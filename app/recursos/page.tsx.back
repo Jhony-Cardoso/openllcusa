@@ -1,0 +1,192 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+
+const SITEURL = 'https://openllcusa.com' // TODO: cambia por tu dominio real. [file:2]
+const BRANDNAME = 'Open LLC USA' // TODO: cambia por tu marca real. [file:2]
+
+export const metadata: Metadata = {
+  title: `Recursos y herramientas | ${BRANDNAME}`,
+  description:
+    'Herramientas gratuitas para elegir el servicio correcto: calculadora, quiz y asesoría gratis 24/7 con Carla.',
+  alternates: { canonical: `${SITEURL}/recursos` },
+  openGraph: {
+    type: 'website',
+    url: `${SITEURL}/recursos`,
+    title: `Recursos y herramientas | ${BRANDNAME}`,
+    description:
+      'Calculadora, quiz y asesoría gratuita 24/7 con Carla para tomar mejores decisiones sobre tu LLC en EE. UU.'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Recursos y herramientas | ${BRANDNAME}`,
+    description: 'Calculadora, quiz y asesoría gratuita 24/7 con Carla.'
+  },
+  robots: { index: true, follow: true }
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `Recursos y herramientas | ${BRANDNAME}`,
+  url: `${SITEURL}/recursos`,
+  description: 'Colección de herramientas gratuitas: calculadora, quiz y asesoría 24/7 con Carla.',
+  isPartOf: { '@type': 'WebSite', name: BRANDNAME, url: SITEURL }
+}
+
+export default function RecursosPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <main className="recursos-page">
+        <section className="recursos-hero">
+          <div className="section-container">
+            <p className="recursos-eyebrow">Herramientas gratuitas</p>
+            <h1 className="recursos-title">Recursos</h1>
+            <p className="recursos-subtitle">
+              Usa estas herramientas para elegir el servicio correcto y avanzar con claridad.
+            </p>
+
+            <div className="recursos-cta">
+              <Link href="/precios" className="btn btn-primary">
+                Ver precios
+              </Link>
+              <Link href="/servicios" className="btn btn-white">
+                Ver servicios
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="section-container">
+            <div className="recursos-grid">
+              <article className="recursos-card">
+                <h2>Calculadora</h2>
+                <p>Estima qué necesitas según tu situación y objetivos.</p>
+                <Link className="btn btn-primary" href="/lead-form">
+                  Abrir calculadora
+                </Link>
+              </article>
+
+              <article className="recursos-card">
+                <h2>Quiz</h2>
+                <p>Responde 5–7 preguntas y recibe una recomendación de plan.</p>
+                <Link className="btn btn-primary" href="/quiz">
+                  Empezar quiz
+                </Link>
+              </article>
+
+              <article className="recursos-card recursos-card-highlight">
+                <h2>Asesoría con Carla</h2>
+                <p>Asesoría gratis 24/7 por voz con transcripción (modo demo por ahora).</p>
+                <div className="recursos-card-actions">
+                  <Link className="btn btn-primary" href="/carla">
+                    Abrir Carla
+                  </Link>
+                  <Link className="btn btn-white" href="/contacto">
+                    Contacto
+                  </Link>
+                </div>
+              </article>
+            </div>
+
+            <p className="recursos-note">
+              Consejo: si estás comparando opciones, empieza por <Link href="/precios">/precios</Link> y luego entra al
+              detalle del servicio en <Link href="/servicios">/servicios</Link>.
+            </p>
+          </div>
+        </section>
+
+        <style jsx>{`
+          .recursos-page {
+            background: var(--color-background);
+          }
+          .recursos-hero {
+            padding: 110px 20px 70px 20px;
+            background: linear-gradient(135deg, #f6fcfa 0%, #f1f7ff 100%);
+            border-bottom: 1px solid var(--color-card-border);
+          }
+          .recursos-hero .section-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+          }
+          .recursos-eyebrow {
+            font-size: 14px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+          }
+          .recursos-title {
+            font-size: 42px;
+            line-height: 1.15;
+            margin-bottom: 14px;
+          }
+          .recursos-subtitle {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            max-width: 720px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+          }
+          .recursos-cta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+          }
+          .recursos-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+          }
+          @media (min-width: 900px) {
+            .recursos-grid {
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+              gap: 22px;
+            }
+          }
+          .recursos-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: 16px;
+            padding: 22px 18px;
+            box-shadow: 0 8px 22px rgba(7, 36, 55, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .recursos-card h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 2px;
+          }
+          .recursos-card p {
+            color: var(--color-text-secondary);
+            line-height: 1.55;
+          }
+          .recursos-card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+          }
+          .recursos-card-highlight {
+            border-color: rgba(33, 128, 141, 0.35);
+            background: rgba(33, 128, 141, 0.06);
+          }
+          .recursos-note {
+            margin-top: 18px;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+          }
+        `}</style>
+      </main>
+    </>
+  )
+}

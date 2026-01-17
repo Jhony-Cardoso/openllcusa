@@ -1,0 +1,43 @@
+import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+
+export default async function ServicioDetallePage({ 
+  params 
+}: { 
+  params: { slug: string } 
+}) {
+  const supabase = await createClient()
+  
+  const { data: servicio, error } = await supabase
+    .from('servicios')
+    .select('*')
+    .eq('slug', params.slug)
+    .single()
+  
+  if (error || !servicio) {
+    notFound()
+  }
+  
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-4xl mx-auto px-4">
+        <h1 className="text-4xl font-bold mb-4">{servicio.title}</h1>
+        <p className="text-xl text-gray-600 mb-6">{servicio.tagline}</p>
+        <p className="text-3xl font-bold text-blue-600 mb-8">{servicio.price}</p>
+        
+        <div className="bg-white p-6 rounded-lg shadow mb-8">
+          <h2 className="text-2xl font-semibold mb-4">¿Qué incluye este servicio?</h2>
+          <p className="text-gray-700 whitespace-pre-line">{servicio.descripcion}</p>
+        </div>
+        
+        <Link 
+          href={`/servicios/${params.slug}/onboarding`}
+          className="inline-block bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+        >
+          Continuar al siguiente paso →
+        </Link>
+      </div>
+    </div>
+  )
+}

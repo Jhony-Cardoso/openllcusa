@@ -1,0 +1,172 @@
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
+
+export default function CompletadoPage() {
+  const router = useRouter()
+  const params = useParams()
+  const searchParams = useSearchParams()
+
+  const slug = (params?.slug as string) || ''
+  const sessionId = searchParams.get('session_id')
+  const pedidoId = searchParams.get('pedido')
+
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [pedido, setPedido] = useState<any>(null)
+
+  useEffect(() => {
+    async function verificar() {
+      try {
+        setLoading(true)
+        setError('')
+
+        if (!sessionId && !pedidoId) {
+          setError('Falta session_id o pedido en la URL.')
+          return
+        }
+
+        const res = await fetch('/api/stripe/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, pedidoId }),
+        })
+
+        const json = await res.json().catch(() => ({}))
+
+        if (!res.ok) {
+          setError(json?.error || 'No se pudo verificar el pago.')
+          return
+        }
+
+        setPedido(json?.pedido || null)
+      } catch (e) {
+        console.error(e)
+        setError('No se pudo verificar el pago. Inténtalo de nuevo.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    verificar()
+  }, [sessionId, pedidoId])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-6 h-6 animate-spin" />
+        <span className="ml-2">Por favor, espera un momento…</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        <div className="border border-red-200 bg-red-50 rounded-lg p-4 flex gap-2 items-start">
+          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+          <div className="text-red-800">{error}</div>
+        </div>
+
+        <div className="mt-6 flex gap-3">
+          <button
+            className="px-4 py-2 border rounded-lg"
+            onClick={() => router.push(`/servicios/${slug}`)}
+          >
+            Volver a servicios
+          </button>
+          <a className="px-4 py-2 underline text-blue-600" href="/contacto">
+            Contactar soporte
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      <div className="flex items-center gap-3 mb-6">
+        <CheckCircle2 className="w-7 h-7 text-green-600" />
+        <h1 className="text-3xl font-bold">Pago confirmado</h1>
+      </div>
+
+      <p className="text-gray-600 mb-6">
+        Tu pedido {pedido?.numero_pedido ? `#${pedido.numero_pedido}` : ''} ha sido procesado correctamente.
+      </p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white border rounded-xl p-6">
+          <div className="font-semibold mb-2">Servicio</div>
+          <div className="text-lg">{pedido?.paquete?.title || pedido?.paquete?.nombre || 'Servicio'}</div>
+          <div className="text-sm text-gray-600 mt-1">{pedido?.paquete?.tagline || pedido?.paquete?.descripcion_corta}</div>
+          <div className="mt-4 flex justify-between">
+            <span className="text-gray-600">Precio</span>
+            <span className="font-semibold">${pedido?.paquete?.price || pedido?.paquete?.precio || 0}</span>
+          </div>
+        </div>
+
+        <div className="bg-white border rounded-xl p-6">
+          <div className="font-semibold mb-2">Estado</div>
+          <div className="text-lg">
+            {pedido?.estado_usa?.nombre} ({pedido?.estado_usa?.codigo})
+          </div>
+          <div className="mt-4 flex justify-between text-sm">
+            <span className="text-gray-600">Filing inicial</span>
+            <span className="font-semibold">${pedido?.estado_usa?.filing_inicial ?? 0}</span>
+          </div>
+          <div className="mt-2 flex justify-between text-sm">
+            <span className="text-gray-600">Total pagado</span>
+            <span className="font-semibold">${pedido?.total_pagado ?? 0}</span>
+          </div>
+        </div>
+
+        <div className="bg-white border rounded-xl p-6 lg:col-span-2">
+          <div className="font-semibold mb-4">Datos de la empresa</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <div className="text-gray-500">Nombre</div>
+              <div className="font-medium">{pedido?.nombre_empresa || '-'}</div>
+            </div>
+            <div>
+              <div className="text-gray-500">Sector</div>
+              <div className="font-medium">{pedido?.sector || '-'}</div>
+            </div>
+            <div>
+              <div className="text-gray-500">Email</div>
+              <div className="font-medium">{pedido?.email_empresa || '-'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white border rounded-xl p-5">
+          <div className="font-semibold mb-1">Recibirás un email</div>
+          <div className="text-sm text-gray-600">En las próximas 24 horas te enviaremos detalles a {pedido?.email_empresa}.</div>
+        </div>
+        <div className="bg-white border rounded-xl p-5">
+          <div className="font-semibold mb-1">Preparación</div>
+          <div className="text-sm text-gray-600">Nuestro equipo comenzará a preparar tu documentación.</div>
+        </div>
+        <div className="bg-white border rounded-xl p-5">
+          <div className="font-semibold mb-1">Seguimiento</div>
+          <div className="text-sm text-gray-600">Podrás ver el estado del pedido y descargar documentos desde tu panel.</div>
+        </div>
+      </div>
+
+      <div className="mt-8 flex gap-3">
+        <button
+          className="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
+          onClick={() => router.push('/dashboard')}
+        >
+          Ir a mi dashboard
+        </button>
+        <a className="px-5 py-3 underline text-blue-600" href="/contacto">
+          Contactar soporte
+        </a>
+      </div>
+    </div>
+  )
+}

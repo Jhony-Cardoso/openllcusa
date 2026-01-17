@@ -1,0 +1,76 @@
+import { NextResponse } from "next/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { stripe } from "@/lib/stripe";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+
+function jsonError(message: string, status = 400) {
+  return NextResponse.json({ ok: false, error: message }, { status });
+}
+
+export async function POST(req: Request) {
+  try {
+    const { userId } = auth();
+    if (!userId) return jsonError("No autenticado", 401);
+
+    const body = await req.json().catch(() => null);
+    if (!body?.servicio_id) return jsonError("Falta servicio_id");
+    const servicio_id: string = body.servicio_id;
+    const pedido_id: string | null = body.pedido_id ?? null;
+
+    // 1) Leer el servicio y su price recurrente
+    const { data: servicio, error: servicioErr } = await supabaseAdmin
+      .from("servicios")
+      .select("id, stripe_price_id_recurrente")
+      .eq("id", servicio_id)
+      .single();
+
+    if (servicioErr || !servicio?.stripe_price_id_recurrente) {
+      return jsonError("Servicio no existe o no tiene stripe_price_id_recurrente");
+    }
+
+    // 2) Leer/crear profile para tener stripe_customer_id (opcional)
+    const clerkUser = await currentUser();
+    const email =
+      clerkUser?.emailAddresses?.[0]?.emailAddress ??
+      clerkUser?.primaryEmailAddress?.emailAddress ??
+      null;
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, stripe_customer_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!profile) {
+      await supabaseAdmin.from("profiles").insert({
+        user_id: userId,
+        email,
+      });
+    }
+
+    // recargar por si se insertó recién
+    const { data: profile2 } = await supabaseAdmin
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer: profile2?.stripe_customer_id ?? undefined,
+      line_items: [{ price: servicio.stripe_price_id_recurrente, quantity: 1 }],
+      success_url: `${appUrl}/dashboard/suscripciones?checkout=success`,
+      cancel_url: `${appUrl}/dashboard/suscripciones?checkout=cancel`,
+      metadata: {
+        user_id: userId,
+        servicio_id,
+        pedido_id: pedido_id ?? "",
+      },
+    });
+
+    return NextResponse.json({ ok: true, url: session.url });
+  } catch (e: any) {
+    return jsonError(e?.message ?? "Error desconocido", 500);
+  }
+}

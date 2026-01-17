@@ -1,0 +1,235 @@
+// lib/models/pedido.ts
+
+import { createClient } from '../supabase/client';
+import { Database } from '../supabase/database.types';
+
+type Pedido = Database['public']['Tables']['pedidos']['Row'];
+type PedidoInsert = Database['public']['Tables']['pedidos']['Insert'];
+type PedidoUpdate = Database['public']['Tables']['pedidos']['Update'];
+
+export class PedidoModel {
+  /**
+   * Crear un nuevo pedido en estado borrador
+   */
+  static async crear(userId: string, servicioId: string): Promise<Pedido | null> {
+    const supabase = createClient();
+
+    console.log('🔍 Intentando crear pedido con:', { userId, servicioId });
+
+    // ✅ Usar paquete_id en lugar de servicio_id (tu tabla usa paquete_id)
+    const pedidoData: any = {
+      user_id: userId,
+      paquete_id: servicioId,  // ✅ Cambiado de servicio_id a paquete_id
+      estado_pedido: 'borrador',
+      paso_actual: 1,
+    };
+
+    console.log('📤 Datos a insertar:', pedidoData);
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .insert(pedidoData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error creando pedido:', error);
+      console.error('❌ Mensaje:', error.message);
+      console.error('❌ Código:', error.code);
+      console.error('❌ Detalles:', error.details);
+      return null;
+    }
+
+    console.log('✅ Pedido creado exitosamente:', data);
+    return data;
+  }
+
+  /**
+   * Obtener un pedido por ID
+   */
+  static async obtenerPorId(pedidoId: string): Promise<Pedido | null> {
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('id', pedidoId)
+      .single();
+
+    if (error) {
+      console.error('Error obteniendo pedido:', error);
+      return null;
+    }
+
+    return data;
+  }
+
+  /**
+   * Obtener pedido completo con relaciones
+   */
+  static async obtenerCompleto(pedidoId: string) {
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select(`
+        *,
+        servicio:servicios(*),
+        estado_usa:estados_usa(*)
+      `)
+      .eq('id', pedidoId)
+      .single();
+
+    if (error) {
+      console.error('Error obteniendo pedido completo:', error);
+      return null;
+    }
+
+    return data;
+  }
+
+  /**
+   * Obtener todos los pedidos de un usuario
+   */
+  static async obtenerPorUsuario(userId: string): Promise<Pedido[]> {
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error obteniendo pedidos del usuario:', error);
+      return [];
+    }
+
+    return data || [];
+  }
+
+  /**
+   * Actualizar paso del onboarding
+   */
+  static async actualizarPaso(
+    pedidoId: string,
+    paso: number,
+    datos?: Partial<PedidoUpdate>
+  ): Promise<boolean> {
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update({
+        paso_actual: paso,
+        ...datos,
+      })
+      .eq('id', pedidoId);
+
+    if (error) {
+      console.error('Error actualizando paso:', error);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Actualizar estado del pedido
+   */
+  static async actualizarEstado(
+    pedidoId: string,
+    nuevoEstado: string
+  ): Promise<boolean> {
+    const supabase = createClient();
+
+    const updates: PedidoUpdate = {
+      estado_pedido: nuevoEstado,
+    };
+
+    // Si el estado es completado, guardar timestamp
+    if (nuevoEstado === 'completado') {
+      updates.completado_at = new Date().toISOString();
+    }
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update(updates)
+      .eq('id', pedidoId);
+
+    if (error) {
+      console.error('Error actualizando estado:', error);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Guardar datos del paso 2 (Estado)
+   */
+  static async guardarEstado(
+    pedidoId: string,
+    estadoUsaId: string
+  ): Promise<boolean> {
+    return await this.actualizarPaso(pedidoId, 2, {
+      estado_usa_id: estadoUsaId,
+    });
+  }
+
+  /**
+   * Guardar datos del paso 3 (Datos empresa)
+   */
+  static async guardarDatosEmpresa(
+    pedidoId: string,
+    datos: {
+      nombre_empresa: string;
+      sector: string;
+      descripcion_negocio: string;
+      num_socios: number;
+      ingresos_estimados: string;
+      email_empresa: string;
+      telefono_empresa: string;
+    }
+  ): Promise<boolean> {
+    return await this.actualizarPaso(pedidoId, 3, {
+      ...datos,
+      estado_pedido: 'datos_completos',
+    });
+  }
+
+  /**
+   * Marcar como pagado
+   */
+  static async marcarComoPagado(
+    pedidoId: string,
+    stripeData: {
+      payment_intent_id: string;
+      session_id: string;
+      customer_id: string;
+      amount: number;
+    }
+  ): Promise<boolean> {
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update({
+        estado_pedido: 'pagado',
+        paso_actual: 5,
+        stripe_payment_intent_id: stripeData.payment_intent_id,
+        stripe_session_id: stripeData.session_id,
+        stripe_customer_id: stripeData.customer_id,
+        total_pagado: stripeData.amount,
+        fecha_pago: new Date().toISOString(),
+      })
+      .eq('id', pedidoId);
+
+    if (error) {
+      console.error('Error marcando como pagado:', error);
+      return false;
+    }
+
+    return true;
+  }
+}

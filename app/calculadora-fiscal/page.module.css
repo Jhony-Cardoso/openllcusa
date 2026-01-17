@@ -1,0 +1,796 @@
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+
+.container {
+  min-height: 100vh;
+  padding: 3rem 1.5rem;
+  padding-top: 5rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.header {
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;   /* ← AÑADIDO para posicionar el botón */
+}
+
+.title {
+  font-size: 3rem;  
+  font-weight: bold;
+  color: #1a202c;
+  margin-bottom: 1rem;   
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #4a5568;  
+}
+
+/* ← BOTÓN QUIZ ESQUINA SUPERIOR DERECHA */
+.quizButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.875rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.quizButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+/* Responsive para botón quiz */
+@media (max-width: 768px) {
+  .quizButton {
+    position: static;  /* En móvil, no flotante */
+    margin: 0 auto 1.5rem;
+    width: fit-content;
+  }
+}
+
+
+/* ========================================
+   FORMULARIO
+   ======================================== */
+
+.form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  width: 100%;
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+}
+
+.checkbox {
+  margin-top: 0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.checkboxLabel {
+  font-size: 0.95rem;
+  color: #78350f;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.calculateButton {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 1.125rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+  margin-bottom: 2rem;  /* ← ESPACIO AÑADIDO AQUÍ */
+}
+
+.calculateButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+.calculateButton:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ========================================
+   RESULTADOS
+   ======================================== */
+
+.results {
+  margin-top: 3rem;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.resultsTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #1a202c;
+  margin-bottom: 2rem;
+}
+
+.scenariosGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.scenarioCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.scenarioCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.scenarioTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #111827;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #667eea;
+  margin-bottom: 1.5rem;
+}
+
+.scenarioTitle .subtitle {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tooltip {
+  background: #e6fffa;
+  border: 1px solid #81e6d9;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  color: #234e52;
+  margin-bottom: 1rem;
+}
+
+.netIncome {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2f855a;
+  margin-bottom: 0.5rem;
+}
+
+.effectiveRate {
+  font-size: 1rem;
+  color: #718096;
+  margin-bottom: 1.5rem;
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.breakdownItem {
+  font-size: 0.875rem;
+  color: #4a5568;
+  padding: 0.5rem;
+  background: #f7fafc;
+  border-radius: 4px;
+}
+
+.consultationBadge {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fed7d7;
+  border: 2px solid #fc8181;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #742a2a;
+  text-align: center;
+}
+
+/* ========================================
+   AVISO LEGAL
+   ======================================== */
+
+.legalNotice {
+  background: white;
+  border: 3px solid #feb2b2;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 3rem;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.legalHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #b91c1c;
+}
+
+.warningIcon {
+  font-size: 1.5rem;
+}
+
+.legalContent {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.legalContent p {
+  margin: 0.75rem 0;
+}
+
+.legalList {
+  margin: 1rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.legalList li {
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.legalFooter {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #fee;
+  border-left: 4px solid #b91c1c;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.legalUpdate {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+}
+
+.legalUpdate strong {
+  color: #374151;
+}
+
+.legalLink {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.legalLink:hover {
+  color: #1d4ed8;
+}
+
+/* ========================================
+   BARRA DE CTAs STICKY
+   ======================================== */
+
+.stickyCtaBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 1rem 2rem;
+  border-bottom: 2px solid #e5e7eb;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.ctaBarContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  align-items: center;
+}
+
+.ctaPrimary {
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.ctaSecondary {
+  padding: 0.875rem 1.75rem;
+  background: white;
+  color: #374151;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.ctaSecondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* CTA Sticky del bottom-right */
+.stickyCta {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.ctaButton {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 1.125rem;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.ctaButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+/* Mobile */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .scenariosGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .stickyCta {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+  }
+
+  .ctaButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .form,
+  .quizSection {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  
+  .results {
+    max-width: 100%;
+  }
+  
+  .legalNotice {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  
+  .container {
+    padding: 2rem 1rem;
+    padding-top: 4rem;
+  }
+
+  .stickyCtaBar {
+    padding: 0.75rem 1rem;
+  }
+
+  .ctaBarContent {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ctaPrimary,
+  .ctaSecondary {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .form,
+  .quizSection {
+    max-width: 700px;
+  }
+  
+  .results,
+  .legalNotice {
+    max-width: 900px;
+  }
+}
+
+/* ========================================
+   ESTILOS ADICIONALES
+   ======================================== */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   VARIATION RANGES
+   ======================================== */
+
+.variationRange {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-left: 4px solid #0ea5e9;
+  border-radius: 8px;
+}
+
+.variationLabel {
+  font-size: 0.9rem;
+  color: #0c4a6e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.variationValue {
+  background: #0ea5e9;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.variationBar {
+  height: 6px;
+  background: #bae6fd;
+  border-radius: 10px;
+  position: relative;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.variationIndicator {
+  position: absolute;
+  left: 40%;
+  width: 20%;
+  height: 100%;
+  background: #0ea5e9;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scaleX(1.2);
+  }
+}
+
+.variationNote {
+  font-size: 0.8rem;
+  color: #075985;
+  margin: 0;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* ========================================
+   FAQ CALCULADORA
+======================================== */
+
+.faqButton {
+  display: inline-block;
+  margin: 1rem auto 3rem;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.faqButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.55);
+}
+
+.faqSection {
+  margin-top: 3rem;
+  margin-bottom: 4rem;
+  max-width: 900px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2rem 2.25rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.faqTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.faqIntro {
+  font-size: 0.98rem;
+  color: #4b5563;
+  margin-bottom: 1.75rem;
+  line-height: 1.6;
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.faqItem {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 0.75rem 1rem;
+}
+
+.faqQuestion {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #111827;
+  position: relative;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion::after {
+  content: '+';
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.faqItem[open] .faqQuestion::after {
+  content: '–';
+}
+
+.faqAnswer {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* Botón de consulta especializada */
+.consultationButton {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-600) 100%);
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(33, 128, 141, 0.2);
+}
+
+.consultationButton:hover {
+  background: linear-gradient(135deg, var(--color-teal-600) 0%, var(--color-teal-700) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(33, 128, 141, 0.35);
+  color: #ffffff;
+}
+
+.consultationButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(33, 128, 141, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  .consultationButton {
+    background: linear-gradient(135deg, var(--color-teal-300) 0%, var(--color-teal-400) 100%);
+    color: var(--color-slate-900);
+  }
+  
+  .consultationButton:hover {
+    background: linear-gradient(135deg, var(--color-teal-400) 0%, var(--color-teal-800) 100%);
+    color: var(--color-slate-900);
+  }
+}
+
+/* Estilos para el icono y flecha del botón */
+.consultationButtonIcon {
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.consultationButtonArrow {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 0.2s ease;
+}
+
+.consultationButton:hover .consultationButtonArrow {
+  transform: translateX(3px);
+}

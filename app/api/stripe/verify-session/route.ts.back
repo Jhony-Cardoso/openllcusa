@@ -1,0 +1,89 @@
+// ============================================
+// app/api/stripe/verify-session/route.ts
+// API Route para verificar sesión de Stripe tras el pago
+// ============================================
+
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import Stripe from 'stripe';
+import { PedidoModel } from '@/lib/models/pedido';
+
+// Inicializar Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    // 1. Verificar autenticación
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'No autenticado' },
+        { status: 401 }
+      );
+    }
+
+    // 2. Obtener datos del body
+    const { sessionId, pedidoId } = await request.json();
+
+    if (!sessionId || !pedidoId) {
+      return NextResponse.json(
+        { error: 'Faltan parámetros requeridos' },
+        { status: 400 }
+      );
+    }
+
+    // 3. Recuperar la sesión de Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    // 4. Verificar que la sesión corresponde al pedido
+    if (session.metadata?.pedidoId !== pedidoId) {
+      return NextResponse.json(
+        { error: 'La sesión no corresponde al pedido' },
+        { status: 400 }
+      );
+    }
+
+    // 5. Verificar que pertenece al usuario autenticado
+    if (session.metadata?.userId !== userId) {
+      return NextResponse.json(
+        { error: 'No autorizado' },
+        { status: 403 }
+      );
+    }
+
+    // 6. Verificar el estado del pago
+    if (session.payment_status === 'paid') {
+      // 7. Actualizar el pedido en Supabase si aún no está marcado como pagado
+      const pedido = await PedidoModel.obtenerPorId(pedidoId);
+
+      if (pedido && pedido.estado_pedido !== 'pagado') {
+        await PedidoModel.marcarComoPagado(pedidoId, {
+          payment_intent_id: session.payment_intent as string,
+          session_id: sessionId,
+          customer_id: session.customer as string,
+          amount: session.amount_total ? session.amount_total / 100 : 0, // Convertir de centavos
+        });
+      }
+
+      return NextResponse.json({
+        paymentStatus: 'paid',
+        sessionId: session.id,
+        customerEmail: session.customer_details?.email,
+      });
+    } else {
+      return NextResponse.json({
+        paymentStatus: session.payment_status,
+        error: 'El pago no se ha completado',
+      });
+    }
+  } catch (error: any) {
+    console.error('Error verificando sesión de Stripe:', error);
+    return NextResponse.json(
+      { error: error.message || 'Error interno del servidor' },
+      { status: 500 }
+    );
+  }
+}

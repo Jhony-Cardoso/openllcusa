@@ -1,0 +1,401 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+
+const SITEURL = 'https://openllcusa.com' // TODO: cambia por tu dominio real (mismo patrón que /precios). [file:2]
+const BRANDNAME = 'Open LLC USA' // TODO: cambia por tu marca real (mismo patrón que /precios). [file:2]
+
+export const metadata: Metadata = {
+  title: `Asesoría con Carla (gratis 24/7) | ${BRANDNAME}`,
+  description:
+    'Asesoría gratuita 24/7 con Carla: guía por voz + transcripción para elegir servicio, resolver dudas y avanzar al siguiente paso.',
+  alternates: { canonical: `${SITEURL}/carla` },
+  openGraph: {
+    type: 'website',
+    url: `${SITEURL}/carla`,
+    title: `Asesoría con Carla (gratis 24/7) | ${BRANDNAME}`,
+    description:
+      'Asesoría gratuita 24/7 por voz con transcripción: precios, servicios y pasos para crear y mantener tu LLC en EE. UU.'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Asesoría con Carla (gratis 24/7) | ${BRANDNAME}`,
+    description:
+      'Asesoría gratuita 24/7 por voz con transcripción: resuelve dudas y elige el plan correcto.'
+  },
+  robots: { index: true, follow: true }
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: `Asesoría con Carla | ${BRANDNAME}`,
+  url: `${SITEURL}/carla`,
+  description:
+    'Asesoría gratuita 24/7 con un agente virtual por voz y transcripción para resolver dudas sobre servicios, precios y proceso.',
+  isPartOf: {
+    '@type': 'WebSite',
+    name: BRANDNAME,
+    url: SITEURL
+  }
+}
+
+export default function CarlaPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <main className="carla-page">
+        <section className="carla-hero">
+          <div className="section-container">
+            <p className="carla-eyebrow">Asesoría gratuita · 24/7 · Voz + transcripción</p>
+            <h1 className="carla-title">Asesoría con Carla</h1>
+            <p className="carla-subtitle">
+              Esta es la versión en pantalla completa (respaldo). El botón del header abre el mismo concepto en un
+              modal.
+            </p>
+
+            <div className="carla-hero-cta">
+              <Link href="/precios" className="btn btn-primary">
+                Ver Precios
+              </Link>
+              <Link href="/servicios" className="btn btn-white">
+                Ver Servicios
+              </Link>
+            </div>
+
+            <p className="carla-note">
+              Nota: de momento la voz real está desactivada. Aquí se muestra una demo de la experiencia con
+              transcripción.
+            </p>
+          </div>
+        </section>
+
+        <section className="carla-shell-section">
+          <div className="section-container">
+            <CarlaFullDemo />
+          </div>
+        </section>
+
+        <style jsx>{`
+          .carla-page {
+            background: var(--color-background);
+          }
+          .carla-hero {
+            padding: 110px 20px 60px 20px;
+            background: linear-gradient(135deg, #f6fcfa 0%, #f1f7ff 100%);
+            border-bottom: 1px solid var(--color-card-border);
+          }
+          .carla-hero .section-container {
+            max-width: 900px;
+            margin: 0 auto;
+          }
+          .carla-eyebrow {
+            font-size: 14px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+          }
+          .carla-title {
+            font-size: 42px;
+            line-height: 1.15;
+            margin-bottom: 14px;
+          }
+          .carla-subtitle {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            max-width: 720px;
+            margin-bottom: 18px;
+            line-height: 1.6;
+          }
+          .carla-hero-cta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 14px;
+          }
+          .carla-note {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+          }
+          .carla-shell-section {
+            padding: 40px 20px 90px 20px;
+          }
+        `}</style>
+      </main>
+    </>
+  )
+}
+
+/**
+ * Demo en pantalla completa:
+ * - NO conecta micrófono ni ElevenLabs todavía.
+ * - Simula: connecting -> listening (draft) -> processing -> speaking (streaming) -> ended
+ */
+function CarlaFullDemo() {
+  'use client'
+
+  type CarlaStatus =
+    | 'idle'
+    | 'connecting'
+    | 'listening'
+    | 'processing'
+    | 'speaking'
+    | 'ended'
+    | 'error'
+
+  type ChatMsg = { role: 'user' | 'assistant'; text: string }
+
+  const [status, setStatus] = React.useState<CarlaStatus>('idle')
+  const [messages, setMessages] = React.useState<ChatMsg[]>([])
+  const [draftUserText, setDraftUserText] = React.useState('')
+  const [assistantStreamingText, setAssistantStreamingText] = React.useState('')
+  const timersRef = React.useRef<number[]>([])
+
+  const clearTimers = () => {
+    timersRef.current.forEach((t) => window.clearTimeout(t))
+    timersRef.current = []
+  }
+
+  React.useEffect(() => {
+    return () => clearTimers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const startDemo = () => {
+    clearTimers()
+    setMessages([])
+    setDraftUserText('')
+    setAssistantStreamingText('')
+    setStatus('connecting')
+
+    const t1 = window.setTimeout(() => {
+      setStatus('listening')
+
+      const demoUserFinal = 'Quiero crear una LLC. ¿Qué plan me conviene para empezar?'
+      let i = 0
+
+      const tick = () => {
+        i += 1
+        setDraftUserText(demoUserFinal.slice(0, i))
+        if (i < demoUserFinal.length) {
+          const t = window.setTimeout(tick, 18)
+          timersRef.current.push(t)
+        } else {
+          const t = window.setTimeout(() => {
+            setDraftUserText('')
+            setMessages([{ role: 'user', text: demoUserFinal }])
+            setStatus('processing')
+
+            const t2 = window.setTimeout(() => {
+              setStatus('speaking')
+              const assistantFull =
+                'Si quieres validar tu negocio sin complicarte, suele encajar “LLC Esencial”. ' +
+                'Si tu prioridad es empezar a cobrar desde el primer mes con acompañamiento, entonces “Launch Banking” suele ser mejor. ' +
+                'Si me dices tu país y si ya tienes clientes, te lo afino en 30 segundos.'
+
+              setMessages((prev) => [...prev, { role: 'assistant', text: '' }])
+
+              const words = assistantFull.split(' ')
+              let w = 0
+              const streamWords = () => {
+                w += 1
+                const next = words.slice(0, w).join(' ')
+                setAssistantStreamingText(next)
+
+                setMessages((prev) => {
+                  const copy = [...prev]
+                  const lastIdx = copy.map((m) => m.role).lastIndexOf('assistant')
+                  if (lastIdx >= 0) copy[lastIdx] = { role: 'assistant', text: next }
+                  return copy
+                })
+
+                if (w < words.length) {
+                  const t = window.setTimeout(streamWords, 70)
+                  timersRef.current.push(t)
+                } else {
+                  setStatus('ended')
+                }
+              }
+
+              streamWords()
+            }, 500)
+
+            timersRef.current.push(t2)
+          }, 250)
+
+          timersRef.current.push(t)
+        }
+      }
+
+      tick()
+    }, 650)
+
+    timersRef.current.push(t1)
+  }
+
+  const label =
+    status === 'idle'
+      ? 'Listo'
+      : status === 'connecting'
+      ? 'Conectando…'
+      : status === 'listening'
+      ? 'Escuchando…'
+      : status === 'processing'
+      ? 'Procesando…'
+      : status === 'speaking'
+      ? 'Carla está respondiendo…'
+      : status === 'ended'
+      ? 'Conversación finalizada'
+      : 'Error'
+
+  return (
+    <div className="carla-full">
+      <div className="carla-full-head">
+        <div>
+          <div className="carla-full-title">Carla (demo)</div>
+          <div className="carla-full-sub">Transcripción en tiempo real (simulada)</div>
+        </div>
+
+        <div className="carla-full-actions">
+          <button className="btn btn-primary" onClick={startDemo}>
+            Iniciar demo
+          </button>
+          <Link className="btn btn-white" href="/contacto">
+            Contacto
+          </Link>
+        </div>
+      </div>
+
+      <div className="carla-full-status" role="status" aria-live="polite">
+        {label}
+        <span className="carla-badge">DEMO</span>
+      </div>
+
+      <div className="carla-full-chat" aria-label="Transcripción">
+        {messages.map((m, idx) => (
+          <div key={idx} className={`carla-msg ${m.role === 'user' ? 'carla-user' : 'carla-assistant'}`}>
+            <div className="carla-meta">{m.role === 'user' ? 'Tú' : 'Carla'}</div>
+            <div className="carla-text">{m.text || (m.role === 'assistant' ? assistantStreamingText : '')}</div>
+          </div>
+        ))}
+
+        {status === 'listening' && (
+          <div className="carla-msg carla-user carla-draft">
+            <div className="carla-meta">Tú (borrador)</div>
+            <div className="carla-text">{draftUserText}</div>
+          </div>
+        )}
+      </div>
+
+      <div className="carla-full-footer">
+        <Link href="/precios">Ir a Precios</Link>
+        <Link href="/servicios">Ir a Servicios</Link>
+      </div>
+
+      <style jsx>{`
+        .carla-full {
+          border: 1px solid var(--color-card-border);
+          border-radius: 16px;
+          background: var(--color-surface);
+          box-shadow: 0 10px 30px rgba(7, 36, 55, 0.12);
+          overflow: hidden;
+        }
+        .carla-full-head {
+          padding: 18px 18px 14px 18px;
+          display: flex;
+          justify-content: space-between;
+          gap: 14px;
+          align-items: center;
+          border-bottom: 1px solid var(--color-card-border);
+          flex-wrap: wrap;
+        }
+        .carla-full-title {
+          font-size: 18px;
+          font-weight: 800;
+        }
+        .carla-full-sub {
+          font-size: 13px;
+          color: var(--color-text-secondary);
+          margin-top: 2px;
+        }
+        .carla-full-actions {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .carla-full-status {
+          padding: 10px 18px;
+          background: rgba(33, 128, 141, 0.06);
+          border-bottom: 1px solid rgba(33, 128, 141, 0.18);
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          font-weight: 700;
+        }
+        .carla-badge {
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
+          background: rgba(33, 128, 141, 0.12);
+          padding: 3px 8px;
+          border-radius: 999px;
+          color: var(--color-primary);
+        }
+        .carla-full-chat {
+          padding: 14px 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          max-height: 52vh;
+          overflow: auto;
+          background: var(--color-surface);
+        }
+        .carla-msg {
+          border: 1px solid rgba(94, 82, 64, 0.16);
+          border-radius: 12px;
+          padding: 12px 12px;
+        }
+        .carla-user {
+          background: rgba(29, 78, 216, 0.06);
+          border-color: rgba(29, 78, 216, 0.18);
+        }
+        .carla-assistant {
+          background: rgba(15, 23, 42, 0.04);
+        }
+        .carla-draft {
+          opacity: 0.85;
+        }
+        .carla-meta {
+          font-size: 11px;
+          font-weight: 900;
+          color: var(--color-text-secondary);
+          letter-spacing: 0.06em;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+        .carla-text {
+          line-height: 1.55;
+        }
+        .carla-full-footer {
+          padding: 12px 18px 18px 18px;
+          border-top: 1px solid var(--color-card-border);
+          display: flex;
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+        .carla-full-footer a {
+          font-weight: 800;
+          color: var(--color-primary);
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// NOTE: Necesario para el componente cliente interno
+import * as React from 'react'

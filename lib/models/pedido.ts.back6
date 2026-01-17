@@ -1,0 +1,147 @@
+// lib/models/pedido.ts
+
+import { createClient } from '../supabase/client';
+
+export class PedidoModel {
+  static async crear(userId: string, servicioId: string): Promise<any | null> {
+    const supabase = createClient();
+
+    const numeroPedido = `PED-${Date.now()}`;
+
+    const pedidoData = {
+      user_id: userId,
+      paquete_id: servicioId,
+      numero_pedido: numeroPedido,
+      estado_pedido: 'borrador',
+      paso_actual: 1,
+    };
+
+    console.log('📤 Insertando:', pedidoData);
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .insert(pedidoData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error:', error.message);
+      return null;
+    }
+
+    console.log('✅ Creado:', data);
+    return data;
+  }
+
+  static async actualizarPaso(pedidoId: string, paso: number, datos: any = {}): Promise<boolean> {
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update({
+        paso_actual: paso,
+        ...datos,
+      })
+      .eq('id', pedidoId);
+
+    if (error) {
+      console.error('Error actualizando paso:', error);
+      return false;
+    }
+    return true;
+  }
+
+  static async actualizarEstado(pedidoId: string, nuevoEstado: string): Promise<boolean> {
+    const supabase = createClient();
+
+    const updates = {
+      estado_pedido: nuevoEstado,
+    };
+
+    if (nuevoEstado === 'completado') {
+      updates['completado_at'] = new Date().toISOString();
+    }
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update(updates)
+      .eq('id', pedidoId);
+
+    if (error) {
+      console.error('Error actualizando estado:', error);
+      return false;
+    }
+    return true;
+  }
+
+  static async marcarComoPagado(pedidoId: string, stripeData: any): Promise<boolean> {
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update({
+        estado_pedido: 'pagado',
+        paso_actual: 5,
+        stripe_payment_intent_id: stripeData.payment_intent_id,
+        stripe_session_id: stripeData.session_id,
+        stripe_customer_id: stripeData.customer_id,
+        total_pagado: stripeData.amount,
+        fecha_pago: new Date().toISOString(),
+      })
+      .eq('id', pedidoId);
+
+    if (error) {
+      console.error('Error marcando pagado:', error);
+      return false;
+    }
+    return true;
+  }
+
+  static async guardarEstado(pedidoId: string, estadoUsaId: string): Promise<boolean> {
+    return this.actualizarPaso(pedidoId, 2, { estado_usa_id: estadoUsaId });
+  }
+
+  static async guardarDatosEmpresa(pedidoId: string, datos: any): Promise<boolean> {
+    return this.actualizarPaso(pedidoId, 3, {
+      ...datos,
+      estado_pedido: 'datos_completos',
+    });
+  }
+
+  static async obtenerPorId(pedidoId: string): Promise<any | null> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('id', pedidoId)
+      .single();
+    if (error) return null;
+    return data;
+  }
+
+  static async obtenerCompleto(pedidoId: string) {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select(`
+        *,
+        servicios(*),
+        estados_usa(*)
+      `)
+      .eq('id', pedidoId)
+      .single();
+    if (error) return null;
+    return data;
+  }
+
+  static async obtenerPorUsuario(userId: string): Promise<any[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) return [];
+    return data || [];
+  }
+}

@@ -1,0 +1,139 @@
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
+import { createClient } from '@/lib/supabase/client'
+import { PedidoModel } from '@/lib/models/pedido'
+import { Loader2, AlertCircle } from 'lucide-react'
+
+type Servicio = {
+  id: string
+  title?: string
+  tagline?: string
+  descripcion?: string
+}
+
+export default function OnboardingInicioPage() {
+  const router = useRouter()
+  const params = useParams()
+  const slug = (params?.slug as string) || ''
+
+  const { user, isLoaded } = useUser()
+
+  const [servicio, setServicio] = useState<Servicio | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    async function cargarServicio() {
+      try {
+        if (!isLoaded) return
+        if (!slug) {
+          setError('Servicio no encontrado (slug vacío)')
+          setLoading(false)
+          return
+        }
+
+        const supabase = createClient()
+
+        const { data, error: dbError } = await supabase
+          .from('servicios')
+          .select('*')
+          .eq('slug', slug)
+          .single()
+
+        if (dbError || !data) {
+          console.error('Error obteniendo servicio:', dbError)
+          setError('Servicio no encontrado')
+          setLoading(false)
+          return
+        }
+
+        setServicio(data as Servicio)
+        setLoading(false)
+      } catch (e) {
+        console.error(e)
+        setError('Error al cargar el servicio')
+        setLoading(false)
+      }
+    }
+
+    cargarServicio()
+  }, [isLoaded, slug])
+
+  const handleContinuar = async () => {
+    setError('')
+
+    if (!user) {
+      router.push('/sign-in')
+      return
+    }
+
+    if (!servicio) {
+      setError('Servicio no encontrado')
+      return
+    }
+
+    const pedido = await PedidoModel.crear(user.id, servicio.id)
+
+    if (!pedido) {
+      setError('Error al crear el pedido')
+      return
+    }
+
+    router.push(`/servicios/${slug}/onboarding/estado?pedido=${pedido.id}`)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-6 h-6 animate-spin" />
+        <span className="ml-2">Cargando…</span>
+      </div>
+    )
+  }
+
+  if (error || !servicio) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <div className="border border-red-200 bg-red-50 rounded-lg p-4 flex gap-2 items-start">
+          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+          <div className="text-red-800">{error || 'Servicio no encontrado'}</div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <h1 className="text-2xl font-bold mb-2">{servicio.title || 'Servicio'}</h1>
+      <p className="text-gray-600 mb-6">{servicio.tagline}</p>
+
+      <div className="bg-white border rounded-lg p-6 mb-6">
+        <h2 className="text-lg font-semibold mb-2">¿Qué incluye este servicio?</h2>
+        <p className="text-gray-700 whitespace-pre-line">{servicio.descripcion}</p>
+      </div>
+
+      <div className="bg-gray-50 border rounded-lg p-6 mb-8">
+        <p className="text-gray-700">
+          En los siguientes pasos te pediremos seleccionar el estado donde quieres constituir tu LLC
+          y los datos de tu empresa. Todo el proceso toma aproximadamente <strong>5-10 minutos</strong>.
+        </p>
+      </div>
+
+      {error && (
+        <div className="border border-red-200 bg-red-50 rounded-lg p-4 mb-6 text-red-800">
+          {error}
+        </div>
+      )}
+
+      <button
+        onClick={handleContinuar}
+        className="w-full bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+      >
+        Continuar al siguiente paso →
+      </button>
+    </div>
+  )
+}

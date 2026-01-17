@@ -1,0 +1,60 @@
+// app/api/stripe/subscription/cancel/route.ts
+
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import Stripe from 'stripe'
+import { SuscripcionModel } from '@/lib/models/suscripcion'
+import { createClient } from '@/lib/supabase/client'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+})
+
+export async function POST(req: NextRequest) {
+  try {
+    const { userId } = await auth()
+    if (!userId) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+
+    const { suscripcionId } = await req.json()
+    if (!suscripcionId) return NextResponse.json({ error: 'Falta suscripcionId' }, { status: 400 })
+
+    // 1) Confirmar que pertenece al usuario
+    const suscripcion = await SuscripcionModel.obtenerPorIdParaUsuario(suscripcionId, userId)
+    if (!suscripcion) return NextResponse.json({ error: 'Suscripción no encontrada' }, { status: 404 })
+    if (!suscripcion.stripe_subscription_id) {
+      return NextResponse.json({ error: 'Suscripción sin stripe_subscription_id' }, { status: 400 })
+    }
+
+    // 2) Cancelar al final del periodo
+    const updated = await stripe.subscriptions.update(suscripcion.stripe_subscription_id, {
+      cancel_at_period_end: true,
+      metadata: {
+        ...(suscripcion as any).metadata,
+        userId,
+      },
+    })
+
+    // 3) Guardar estado local
+    await SuscripcionModel.actualizar(suscripcionId, {
+      estado: 'canceling',
+      cancel_at_period_end: true,
+      current_period_start: updated.current_period_start
+        ? new Date(updated.current_period_start * 1000).toISOString()
+        : suscripcion.current_period_start,
+      current_period_end: updated.current_period_end
+        ? new Date(updated.current_period_end * 1000).toISOString()
+        : suscripcion.current_period_end,
+      canceled_at: updated.canceled_at ? new Date(updated.canceled_at * 1000).toISOString() : suscripcion.canceled_at,
+    })
+
+    return NextResponse.json({
+      ok: true,
+      stripe_subscription_id: updated.id,
+      cancel_at_period_end: updated.cancel_at_period_end,
+      current_period_end: updated.current_period_end ? new Date(updated.current_period_end * 1000).toISOString() : null,
+    })
+  } catch (e: any) {
+    console.error('Error cancel subscription:', e)
+    return NextResponse.json({ error: e.message || 'Error interno' }, { status: 500 })
+  }
+}

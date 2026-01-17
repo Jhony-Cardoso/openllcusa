@@ -1,0 +1,23 @@
+static async crear(userId: string, paqueteId: string): Promise<Pedido | null> {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from('pedidos')
+    .insert({
+      user_id: userId,
+      paquete_id: paqueteId,
+      estado_pedido: 'borrador',
+      paso_actual: 1,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    // ✅ Mostrar error completo en consola
+    console.error('Error creando pedido:', error);
+    console.error('Detalles:', JSON.stringify(error, null, 2));
+    return null;
+  }
+
+  return data;
+}

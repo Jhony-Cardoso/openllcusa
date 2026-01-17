@@ -1,0 +1,50 @@
+/* ============ SITE HEADER (azul) ============ */
+.site-header{
+  background: linear-gradient(to right, #1d4ed8, #1e3a8a);
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Grid para centrar el menú independientemente del ancho del logo/CTA */
+.site-header__container{
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* izquierda | centro | derecha */
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-header__left{
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  min-width: 0;
+}
+
+.site-header__nav{
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.site-header__right{
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Responsive (manteniendo tu lógica actual) */
+@media (max-width: 768px){
+  .site-header__nav{ display: none; }
+  .header-auth-buttons{ display: none; } /* tus clases existentes del header.tsx */
+  .header-mobile-menu-button{ display: block; }
+  .site-header__container{ padding: 0 1rem; }
+}

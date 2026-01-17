@@ -1,0 +1,68 @@
+// ============================================
+// app/api/stripe/webhook/route.ts
+// Webhook para escuchar eventos de Stripe
+// ============================================
+
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
+import { PedidoModel } from '@/lib/models/pedido';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+});
+
+// Clave secreta del webhook (obtenerla desde Stripe Dashboard)
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.text();
+    const signature = request.headers.get('stripe-signature')!;
+
+    // Verificar el evento
+    const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+
+    // Manejar el evento
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+
+        // Actualizar el pedido en Supabase
+        if (session.metadata?.pedidoId && session.payment_status === 'paid') {
+          await PedidoModel.marcarComoPagado(session.metadata.pedidoId, {
+            payment_intent_id: session.payment_intent as string,
+            session_id: session.id,
+            customer_id: session.customer as string,
+            amount: session.amount_total ? session.amount_total / 100 : 0,
+          });
+
+          console.log(`✅ Pedido ${session.metadata.pedidoId} marcado como pagado`);
+        }
+        break;
+      }
+
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.log(`✅ PaymentIntent ${paymentIntent.id} exitoso`);
+        break;
+      }
+
+      case 'payment_intent.payment_failed': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.error(`❌ PaymentIntent ${paymentIntent.id} falló`);
+        break;
+      }
+
+      default:
+        console.log(`Evento no manejado: ${event.type}`);
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error: any) {
+    console.error('Error en webhook de Stripe:', error);
+    return NextResponse.json(
+      { error: error.message },
+      { status: 400 }
+    );
+  }
+}

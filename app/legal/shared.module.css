@@ -1,0 +1,338 @@
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 3rem 1.5rem;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.header {
+  padding: 2rem 3rem 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.backLink:hover {
+  color: #4f46e5;
+  transform: translateX(-4px);
+}
+
+/* ========================================
+   CONTENIDO MARKDOWN
+   ======================================== */
+
+.markdownContent {
+  padding: 2rem 3rem;
+  line-height: 1.8;
+  color: #334155;
+}
+
+/* Estilos para elementos del markdown */
+.markdownContent h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #6366f1;
+}
+
+.markdownContent h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.markdownContent h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #475569;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdownContent p {
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  color: #475569;
+}
+
+.markdownContent strong {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.markdownContent ul,
+.markdownContent ol {
+  margin: 1.25rem 0;
+  padding-left: 2rem;
+}
+
+.markdownContent li {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.markdownContent ul li {
+  list-style-type: none;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.markdownContent ul li:before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #6366f1;
+  font-weight: bold;
+}
+
+.markdownContent a {
+  color: #6366f1;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.markdownContent a:hover {
+  color: #4f46e5;
+}
+
+.markdownContent blockquote {
+  border-left: 4px solid #fbbf24;
+  background: #fef3c7;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+}
+
+.markdownContent blockquote p {
+  margin: 0;
+  color: #78350f;
+}
+
+.markdownContent code {
+  background: #f1f5f9;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #dc2626;
+}
+
+.markdownContent pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.markdownContent pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+.markdownContent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.markdownContent table th,
+.markdownContent table td {
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.markdownContent table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.markdownContent table tr:hover {
+  background: #f8fafc;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.footer {
+  padding: 2rem 3rem 3rem;
+  background: #f8fafc;
+  border-top: 2px solid #e5e7eb;
+}
+
+.footerBox {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.footerBox h3 {
+  font-size: 1.25rem;
+  color: #78350f;
+  margin: 0 0 0.75rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footerBox p {
+  margin: 0;
+  color: #92400e;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.footerActions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  flex: 1;
+  min-width: 200px;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s;
+  display: inline-block;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.secondaryButton {
+  background: white;
+  color: #6366f1;
+  border: 2px solid #6366f1;
+}
+
+.secondaryButton:hover {
+  background: #f5f3ff;
+  transform: translateY(-2px);
+}
+
+.updateInfo {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.updateInfo p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.updateInfo strong {
+  color: #334155;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .header {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .markdownContent {
+    padding: 1.5rem;
+  }
+
+  .markdownContent h1 {
+    font-size: 2rem;
+  }
+
+  .markdownContent h2 {
+    font-size: 1.5rem;
+  }
+
+  .markdownContent h3 {
+    font-size: 1.25rem;
+  }
+
+  .footer {
+    padding: 1.5rem;
+  }
+
+  .footerActions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .markdownContent {
+    padding: 1rem;
+  }
+
+  .markdownContent h1 {
+    font-size: 1.75rem;
+  }
+
+  .footer {
+    padding: 1rem;
+  }
+}

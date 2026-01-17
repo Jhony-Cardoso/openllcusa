@@ -1,0 +1,117 @@
+// lib/models/pedido.ts
+import { createClient } from '../supabase/client'
+import type { Database } from '../supabase/database.types'
+
+type PedidoRow = Database['public']['Tables']['pedidos']['Row']
+type PedidoUpdate = Database['public']['Tables']['pedidos']['Update']
+
+export class PedidoModel {
+  static async crear(userId: string, servicioId: string): Promise<PedidoRow | null> {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .insert({
+        numero_pedido: `PED-${Date.now()}`,
+        user_id: userId,
+        paquete_id: servicioId, // columna se llama paquete_id pero apunta a servicios(id)
+        estado_pedido: 'borrador',
+        paso_actual: 1,
+      })
+      .select('*')
+      .single()
+
+    if (error) {
+      console.error('Error creando pedido:', error)
+      return null
+    }
+
+    return data
+  }
+
+  static async obtenerPorId(pedidoId: string): Promise<PedidoRow | null> {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .eq('id', pedidoId)
+      .single()
+
+    if (error) {
+      console.error('Error obteniendo pedido:', error)
+      return null
+    }
+
+    return data
+  }
+
+  // Para Revisión/Checkout: devuelve pedido + servicio (aliased como "paquete") + estado_usa
+  static async obtenerCompleto(pedidoId: string) {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select(
+        `
+        *,
+        paquete:servicios(*),
+        estado_usa:estados_usa(*)
+      `
+      )
+      .eq('id', pedidoId)
+      .single()
+
+    if (error) {
+      console.error('Error obteniendo pedido completo:', error)
+      return null
+    }
+
+    return data
+  }
+
+  static async actualizarPaso(
+    pedidoId: string,
+    paso: number,
+    datos: Partial<PedidoUpdate> = {}
+  ): Promise<boolean> {
+    const supabase = createClient()
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update({
+        paso_actual: paso,
+        ...datos,
+      })
+      .eq('id', pedidoId)
+
+    if (error) {
+      console.error('Error actualizando paso:', error)
+      return false
+    }
+
+    return true
+  }
+
+  static async guardarEstado(pedidoId: string, estadoUsaId: string): Promise<boolean> {
+    return this.actualizarPaso(pedidoId, 2, { estado_usa_id: estadoUsaId })
+  }
+
+  static async guardarDatosEmpresa(
+    pedidoId: string,
+    datos: {
+      nombre_empresa: string
+      sector: string
+      descripcion_negocio: string
+      num_socios: number
+      ingresos_estimados: string
+      email_empresa: string
+      telefono_empresa: string
+    }
+  ): Promise<boolean> {
+    return this.actualizarPaso(pedidoId, 3, {
+      ...datos,
+      estado_pedido: 'datos_completos',
+    })
+  }
+}

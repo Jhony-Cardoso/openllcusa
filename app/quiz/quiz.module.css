@@ -1,0 +1,546 @@
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+  padding: 2rem 1rem;
+}
+
+.resultContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%);
+  padding: 2rem 1rem;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+.header,
+.resultHeader {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.backLink {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: #4f46e5;
+}
+
+.versionBadge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ========================================
+   TÍTULO PRINCIPAL
+   ======================================== */
+
+.mainTitle {
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+
+.mainTitle h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #475569;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #475569;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ========================================
+   BARRA DE PROGRESO
+   ======================================== */
+
+.progressContainer {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.progressPercent {
+  color: #6366f1;
+}
+
+.progressBar {
+  height: 8px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  transition: width 0.5s ease;
+}
+
+/* ========================================
+   TARJETA DE PREGUNTA
+   ======================================== */
+
+.questionCard {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+.questionIcon {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.questionTitle {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1e293b;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.questionSubtitle {
+  font-size: 1rem;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.importantBadge {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0 auto 2rem;
+  display: block;
+  width: fit-content;
+}
+
+/* ========================================
+   OPCIONES
+   ======================================== */
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.optionButton {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.optionButton:hover {
+  background: white;
+  border-color: #6366f1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.optionLabel {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.optionSubtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.backButton {
+  background: #f1f5f9;
+  border: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  background: #e2e8f0;
+}
+
+/* ========================================
+   PÁGINA DE RESULTADO
+   ======================================== */
+
+.resultCard {
+  max-width: 700px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.resultIcon {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.tierBadge {
+  display: inline-block;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0 auto 2rem;
+  display: block;
+  width: fit-content;
+  text-align: center;
+}
+
+.resultTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e293b;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.resultDescription {
+  font-size: 1.1rem;
+  color: #475569;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.highlightBox {
+  background: #fef3c7;
+  border-left: 4px solid;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.actionPlan {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.actionPlan h3 {
+  font-size: 1.25rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.benefitsBox,
+.growthBox {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.benefitsBox p {
+  margin-bottom: 0.75rem;
+}
+
+.growthBox ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.growthBox li {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.growthBox li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.importantNote {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #991b1b;
+  margin-bottom: 2rem;
+}
+
+.resultCtas {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.ctaPrimary,
+.ctaSecondary {
+  padding: 1.25rem 2rem;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  width: 100%;
+}
+
+.ctaPrimary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.ctaSecondary {
+  background: white;
+  color: #475569;
+  border: 2px solid #e2e8f0;
+}
+
+.ctaSecondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.nextSteps {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.nextSteps h3 {
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.nextSteps ol {
+  padding-left: 1.5rem;
+  color: #475569;
+  line-height: 1.8;
+}
+
+.testimonials {
+  margin-bottom: 2rem;
+}
+
+.testimonials h3 {
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.testimonialCard {
+  background: #fefce8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.testimonialCard p {
+  font-size: 0.95rem;
+  color: #422006;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.testimonialAuthor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.testimonialAuthor strong {
+  color: #1e293b;
+}
+
+.testimonialAuthor span {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.earnings {
+  color: #10b981 !important;
+  font-weight: 600 !important;
+}
+
+.finalCta {
+  background: linear-gradient(135deg, #ede9fe 0%, #fae8ff 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.finalCta h3 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.finalCta p {
+  color: #475569;
+  margin-bottom: 1.5rem;
+}
+
+.finalButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btnCalculator,
+.btnRepeat {
+  flex: 1;
+  min-width: 200px;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btnCalculator {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.btnCalculator:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.btnRepeat {
+  background: white;
+  color: #6366f1;
+  border: 2px solid #6366f1;
+}
+
+.btnRepeat:hover {
+  background: #f5f3ff;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .container,
+  .resultContainer {
+    padding: 1rem 0.5rem;
+  }
+
+  .mainTitle h1 {
+    font-size: 1.75rem;
+  }
+
+  .questionCard,
+  .resultCard {
+    padding: 2rem 1.5rem;
+  }
+
+  .questionTitle {
+    font-size: 1.4rem;
+  }
+
+  .resultTitle {
+    font-size: 1.5rem;
+  }
+
+  .finalButtons {
+    flex-direction: column;
+  }
+
+  .btnCalculator,
+  .btnRepeat {
+    width: 100%;
+  }
+}

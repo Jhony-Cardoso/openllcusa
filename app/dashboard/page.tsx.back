@@ -1,0 +1,102 @@
+import { auth, clerkClient } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import { FileText, CreditCard, Package, User } from 'lucide-react'
+
+export default async function DashboardPage() {
+  // Protección manual de la ruta
+  const { userId } = await auth()
+
+  if (!userId) {
+    redirect('/auth/sign-in')
+  }
+
+  // Obtener información del usuario
+  const client = await clerkClient()
+  const user = await client.users.getUser(userId)
+
+  // Extraer el nombre (con fallback si no existe)
+  const userName = user.firstName || user.emailAddresses[0]?.emailAddress.split('@')[0] || 'Usuario'
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h1 className="text-3xl font-bold mb-2">
+            ¡Bienvenido, {userName}! 👋
+          </h1>
+          <p className="text-gray-600">
+            Gestiona tu LLC desde aquí
+          </p>
+        </div>
+
+        {/* Cards de navegación */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Documentos */}
+          <Link
+            href="/dashboard/documentos"
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          >
+            <FileText className="text-blue-600 mb-4" size={40} />
+            <h3 className="text-xl font-semibold mb-2">Documentos</h3>
+            <p className="text-gray-600 text-sm">
+              Accede a todos tus documentos de LLC
+            </p>
+          </Link>
+
+          {/* Facturación */}
+          <Link
+            href="/dashboard/facturacion"
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          >
+            <CreditCard className="text-green-600 mb-4" size={40} />
+            <h3 className="text-xl font-semibold mb-2">Facturación</h3>
+            <p className="text-gray-600 text-sm">
+              Consulta tus facturas y pagos
+            </p>
+          </Link>
+
+          {/* Pedidos */}
+          <Link
+            href="/dashboard/pedidos"
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          >
+            <Package className="text-purple-600 mb-4" size={40} />
+            <h3 className="text-xl font-semibold mb-2">Pedidos</h3>
+            <p className="text-gray-600 text-sm">
+              Revisa el estado de tus servicios
+            </p>
+          </Link>
+
+          {/* Perfil */}
+          <Link
+            href="/dashboard/perfil"
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          >
+            <User className="text-orange-600 mb-4" size={40} />
+            <h3 className="text-xl font-semibold mb-2">Perfil</h3>
+            <p className="text-gray-600 text-sm">
+              Actualiza tus datos personales
+            </p>
+          </Link>
+        </div>
+
+        {/* Información reciente */}
+        <div className="bg-white rounded-lg shadow-md p-6 mt-8">
+          <h2 className="text-2xl font-semibold mb-4">Estado de tu LLC</h2>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+              <span className="font-medium">Estado de registro</span>
+              <span className="text-green-600 font-semibold">✓ Activo</span>
+            </div>
+            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+              <span className="font-medium">Próximo pago anual</span>
+              <span className="text-gray-700">15 Marzo 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

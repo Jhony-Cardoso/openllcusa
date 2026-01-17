@@ -1,0 +1,226 @@
+'use client'
+
+import React, { useEffect, useMemo, useState } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
+import { PedidoModel } from '@/lib/models/pedido'
+import { AlertCircle, Loader2 } from 'lucide-react'
+
+export default function RevisionPage() {
+  const router = useRouter()
+  const params = useParams()
+  const searchParams = useSearchParams()
+  const { user, isLoaded } = useUser()
+
+  const slug = (params?.slug as string) || ''
+  const pedidoId = searchParams.get('pedido')
+
+  const [pedido, setPedido] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    async function cargar() {
+      try {
+        if (!isLoaded) return
+        if (!user) {
+          router.push('/sign-in')
+          return
+        }
+        if (!pedidoId) {
+          setError('Falta ?pedido= en la URL.')
+          setLoading(false)
+          return
+        }
+
+        const pedidoData = await PedidoModel.obtenerCompleto(pedidoId)
+        if (!pedidoData) {
+          setError('No se encontró el pedido.')
+          setLoading(false)
+          return
+        }
+
+        if (pedidoData.user_id !== user.id) {
+          setError('No tienes permisos para ver este pedido.')
+          setLoading(false)
+          return
+        }
+
+        setPedido(pedidoData)
+      } catch (e) {
+        console.error(e)
+        setError('Error al cargar los datos. Por favor, recarga la página.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    cargar()
+  }, [isLoaded, user, pedidoId, router])
+
+  const precioPaquete = useMemo(() => {
+    const raw =
+      pedido?.paquete?.precio ??
+      pedido?.paquete?.price ??
+      pedido?.paquete?.precio_unico ??
+      pedido?.paquete?.precio_base ??
+      0
+
+    const n = typeof raw === 'number' ? raw : Number(String(raw).replace(/[^\d.,]/g, '').replace(',', '.'))
+    return Number.isFinite(n) ? n : 0
+  }, [pedido])
+
+  const filingInicial = Number(pedido?.estado_usa?.filing_inicial ?? 0)
+  const filingAnual = Number(pedido?.estado_usa?.filing_anual ?? 0)
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-6 h-6 animate-spin" />
+        <span className="ml-2">Cargando…</span>
+      </div>
+    )
+  }
+
+  if (error || !pedido) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        <div className="border border-red-200 bg-red-50 rounded-lg p-4 flex gap-2 items-start">
+          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+          <div className="text-red-800">{error || 'No se encontró el pedido'}</div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="mt-6 text-sm text-gray-600 underline"
+        >
+          ← Atrás
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      <div className="flex items-center justify-between mb-6">
+        <button
+          type="button"
+          onClick={() => router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${pedidoId}`)}
+          className="text-sm text-gray-600 underline"
+        >
+          ← Atrás
+        </button>
+        <div className="text-sm text-gray-500">Paso 4 de 5</div>
+      </div>
+
+      <h1 className="text-3xl font-bold mb-2">Revisión</h1>
+      <p className="text-gray-600 mb-6">
+        Verifica que todos los datos sean correctos antes de proceder al pago. Puedes editar cualquier sección si es necesario.
+      </p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white border rounded-xl p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-lg font-semibold">{pedido.paquete?.title || pedido.paquete?.nombre || 'Servicio'}</div>
+              {pedido.paquete?.tagline || pedido.paquete?.descripcion_corta ? (
+                <div className="text-sm text-gray-600 mt-1">
+                  {pedido.paquete?.tagline || pedido.paquete?.descripcion_corta}
+                </div>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push(`/servicios/${slug}/onboarding?pedido=${pedidoId}`)}
+              className="text-sm text-blue-600 underline"
+            >
+              Editar
+            </button>
+          </div>
+
+          <div className="mt-4 border-t pt-4 flex items-center justify-between">
+            <span className="text-gray-600">Precio del servicio</span>
+            <span className="font-semibold">${precioPaquete}</span>
+          </div>
+        </div>
+
+        <div className="bg-white border rounded-xl p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-lg font-semibold">
+                {pedido.estado_usa?.nombre || 'Estado no seleccionado'} ({pedido.estado_usa?.codigo || '--'})
+              </div>
+              {pedido.estado_usa?.descripcion ? (
+                <div className="text-sm text-gray-600 mt-1">{pedido.estado_usa.descripcion}</div>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push(`/servicios/${slug}/onboarding/estado?pedido=${pedidoId}`)}
+              className="text-sm text-blue-600 underline"
+            >
+              Editar
+            </button>
+          </div>
+
+          <div className="mt-4 border-t pt-4 space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Filing inicial</span>
+              <span className="font-semibold">${filingInicial}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Filing anual</span>
+              <span className="font-semibold">${filingAnual}/año</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border rounded-xl p-6 lg:col-span-2">
+          <div className="flex items-start justify-between gap-4">
+            <div className="text-lg font-semibold">Datos de la empresa</div>
+            <button
+              type="button"
+              onClick={() => router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${pedidoId}`)}
+              className="text-sm text-blue-600 underline"
+            >
+              Editar
+            </button>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <div className="text-gray-500">Nombre</div>
+              <div className="font-medium">{pedido.nombre_empresa || 'No especificado'}</div>
+            </div>
+            <div>
+              <div className="text-gray-500">Sector</div>
+              <div className="font-medium">{pedido.sector || 'No especificado'}</div>
+            </div>
+            <div>
+              <div className="text-gray-500">Email</div>
+              <div className="font-medium">{pedido.email_empresa || 'No especificado'}</div>
+            </div>
+            <div>
+              <div className="text-gray-500">Teléfono</div>
+              <div className="font-medium">{pedido.telefono_empresa || 'No especificado'}</div>
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-500 mt-5">
+            💡 El filing anual de ${filingAnual} se pagará directamente al estado en el futuro.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex justify-end mt-8">
+        <button
+          onClick={() => router.push(`/servicios/${slug}/onboarding/checkout?pedido=${pedidoId}`)}
+          className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition"
+        >
+          Ir al pago →
+        </button>
+      </div>
+    </div>
+  )
+}

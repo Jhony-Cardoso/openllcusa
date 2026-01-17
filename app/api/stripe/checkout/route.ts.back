@@ -1,0 +1,32 @@
+// app/api/create-checkout/route.ts
+import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+export async function POST(req: Request) {
+  const { pedidoId, paquete, email } = await req.json();
+  
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: paquete.stripe_price_id,
+          quantity: 1,
+        },
+      ],
+      customer_email: email,
+      success_url: `${process.env.NEXT_PUBLIC_URL}/paquetes/${paquete.slug}/onboarding/completado?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_URL}/paquetes/${paquete.slug}/onboarding/revision`,
+      metadata: {
+        pedido_id: pedidoId,
+      },
+    });
+    
+    return NextResponse.json({ url: session.url });
+  } catch (error) {
+    return NextResponse.json({ error: 'Error creando checkout' }, { status: 500 });
+  }
+}

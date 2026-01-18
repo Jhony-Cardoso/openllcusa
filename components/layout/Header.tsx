@@ -23,26 +23,12 @@ import {
 
 const LogoEdificio = () => (
   <svg width="36" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="20" cy="20" r="18" fill="url(#paint0_linear_edificio)" />
     <rect x="14" y="14" width="2" height="14" fill="white" />
     <rect x="19" y="14" width="2" height="14" fill="white" />
     <rect x="24" y="14" width="2" height="14" fill="white" />
     <rect x="12" y="13" width="16" height="3" fill="white" />
     <rect x="12" y="28" width="16" height="2" fill="white" />
     <path d="M20 9L24 12H16L20 9Z" fill="#FBBF24" />
-    <defs>
-      <linearGradient
-        id="paint0_linear_edificio"
-        x1="2"
-        y1="2"
-        x2="38"
-        y2="38"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop stopColor="#1D4ED8" />
-        <stop offset="1" stopColor="#1E3A8A" />
-      </linearGradient>
-    </defs>
   </svg>
 )
 
@@ -102,7 +88,7 @@ function CarlaModal({
       const focusables = el.querySelectorAll<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       )
-      ;(focusables[0] || el).focus()
+        ; (focusables[0] || el).focus()
     }, 0)
     timersRef.current.push(t)
 
@@ -439,7 +425,6 @@ export default function Header() {
 
   return (
     <>
-         
       <header className="site-header">
         <div className="site-header__container">
           <div className="site-header__left">

@@ -1,6 +1,7 @@
 // app/layout.tsx (layout raíz)
 
 import './globals.css';
+import './header.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { esES } from '@clerk/localizations';
 import Header from '@/components/layout/Header';
@@ -17,16 +18,16 @@ export const metadata: Metadata = {
     template: '%s | Open LLC USA', // ← %s será reemplazado por el título de cada página
     default: 'Open LLC USA - Crea tu LLC desde España', // ← Solo para la home
   },
-  
+
   // ✅ NUEVO: Descripción por defecto (puede ser sobrescrita)
   description: 'Calculadora fiscal y servicios para crear y gestionar tu LLC USA desde España',
-  
+
   // ✅ AÑADIR: Metadata global que aplica a todas las páginas
   robots: {
     index: true,
     follow: true,
   },
-  
+
   // ✅ AÑADIR: Open Graph por defecto (puede ser sobrescrito)
   openGraph: {
     siteName: 'Open LLC USA',
@@ -40,17 +41,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (    
-      <html lang="es">
-        <body>
-          <ClerkProvider localization={esES}>
+  return (
+    <html lang="es">
+      <body>
+        <ClerkProvider localization={esES}>
           <Header />
           {children}
           <Footer />
           {/* Banner de cookies global */}
           <CookiesBanner />
-          </ClerkProvider>
-        </body>
-      </html>    
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

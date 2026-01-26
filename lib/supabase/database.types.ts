@@ -165,6 +165,7 @@ export interface Database {
           id: string
           numero_pedido: string
           user_id: string
+          paquete_id: string | null
           servicio_id: string | null
           estado_usa_id: string | null
           estado_pedido: string
@@ -175,6 +176,7 @@ export interface Database {
           num_socios: number | null
           ingresos_estimados: string | null
           email_empresa: string | null
+          codigo_pais: string | null
           telefono_empresa: string | null
           direccion_empresa: Json | null
           notas_cliente: string | null
@@ -195,6 +197,7 @@ export interface Database {
           id?: string
           numero_pedido?: string
           user_id: string
+          paquete_id?: string | null
           servicio_id?: string | null
           estado_usa_id?: string | null
           estado_pedido?: string
@@ -205,6 +208,7 @@ export interface Database {
           num_socios?: number | null
           ingresos_estimados?: string | null
           email_empresa?: string | null
+          codigo_pais?: string | null
           telefono_empresa?: string | null
           direccion_empresa?: Json | null
           notas_cliente?: string | null
@@ -225,6 +229,7 @@ export interface Database {
           id?: string
           numero_pedido?: string
           user_id?: string
+          paquete_id?: string | null
           servicio_id?: string | null
           estado_usa_id?: string | null
           estado_pedido?: string
@@ -235,6 +240,7 @@ export interface Database {
           num_socios?: number | null
           ingresos_estimados?: string | null
           email_empresa?: string | null
+          codigo_pais?: string | null
           telefono_empresa?: string | null
           direccion_empresa?: Json | null
           notas_cliente?: string | null

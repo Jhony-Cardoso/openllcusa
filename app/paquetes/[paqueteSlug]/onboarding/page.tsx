@@ -64,9 +64,11 @@ export default function OnboardingPaso1Page() {
   // Continuar al siguiente paso (Estado)
   // ============================================
   const handleContinuar = async () => {
-    // Si el usuario no está autenticado, redirigir al login
+    // Si el usuario no está autenticado, redirigir al login con URL de retorno
     if (!isUserLoaded || !user) {
-      router.push('/sign-in');
+      // Guardar la URL actual para volver después del login
+      const returnUrl = `/paquetes/${paqueteSlug}/onboarding`;
+      router.push(`/sign-in?redirect_url=${encodeURIComponent(returnUrl)}`);
       return;
     }
 
@@ -77,7 +79,7 @@ export default function OnboardingPaso1Page() {
 
     // Buscar o crear pedido en borrador
     const pedidosUsuario = await PedidoModel.obtenerPorUsuario(user.id);
-    
+
     const pedidoExistente = pedidosUsuario.find(
       (p) =>
         p.paquete_id === paquete.id &&

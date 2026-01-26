@@ -25,7 +25,7 @@ export default function RevisionPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const slug = params.slug as string;
+  const paqueteSlug = params.paqueteSlug as string;
   const pedidoId = searchParams.get('pedido');
 
   // ============================================
@@ -47,10 +47,15 @@ export default function RevisionPage() {
           return;
         }
 
+        console.log('🔍 [REVISION] Buscando pedido:', pedidoId);
+
         // Obtener pedido completo con paquete y estado relacionados
         const pedidoData = await PedidoModel.obtenerCompleto(pedidoId);
 
+        console.log('📦 [REVISION] Pedido obtenido:', pedidoData);
+
         if (!pedidoData) {
+          console.error('❌ [REVISION] Pedido no encontrado en la base de datos');
           setError('No se ha encontrado el pedido en la base de datos.');
           setLoading(false);
           return;
@@ -85,7 +90,7 @@ export default function RevisionPage() {
     }
 
     // Redirigir al checkout
-    router.push(`/servicios/${slug}/onboarding/checkout?pedido=${pedidoId}`);
+    router.push(`/paquetes/${paqueteSlug}/onboarding/checkout?pedido=${pedidoId}`);
   };
 
   // ============================================
@@ -93,7 +98,7 @@ export default function RevisionPage() {
   // ============================================
   const handleEditarEstado = () => {
     if (!pedidoId) return;
-    router.push(`/servicios/${slug}/onboarding/estado?pedido=${pedidoId}`);
+    router.push(`/paquetes/${paqueteSlug}/onboarding/estado?pedido=${pedidoId}`);
   };
 
   // ============================================
@@ -101,7 +106,7 @@ export default function RevisionPage() {
   // ============================================
   const handleEditarDatos = () => {
     if (!pedidoId) return;
-    router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${pedidoId}`);
+    router.push(`/paquetes/${paqueteSlug}/onboarding/datos-empresa?pedido=${pedidoId}`);
   };
 
   // ============================================

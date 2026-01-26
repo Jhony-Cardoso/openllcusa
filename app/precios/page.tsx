@@ -194,7 +194,7 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/servicios/llc-esencial" className="btn btn-primary">
+                    <a href="/paquetes/llc-esencial/onboarding" className="btn btn-primary">
                       Empezar con LLC Esencial
                     </a>
                     <p className="pricing-card-footnote">
@@ -247,7 +247,7 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/servicios/launch-banking" className="btn btn-primary">
+                    <a href="/paquetes/launch-banking/onboarding" className="btn btn-primary">
                       Lanzar mi LLC con acompañamiento
                     </a>
                     <p className="pricing-card-footnote">
@@ -293,7 +293,7 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/servicios/primer-ano-pro" className="btn btn-primary">
+                    <a href="/paquetes/primer-ano-pro/onboarding" className="btn btn-primary">
                       Quiero olvidarme del primer año
                     </a>
                     <p className="pricing-card-footnote">
@@ -305,8 +305,8 @@ export default function PricingPage() {
             </div>
           </div>
         </section>
-        
-                {/* BANNER FACILIDADES DE PAGO */}
+
+        {/* BANNER FACILIDADES DE PAGO */}
         <section className="pricing-payment-banner-section" aria-label="Facilidades de pago">
           <div className="section-container">
             <div className="pricing-payment-banner">
@@ -367,7 +367,7 @@ export default function PricingPage() {
                     <li>Sin permanencia: puedes pausar o cambiar de plan cuando lo necesites.</li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/servicios/compliance-basico" className="btn btn-primary">
+                    <a href="/paquetes/compliance-basico/onboarding" className="btn btn-primary">
                       Activar Compliance Básico
                     </a>
                   </div>
@@ -408,7 +408,7 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/servicios/plan-crecimiento" className="btn btn-primary">
+                    <a href="/paquetes/plan-crecimiento/onboarding" className="btn btn-primary">
                       Quiero mantener y crecer
                     </a>
                   </div>
@@ -462,7 +462,7 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/servicios/pack-optimizacion" className="btn btn-primary">
+                    <a href="/paquetes/pack-optimizacion/onboarding" className="btn btn-primary">
                       Quiero revisar mi estructura
                     </a>
                   </div>

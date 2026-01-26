@@ -14,7 +14,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   const searchParams = useSearchParams()
   const params = useParams()
 
-  const slug = (params?.slug as string) || ''
+  const paqueteSlug = (params?.paqueteSlug as string) || ''
   const pedidoId = searchParams.get('pedido')
 
   const getCurrentStep = () => {
@@ -36,7 +36,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   ]
 
   const goTo = (path: string) => {
-    const base = `/servicios/${slug}/onboarding${path}`
+    const base = `/paquetes/${paqueteSlug}/onboarding${path}`
     const url = pedidoId ? `${base}?pedido=${pedidoId}` : base
     router.push(url)
   }
@@ -44,7 +44,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   const handleBack = () => {
     // Back “inteligente”: según el paso actual, va al anterior dentro del onboarding
     if (currentStep === 1) {
-      router.push(`/servicios/${slug}`)
+      router.push(`/paquetes/${paqueteSlug}`)
       return
     }
     const prev = steps.find((s) => s.id === currentStep - 1)

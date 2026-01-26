@@ -7,7 +7,17 @@ type PedidoRow = Database['public']['Tables']['pedidos']['Row']
 type PedidoUpdate = Database['public']['Tables']['pedidos']['Update']
 
 export class PedidoModel {
-  static async crear(userId: string, servicioId: string): Promise<PedidoRow | null> {
+  /**
+   * Crear un nuevo pedido
+   * @param userId - ID del usuario
+   * @param paqueteId - ID del paquete (de la tabla paquetes)
+   * @param servicioId - ID del servicio individual (opcional, de la tabla servicios)
+   */
+  static async crear(
+    userId: string,
+    paqueteId?: string,
+    servicioId?: string
+  ): Promise<PedidoRow | null> {
     const supabase = createClient()
 
     const { data, error } = await supabase
@@ -15,7 +25,8 @@ export class PedidoModel {
       .insert({
         numero_pedido: `PED-${Date.now()}`,
         user_id: userId,
-        paquete_id: servicioId, // columna se llama paquete_id pero apunta a servicios(id)
+        paquete_id: paqueteId || null,
+        servicio_id: servicioId || null,
         estado_pedido: 'borrador',
         paso_actual: 1,
       })
@@ -47,28 +58,99 @@ export class PedidoModel {
     return data
   }
 
-  // Para Revisión/Checkout: devuelve pedido + servicio (aliased como "paquete") + estado_usa
-  static async obtenerCompleto(pedidoId: string) {
+  static async obtenerPorUsuario(userId: string): Promise<PedidoRow[]> {
     const supabase = createClient()
 
     const { data, error } = await supabase
       .from('pedidos')
-      .select(
-        `
-        *,
-        paquete:servicios(*),
-        estado_usa:estados_usa(*)
-      `
-      )
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error obteniendo pedidos del usuario:', error)
+      return []
+    }
+
+    return data || []
+  }
+
+  // Para Revisión/Checkout: devuelve pedido + paquete + estado_usa
+  // Hacemos consultas separadas porque el join no funciona correctamente
+  static async obtenerCompleto(pedidoId: string) {
+    const supabase = createClient()
+
+    console.log('🔍 [MODELO] Buscando pedido completo:', pedidoId)
+
+    // 1. Obtener el pedido base
+    const { data: pedido, error: pedidoError } = await supabase
+      .from('pedidos')
+      .select('*')
       .eq('id', pedidoId)
       .single()
 
-    if (error) {
-      console.error('Error obteniendo pedido completo:', error)
+    if (pedidoError || !pedido) {
+      console.error('❌ [MODELO] Error obteniendo pedido:', pedidoError)
       return null
     }
 
-    return data
+    console.log('📦 [MODELO] Pedido base obtenido:', pedido)
+
+    // 2. Obtener el paquete si existe
+    let paquete = null
+    if (pedido.paquete_id) {
+      const { data: paqueteData, error: paqueteError } = await supabase
+        .from('paquetes')
+        .select('*')
+        .eq('id', pedido.paquete_id)
+        .single()
+
+      if (!paqueteError && paqueteData) {
+        paquete = paqueteData
+        console.log('📦 [MODELO] Paquete obtenido:', paquete)
+      }
+    }
+
+    // 3. Obtener el servicio si existe
+    let servicio = null
+    if (pedido.servicio_id) {
+      const { data: servicioData, error: servicioError } = await supabase
+        .from('servicios')
+        .select('*')
+        .eq('id', pedido.servicio_id)
+        .single()
+
+      if (!servicioError && servicioData) {
+        servicio = servicioData
+        console.log('📦 [MODELO] Servicio obtenido:', servicio)
+      }
+    }
+
+    // 4. Obtener el estado USA si existe
+    let estado_usa = null
+    if (pedido.estado_usa_id) {
+      const { data: estadoData, error: estadoError } = await supabase
+        .from('estados_usa')
+        .select('*')
+        .eq('id', pedido.estado_usa_id)
+        .single()
+
+      if (!estadoError && estadoData) {
+        estado_usa = estadoData
+        console.log('📍 [MODELO] Estado USA obtenido:', estado_usa)
+      }
+    }
+
+    // 5. Combinar todo
+    const resultado = {
+      ...pedido,
+      paquete,
+      servicio,
+      estado_usa
+    }
+
+    console.log('✅ [MODELO] Pedido completo obtenido:', resultado)
+    return resultado
   }
 
   static async actualizarPaso(
@@ -107,6 +189,7 @@ export class PedidoModel {
       num_socios: number
       ingresos_estimados: string
       email_empresa: string
+      codigo_pais: string
       telefono_empresa: string
     }
   ): Promise<boolean> {

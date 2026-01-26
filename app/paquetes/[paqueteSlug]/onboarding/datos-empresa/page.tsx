@@ -13,8 +13,39 @@ type DatosEmpresaForm = {
   num_socios: number
   ingresos_estimados: string
   email_empresa: string
+  codigo_pais: string
   telefono_empresa: string
 }
+
+// Opciones de sectores
+const SECTORES = [
+  { value: '', label: 'Selecciona un sector' },
+  { value: 'tecnologia', label: 'Tecnología y Software' },
+  { value: 'ecommerce', label: 'E-commerce y Retail Online' },
+  { value: 'marketing', label: 'Marketing y Publicidad Digital' },
+  { value: 'consultoria', label: 'Consultoría y Servicios Profesionales' },
+  { value: 'educacion', label: 'Educación y Formación Online' },
+  { value: 'contenido', label: 'Creación de Contenido y Medios' },
+  { value: 'diseno', label: 'Diseño y Creatividad' },
+  { value: 'salud', label: 'Salud y Bienestar' },
+  { value: 'finanzas', label: 'Finanzas e Inversiones' },
+  { value: 'inmobiliario', label: 'Inmobiliario' },
+  { value: 'otro', label: 'Otro' },
+]
+
+// Códigos de país con banderas
+const CODIGOS_PAIS = [
+  { code: '+34', country: 'ES', flag: '🇪🇸', name: 'España' },
+  { code: '+1', country: 'US', flag: '🇺🇸', name: 'Estados Unidos' },
+  { code: '+52', country: 'MX', flag: '🇲🇽', name: 'México' },
+  { code: '+54', country: 'AR', flag: '🇦🇷', name: 'Argentina' },
+  { code: '+56', country: 'CL', flag: '🇨🇱', name: 'Chile' },
+  { code: '+57', country: 'CO', flag: '🇨🇴', name: 'Colombia' },
+  { code: '+51', country: 'PE', flag: '🇵🇪', name: 'Perú' },
+  { code: '+58', country: 'VE', flag: '🇻🇪', name: 'Venezuela' },
+  { code: '+593', country: 'EC', flag: '🇪🇨', name: 'Ecuador' },
+  { code: '+55', country: 'BR', flag: '🇧🇷', name: 'Brasil' },
+]
 
 const INICIAL: DatosEmpresaForm = {
   nombre_empresa: '',
@@ -23,6 +54,7 @@ const INICIAL: DatosEmpresaForm = {
   num_socios: 1,
   ingresos_estimados: '',
   email_empresa: '',
+  codigo_pais: '+34', // España por defecto
   telefono_empresa: '',
 }
 
@@ -32,7 +64,7 @@ export default function DatosEmpresaPage() {
   const searchParams = useSearchParams()
   const { user, isLoaded: isUserLoaded } = useUser()
 
-  const slug = (params?.slug as string) || ''
+  const paqueteSlug = (params?.paqueteSlug as string) || ''
   const pedidoId = searchParams.get('pedido')
 
   const [form, setForm] = useState<DatosEmpresaForm>(INICIAL)
@@ -51,17 +83,23 @@ export default function DatosEmpresaPage() {
         }
 
         if (!pedidoId) {
+          console.log('❌ No hay pedidoId en la URL')
           setError('No se ha encontrado el pedido. Vuelve al paso anterior.')
           return
         }
 
+        console.log('🔍 Buscando pedido en datos-empresa:', pedidoId)
         const pedido = await PedidoModel.obtenerPorId(pedidoId)
+        console.log('📦 Pedido obtenido:', pedido)
+
         if (!pedido) {
+          console.log('❌ Pedido no encontrado en la base de datos')
           setError('No se ha encontrado el pedido en la base de datos.')
           return
         }
 
         if (pedido.user_id !== user.id) {
+          console.log('❌ El pedido no pertenece al usuario actual')
           setError('No tienes permisos para acceder a este pedido.')
           return
         }
@@ -73,10 +111,11 @@ export default function DatosEmpresaPage() {
           num_socios: pedido.num_socios || 1,
           ingresos_estimados: pedido.ingresos_estimados || '',
           email_empresa: pedido.email_empresa || user.emailAddresses?.[0]?.emailAddress || '',
+          codigo_pais: pedido.codigo_pais || '+34',
           telefono_empresa: pedido.telefono_empresa || '',
         })
       } catch (e) {
-        console.error(e)
+        console.error('❌ Error en cargar() datos-empresa:', e)
         setError('Error al cargar los datos. Por favor, recarga la página.')
       } finally {
         setLoading(false)
@@ -87,7 +126,7 @@ export default function DatosEmpresaPage() {
   }, [isUserLoaded, user, pedidoId, router])
 
   const handleBack = () => {
-    router.push(`/servicios/${slug}/onboarding/estado?pedido=${pedidoId ?? ''}`)
+    router.push(`/paquetes/${paqueteSlug}/onboarding/estado?pedido=${pedidoId ?? ''}`)
   }
 
   const handleChange = (
@@ -102,8 +141,9 @@ export default function DatosEmpresaPage() {
 
   const validar = (): string | null => {
     if (!form.nombre_empresa.trim()) return 'El nombre de la empresa es obligatorio.'
-    if (!form.sector.trim()) return 'El sector es obligatorio.'
+    if (!form.sector.trim()) return 'Debes seleccionar un sector.'
     if (!form.descripcion_negocio.trim()) return 'La descripción del negocio es obligatoria.'
+    if (!form.ingresos_estimados.trim()) return 'Los ingresos estimados son obligatorios.'
     if (!form.email_empresa.trim()) return 'El email de la empresa es obligatorio.'
     if (!form.telefono_empresa.trim()) return 'El teléfono de la empresa es obligatorio.'
     if (form.num_socios <= 0) return 'El número de socios debe ser al menos 1.'
@@ -133,7 +173,7 @@ export default function DatosEmpresaPage() {
         return
       }
 
-      router.push(`/servicios/${slug}/onboarding/revision?pedido=${pedidoId}`)
+      router.push(`/paquetes/${paqueteSlug}/onboarding/revision?pedido=${pedidoId}`)
     } catch (e) {
       console.error(e)
       setError('Error al guardar los datos. Por favor, inténtalo de nuevo.')
@@ -171,49 +211,133 @@ export default function DatosEmpresaPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Nombre de la empresa</label>
+          <label className="block text-sm font-medium mb-1">
+            Nombre de la empresa <span className="text-red-500">*</span>
+          </label>
           <input
             name="nombre_empresa"
             value={form.nombre_empresa}
             onChange={handleChange}
-            className="w-full border rounded-lg px-3 py-2"
+            required
+            placeholder="Ej: Mi Empresa LLC"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Sector</label>
-          <input name="sector" value={form.sector} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" />
+          <label className="block text-sm font-medium mb-1">
+            Sector <span className="text-red-500">*</span>
+          </label>
+          <select
+            name="sector"
+            value={form.sector}
+            onChange={handleChange}
+            required
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            {SECTORES.map((sector) => (
+              <option key={sector.value} value={sector.value}>
+                {sector.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Descripción del negocio</label>
+          <label className="block text-sm font-medium mb-1">
+            Descripción del negocio <span className="text-red-500">*</span>
+          </label>
           <textarea
             name="descripcion_negocio"
             value={form.descripcion_negocio}
             onChange={handleChange}
-            className="w-full border rounded-lg px-3 py-2"
+            required
+            placeholder="Describe brevemente a qué se dedica tu empresa..."
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={4}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Número de socios</label>
-          <input name="num_socios" type="number" min={1} value={form.num_socios} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" />
+          <label className="block text-sm font-medium mb-1">
+            Número de socios <span className="text-red-500">*</span>
+          </label>
+          <input
+            name="num_socios"
+            type="number"
+            min={1}
+            value={form.num_socios}
+            onChange={handleChange}
+            required
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Ingresos estimados</label>
-          <input name="ingresos_estimados" value={form.ingresos_estimados} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" />
+          <label className="block text-sm font-medium mb-1">
+            Ingresos estimados anuales <span className="text-red-500">*</span>
+          </label>
+          <select
+            name="ingresos_estimados"
+            value={form.ingresos_estimados}
+            onChange={handleChange}
+            required
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Selecciona un rango</option>
+            <option value="0-10k">$0 - $10,000</option>
+            <option value="10k-50k">$10,000 - $50,000</option>
+            <option value="50k-100k">$50,000 - $100,000</option>
+            <option value="100k-250k">$100,000 - $250,000</option>
+            <option value="250k-500k">$250,000 - $500,000</option>
+            <option value="500k+">Más de $500,000</option>
+          </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <input name="email_empresa" type="email" value={form.email_empresa} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" />
+          <label className="block text-sm font-medium mb-1">
+            Email de contacto <span className="text-red-500">*</span>
+          </label>
+          <input
+            name="email_empresa"
+            type="email"
+            value={form.email_empresa}
+            onChange={handleChange}
+            required
+            placeholder="contacto@miempresa.com"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Teléfono</label>
-          <input name="telefono_empresa" value={form.telefono_empresa} onChange={handleChange} className="w-full border rounded-lg px-3 py-2" />
+          <label className="block text-sm font-medium mb-1">
+            Teléfono <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-2">
+            <select
+              name="codigo_pais"
+              value={form.codigo_pais}
+              onChange={handleChange}
+              required
+              className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {CODIGOS_PAIS.map((pais) => (
+                <option key={pais.country} value={pais.code}>
+                  {pais.flag} {pais.code}
+                </option>
+              ))}
+            </select>
+            <input
+              name="telefono_empresa"
+              type="tel"
+              value={form.telefono_empresa}
+              onChange={handleChange}
+              required
+              placeholder="612345678"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-1">Sin espacios ni guiones</p>
         </div>
 
         <button

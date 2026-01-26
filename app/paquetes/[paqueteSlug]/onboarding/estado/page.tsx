@@ -16,7 +16,7 @@ export default function EstadoPage() {
   const searchParams = useSearchParams()
   const { user, isLoaded: isUserLoaded } = useUser()
 
-  const slug = (params?.slug as string) || ''
+  const paqueteSlug = (params?.paqueteSlug as string) || ''
   const pedidoId = searchParams.get('pedido')
 
   const [estados, setEstados] = useState<EstadoUsa[]>([])
@@ -40,10 +40,15 @@ export default function EstadoPage() {
           return
         }
 
+        console.log('🔍 Cargando estados...')
         const estadosData = await EstadoUsaModel.obtenerTodos()
+        console.log('📊 Estados obtenidos:', estadosData)
         setEstados(estadosData)
 
+        console.log('🔍 Buscando pedido:', pedidoId)
         const pedido = await PedidoModel.obtenerPorId(pedidoId)
+        console.log('📦 Pedido encontrado:', pedido)
+
         if (!pedido) {
           setError('Pedido no encontrado. Vuelve al paso anterior.')
           return
@@ -59,7 +64,7 @@ export default function EstadoPage() {
           setEstadoSeleccionado(prev)
         }
       } catch (e) {
-        console.error(e)
+        console.error('❌ Error en cargar():', e)
         setError('Error al cargar los datos. Por favor, recarga la página.')
       } finally {
         setLoading(false)
@@ -70,7 +75,7 @@ export default function EstadoPage() {
   }, [isUserLoaded, user, pedidoId, router])
 
   const handleBack = () => {
-    router.push(`/servicios/${slug}/onboarding?pedido=${pedidoId ?? ''}`)
+    router.push(`/paquetes/${paqueteSlug}/onboarding?pedido=${pedidoId ?? ''}`)
   }
 
   const handleContinuar = async () => {
@@ -91,7 +96,7 @@ export default function EstadoPage() {
         setError('Error al guardar el estado. Inténtalo de nuevo.')
         return
       }
-      router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${pedidoId}`)
+      router.push(`/paquetes/${paqueteSlug}/onboarding/datos-empresa?pedido=${pedidoId}`)
     } catch (e) {
       console.error(e)
       setError('Error al guardar. Por favor, inténtalo de nuevo.')

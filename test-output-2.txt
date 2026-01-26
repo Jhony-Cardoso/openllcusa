@@ -1,0 +1,17 @@
+[dotenv@17.2.3] injecting env (13) from .env.local -- tip: ­ƒöä add secrets lifecycle management: https://dotenvx.com/ops
+­ƒöì Verificando conexi├│n a Supabase...
+
+­ƒôì URL: http://open-llc-usa-supabase-6c3b04-89-117-53-55.traefik.me/api
+­ƒöæ Anon Key Longitud: 236
+­ƒöæ Anon Key Inicio: [eyJhb...]
+­ƒöæ Anon Key Fin: [...X0TAs]
+
+ÔÅ│ Probando conexi├│n...
+­ƒôí Fetching: http://open-llc-usa-supabase-6c3b04-89-117-53-55.traefik.me/api/rest/v1/
+­ƒôí Status HTTP: 401
+­ƒôØ BODY COMPLETO DE RESPUESTA:
+{"message":"Unauthorized"}
+
+ÔØî Error de conexi├│n detectado.
+
+ÔÜá´©Å  Hay problemas de conexi├│n. Revisa la configuraci├│n.

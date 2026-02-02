@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Métodos de Pago</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status.yes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.maybe {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .payment-method {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method.available {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .payment-method.unavailable {
+            border-color: #dc3545;
+            background: #fff5f5;
+            opacity: 0.6;
+        }
+
+        .payment-method-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .payment-method-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .payment-method-status {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .recommendation {
+            background: #e7f3ff;
+            border: 2px solid #2196F3;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .recommendation h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation ul {
+            margin-left: 20px;
+            color: #333;
+        }
+
+        .recommendation li {
+            margin: 8px 0;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico de Métodos de Pago</h1>
+        <p class="subtitle">Verifica qué métodos de pago están disponibles en tu dispositivo</p>
+
+        <!-- Información del Sistema -->
+        <div class="section">
+            <h2>🖥️ Información del Sistema</h2>
+            <div class="info-row">
+                <span class="info-label">Sistema Operativo:</span>
+                <span class="info-value" id="os"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Navegador:</span>
+                <span class="info-value" id="browser"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Dispositivo:</span>
+                <span class="info-value" id="device"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">User Agent:</span>
+                <span class="info-value" id="userAgent"></span>
+            </div>
+        </div>
+
+        <!-- Métodos de Pago Disponibles -->
+        <div class="section">
+            <h2>💳 Métodos de Pago Disponibles</h2>
+            <div class="payment-methods">
+                <div class="payment-method available">
+                    <div class="payment-method-icon">💳</div>
+                    <div class="payment-method-name">Tarjetas</div>
+                    <div class="payment-method-status">✅ Siempre disponible</div>
+                </div>
+                <div class="payment-method" id="applePay">
+                    <div class="payment-method-icon">🍎</div>
+                    <div class="payment-method-name">Apple Pay</div>
+                    <div class="payment-method-status" id="applePayStatus">Verificando...</div>
+                </div>
+                <div class="payment-method" id="googlePay">
+                    <div class="payment-method-icon">🤖</div>
+                    <div class="payment-method-name">Google Pay</div>
+                    <div class="payment-method-status" id="googlePayStatus">Verificando...</div>
+                </div>
+                <div class="payment-method available">
+                    <div class="payment-method-icon">🔗</div>
+                    <div class="payment-method-name">Stripe Link</div>
+                    <div class="payment-method-status">✅ Siempre disponible</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="recommendation" id="recommendation">
+            <h3>💡 Recomendaciones</h3>
+            <div id="recommendationContent"></div>
+        </div>
+
+        <button onclick="copyDiagnostic()">📋 Copiar Diagnóstico</button>
+    </div>
+
+    <script>
+        // Detectar sistema operativo
+        function detectOS() {
+            const userAgent = navigator.userAgent;
+            if (/Windows/i.test(userAgent)) return 'Windows';
+            if (/Mac/i.test(userAgent)) return 'macOS';
+            if (/Linux/i.test(userAgent)) return 'Linux';
+            if (/iPhone|iPad|iPod/i.test(userAgent)) return 'iOS';
+            if (/Android/i.test(userAgent)) return 'Android';
+            return 'Desconocido';
+        }
+
+        // Detectar navegador
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            if (/Edg/i.test(userAgent)) return 'Microsoft Edge';
+            if (/Chrome/i.test(userAgent) && !/Edg/i.test(userAgent)) return 'Google Chrome';
+            if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) return 'Safari';
+            if (/Firefox/i.test(userAgent)) return 'Mozilla Firefox';
+            if (/Opera|OPR/i.test(userAgent)) return 'Opera';
+            return 'Desconocido';
+        }
+
+        // Detectar tipo de dispositivo
+        function detectDevice() {
+            const userAgent = navigator.userAgent;
+            if (/iPhone/i.test(userAgent)) return 'iPhone';
+            if (/iPad/i.test(userAgent)) return 'iPad';
+            if (/Android/i.test(userAgent) && /Mobile/i.test(userAgent)) return 'Android Phone';
+            if (/Android/i.test(userAgent)) return 'Android Tablet';
+            return 'Desktop/Laptop';
+        }
+
+        // Verificar Apple Pay
+        function checkApplePay() {
+            const os = detectOS();
+            const browser = detectBrowser();
+            const device = detectDevice();
+
+            // Apple Pay está disponible en:
+            // - iOS (cualquier navegador, porque todos usan WebKit)
+            // - macOS con Safari
+            const isIOS = os === 'iOS';
+            const isMacSafari = os === 'macOS' && browser === 'Safari';
+
+            return isIOS || isMacSafari;
+        }
+
+        // Verificar Google Pay
+        function checkGooglePay() {
+            const os = detectOS();
+            const browser = detectBrowser();
+
+            // Google Pay está disponible en:
+            // - Android con Chrome
+            // - Chrome en Desktop (a veces)
+            const isAndroidChrome = os === 'Android' && browser === 'Google Chrome';
+            const isDesktopChrome = (os === 'Windows' || os === 'macOS' || os === 'Linux') && browser === 'Google Chrome';
+
+            if (isAndroidChrome) return true;
+            if (isDesktopChrome) return 'maybe'; // Depende de si tiene Google Pay configurado
+            return false;
+        }
+
+        // Generar recomendaciones
+        function generateRecommendations() {
+            const os = detectOS();
+            const browser = detectBrowser();
+            const applePayAvailable = checkApplePay();
+            const googlePayAvailable = checkGooglePay();
+
+            let recommendations = '<ul>';
+
+            if (!applePayAvailable && !googlePayAvailable) {
+                recommendations += '<li><strong>Estás en ' + os + ' con ' + browser + '</strong></li>';
+                recommendations += '<li>✅ Puedes usar <strong>tarjetas de crédito/débito</strong></li>';
+                recommendations += '<li>✅ Puedes usar <strong>Stripe Link</strong></li>';
+                
+                if (os === 'Windows' || os === 'Linux') {
+                    recommendations += '<li>💡 Para probar <strong>Apple Pay</strong>: Usa un iPhone, iPad o Mac con Safari</li>';
+                    recommendations += '<li>💡 Para probar <strong>Google Pay</strong>: Usa un dispositivo Android con Chrome</li>';
+                }
+                
+                if (os === 'macOS' && browser !== 'Safari') {
+                    recommendations += '<li>💡 Para ver <strong>Apple Pay</strong>: Abre esta página en Safari</li>';
+                }
+            }
+
+            if (applePayAvailable) {
+                recommendations += '<li>✅ <strong>Apple Pay está disponible</strong> en tu dispositivo</li>';
+                recommendations += '<li>Asegúrate de tener Apple Pay configurado en tu dispositivo</li>';
+            }
+
+            if (googlePayAvailable === true) {
+                recommendations += '<li>✅ <strong>Google Pay está disponible</strong> en tu dispositivo</li>';
+                recommendations += '<li>Asegúrate de tener Google Pay configurado</li>';
+            } else if (googlePayAvailable === 'maybe') {
+                recommendations += '<li>⚠️ <strong>Google Pay puede estar disponible</strong> si lo tienes configurado en Chrome</li>';
+                recommendations += '<li>Ve a chrome://settings/payments para verificar</li>';
+            }
+
+            recommendations += '<li>🔒 Todos los métodos de pago son seguros y están encriptados</li>';
+            recommendations += '</ul>';
+
+            return recommendations;
+        }
+
+        // Copiar diagnóstico
+        function copyDiagnostic() {
+            const diagnostic = `
+🔍 DIAGNÓSTICO DE MÉTODOS DE PAGO
+================================
+
+Sistema Operativo: ${detectOS()}
+Navegador: ${detectBrowser()}
+Dispositivo: ${detectDevice()}
+User Agent: ${navigator.userAgent}
+
+MÉTODOS DE PAGO DISPONIBLES:
+- Tarjetas: ✅ Sí
+- Apple Pay: ${checkApplePay() ? '✅ Sí' : '❌ No'}
+- Google Pay: ${checkGooglePay() === true ? '✅ Sí' : checkGooglePay() === 'maybe' ? '⚠️ Tal vez' : '❌ No'}
+- Stripe Link: ✅ Sí
+
+Generado: ${new Date().toLocaleString()}
+            `.trim();
+
+            navigator.clipboard.writeText(diagnostic).then(() => {
+                alert('✅ Diagnóstico copiado al portapapeles');
+            }).catch(() => {
+                alert('❌ Error al copiar. Por favor, selecciona y copia manualmente.');
+            });
+        }
+
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', () => {
+            // Mostrar información del sistema
+            document.getElementById('os').textContent = detectOS();
+            document.getElementById('browser').textContent = detectBrowser();
+            document.getElementById('device').textContent = detectDevice();
+            document.getElementById('userAgent').textContent = navigator.userAgent;
+
+            // Verificar Apple Pay
+            const applePayAvailable = checkApplePay();
+            const applePayElement = document.getElementById('applePay');
+            const applePayStatus = document.getElementById('applePayStatus');
+            
+            if (applePayAvailable) {
+                applePayElement.classList.add('available');
+                applePayStatus.textContent = '✅ Disponible';
+            } else {
+                applePayElement.classList.add('unavailable');
+                applePayStatus.textContent = '❌ No disponible';
+            }
+
+            // Verificar Google Pay
+            const googlePayAvailable = checkGooglePay();
+            const googlePayElement = document.getElementById('googlePay');
+            const googlePayStatus = document.getElementById('googlePayStatus');
+            
+            if (googlePayAvailable === true) {
+                googlePayElement.classList.add('available');
+                googlePayStatus.textContent = '✅ Disponible';
+            } else if (googlePayAvailable === 'maybe') {
+                googlePayElement.classList.add('available');
+                googlePayStatus.textContent = '⚠️ Tal vez disponible';
+            } else {
+                googlePayElement.classList.add('unavailable');
+                googlePayStatus.textContent = '❌ No disponible';
+            }
+
+            // Generar recomendaciones
+            document.getElementById('recommendationContent').innerHTML = generateRecommendations();
+        });
+    </script>
+</body>
+</html>

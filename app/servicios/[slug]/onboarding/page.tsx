@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { createClient } from '@/lib/supabase/client'
 import { PedidoModel } from '@/lib/models/pedido'
 import { Loader2, AlertCircle } from 'lucide-react'
 
@@ -47,31 +46,42 @@ export default function OnboardingInicioPage() {
           return
         }
 
-        const supabase = createClient()
-        const { data, error: dbError } = await supabase
-          .from('servicios')
-          .select('*')
-          .eq('slug', slug)
-          .single()
+        console.log('🔍 Cargando servicio con slug:', slug)
 
-        if (dbError || !data) {
-          console.error('Error obteniendo servicio:', dbError)
-          setError('Servicio no encontrado')
+        // Usar API route en lugar de cliente directo para evitar Mixed Content
+        console.log('📡 Consultando API /api/servicios...')
+        const response = await fetch(`/api/servicios?slug=${slug}`)
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('❌ Error de API:', errorData)
+          setError(errorData.error || 'Error al cargar el servicio')
           setLoading(false)
           return
         }
 
+        const data = await response.json()
+        console.log('✅ Servicio cargado:', data)
+
         setServicio(data as Servicio)
         setLoading(false)
       } catch (e) {
-        console.error(e)
-        setError('Error al cargar el servicio')
+        console.error('💥 Excepción al cargar servicio:', e)
+        setError(`Error al cargar el servicio: ${e instanceof Error ? e.message : 'Error desconocido'}`)
         setLoading(false)
       }
     }
 
     cargarServicio()
   }, [isLoaded, slug])
+
+  // Auto-rellenar email del usuario autenticado para cualquier servicio
+  useEffect(() => {
+    if (isLoaded && user && !einEmail) {
+      const userEmail = user.emailAddresses?.[0]?.emailAddress || ''
+      setEinEmail(userEmail)
+    }
+  }, [isLoaded, user, einEmail])
 
   const handleContinuar = async () => {
     setError('')

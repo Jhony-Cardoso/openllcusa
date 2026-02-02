@@ -8,7 +8,7 @@ export default async function PedidosPage() {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect('/auth/sign-in')
+    redirect('/sign-in')
   }
 
   // En producción, esto vendría de tu base de datos
@@ -112,9 +112,9 @@ export default async function PedidosPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
-                          <Package 
-                            className={`text-${pedido.estadoColor}-600 flex-shrink-0`} 
-                            size={24} 
+                          <Package
+                            className={`text-${pedido.estadoColor}-600 flex-shrink-0`}
+                            size={24}
                           />
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-gray-900 truncate">
@@ -145,19 +145,18 @@ export default async function PedidosPage() {
                       </div>
 
                       <div className="ml-6 flex items-center gap-4">
-                        <span 
-                          className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${
-                            pedido.estadoColor === 'green' 
-                              ? 'bg-green-100 text-green-800' 
+                        <span
+                          className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${pedido.estadoColor === 'green'
+                              ? 'bg-green-100 text-green-800'
                               : 'bg-blue-100 text-blue-800'
-                          }`}
+                            }`}
                         >
                           {pedido.estado}
                         </span>
 
-                        <ChevronRight 
-                          className="text-gray-400 flex-shrink-0" 
-                          size={24} 
+                        <ChevronRight
+                          className="text-gray-400 flex-shrink-0"
+                          size={24}
                         />
                       </div>
                     </div>

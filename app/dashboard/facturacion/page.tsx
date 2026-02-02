@@ -7,7 +7,7 @@ export default async function FacturacionPage() {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect('/auth/sign-in')
+    redirect('/sign-in')
   }
 
   const facturas = [

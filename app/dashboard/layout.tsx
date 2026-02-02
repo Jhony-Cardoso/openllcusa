@@ -2,8 +2,9 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, FileText, CreditCard, Package, User, Menu, X } from 'lucide-react'
+import { Home, FileText, CreditCard, Package, User, Menu, X, Bell } from 'lucide-react'
 import { useState } from 'react'
+import NotificacionesWidget from '@/components/NotificacionesWidget'
 
 export default function DashboardLayout({
   children,
@@ -19,6 +20,12 @@ export default function DashboardLayout({
       href: '/dashboard',
       icon: Home,
       current: pathname === '/dashboard',
+    },
+    {
+      name: 'Notificaciones',
+      href: '/dashboard/notificaciones',
+      icon: Bell,
+      current: pathname?.startsWith('/dashboard/notificaciones'),
     },
     {
       name: 'Documentos',
@@ -48,10 +55,22 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex">
+      {/* Header con notificaciones */}
+      <div className="fixed top-0 right-0 left-0 lg:left-64 z-30 bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="lg:hidden">
+            <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+          </div>
+          <div className="ml-auto">
+            <NotificacionesWidget />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex pt-16">
         {/* Sidebar Desktop */}
         <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
-          <div className="flex-1 flex flex-col min-h-0 pt-20">
+          <div className="flex-1 flex flex-col min-h-0 pt-4">
             {/* Título del Dashboard */}
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Mi Dashboard</h2>

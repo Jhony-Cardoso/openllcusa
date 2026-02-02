@@ -8,7 +8,7 @@ import { FileText, CreditCard, Package, User, Repeat } from 'lucide-react'
 export default async function DashboardPage() {
   const { userId } = await auth()
   if (!userId) {
-    redirect('/auth/sign-in')
+    redirect('/sign-in')
   }
 
   const client = await clerkClient()

@@ -12,7 +12,7 @@ export default async function PedidoDetallePage({ params }: Props) {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect('/auth/sign-in')
+    redirect('/sign-in')
   }
 
   const { id } = await params
@@ -42,7 +42,7 @@ export default async function PedidoDetallePage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <Link 
+        <Link
           href="/dashboard/pedidos"
           className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6"
         >
@@ -95,7 +95,7 @@ export default async function PedidoDetallePage({ params }: Props) {
 
               <div className="space-y-4">
                 {pedido.detalles.map((detalle, index) => (
-                  <div 
+                  <div
                     key={index}
                     className="flex items-start gap-4 pb-4 border-b border-gray-200 last:border-0"
                   >
@@ -121,7 +121,7 @@ export default async function PedidoDetallePage({ params }: Props) {
               </p>
               <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Nota:</strong> Todos los documentos están disponibles en la sección de 
+                  <strong>Nota:</strong> Todos los documentos están disponibles en la sección de
                   Documentos de tu panel.
                 </p>
               </div>
@@ -137,7 +137,7 @@ export default async function PedidoDetallePage({ params }: Props) {
 
               <div className="space-y-3">
                 {pedido.documentos.map((doc, index) => (
-                  <div 
+                  <div
                     key={index}
                     className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
                   >

@@ -46,7 +46,7 @@ export default function CompletadoPage() {
         }
 
         // 1. Verificar la sesión de Stripe con nuestra API
-        const response = await fetch('/api/stripe/verify-session', {
+        const response = await fetch('/api/stripe/verify-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -54,6 +54,7 @@ export default function CompletadoPage() {
           body: JSON.stringify({
             sessionId,
             pedidoId,
+            userId: user.id,
           }),
         });
 

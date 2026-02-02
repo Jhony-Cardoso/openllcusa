@@ -6,7 +6,7 @@ export default async function PerfilPage() {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect('/auth/sign-in')
+    redirect('/sign-in')
   }
 
   // Obtener información del usuario

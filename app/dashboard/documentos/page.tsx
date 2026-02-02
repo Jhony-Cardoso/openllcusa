@@ -7,7 +7,7 @@ export default async function DocumentosPage() {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect('/auth/sign-in')
+    redirect('/sign-in')
   }
 
   const documentos = [

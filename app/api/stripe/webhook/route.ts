@@ -149,9 +149,10 @@ export async function POST(req: Request) {
               );
               console.log('🔔 [WEBHOOK] Notificación creada para usuario:', userId);
 
-              // 3. TODO: Iniciar proceso automático según el servicio
-              // Por ejemplo, si es "obtención de EIN", crear tarea para el equipo
-              // Si es "formación de LLC", iniciar workflow de documentos
+              // 3. Iniciar proceso automático según el servicio
+              const { TaskService } = await import('@/lib/services/task.service');
+              await TaskService.generarTareasPorPedido(pedido);
+              console.log('⚙️ [WEBHOOK] Tareas automáticas generadas');
             }
           }
         }

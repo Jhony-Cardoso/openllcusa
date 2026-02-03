@@ -87,7 +87,9 @@ export default function OnboardingInicioPage() {
     setError('')
 
     if (!user) {
-      router.push('/sign-in')
+      // Redirigir al usuario de vuelta a esta página después de loguearse
+      const currentPath = window.location.pathname
+      router.push(`/sign-in?redirect_url=${encodeURIComponent(currentPath)}`)
       return
     }
 
@@ -108,21 +110,34 @@ export default function OnboardingInicioPage() {
       }
     }
 
-    const pedido = await PedidoModel.crear(user.id, servicio.id)
-    if (!pedido) {
-      setError('Error al crear el pedido')
-      return
-    }
+    // Modificación: Usar API route para crear pedido y asegurar sync de perfil
+    try {
+      const response = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ servicioId: servicio.id })
+      })
 
-    // Guardar email en el pedido (para Stripe y para contacto)
-    if (isEIN) {
-      await PedidoModel.actualizarPaso(pedido.id, 1, { email_empresa: einEmail })
-      router.push(`/servicios/${slug}/onboarding/checkout?pedido=${pedido.id}`)
-      return
-    }
+      if (!response.ok) {
+        throw new Error('Error en la petición de creación de pedido')
+      }
 
-    // Flujo LLC actual
-    router.push(`/servicios/${slug}/onboarding/estado?pedido=${pedido.id}`)
+      const pedido = await response.json()
+
+      // Guardar email en el pedido (para Stripe y para contacto)
+      if (isEIN) {
+        await PedidoModel.actualizarPaso(pedido.id, 1, { email_empresa: einEmail })
+        router.push(`/servicios/${slug}/onboarding/checkout?pedido=${pedido.id}`)
+        return
+      }
+
+      // Flujo LLC actual
+      router.push(`/servicios/${slug}/onboarding/estado?pedido=${pedido.id}`)
+
+    } catch (err) {
+      console.error('Error creando pedido:', err)
+      setError('Error al crear el pedido. Inténtalo de nuevo.')
+    }
   }
 
   if (loading) {

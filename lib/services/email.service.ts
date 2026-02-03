@@ -16,6 +16,15 @@ export interface EmailBienvenidaParams {
   nombreUsuario: string
 }
 
+export interface EmailEquipoParams {
+  tipo: 'nuevo_pedido' | 'error_sistema'
+  pedidoId?: string
+  nombreServicio?: string
+  cliente?: string
+  monto?: number
+  errorDetalle?: string
+}
+
 export class EmailService {
   /**
    * Enviar email de confirmación de pago
@@ -206,6 +215,52 @@ export class EmailService {
     } catch (error) {
       console.error('💥 Excepción enviando email:', error)
       return { success: false, error }
+    }
+  }
+
+  /**
+   * Notificar al equipo interno (Admin)
+   */
+  static async notificarEquipo(params: EmailEquipoParams) {
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL || 'soporte@openllcusa.com' // Email donde recibirás las alertas
+
+      let subject = ''
+      let html = ''
+
+      if (params.tipo === 'nuevo_pedido') {
+        subject = `🤑 Nueva Venta: ${params.nombreServicio} ($${params.monto})`
+        html = `
+                    <h1>¡Nueva Venta Realizada! 🚀</h1>
+                    <p>Se ha recibido un nuevo pago.</p>
+                    <ul>
+                        <li><strong>Servicio:</strong> ${params.nombreServicio}</li>
+                        <li><strong>Monto:</strong> $${params.monto}</li>
+                        <li><strong>ID Pedido:</strong> ${params.pedidoId}</li>
+                        <li><strong>Cliente ID:</strong> ${params.cliente}</li>
+                    </ul>
+                    <p>Se han generado las tareas correspondientes en el sistema.</p>
+                `
+      } else {
+        subject = `🚨 Error del Sistema`
+        html = `<p>Error: ${params.errorDetalle}</p>`
+      }
+
+      const { data, error } = await resend.emails.send({
+        from: 'Open LLC System <onboarding@resend.dev>',
+        to: adminEmail,
+        subject,
+        html
+      })
+
+      if (error) {
+        console.error('❌ Error notificando al equipo:', error)
+      } else {
+        console.log('✅ Equipo notificado:', data?.id)
+      }
+
+    } catch (error) {
+      console.error('💥 Excepción notificando equipo:', error)
     }
   }
 }

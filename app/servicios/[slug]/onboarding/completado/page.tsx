@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
+import { Analytics } from '@/lib/analytics'
 
 export default function CompletadoPage() {
   const router = useRouter()
@@ -53,6 +54,26 @@ export default function CompletadoPage() {
 
     verificar()
   }, [sessionId, pedidoId])
+
+  // Trackear purchase cuando el pedido se verifica correctamente
+  useEffect(() => {
+    if (pedido && !loading && !error) {
+      Analytics.trackPurchase({
+        transaction_id: pedido.numero_pedido || pedido.id || 'trans_' + Date.now(),
+        currency: 'USD',
+        value: pedido.total_pagado || 0,
+        items: [
+          {
+            item_id: pedido.servicio_id || pedido.paquete_id || 'servicio_unknown',
+            item_name: pedido?.numero_pedido || 'Pedido Open LLC',
+            price: pedido.total_pagado || 0,
+            quantity: 1,
+            item_category: isEIN ? 'Servicio' : 'Paquete LLC'
+          }
+        ]
+      })
+    }
+  }, [pedido, loading, error, isEIN])
 
   if (loading) {
     return (

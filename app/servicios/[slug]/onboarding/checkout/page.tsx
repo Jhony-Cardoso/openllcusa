@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { PedidoModel } from '@/lib/models/pedido'
 import { AlertCircle, Loader2 } from 'lucide-react'
+import { Analytics } from '@/lib/analytics'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -63,12 +64,16 @@ export default function CheckoutPage() {
   }, [isLoaded, user, pedidoId, router])
 
   const precioBase = useMemo(() => {
+    // Buscar precio en paquete O en servicio
     const raw =
       pedido?.paquete?.precio ??
       pedido?.paquete?.price ??
       pedido?.paquete?.precio_unico ??
       pedido?.paquete?.precio_base ??
+      pedido?.servicio?.precio ?? // <--- Añadido soporte para servicio
+      pedido?.servicio?.price ??
       0
+
     const n =
       typeof raw === 'number'
         ? raw
@@ -78,6 +83,25 @@ export default function CheckoutPage() {
 
   const filingInicial = Number(pedido?.estado_usa?.filing_inicial ?? 0)
   const total = isEIN ? precioBase : precioBase + filingInicial
+
+  // Trackear begin_checkout cuando se cargan los datos y el total es > 0
+  useEffect(() => {
+    if (pedido && total > 0) {
+      Analytics.trackBeginCheckout({
+        currency: 'USD',
+        value: total,
+        items: [
+          {
+            item_id: pedido.servicio_id || pedido.paquete_id || 'servicio_unknown',
+            item_name: pedido?.paquete?.nombre || pedido?.paquete?.title || pedido?.servicio?.nombre || pedido?.servicio?.title || 'Servicio',
+            price: total,
+            quantity: 1,
+            item_category: isEIN ? 'Servicio' : 'Paquete LLC'
+          }
+        ]
+      })
+    }
+  }, [pedido, total, isEIN])
 
   const handlePagar = async () => {
     if (!pedidoId) return
@@ -164,7 +188,7 @@ export default function CheckoutPage() {
 
       <div className="rounded-xl border border-gray-200 bg-white p-5 mb-6">
         <div className="font-semibold text-gray-900 mb-4">
-          {pedido?.paquete?.title || pedido?.paquete?.nombre || 'Servicio'}
+          {pedido?.paquete?.title || pedido?.paquete?.nombre || pedido?.servicio?.nombre || pedido?.servicio?.title || 'Servicio'}
         </div>
 
         <div className="flex justify-between text-gray-700 mb-2">

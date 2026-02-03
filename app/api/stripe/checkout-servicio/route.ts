@@ -28,10 +28,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 
-    const precioServicio = Number(pedido.paquete?.precio || pedido.paquete?.price || 0)
+    const precioServicio = Number(
+      pedido.paquete?.precio ??
+      pedido.paquete?.price ??
+      pedido.servicio?.precio ??
+      pedido.servicio?.price ??
+      0
+    )
+
     if (!precioServicio || precioServicio <= 0) {
+      console.error('Precio inválido:', { paquete: pedido.paquete, servicio: pedido.servicio })
       return NextResponse.json({ error: 'Precio inválido para el servicio' }, { status: 400 })
     }
+
+    const nombreProducto =
+      pedido.paquete?.nombre ||
+      pedido.paquete?.title ||
+      pedido.servicio?.nombre ||
+      pedido.servicio?.title ||
+      'Servicio'
+
+    const descripcionProducto =
+      pedido.paquete?.descripcion_corta ||
+      pedido.paquete?.descripcion ||
+      pedido.servicio?.descripcion_corta ||
+      pedido.servicio?.descripcion ||
+      undefined
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -41,8 +63,8 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: pedido.paquete?.nombre || pedido.paquete?.title || 'Servicio',
-              description: pedido.paquete?.descripcion_corta || pedido.paquete?.descripcion || undefined,
+              name: nombreProducto,
+              description: descripcionProducto,
             },
             unit_amount: Math.round(precioServicio * 100),
           },

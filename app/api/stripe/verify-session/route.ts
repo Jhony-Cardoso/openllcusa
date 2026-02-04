@@ -4,9 +4,11 @@
 // ============================================
 
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import Stripe from 'stripe'
 import { PedidoModel } from '@/lib/models/pedido'
+import { EmailService } from '@/lib/services/email.service'
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia',
@@ -44,12 +46,51 @@ export async function POST(request: NextRequest) {
     // Si está pagado, marcar el pedido (solo si aún no lo está)
     const pedido = await PedidoModel.obtenerPorId(pedidoId)
     if (pedido && pedido.estado_pedido !== 'pagado') {
+      const totalAmount = session.amount_total ? session.amount_total / 100 : 0
+
       await PedidoModel.marcarComoPagado(pedidoId, {
         payment_intent_id: (session.payment_intent as string) || undefined,
         session_id: sessionId,
         customer_id: (session.customer as string) || undefined,
-        amount: session.amount_total ? session.amount_total / 100 : 0,
+        amount: totalAmount,
       })
+
+      // DISPARAR EMAILS POST-PAGO
+      try {
+        const user = await currentUser()
+        const pedidoCompleto = await PedidoModel.obtenerCompleto(pedidoId)
+
+        const nombreProducto =
+          pedidoCompleto?.paquete?.nombre ||
+          pedidoCompleto?.paquete?.title ||
+          pedidoCompleto?.servicio?.nombre ||
+          pedidoCompleto?.servicio?.title ||
+          'Servicio Open LLC'
+
+        // 1. Email al Cliente
+        await EmailService.enviarConfirmacionPago({
+          to: session.customer_details?.email || user?.emailAddresses[0].emailAddress || '',
+          nombreUsuario: user?.firstName || 'Emprendedor',
+          nombreServicio: nombreProducto,
+          montoPagado: totalAmount,
+          pedidoId: pedidoCompleto?.numero_pedido || pedidoId,
+          fechaPago: new Date().toISOString()
+        })
+
+        // 2. Notificación al Equipo
+        await EmailService.notificarEquipo({
+          tipo: 'nuevo_pedido',
+          pedidoId: pedidoCompleto?.numero_pedido || pedidoId,
+          nombreServicio: nombreProducto,
+          monto: totalAmount,
+          cliente: `${user?.firstName} ${user?.lastName} (${user?.emailAddresses[0].emailAddress})`
+        })
+
+        console.log('📬 Emails post-pago enviados correctamente')
+      } catch (emailError) {
+        console.error('❌ Error enviando emails post-pago:', emailError)
+        // No bloqueamos la respuesta al cliente si el email falla
+      }
     }
 
     // Devolver pedido completo para UI

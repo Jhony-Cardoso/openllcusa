@@ -1,6 +1,8 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
+import { EmailService } from '@/lib/services/email.service'
+
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET
@@ -46,17 +48,25 @@ export async function POST(req: Request) {
   }
 
   // 3) CORRECCIÓN: Acceso seguro a los datos
-  // evt.data puede variar según el evento, así que lo extraemos directamente
   const eventType = evt.type;
-  
-  // Ejemplo: Solo si es 'user.created' o 'user.updated', data tendrá 'id' con seguridad
-  if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id, email_addresses } = evt.data;
-    
-    console.log(`Usuario ${id} fue ${eventType}`);
-    console.log('Email:', email_addresses?.[0]?.email_address);
 
-    // AQUÍ AGREGAS TU LÓGICA DE BASE DE DATOS (crear usuario en MongoDB, etc.)
+  if (eventType === 'user.created') {
+    const { id, email_addresses, first_name } = evt.data;
+    const email = email_addresses?.[0]?.email_address;
+
+    console.log(`🚀 Nuevo usuario creado: ${id} (${email})`);
+
+    if (email) {
+      try {
+        await EmailService.enviarBienvenida({
+          to: email,
+          nombreUsuario: first_name || 'Emprendedor'
+        });
+        console.log('📬 Email de bienvenida enviado con éxito');
+      } catch (err) {
+        console.error('❌ Error enviando email de bienvenida:', err);
+      }
+    }
   }
 
   return new Response('', { status: 200 })

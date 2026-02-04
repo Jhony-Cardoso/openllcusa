@@ -1,180 +1,171 @@
 import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Package, Calendar, DollarSign, FileText } from 'lucide-react'
+import { ArrowLeft, Package, Calendar, DollarSign, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
+import { PedidoModel } from '@/lib/models/pedido'
 
 type Props = {
   params: Promise<{ id: string }>
 }
 
 export default async function PedidoDetallePage({ params }: Props) {
-  // Protección manual de la ruta
   const { userId } = await auth()
-
-  if (!userId) {
-    redirect('/sign-in')
-  }
+  if (!userId) redirect('/sign-in')
 
   const { id } = await params
 
-  // En producción, buscarías el pedido en la base de datos
-  const pedido = {
-    id: id,
-    numero: `#${id}`,
-    servicio: 'Formación LLC completa',
-    fecha: '01/11/2025',
-    estado: 'Completado',
-    monto: '$499',
-    descripcion: 'Formación de LLC en Wyoming + Obtención de EIN',
-    detalles: [
-      { item: 'Registro de LLC', estado: 'Completado', fecha: '01/11/2025' },
-      { item: 'Obtención de EIN', estado: 'Completado', fecha: '05/11/2025' },
-      { item: 'Operating Agreement', estado: 'Completado', fecha: '06/11/2025' },
-      { item: 'Certificado de Formación', estado: 'Completado', fecha: '06/11/2025' },
-    ],
-    documentos: [
-      { nombre: 'Certificado de Formación', tipo: 'PDF' },
-      { nombre: 'EIN Letter', tipo: 'PDF' },
-      { nombre: 'Operating Agreement', tipo: 'PDF' },
-    ],
+  // Obtener datos reales
+  const pedido = await PedidoModel.obtenerCompleto(id)
+
+  if (!pedido || pedido.user_id !== userId) {
+    notFound()
   }
 
+  const isPaid = pedido.estado_pedido === 'pagado'
+  const nombreProducto = pedido.paquete?.nombre || pedido.servicio?.nombre || pedido.paquete?.title || pedido.servicio?.title || 'Servicio Open LLC'
+  const precio = pedido.total_pagado || pedido.paquete?.precio || pedido.servicio?.precio || 0
+
+  // Mapeo de progreso visual
+  const pasos = [
+    { label: 'Información recibida', completado: true, fecha: new Date(pedido.created_at).toLocaleDateString() },
+    { label: 'Pago verificado', completado: isPaid, fecha: isPaid ? 'Confirmado' : 'Pendiente' },
+    { label: 'Revisión por expertos', completado: isPaid, fecha: isPaid ? 'En proceso' : 'Esperando pago' },
+    { label: 'Presentación gubernamental', completado: false, fecha: '-' },
+    { label: 'Documentación entregada', completado: false, fecha: '-' },
+  ]
+
+  // Generar URL de checkout si no está pagado
+  const checkoutUrl = `/servicios/\${pedido.servicio?.slug || 'pack'}/onboarding/checkout?pedidoId=\${pedido.id}`
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-slate-50/50 py-8 lg:py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+
         <Link
           href="/dashboard/pedidos"
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-8 transition-colors font-medium text-sm group"
         >
-          <ArrowLeft size={20} />
-          Volver a Pedidos
+          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          Volver a Mis Pedidos
         </Link>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Pedido {pedido.numero}</h1>
-              <p className="text-gray-600">{pedido.servicio}</p>
-            </div>
-            <span className="px-4 py-2 bg-green-100 text-green-800 rounded-full font-semibold">
-              {pedido.estado}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <div className="flex items-center gap-3">
-              <Calendar className="text-blue-600" size={24} />
+        {/* Card Principal */}
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+          <div className="p-6 lg:p-10">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
               <div>
-                <p className="text-sm text-gray-600">Fecha de pedido</p>
-                <p className="font-semibold">{pedido.fecha}</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-sm font-mono text-slate-400 bg-slate-100 px-2 py-1 rounded">#{pedido.numero_pedido}</span>
+                  {isPaid ? (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-100 uppercase tracking-wider">
+                      <CheckCircle2 size={12} /> Pagado
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-100 uppercase tracking-wider">
+                      <Clock size={12} /> Pendiente de Pago
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-3xl lg:text-4xl font-black text-slate-900">{nombreProducto}</h1>
               </div>
+
+              {!isPaid && (
+                <Link
+                  href={checkoutUrl}
+                  className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                >
+                  Completar Pago <ArrowLeft size={18} className="rotate-180" />
+                </Link>
+              )}
             </div>
 
-            <div className="flex items-center gap-3">
-              <DollarSign className="text-green-600" size={24} />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
               <div>
-                <p className="text-sm text-gray-600">Monto total</p>
-                <p className="font-semibold text-lg">{pedido.monto}</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha</p>
+                <p className="font-bold text-slate-700">{new Date(pedido.created_at).toLocaleDateString()}</p>
               </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Package className="text-purple-600" size={24} />
               <div>
-                <p className="text-sm text-gray-600">ID del pedido</p>
-                <p className="font-semibold">{pedido.id}</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Monto</p>
+                <p className="font-bold text-slate-700">$\${precio} USD</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Estado USA</p>
+                <p className="font-bold text-slate-700">{pedido.estado_usa?.nombre || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tipo</p>
+                <p className="font-bold text-slate-700">{pedido.paquete_id ? 'Paquete Formación' : 'Servicio Directo'}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-semibold mb-6">Progreso del Pedido</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-slate-900">
 
-              <div className="space-y-4">
-                {pedido.detalles.map((detalle, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-4 pb-4 border-b border-gray-200 last:border-0"
-                  >
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                      <span className="text-green-600 font-bold">✓</span>
+          {/* LÍNEA DE TIEMPO DEL PROCESO */}
+          <div className="lg:col-span-2 space-y-8">
+            <section className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 lg:p-8">
+              <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                <Package className="text-blue-600" size={24} />
+                Progreso del trámite
+              </h2>
+
+              <div className="space-y-0 relative">
+                {pasos.map((paso, idx) => (
+                  <div key={idx} className="flex gap-4 pb-10 last:pb-0 relative">
+                    {idx !== pasos.length - 1 && (
+                      <div className={`absolute left-4 top-8 bottom-0 w-0.5 \${paso.completado ? 'bg-green-200' : 'bg-slate-100'}`}></div>
+                    )}
+                    <div className={`z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 \${
+                      paso.completado ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-300'
+                    }`}>
+                      {paso.completado ? <CheckCircle2 size={18} /> : <div className="w-2 h-2 bg-current rounded-full"></div>}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{detalle.item}</h3>
-                      <p className="text-sm text-gray-600">{detalle.fecha}</p>
+                    <div>
+                      <h3 className={`font-bold \${paso.completado ? 'text-slate-800' : 'text-slate-400'}`}>
+                        {paso.label}
+                      </h3>
+                      <p className="text-sm text-slate-500">{paso.fecha}</p>
                     </div>
-                    <span className="text-sm text-green-600 font-semibold">
-                      {detalle.estado}
-                    </span>
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-              <h2 className="text-2xl font-semibold mb-4">Información del Servicio</h2>
-              <p className="text-gray-700 leading-relaxed">
-                {pedido.descripcion}
-              </p>
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>Nota:</strong> Todos los documentos están disponibles en la sección de
-                  Documentos de tu panel.
-                </p>
-              </div>
-            </div>
+            </section>
           </div>
 
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-8">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <FileText className="text-blue-600" size={24} />
+          {/* DOCUMENTOS Y AYUDA */}
+          <div className="space-y-8">
+            <section className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 lg:p-8">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <FileText className="text-blue-600" size={20} />
                 Documentos
               </h2>
 
-              <div className="space-y-3">
-                {pedido.documentos.map((doc, index) => (
-                  <div
-                    key={index}
-                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{doc.nombre}</p>
-                        <p className="text-sm text-gray-600">{doc.tipo}</p>
-                      </div>
-                      <button className="text-blue-600 hover:text-blue-700 text-sm font-semibold">
-                        Ver
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {!isPaid ? (
+                <div className="text-center py-6">
+                  <AlertCircle className="mx-auto text-amber-500 mb-2" size={32} />
+                  <p className="text-sm text-slate-500">
+                    Los documentos estarán disponibles una vez se complete el pago y la gestión.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-slate-500 italic">No hay documentos cargados todavía.</p>
+                </div>
+              )}
+            </section>
 
-              <Link
-                href="/dashboard/documentos"
-                className="mt-6 w-full block text-center bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-              >
-                Ver todos los documentos
+            <div className="bg-slate-900 rounded-3xl p-8 text-white">
+              <h3 className="text-xl font-bold mb-2">¿Alguna duda?</h3>
+              <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+                Nuestros agentes especializados están listos para revisar tu caso.
+              </p>
+              <Link href="/contacto" className="block text-center py-3 bg-blue-600 font-bold rounded-xl hover:bg-blue-700 transition-colors">
+                Contactar ahora
               </Link>
             </div>
           </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-          <h2 className="text-xl font-semibold mb-2">¿Necesitas ayuda?</h2>
-          <p className="text-gray-600 mb-4">
-            Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.
-          </p>
-          <Link
-            href="/contacto"
-            className="inline-block bg-gray-100 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
-          >
-            Contactar Soporte
-          </Link>
         </div>
       </div>
     </div>

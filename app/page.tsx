@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     siteName: 'Open LLC USA',
     images: [
       {
-        url: '/og-image.jpg', // Crea esta imagen: 1200x630px
+        url: '/images/og-image-home.jpg',
         width: 1200,
         height: 630,
         alt: 'Open LLC USA - Servicios de creación de LLC',
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Open LLC USA - Abre tu LLC en 72 horas sin visa',
     description: 'Crea tu empresa en Estados Unidos 100% online. EIN incluido, agente registrado gratis.',
-    images: ['/og-image.jpg'],
+    images: ['/images/og-image-home.jpg'],
     creator: '@openllcusa', // Cambia por tu handle real
   },
   robots: {

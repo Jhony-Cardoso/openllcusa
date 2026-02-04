@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     locale: 'es_ES',
     type: 'website',
   },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'),
 };
 
 import { GoogleAnalytics } from '@next/third-parties/google';

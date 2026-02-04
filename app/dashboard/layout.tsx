@@ -72,9 +72,14 @@ export default function DashboardLayout({
         <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
           <div className="flex-1 flex flex-col min-h-0 pt-4">
             {/* Título del Dashboard */}
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-bold text-gray-900">Mi Dashboard</h2>
-              <p className="text-sm text-gray-600 mt-1">Gestiona tu LLC</p>
+            <div className="px-6 py-6 border-b border-gray-100 mb-2">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                  O
+                </div>
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">Open LLC</h2>
+              </div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Portal del Cliente</p>
             </div>
 
             {/* Navegación */}
@@ -140,9 +145,14 @@ export default function DashboardLayout({
             <aside className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white z-40 transform transition-transform duration-300 ease-in-out">
               <div className="flex flex-col h-full pt-20">
                 {/* Título */}
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-900">Mi Dashboard</h2>
-                  <p className="text-sm text-gray-600 mt-1">Gestiona tu LLC</p>
+                <div className="px-6 py-6 border-b border-gray-100 mb-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                      O
+                    </div>
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Open LLC</h2>
+                  </div>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Portal del Cliente</p>
                 </div>
 
                 {/* Navegación */}

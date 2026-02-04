@@ -1,6 +1,34 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = await createClient()
+
+  const { data: servicio } = await supabase
+    .from('servicios')
+    .select('title, tagline, descripcion_corta')
+    .eq('slug', slug)
+    .single()
+
+  if (!servicio) return {}
+
+  return {
+    title: servicio.title,
+    description: servicio.descripcion_corta || servicio.tagline,
+    openGraph: {
+      title: `${servicio.title} | Open LLC USA`,
+      description: servicio.descripcion_corta || servicio.tagline,
+    }
+  }
+}
+
 
 export default async function ServicioDetallePage({
   params,

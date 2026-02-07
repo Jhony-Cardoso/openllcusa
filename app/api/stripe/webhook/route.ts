@@ -131,7 +131,7 @@ export async function POST(req: Request) {
                 await EmailService.enviarConfirmacionPago({
                   to: userEmail,
                   nombreUsuario: userName,
-                  nombreServicio: pedido.servicios?.nombre || 'Servicio',
+                  nombreServicio: pedido.servicios?.nombre || pedido.paquetes?.nombre || 'Servicio',
                   montoPagado: session.amount_total / 100,
                   pedidoId: pedidoId,
                   fechaPago: new Date().toISOString(),

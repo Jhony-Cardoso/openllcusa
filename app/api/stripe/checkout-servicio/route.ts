@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/${slug}/onboarding/completado?session_id={CHECKOUT_SESSION_ID}&pedido=${pedidoId}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}?status=success`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/${slug}/onboarding/checkout?pedido=${pedidoId}&canceled=true`,
       metadata: {
         pedidoId: pedido.id,

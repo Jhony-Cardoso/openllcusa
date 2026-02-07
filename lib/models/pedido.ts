@@ -1,6 +1,7 @@
 // lib/models/pedido.ts
 
 import { createClient } from '../supabase/client'
+import { createAdminClient } from '../supabase/admin'
 import type { Database } from '../supabase/database.types'
 
 type PedidoRow = Database['public']['Tables']['pedidos']['Row']
@@ -77,8 +78,8 @@ export class PedidoModel {
 
   // Para Revisión/Checkout: devuelve pedido + paquete + estado_usa
   // Hacemos consultas separadas porque el join no funciona correctamente
-  static async obtenerCompleto(pedidoId: string) {
-    const supabase = createClient()
+  static async obtenerCompleto(pedidoId: string, isAdmin: boolean = false) {
+    const supabase = isAdmin ? createAdminClient() : createClient()
 
     console.log('🔍 [MODELO] Buscando pedido completo:', pedidoId)
 
@@ -199,6 +200,29 @@ export class PedidoModel {
     })
   }
 
+  // NUEVO: Guardar datos legales del checklist en metadata
+  static async guardarDatosLegales(
+    pedidoId: string,
+    datosLegales: any
+  ): Promise<boolean> {
+    const supabase = createClient()
+
+    const { error } = await supabase
+      .from('pedidos')
+      .update({
+        metadata: datosLegales,
+        paso_actual: 7, // Hito de configuración legal completada
+      })
+      .eq('id', pedidoId)
+
+    if (error) {
+      console.error('Error guardando datos legales:', error)
+      return false
+    }
+
+    return true
+  }
+
   // NUEVO: marcar pedido como pagado (Opción B)
   static async marcarComoPagado(
     pedidoId: string,
@@ -221,5 +245,52 @@ export class PedidoModel {
     // patch.paso_actual = 6
 
     return this.actualizarPaso(pedidoId, 6, patch)
+  }
+
+  // NUEVO: Listar todos los pedidos (Solo Admin)
+  static async listarTodosAdmin(): Promise<any[]> {
+    const supabase = createAdminClient()
+
+    // 1. Obtener todos los pedidos
+    const { data: pedidos, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('❌ [ADMIN] Error listando pedidos:', error.message || error)
+      return []
+    }
+
+    if (!pedidos) return []
+
+    // 2. Enriquecer con datos relacionados manualmente para evitar fallos de joins
+    const enrichedPedidos = await Promise.all(pedidos.map(async (p) => {
+      let paquetes = null
+      let servicios = null
+      let estados_usa = null
+
+      if (p.paquete_id) {
+        const { data } = await supabase.from('paquetes').select('nombre').eq('id', p.paquete_id).single()
+        paquetes = data
+      }
+      if (p.servicio_id) {
+        const { data } = await supabase.from('servicios').select('nombre').eq('id', p.servicio_id).single()
+        servicios = data
+      }
+      if (p.estado_usa_id) {
+        const { data } = await supabase.from('estados_usa').select('nombre, codigo').eq('id', p.estado_usa_id).single()
+        estados_usa = data
+      }
+
+      return {
+        ...p,
+        paquetes,
+        servicios,
+        estados_usa
+      }
+    }))
+
+    return enrichedPedidos
   }
 }

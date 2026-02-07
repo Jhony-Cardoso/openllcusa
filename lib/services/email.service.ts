@@ -90,8 +90,8 @@ export class EmailService {
                           <div style="margin-bottom: 30px;">
                             <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
                               <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #0ea5e9; border-radius: 50%;"></div>
-                              <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Revisión de datos (Inmediato)</p>
-                              <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Nuestro equipo verifica que toda la información sea correcta para evitar retrasos con el IRS.</p>
+                              <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Configuración Legal (Requiere tu acción)</p>
+                              <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Entra en tu panel para completar los detalles de tu LLC y adjuntar tu pasaporte. Es esencial para enviar hoy mismo la solicitud.</p>
                             </div>
                             <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
                               <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
@@ -107,7 +107,7 @@ export class EmailService {
 
                           <!-- Call to Action -->
                           <div align="center" style="margin: 40px 0;">
-                            <a href="${process.env.NEXT_PUBLIC_BASE_URL}/dashboard" style="background-color: #0ea5e9; color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; transition: background-color 0.3s ease;">Ir a mi Panel de Control</a>
+                            <a href="${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}" style="background-color: #0ea5e9; color: #ffffff; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">Completar Configuración Legal</a>
                           </div>
 
                           <p style="margin: 20px 0 0 0; font-size: 14px; color: #94a3b8; text-align: center;">

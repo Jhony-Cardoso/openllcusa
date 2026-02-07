@@ -4,13 +4,32 @@ import { FileText, Download, ArrowLeft, Search, Filter, AlertCircle, FileArchive
 import Link from 'next/link'
 import { DocumentoModel } from '@/lib/models/documento'
 
-export default async function DocumentosPage() {
+export default async function DocumentosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ filtro?: string }>
+}) {
+  const { filtro: filtroActivo } = await searchParams
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  // Obtener documentos reales
-  const documentos = await DocumentoModel.obtenerPorUsuario(userId)
+  // 1. Obtener todos los documentos reales del usuario
+  const todosLosDocumentos = await DocumentoModel.obtenerPorUsuario(userId)
+
+  // 2. Aplicar lógica de filtrado
+  const documentos = filtroActivo
+    ? todosLosDocumentos.filter(doc => doc.tipo?.toLowerCase() === filtroActivo.toLowerCase())
+    : todosLosDocumentos
+
   const hasDocuments = documentos.length > 0
+  const hasAnyDocuments = todosLosDocumentos.length > 0
+
+  const categorias = [
+    { id: '', label: 'Todos' },
+    { id: 'formacion', label: 'Formación' },
+    { id: 'impuestos', label: 'Impuestos' },
+    { id: 'contratos', label: 'Contratos' }
+  ]
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -39,11 +58,20 @@ export default async function DocumentosPage() {
               <Filter size={18} className="text-blue-600" />
               Filtrar por
             </h3>
-            <div className="space-y-2">
-              <button className="w-full text-left px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-sm font-bold">Todos</button>
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-50 text-slate-600 rounded-xl text-sm font-medium">Formación</button>
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-50 text-slate-600 rounded-xl text-sm font-medium">Impuestos</button>
-              <button className="w-full text-left px-4 py-2 hover:bg-slate-50 text-slate-600 rounded-xl text-sm font-medium">Contratos</button>
+            <div className="flex flex-col gap-2">
+              {categorias.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={cat.id ? `/dashboard/documentos?filtro=\${cat.id}` : '/dashboard/documentos'}
+                  className={`w-full text-left px-4 py-2 rounded-xl text-sm transition-all \${
+                    (filtroActivo === cat.id || (!filtroActivo && cat.id === ''))
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'hover:bg-slate-50 text-slate-600 font-medium'
+                  }`}
+                >
+                  {cat.label}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -63,15 +91,21 @@ export default async function DocumentosPage() {
               <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FileArchive className="text-slate-300" size={40} />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-3">Tu archivo está vacío</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-3">
+                {filtroActivo ? 'No hay documentos en esta categoría' : 'Tu archivo está vacío'}
+              </h2>
               <p className="text-slate-500 max-w-sm mx-auto mb-8">
-                Aquí aparecerán tu Certificado de Formación, EIN, Operating Agreement y facturas una vez los hayamos procesado.
+                {filtroActivo
+                  ? 'Prueba a cambiar el filtro para ver otros documentos.'
+                  : 'Aquí aparecerán tu Certificado de Formación, EIN, Operating Agreement y facturas una vez los hayamos procesado.'}
               </p>
-              <div className="flex items-center justify-center gap-3">
-                <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-bold">
-                  <AlertCircle size={16} /> En proceso de gestión
+              {!hasAnyDocuments && (
+                <div className="flex items-center justify-center gap-3">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-bold">
+                    <AlertCircle size={16} /> En proceso de gestión
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ) : (
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">

@@ -1,41 +1,67 @@
-import { auth } from '@clerk/nextjs/server'
-import { redirect, notFound } from 'next/navigation'
+import { auth, currentUser } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import {
+  Building2, Calendar, MapPin, CheckCircle2,
+  Clock, CreditCard, ArrowLeft, ShieldCheck,
+  FileText, Download, MessageSquare, AlertCircle, Package
+} from 'lucide-react'
 import Link from 'next/link'
-import { ArrowLeft, Package, Calendar, DollarSign, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
+import OnboardingWizard from '@/components/dashboard/OnboardingWizard'
 
-type Props = {
+export default async function PedidoDetallePage({
+  params,
+}: {
   params: Promise<{ id: string }>
-}
-
-export default async function PedidoDetallePage({ params }: Props) {
+}) {
   const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
-
+  const user = await currentUser()
   const { id } = await params
 
-  // Obtener datos reales
-  const pedido = await PedidoModel.obtenerCompleto(id)
+  if (!userId) redirect('/sign-in')
 
-  if (!pedido || pedido.user_id !== userId) {
-    notFound()
+  const pedidoFull = await PedidoModel.obtenerCompleto(id)
+
+  if (!pedidoFull || pedidoFull.user_id !== userId) {
+    redirect('/dashboard/pedidos')
   }
 
-  const isPaid = pedido.estado_pedido === 'pagado'
-  const nombreProducto = pedido.paquete?.nombre || pedido.servicio?.nombre || pedido.paquete?.title || pedido.servicio?.title || 'Servicio Open LLC'
-  const precio = pedido.total_pagado || pedido.paquete?.precio || pedido.servicio?.precio || 0
+  const isPaid = pedidoFull.estado_pedido === 'pagado'
+  const isLegalSetupPending = isPaid && (pedidoFull.paso_actual < 7)
+
+  // SI EL PAGO ESTÁ HECHO PERO FALTA EL CHECKLIST LEGAL
+  if (isLegalSetupPending) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <Link
+          href="/dashboard/pedidos"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-8 transition-colors font-medium text-sm group"
+        >
+          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          Volver a mis pedidos
+        </Link>
+        <OnboardingWizard
+          pedidoId={pedidoFull.id}
+          nombreUsuario={user?.firstName || 'emprendedor'}
+        />
+      </div>
+    )
+  }
+
+  const nombreProducto = pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || pedidoFull.paquete?.title || pedidoFull.servicio?.title || 'Servicio Open LLC'
+  const precio = pedidoFull.total_pagado || pedidoFull.paquete?.precio || pedidoFull.servicio?.precio || 0
 
   // Mapeo de progreso visual
   const pasos = [
-    { label: 'Información recibida', completado: true, fecha: new Date(pedido.created_at).toLocaleDateString() },
-    { label: 'Pago verificado', completado: isPaid, fecha: isPaid ? 'Confirmado' : 'Pendiente' },
-    { label: 'Revisión por expertos', completado: isPaid, fecha: isPaid ? 'En proceso' : 'Esperando pago' },
-    { label: 'Presentación gubernamental', completado: false, fecha: '-' },
-    { label: 'Documentación entregada', completado: false, fecha: '-' },
+    { id: 1, label: 'Información recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
+    { id: 2, label: 'Pago verificado', date: isPaid ? 'Verificado' : 'Pendiente', completado: isPaid },
+    { id: 7, label: 'Configuración Legal', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
+    { id: 4, label: 'Presentación gubernamental', date: 'Próximamente', completado: pedidoFull.paso_actual >= 8 },
+    { id: 5, label: 'Documentación entregada', date: 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
   ]
 
   // Generar URL de checkout si no está pagado
-  const checkoutUrl = `/servicios/\${pedido.servicio?.slug || 'pack'}/onboarding/checkout?pedidoId=\${pedido.id}`
+  const checkoutUrl = `/servicios/${pedidoFull.servicio?.slug || 'pack'}/onboarding/checkout?pedidoId=${pedidoFull.id}`
 
   return (
     <div className="min-h-screen bg-slate-50/50 py-8 lg:py-12">
@@ -55,7 +81,7 @@ export default async function PedidoDetallePage({ params }: Props) {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="text-sm font-mono text-slate-400 bg-slate-100 px-2 py-1 rounded">#{pedido.numero_pedido}</span>
+                  <span className="text-sm font-mono text-slate-400 bg-slate-100 px-2 py-1 rounded">#{pedidoFull.numero_pedido}</span>
                   {isPaid ? (
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-100 uppercase tracking-wider">
                       <CheckCircle2 size={12} /> Pagado
@@ -82,19 +108,19 @@ export default async function PedidoDetallePage({ params }: Props) {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha</p>
-                <p className="font-bold text-slate-700">{new Date(pedido.created_at).toLocaleDateString()}</p>
+                <p className="font-bold text-slate-700">{new Date(pedidoFull.created_at).toLocaleDateString()}</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Monto</p>
-                <p className="font-bold text-slate-700">$\${precio} USD</p>
+                <p className="font-bold text-slate-700">${precio} USD</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Estado USA</p>
-                <p className="font-bold text-slate-700">{pedido.estado_usa?.nombre || 'N/A'}</p>
+                <p className="font-bold text-slate-700">{pedidoFull.estados_usa?.nombre || 'N/A'}</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tipo</p>
-                <p className="font-bold text-slate-700">{pedido.paquete_id ? 'Paquete Formación' : 'Servicio Directo'}</p>
+                <p className="font-bold text-slate-700">{pedidoFull.paquete_id ? 'Paquete Formación' : 'Servicio Directo'}</p>
               </div>
             </div>
           </div>
@@ -110,22 +136,21 @@ export default async function PedidoDetallePage({ params }: Props) {
                 Progreso del trámite
               </h2>
 
-              <div className="space-y-0 relative">
+              <div className="space-y-0 relative ml-4">
                 {pasos.map((paso, idx) => (
-                  <div key={idx} className="flex gap-4 pb-10 last:pb-0 relative">
+                  <div key={idx} className="flex gap-6 pb-10 last:pb-0 relative">
                     {idx !== pasos.length - 1 && (
-                      <div className={`absolute left-4 top-8 bottom-0 w-0.5 \${paso.completado ? 'bg-green-200' : 'bg-slate-100'}`}></div>
+                      <div className={`absolute left-4 top-8 bottom-0 w-0.5 ${paso.completado ? 'bg-green-200' : 'bg-slate-100'}`}></div>
                     )}
-                    <div className={`z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 \${
-                      paso.completado ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-300'
-                    }`}>
+                    <div className={`z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${paso.completado ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-300'
+                      }`}>
                       {paso.completado ? <CheckCircle2 size={18} /> : <div className="w-2 h-2 bg-current rounded-full"></div>}
                     </div>
                     <div>
-                      <h3 className={`font-bold \${paso.completado ? 'text-slate-800' : 'text-slate-400'}`}>
+                      <h3 className={`font-bold ${paso.completado ? 'text-slate-800' : 'text-slate-400'}`}>
                         {paso.label}
                       </h3>
-                      <p className="text-sm text-slate-500">{paso.fecha}</p>
+                      <p className="text-sm text-slate-500">{paso.date}</p>
                     </div>
                   </div>
                 ))}
@@ -155,14 +180,20 @@ export default async function PedidoDetallePage({ params }: Props) {
               )}
             </section>
 
-            <div className="bg-slate-900 rounded-3xl p-8 text-white">
-              <h3 className="text-xl font-bold mb-2">¿Alguna duda?</h3>
-              <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                Nuestros agentes especializados están listos para revisar tu caso.
-              </p>
-              <Link href="/contacto" className="block text-center py-3 bg-blue-600 font-bold rounded-xl hover:bg-blue-700 transition-colors">
-                Contactar ahora
-              </Link>
+            <div className="bg-slate-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-xl shadow-slate-200">
+              <div className="relative z-10">
+                <h3 className="text-xl font-black mb-2 text-slate-300">¿Alguna duda?</h3>
+                <p className="text-slate-300 text-sm mb-6 leading-relaxed font-medium">
+                  Nuestros agentes especializados están listos para revisar tu caso.
+                </p>
+                <Link
+                  href="/contacto"
+                  className="block text-center py-4 bg-blue-600 text-slate-300 font-black rounded-2xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98]"
+                >
+                  Contactar ahora
+                </Link>
+              </div>
+              <MessageSquare className="absolute -right-4 -bottom-4 text-white/10" size={140} />
             </div>
           </div>
 

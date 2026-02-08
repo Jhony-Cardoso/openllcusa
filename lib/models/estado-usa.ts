@@ -12,19 +12,19 @@ export class EstadoUsaModel {
    */
   static async obtenerTodos(): Promise<EstadoUsa[]> {
     const supabase = createClient();
-    
+
     const { data, error } = await supabase
       .from('estados_usa')
       .select('*')
-      .eq('activo', true)
+      // .eq('activo', true)
       .order('popular', { ascending: false })
       .order('nombre');
-    
+
     if (error) {
       console.error('Error obteniendo estados:', error);
       return [];
     }
-    
+
     return data || [];
   }
 
@@ -33,18 +33,18 @@ export class EstadoUsaModel {
    */
   static async obtenerPorCodigo(codigo: string): Promise<EstadoUsa | null> {
     const supabase = createClient();
-    
+
     const { data, error } = await supabase
       .from('estados_usa')
       .select('*')
       .eq('codigo', codigo)
       .single();
-    
+
     if (error) {
       console.error('Error obteniendo estado:', error);
       return null;
     }
-    
+
     return data;
   }
 }

@@ -205,14 +205,26 @@ export class PedidoModel {
     pedidoId: string,
     datosLegales: any
   ): Promise<boolean> {
-    const supabase = createClient()
+    const supabase = createAdminClient()
+
+    // 1. Obtener los datos actuales para no sobreescribir otros campos de metadata (como documentos)
+    const { data: currentPedido } = await supabase
+      .from('pedidos')
+      .select('metadata')
+      .eq('id', pedidoId)
+      .single()
+
+    const currentMetadata = (currentPedido?.metadata as any) || {}
 
     const { error } = await supabase
       .from('pedidos')
       .update({
-        metadata: datosLegales,
+        metadata: {
+          ...currentMetadata,
+          ...datosLegales
+        },
         paso_actual: 7, // Hito de configuración legal completada
-      })
+      } as any)
       .eq('id', pedidoId)
 
     if (error) {

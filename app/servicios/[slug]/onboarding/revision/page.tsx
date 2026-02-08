@@ -30,13 +30,30 @@ export default function RevisionPage() {
           return
         }
 
-        if (!pedidoId) {
-          setError('Falta ?pedido= en la URL.')
+        let currentId = pedidoId
+
+        if (!currentId && user) {
+          const resServ = await fetch(`/api/servicios?slug=${slug}`)
+          const infoServ = await resServ.json()
+          const targetId = infoServ?.id
+          if (targetId) {
+            const borradores = await PedidoModel.obtenerPorUsuario(user.id)
+            const miBorrador = borradores.find(p => p.estado_pedido === 'borrador' && (p.servicio_id === targetId || p.paquete_id === targetId))
+            if (miBorrador) {
+              currentId = miBorrador.id
+              const newUrl = `${window.location.pathname}?pedido=${miBorrador.id}`
+              window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl)
+            }
+          }
+        }
+
+        if (!currentId) {
+          setError('Falta el identificador del pedido. Por favor, vuelve al paso anterior.')
           setLoading(false)
           return
         }
 
-        const pedidoData = await PedidoModel.obtenerCompleto(pedidoId)
+        const pedidoData = await PedidoModel.obtenerCompleto(currentId)
         if (!pedidoData) {
           setError('No se encontró el pedido.')
           setLoading(false)
@@ -67,6 +84,7 @@ export default function RevisionPage() {
       pedido?.paquete?.price ??
       pedido?.paquete?.precio_unico ??
       pedido?.paquete?.precio_base ??
+      pedido?.servicio?.precio ??
       0
 
     const n =

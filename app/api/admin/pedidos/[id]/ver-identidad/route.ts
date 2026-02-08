@@ -32,18 +32,24 @@ export async function GET(
 
         const path = pedido.metadata.documento_identidad_path
 
-        // 2. Generar una URL firmada de corta duración (60 segundos)
-        const { data, error: signedError } = await supabase.storage
+        // 2. Descargar el archivo desde Supabase a través del servidor para ocultar la IP
+        const { data, error: downloadError } = await supabase.storage
             .from('identificaciones')
-            .createSignedUrl(path, 60)
+            .download(path)
 
-        if (signedError || !data?.signedUrl) {
-            console.error('Error generando URL firmada:', signedError)
-            return new NextResponse('Error al generar acceso al archivo', { status: 500 })
+        if (downloadError || !data) {
+            console.error('Error descargando archivo:', downloadError)
+            return new NextResponse('Error al acceder al archivo', { status: 500 })
         }
 
-        // Redirigir directamente a la URL firmada
-        return NextResponse.redirect(data.signedUrl)
+        // 3. Devolver el archivo con el tipo de contenido original
+        const blob = data
+        const headers = new Headers()
+        headers.set('Content-Type', blob.type || 'application/octet-stream')
+        headers.set('Content-Disposition', `inline; filename="${pedido.metadata.documento_identidad_nombre || 'documento'}"`)
+        headers.set('Cache-Control', 'private, max-age=3600')
+
+        return new Response(blob, { headers })
 
     } catch (error) {
         console.error('View ID Error:', error)

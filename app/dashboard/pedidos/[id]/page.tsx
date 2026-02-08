@@ -175,7 +175,33 @@ export default async function PedidoDetallePage({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-sm text-slate-500 italic">No hay documentos cargados todavía.</p>
+                  {pedidoFull.metadata?.documento_identidad_path ? (
+                    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-200 text-blue-600">
+                          <FileText size={16} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-slate-900 truncate max-w-[120px]">
+                            {pedidoFull.metadata.documento_identidad_nombre || 'Identificación'}
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase">Cargado</p>
+                        </div>
+                      </div>
+                      <a
+                        href={`/api/pedidos/${pedidoFull.id}/ver-documento?path=${pedidoFull.metadata.documento_identidad_path}`}
+                        target="_blank"
+                        className="p-2 hover:bg-white hover:text-blue-600 rounded-lg transition-all text-slate-400"
+                        title="Ver Documento"
+                      >
+                        <Download size={16} />
+                      </a>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500 italic">No hay documentos cargados todavía.</p>
+                  )}
+
+                  {/* Aquí se listarán futuros documentos como el Articles of Organization, etc. */}
                 </div>
               )}
             </section>

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
     User, Building2, ShieldEllipsis, FileCheck,
     ArrowRight, ArrowLeft, CheckCircle2, Upload,
-    Info, ShieldCheck, Mail, MapPin, Globe, CreditCard
+    Info, ShieldCheck, Mail, MapPin, Globe, CreditCard, Loader2
 } from 'lucide-react'
 
 type Props = {
@@ -49,7 +49,30 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario }: Props) {
         setFormData(prev => ({ ...prev, [field]: value }))
     }
 
-    const handleNext = () => setStep(step + 1)
+    const validateStep = () => {
+        if (step === 1) {
+            if (!formData.member_nombre_completo.trim() ||
+                !formData.member_fecha_nacimiento ||
+                !formData.member_nacionalidad.trim() ||
+                !formData.member_direccion.trim()) {
+                alert('Por favor, completa todos los campos del propietario.')
+                return false
+            }
+        }
+        if (step === 2) {
+            if (!formData.empresa_proposito.trim()) {
+                alert('Por favor, indica el propósito de la empresa.')
+                return false
+            }
+        }
+        return true
+    }
+
+    const handleNext = () => {
+        if (validateStep()) {
+            setStep(step + 1)
+        }
+    }
     const handleBack = () => setStep(step - 1)
 
     const handleUploadId = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,7 +195,9 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario }: Props) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-900">
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Nombre Completo</label>
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Nombre Completo <span className="text-rose-500">*</span>
+                                </label>
                                 <div className="relative">
                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                     <input
@@ -186,7 +211,9 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario }: Props) {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Fecha de Nacimiento</label>
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Fecha de Nacimiento <span className="text-rose-500">*</span>
+                                </label>
                                 <input
                                     type="date"
                                     className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
@@ -196,7 +223,9 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario }: Props) {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Nacionalidad</label>
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Nacionalidad <span className="text-rose-500">*</span>
+                                </label>
                                 <div className="relative">
                                     <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                     <input
@@ -210,7 +239,9 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario }: Props) {
                             </div>
 
                             <div className="space-y-2 md:col-span-2 text-slate-900">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Dirección Personal Completa</label>
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Dirección Personal Completa <span className="text-rose-500">*</span>
+                                </label>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-4 text-slate-400" size={18} />
                                     <textarea
@@ -257,7 +288,9 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario }: Props) {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Propósito de la Empresa</label>
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Propósito de la Empresa <span className="text-rose-500">*</span>
+                                </label>
                                 <input
                                     type="text"
                                     placeholder="Ej: Any lawful business (Genérico)"
@@ -381,7 +414,9 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario }: Props) {
                             <div className="flex-1 text-center md:text-left">
                                 <h4 className="text-xl font-bold mb-1">{idUploaded ? 'Documento Adjuntado' : 'Carga de Identificación'}</h4>
                                 <p className="text-blue-100 text-sm">
-                                    {idUploaded ? `Archivo: ${idFile?.name}` : 'Necesitaremos una copia de tu pasaporte en vigor para el KYC.'}
+                                    {idUploaded
+                                        ? `Archivo: ${idFile?.name}`
+                                        : 'Adjunta tu pasaporte en formato PDF o Imagen (JPG/PNG).'}
                                 </p>
                             </div>
                             <div className="relative w-full md:w-auto">

@@ -39,7 +39,21 @@ export async function POST(req: Request) {
             // pero si el error es de FK, fallará el pedido igual.
         }
 
-        // 2. Crear el pedido
+        // 2. ¿Ya existe un borrador para este usuario y servicio?
+        const { data: existente } = await supabaseAdmin
+            .from('pedidos')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('servicio_id', servicioId)
+            .eq('estado_pedido', 'borrador')
+            .maybeSingle()
+
+        if (existente) {
+            console.log('♻️ Reutilizando pedido borrador:', existente.id)
+            return NextResponse.json(existente)
+        }
+
+        // 3. Crear el pedido
         const { data: pedido, error: pedidoError } = await supabaseAdmin
             .from('pedidos')
             .insert({

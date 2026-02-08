@@ -1,7 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { PedidoModel } from '@/lib/models/pedido'
+import { Database } from '@/lib/supabase/database.types'
 
 export async function POST(
     req: Request,
@@ -29,11 +30,16 @@ export async function POST(
             return NextResponse.json({ error: 'No se ha subido ningún archivo' }, { status: 400 })
         }
 
-        // 3. Crear cliente de Supabase
-        const supabase = await createClient()
+        // 3. Crear cliente de Supabase Admin
+        const supabase = createAdminClient()
+
+        console.log('📤 [UPLOAD] Detalle archivo:', {
+            nombre: file.name,
+            tipo: file.type,
+            medida: `${(file.size / 1024).toFixed(2)} KB`
+        })
 
         // 4. Subir archivo al bucket 'identificaciones'
-        // El nombre será: {pedidoId}/{timestamp}-{nombre_original}
         const fileExt = file.name.split('.').pop()
         const fileName = `${pedidoId}/${Date.now()}.${fileExt}`
 
@@ -41,7 +47,8 @@ export async function POST(
             .from('identificaciones')
             .upload(fileName, file, {
                 cacheControl: '3600',
-                upsert: false
+                upsert: false,
+                contentType: file.type
             })
 
         if (uploadError) {
@@ -59,9 +66,8 @@ export async function POST(
             fecha_subida_id: new Date().toISOString()
         }
 
-        // 6. Actualizar el pedido (sin cambiar el paso todavía, o si prefieres subirlo aquí)
-        // Por ahora solo guardamos la carga del archivo
-        const { error: updateError } = await (await createClient())
+        // 6. Actualizar el pedido
+        const { error: updateError } = await (supabase as any)
             .from('pedidos')
             .update({ metadata: updatedMetadata })
             .eq('id', pedidoId)

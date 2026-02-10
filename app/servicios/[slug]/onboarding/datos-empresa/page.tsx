@@ -52,7 +52,9 @@ export default function DatosEmpresaPage() {
     sector: '',
     descripcion_negocio: '',
     num_socios: 1,
+    ingresos_estimados: '',
     email_empresa: '',
+    codigo_pais: '',
     telefono_empresa: ''
   })
 
@@ -68,17 +70,25 @@ export default function DatosEmpresaPage() {
 
         let currentId = searchParams.get('pedido')
 
-        if (!currentId && user) {
+        // Si no hay ID en URL, buscar borrador vía API segura (sin problemas de RLS)
+        if (!currentId) {
+          console.log('🔍 [DATOS-EMPRESA] No hay pedidoId en URL, buscando borrador...')
+
           const resServ = await fetch(`/api/servicios?slug=${slug}`)
           const infoServ = await resServ.json()
           const targetId = infoServ?.id
+
           if (targetId) {
-            const borradores = await PedidoModel.obtenerPorUsuario(user.id)
-            const miBorrador = borradores.find(p => p.estado_pedido === 'borrador' && (p.servicio_id === targetId || p.paquete_id === targetId))
-            if (miBorrador) {
-              currentId = miBorrador.id
-              const newUrl = `${window.location.pathname}?pedido=${miBorrador.id}`
-              window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl)
+            const tipo = infoServ?._tipo || 'servicio'
+            const resBorrador = await fetch(`/api/pedidos/borrador?servicioId=${targetId}&tipo=${tipo}`)
+            const dataBorrador = await resBorrador.json()
+
+            if (dataBorrador?.pedido?.id) {
+              currentId = dataBorrador.pedido.id
+              console.log('✅ [DATOS-EMPRESA] Borrador encontrado:', currentId)
+
+              const newUrl = `${window.location.pathname}?pedido=${currentId}`
+              window.history.replaceState({}, '', newUrl)
             }
           }
         }

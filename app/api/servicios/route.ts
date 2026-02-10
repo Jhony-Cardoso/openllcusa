@@ -6,7 +6,7 @@ export async function GET(request: Request) {
 
     try {
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
         if (!supabaseUrl || !supabaseKey) {
             return NextResponse.json(
@@ -15,14 +15,65 @@ export async function GET(request: Request) {
             )
         }
 
-        // Construir URL según si hay slug o no
-        const url = slug
-            ? `${supabaseUrl}/rest/v1/servicios?slug=eq.${slug}&select=*`
-            : `${supabaseUrl}/rest/v1/servicios?select=id,slug,nombre,precio&limit=10`
+        // Si hay slug, buscar en ambas tablas (servicios y paquetes)
+        if (slug) {
+            // 1. Buscar primero en servicios
+            const serviciosUrl = `${supabaseUrl}/rest/v1/servicios?slug=eq.${slug}&select=*`
+            console.log('🔍 Buscando en servicios:', serviciosUrl)
 
-        console.log('🔍 Consultando Supabase:', url)
+            const serviciosResponse = await fetch(serviciosUrl, {
+                headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Content-Type': 'application/json',
+                },
+            })
 
-        // Hacer la petición desde el servidor (evita problemas de Mixed Content)
+            if (serviciosResponse.ok) {
+                const serviciosData = await serviciosResponse.json()
+                if (serviciosData && serviciosData.length > 0) {
+                    console.log('✅ Encontrado en servicios:', serviciosData[0])
+                    return NextResponse.json({
+                        ...serviciosData[0],
+                        _tipo: 'servicio'
+                    })
+                }
+            }
+
+            // 2. Si no está en servicios, buscar en paquetes
+            const paquetesUrl = `${supabaseUrl}/rest/v1/paquetes?slug=eq.${slug}&select=*`
+            console.log('🔍 Buscando en paquetes:', paquetesUrl)
+
+            const paquetesResponse = await fetch(paquetesUrl, {
+                headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            if (paquetesResponse.ok) {
+                const paquetesData = await paquetesResponse.json()
+                if (paquetesData && paquetesData.length > 0) {
+                    console.log('✅ Encontrado en paquetes:', paquetesData[0])
+                    return NextResponse.json({
+                        ...paquetesData[0],
+                        _tipo: 'paquete'
+                    })
+                }
+            }
+
+            // 3. No encontrado en ninguna tabla
+            return NextResponse.json(
+                { error: 'Servicio no encontrado' },
+                { status: 404 }
+            )
+        }
+
+        // Si no hay slug, listar todos los servicios
+        const url = `${supabaseUrl}/rest/v1/servicios?select=id,slug,nombre,precio&limit=10`
+        console.log('🔍 Listando servicios:', url)
+
         const response = await fetch(url, {
             headers: {
                 'apikey': supabaseKey,
@@ -41,21 +92,8 @@ export async function GET(request: Request) {
         }
 
         const data = await response.json()
-        console.log('✅ Datos obtenidos:', data)
-
-        // Si buscamos por slug, devolver el primer resultado
-        if (slug) {
-            if (!data || data.length === 0) {
-                return NextResponse.json(
-                    { error: 'Servicio no encontrado' },
-                    { status: 404 }
-                )
-            }
-            return NextResponse.json(data[0])
-        }
-
-        // Si listamos todos, devolver el array
         return NextResponse.json(data)
+
     } catch (error) {
         console.error('💥 Excepción en API:', error)
         return NextResponse.json(

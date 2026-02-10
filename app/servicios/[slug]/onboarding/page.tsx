@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { PedidoModel } from '@/lib/models/pedido'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 type Servicio = {
@@ -27,13 +26,15 @@ export default function OnboardingInicioPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const isEIN = slug === 'obtencion-ein'
+  // Determinar tipo de flujo basado en _tipo del producto
+  // servicio = flujo corto (checkout directo)
+  // paquete = flujo completo (estado → datos → revisión → checkout)
+  const esServicioSuelto = (servicio as any)?._tipo === 'servicio'
+  const esPaquete = (servicio as any)?._tipo === 'paquete'
 
-  // Estado del Paso 1 EIN
-  const [einEmail, setEinEmail] = useState('')
-  const [einC1, setEinC1] = useState(false)
-  const [einC2, setEinC2] = useState(false)
-  const [einC3, setEinC3] = useState(false)
+  // Estado del Paso 1 para servicios sueltos (como EIN)
+  const [contactEmail, setContactEmail] = useState('')
+  const [confirmaciones, setConfirmaciones] = useState<boolean[]>([false, false, false])
 
   useEffect(() => {
     async function cargarServicio() {
@@ -75,13 +76,13 @@ export default function OnboardingInicioPage() {
     cargarServicio()
   }, [isLoaded, slug])
 
-  // Auto-rellenar email del usuario autenticado para cualquier servicio
+  // Auto-rellenar email del usuario autenticado para servicios sueltos
   useEffect(() => {
-    if (isLoaded && user && !einEmail) {
+    if (isLoaded && user && !contactEmail) {
       const userEmail = user.emailAddresses?.[0]?.emailAddress || ''
-      setEinEmail(userEmail)
+      setContactEmail(userEmail)
     }
-  }, [isLoaded, user, einEmail])
+  }, [isLoaded, user, contactEmail])
 
   const handleContinuar = async () => {
     setError('')
@@ -98,13 +99,10 @@ export default function OnboardingInicioPage() {
       return
     }
 
-    // Validación Paso 1 EIN
-    if (isEIN) {
-      if (!einC1 || !einC2 || !einC3) {
-        setError('Confirma los 3 puntos para continuar.')
-        return
-      }
-      if (!einEmail || !einEmail.includes('@')) {
+    // Validación Paso 1 para servicios sueltos
+    if (esServicioSuelto) {
+      // Validar email de contacto
+      if (!contactEmail || !contactEmail.includes('@')) {
         setError('Introduce un email válido.')
         return
       }
@@ -112,10 +110,16 @@ export default function OnboardingInicioPage() {
 
     // Modificación: Usar API route para crear pedido y asegurar sync de perfil
     try {
+      const servicioInfo = servicio as any
+      const esPaquete = servicioInfo._tipo === 'paquete'
+
       const response = await fetch('/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ servicioId: servicio.id })
+        body: JSON.stringify({
+          servicioId: servicio.id,
+          tipo: servicioInfo._tipo || 'servicio'
+        })
       })
 
       if (!response.ok) {
@@ -124,14 +128,24 @@ export default function OnboardingInicioPage() {
 
       const pedido = await response.json()
 
-      // Guardar email en el pedido (para Stripe y para contacto)
-      if (isEIN) {
-        await PedidoModel.actualizarPaso(pedido.id, 1, { email_empresa: einEmail })
+      // Flujo según tipo de producto
+      if (esServicioSuelto) {
+        // Servicios sueltos: guardar email y ir directo a checkout
+        await fetch('/api/pedidos/actualizar', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pedidoId: pedido.id,
+            paso: 1,
+            datos: { email_empresa: contactEmail }
+          })
+        });
+
         router.push(`/servicios/${slug}/onboarding/checkout?pedido=${pedido.id}`)
         return
       }
 
-      // Flujo LLC actual
+      // Paquetes: flujo completo (estado → datos → revisión → checkout)
       router.push(`/servicios/${slug}/onboarding/estado?pedido=${pedido.id}`)
 
     } catch (err) {
@@ -167,69 +181,45 @@ export default function OnboardingInicioPage() {
     )
   }
 
-  // === UI Paso 1 EIN ===
-  if (isEIN) {
+  // === UI Paso 1 para SERVICIOS SUELTOS (flujo corto) ===
+  if (esServicioSuelto) {
     return (
       <div className="max-w-2xl">
         <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-          Empezar solicitud de EIN
+          {servicio.title || servicio.nombre || 'Servicio'}
         </h1>
 
         <p className="text-gray-600 mb-6">
-          Este servicio es solo para LLCs ya constituidas. En 2 minutos confirmamos que todo encaja y te llevamos al pago.
+          {servicio.tagline || servicio.descripcion || 'Completa los datos para continuar con tu compra.'}
         </p>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-3">Qué vas a recibir</h2>
-          <ul className="list-disc pl-5 text-gray-700 space-y-1">
-            <li>EIN para tu LLC (número fiscal federal).</li>
-            <li>Carta oficial del IRS (CP 575) con tu EIN.</li>
-            <li>Soporte en español y seguimiento durante el trámite.</li>
-          </ul>
+          <h2 className="font-semibold text-gray-900 mb-3">¿Qué incluye este servicio?</h2>
+          <p className="text-gray-700">
+            {servicio.descripcion || 'Servicio profesional con soporte en español.'}
+          </p>
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-3">Antes de seguir, confirma esto</h2>
-
-          <label className="flex gap-3 items-start mb-3 text-gray-700">
-            <input type="checkbox" className="mt-1" checked={einC1} onChange={(e) => setEinC1(e.target.checked)} />
-            <span>Mi LLC ya está constituida (tengo el documento de formación del estado).</span>
-          </label>
-
-          <label className="flex gap-3 items-start mb-3 text-gray-700">
-            <input type="checkbox" className="mt-1" checked={einC2} onChange={(e) => setEinC2(e.target.checked)} />
-            <span>Mi LLC aún no tiene EIN.</span>
-          </label>
-
-          <label className="flex gap-3 items-start mb-4 text-gray-700">
-            <input type="checkbox" className="mt-1" checked={einC3} onChange={(e) => setEinC3(e.target.checked)} />
-            <span>Soy el Responsible Party o tengo permiso del responsable para tramitarlo.</span>
-          </label>
-
           <div className="mb-2 font-semibold text-gray-900">Email de contacto</div>
           <input
-            value={einEmail}
-            onChange={(e) => setEinEmail(e.target.value)}
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
             placeholder="tu@email.com"
             className="w-full rounded-lg border border-gray-300 px-3 py-2"
           />
           <div className="text-sm text-gray-500 mt-2">
-            Te avisaremos aquí del estado del trámite y si falta algún dato.
+            Te avisaremos aquí del estado del trámite y si necesitamos algún dato adicional.
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-3">
-            Documentos que vas a necesitar (se suben después del pago)
+        <div className="rounded-xl border border-blue-100 bg-blue-50 p-5 mb-6">
+          <h2 className="font-semibold text-blue-900 mb-2">
+            💡 Después del pago te pediremos la documentación necesaria
           </h2>
-          <ul className="list-disc pl-5 text-gray-700 space-y-1">
-            <li>Documento de constitución de la LLC: Articles/Certificate (según el estado).</li>
-            <li>Pasaporte del Responsible Party (imagen nítida).</li>
-            <li>Dirección postal de la LLC (puede ser la del agente registrado si aplica).</li>
-          </ul>
-          <div className="text-sm text-gray-500 mt-3">
-            Formatos aceptados: PDF, JPG o PNG. Ideal: 1 archivo por documento.
-          </div>
+          <p className="text-sm text-blue-800">
+            Este es un proceso simplificado. Primero realizas el pago y luego te guiaremos paso a paso para recopilar la información que necesitemos.
+          </p>
         </div>
 
         {error && (
@@ -248,14 +238,14 @@ export default function OnboardingInicioPage() {
           Continuar al pago →
         </button>
 
-        <div className="text-sm text-gray-500 mt-3">
-          Pago único. Sin suscripciones. Si tu caso no aplica, se detiene el proceso antes de tramitar con el IRS.
+        <div className="text-sm text-gray-500 mt-3 text-center">
+          Pago único. Sin suscripciones.
         </div>
       </div>
     )
   }
 
-  // === UI Paso 1 normal (LLC) ===
+  // === UI Paso 1 para PAQUETES (flujo completo) ===
   return (
     <div className="max-w-2xl">
       <h1 className="text-3xl font-semibold text-gray-900 mb-2">

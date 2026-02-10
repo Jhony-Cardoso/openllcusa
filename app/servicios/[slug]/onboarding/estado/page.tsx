@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { PedidoModel } from '@/lib/models/pedido'
-import { EstadoUsaModel } from '@/lib/models/estado-usa'
 import { AlertCircle, Loader2, Check, Star, ChevronDown } from 'lucide-react'
 
 export default function EstadoPage() {
@@ -44,34 +43,39 @@ export default function EstadoPage() {
       try {
         if (!isUserLoaded) return
 
+        if (!user) {
+          router.push('/sign-in')
+          return
+        }
+
         let currentPedidoId = pedidoIdFromUrl
 
-        if (!currentPedidoId && user) {
-          // 1. Obtener el servicio/paquete por slug para saber su ID
+        // Si no hay ID en URL, buscar borrador vía API segura
+        if (!currentPedidoId) {
+          console.log('🔍 [ESTADO] No hay pedidoId en URL, buscando borrador...')
+
           const resServ = await fetch(`/api/servicios?slug=${slug}`)
           const infoServ = await resServ.json()
           const targetId = infoServ?.id
 
           if (targetId) {
-            // 2. Buscar borradores del usuario que coincidan con ese ID
-            const borradores = await PedidoModel.obtenerPorUsuario(user.id)
-            const miBorrador = borradores.find(
-              (p) =>
-                p.estado_pedido === 'borrador' &&
-                (p.servicio_id === targetId || p.paquete_id === targetId)
-            )
+            const tipo = infoServ?._tipo || 'servicio'
+            const resBorrador = await fetch(`/api/pedidos/borrador?servicioId=${targetId}&tipo=${tipo}`)
+            const dataBorrador = await resBorrador.json()
 
-            if (miBorrador) {
-              currentPedidoId = miBorrador.id
-              setPedidoId(miBorrador.id)
-              const newUrl = `${window.location.pathname}?pedido=${miBorrador.id}`
-              window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl)
+            if (dataBorrador?.pedido?.id) {
+              currentPedidoId = dataBorrador.pedido.id
+              setPedidoId(currentPedidoId)
+              console.log('✅ [ESTADO] Borrador encontrado:', currentPedidoId)
+
+              const newUrl = `${window.location.pathname}?pedido=${currentPedidoId}`
+              window.history.replaceState({}, '', newUrl)
             }
           }
         }
 
         if (!currentPedidoId) {
-          setError('Falta el identificador del pedido. Por favor, vuelve al paso anterior.')
+          setError('No se encontró un pedido en curso. Por favor, vuelve al inicio del proceso.')
           setLoading(false)
           return
         }
@@ -92,17 +96,17 @@ export default function EstadoPage() {
         setPedidoId(pedido.id)
         if (pedido.estado_usa_id) setSelectedEstado(pedido.estado_usa_id)
 
-        // Cargar estados disponibles vía API Proxy (más seguro y evita Mixed Content)
+        // Cargar estados disponibles vía API Proxy
         const responseEstados = await fetch('/api/estados')
         if (!responseEstados.ok) throw new Error('Error al cargar estados')
         const estadosData = await responseEstados.json()
-        setEstados(estadosData)
+        // Filtrar Texas según solicitud del cliente
+        const estadosFiltrados = estadosData.filter((e: any) => e.nombre !== 'Texas')
+        setEstados(estadosFiltrados)
 
-        // Reutilizamos columnas existentes cuando sea posible
-        // nombre_empresa -> nombre legal LLC
+        // Recuperar datos EIN si existen
         if (pedido.nombre_empresa) setLlcLegalName(pedido.nombre_empresa)
 
-        // descripcion_negocio: guardamos datos EIN como JSON para no tocar DB
         if (pedido.descripcion_negocio) {
           try {
             const obj = JSON.parse(pedido.descripcion_negocio)
@@ -127,12 +131,16 @@ export default function EstadoPage() {
     }
 
     cargar()
-  }, [isUserLoaded, user, pedidoIdFromUrl, router])
+  }, [isUserLoaded, user, pedidoIdFromUrl, slug, router])
 
   const handleContinuar = async () => {
     setError('')
 
-    if (!pedidoId) {
+    // Obtener el ID actual (puede haber cambiado)
+    const urlParams = new URLSearchParams(window.location.search)
+    const currentId = urlParams.get('pedido') || pedidoId
+
+    if (!currentId) {
       setError('Error: No se encontró el pedido')
       return
     }
@@ -144,8 +152,8 @@ export default function EstadoPage() {
       }
       setSaving(true)
       try {
-        await PedidoModel.guardarEstado(pedidoId, selectedEstado)
-        router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${pedidoId}`)
+        await PedidoModel.guardarEstado(currentId, selectedEstado)
+        router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${currentId}`)
       } catch (err) {
         setError('Error al guardar el estado.')
       } finally {
@@ -171,9 +179,6 @@ export default function EstadoPage() {
     setSaving(true)
 
     try {
-      // Guardamos:
-      // - nombre_empresa como nombre legal
-      // - descripcion_negocio como JSON con datos EIN
       const payload = {
         nombre_empresa: llcLegalName,
         sector: 'EIN',
@@ -191,14 +196,13 @@ export default function EstadoPage() {
         }),
         num_socios: 1,
         ingresos_estimados: '',
-        // email_empresa ya se guardó en el paso 1 (si lo hiciste como te pasé)
         email_empresa: '',
         telefono_empresa: '',
       }
 
-      await PedidoModel.actualizarPaso(pedidoId, 3, payload)
+      await PedidoModel.actualizarPaso(currentId, 3, payload)
 
-      router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${pedidoId}`)
+      router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${currentId}`)
     } catch (e) {
       console.error(e)
       setError('Error al guardar. Por favor, inténtalo de nuevo.')
@@ -223,8 +227,11 @@ export default function EstadoPage() {
           <AlertCircle size={18} />
           {error}
         </div>
-        <button onClick={() => router.back()} className="mt-6 text-sm text-gray-600 underline">
-          ← Atrás
+        <button
+          onClick={() => router.push(`/servicios/${slug}/onboarding`)}
+          className="mt-6 text-sm text-gray-600 underline"
+        >
+          ← Reiniciar proceso
         </button>
       </div>
     )
@@ -337,9 +344,7 @@ export default function EstadoPage() {
     )
   }
 
-  // UI original (LLC): Restauramos la selección de estados
-  const estadoSeleccionado = estados.find(e => e.id === selectedEstado);
-
+  // UI original (LLC): Selección de estados
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -351,13 +356,6 @@ export default function EstadoPage() {
           por su bajo coste anual y máxima privacidad.
         </p>
       </div>
-
-      {error && !pedidoId && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 mb-6 font-semibold">
-          <AlertCircle size={18} className="inline mr-2" />
-          {error}
-        </div>
-      )}
 
       <div className="space-y-3 mb-8">
         {estados.length === 0 && (

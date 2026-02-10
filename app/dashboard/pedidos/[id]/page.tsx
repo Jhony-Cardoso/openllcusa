@@ -29,6 +29,9 @@ export default async function PedidoDetallePage({
   const isPaid = pedidoFull.estado_pedido === 'pagado'
   const isLegalSetupPending = isPaid && (pedidoFull.paso_actual < 7)
 
+  // Detectar si es un trámite de EIN
+  const esEIN = pedidoFull.servicio?.slug === 'obtencion-ein' || pedidoFull.paquete?.slug === 'ein-express' // Ajustar según slug real
+
   // SI EL PAGO ESTÁ HECHO PERO FALTA EL CHECKLIST LEGAL
   if (isLegalSetupPending) {
     return (
@@ -43,6 +46,7 @@ export default async function PedidoDetallePage({
         <OnboardingWizard
           pedidoId={pedidoFull.id}
           nombreUsuario={user?.firstName || 'emprendedor'}
+          esEIN={esEIN}
         />
       </div>
     )
@@ -51,8 +55,14 @@ export default async function PedidoDetallePage({
   const nombreProducto = pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || pedidoFull.paquete?.title || pedidoFull.servicio?.title || 'Servicio Open LLC'
   const precio = pedidoFull.total_pagado || pedidoFull.paquete?.precio || pedidoFull.servicio?.precio || 0
 
-  // Mapeo de progreso visual
-  const pasos = [
+  // Mapeo de progreso visual (Adaptado para EIN vs LLC)
+  const pasos = esEIN ? [
+    { id: 1, label: 'Solicitud Recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
+    { id: 2, label: 'Pago Confirmado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
+    { id: 7, label: 'Firma SS-4', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
+    { id: 4, label: 'Tramitación ante IRS', date: 'En proceso interno', completado: pedidoFull.paso_actual >= 8 },
+    { id: 5, label: 'EIN Entregado', date: 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
+  ] : [
     { id: 1, label: 'Información recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
     { id: 2, label: 'Pago verificado', date: isPaid ? 'Verificado' : 'Pendiente', completado: isPaid },
     { id: 7, label: 'Configuración Legal', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },

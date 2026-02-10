@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { PedidoModel } from '@/lib/models/pedido'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 type DatosEmpresaForm = {
@@ -82,27 +81,51 @@ export default function DatosEmpresaPage() {
           return
         }
 
-        if (!pedidoId) {
+        let currentPedidoId = pedidoId
+
+        // Si no hay ID en URL, buscar borrador vía API segura
+        if (!currentPedidoId) {
+          console.log('🔍 [PAQUETE DATOS-EMPRESA] No hay pedidoId en URL, buscando borrador...')
+
+          const resPaquete = await fetch(`/api/paquetes?slug=${paqueteSlug}`)
+          const infoPaquete = await resPaquete.json()
+          const targetId = infoPaquete?.id
+
+          if (targetId) {
+            const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${targetId}&tipo=paquete`)
+            const dataBorrador = await resBorrador.json()
+
+            if (dataBorrador?.pedido?.id) {
+              currentPedidoId = dataBorrador.pedido.id
+              console.log('✅ [PAQUETE DATOS-EMPRESA] Borrador encontrado:', currentPedidoId)
+
+              const newUrl = `${window.location.pathname}?pedido=${currentPedidoId}`
+              window.history.replaceState({}, '', newUrl)
+            }
+          }
+        }
+
+        if (!currentPedidoId) {
           console.log('❌ No hay pedidoId en la URL')
           setError('No se ha encontrado el pedido. Vuelve al paso anterior.')
+          setLoading(false)
           return
         }
 
-        console.log('🔍 Buscando pedido en datos-empresa:', pedidoId)
-        const pedido = await PedidoModel.obtenerPorId(pedidoId)
-        console.log('📦 Pedido obtenido:', pedido)
+        // Usar API segura para obtener pedido
+        console.log('🔍 Buscando pedido en datos-empresa:', currentPedidoId)
+        const resPedido = await fetch(`/api/pedidos/obtener?id=${currentPedidoId}`)
+        const dataPedido = await resPedido.json()
 
-        if (!pedido) {
-          console.log('❌ Pedido no encontrado en la base de datos')
+        if (!resPedido.ok || !dataPedido.pedido) {
+          console.error('❌ Pedido no encontrado:', dataPedido)
           setError('No se ha encontrado el pedido en la base de datos.')
+          setLoading(false)
           return
         }
 
-        if (pedido.user_id !== user.id) {
-          console.log('❌ El pedido no pertenece al usuario actual')
-          setError('No tienes permisos para acceder a este pedido.')
-          return
-        }
+        const pedido = dataPedido.pedido
+        console.log('📦 Pedido obtenido:', pedido)
 
         setForm({
           nombre_empresa: pedido.nombre_empresa || '',
@@ -167,8 +190,23 @@ export default function DatosEmpresaPage() {
 
     setSaving(true)
     try {
-      const ok = await PedidoModel.guardarDatosEmpresa(pedidoId, form)
-      if (!ok) {
+      // Usar API segura para actualizar
+      const res = await fetch('/api/pedidos/actualizar', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pedidoId,
+          paso: 3,
+          datos: {
+            ...form,
+            estado_pedido: 'datos_completos'
+          }
+        })
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        console.error('Error guardando datos empresa:', errorData)
         setError('Error al guardar los datos de la empresa. Inténtalo de nuevo.')
         return
       }

@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { PedidoModel } from '@/lib/models/pedido'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { Analytics } from '@/lib/analytics'
 
@@ -14,7 +13,7 @@ export default function CheckoutPage() {
   const { user, isLoaded } = useUser()
 
   const slug = (params?.slug as string) || ''
-  const pedidoId = searchParams.get('pedido')
+  const pedidoIdFromUrl = searchParams.get('pedido')
   const isEIN = slug === 'obtencion-ein'
 
   const [pedido, setPedido] = useState<any>(null)
@@ -32,35 +31,51 @@ export default function CheckoutPage() {
           return
         }
 
-        let currentId = pedidoId
+        let currentId = pedidoIdFromUrl
 
-        if (!currentId && user) {
+        // Si no hay ID en URL, buscar borrador vía API segura
+        if (!currentId) {
+          console.log('🔍 [CHECKOUT] No hay pedidoId en URL, buscando borrador...')
+
+          // Obtener el servicio por slug
           const resServ = await fetch(`/api/servicios?slug=${slug}`)
           const infoServ = await resServ.json()
           const targetId = infoServ?.id
+
           if (targetId) {
-            const borradores = await PedidoModel.obtenerPorUsuario(user.id)
-            const miBorrador = borradores.find(p => p.estado_pedido === 'borrador' && (p.servicio_id === targetId || p.paquete_id === targetId))
-            if (miBorrador) {
-              currentId = miBorrador.id
-              const newUrl = `${window.location.pathname}?pedido=${miBorrador.id}`
-              window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl)
+            // Buscar borrador vía API (server-side, sin problemas de RLS)
+            const tipo = infoServ?._tipo || 'servicio'
+            const resBorrador = await fetch(`/api/pedidos/borrador?servicioId=${targetId}&tipo=${tipo}`)
+            const dataBorrador = await resBorrador.json()
+
+            if (dataBorrador?.pedido?.id) {
+              currentId = dataBorrador.pedido.id
+              console.log('✅ [CHECKOUT] Borrador encontrado:', currentId)
+
+              // Actualizar URL sin recargar
+              const newUrl = `${window.location.pathname}?pedido=${currentId}`
+              window.history.replaceState({}, '', newUrl)
             }
           }
         }
 
         if (!currentId) {
-          setError('Falta el identificador del pedido. Por favor, vuelve al paso anterior.')
+          setError('No se encontró un pedido en curso. Por favor, vuelve al inicio del proceso.')
           setLoading(false)
           return
         }
 
-        const pedidoData = await PedidoModel.obtenerCompleto(currentId)
-        if (!pedidoData) {
-          setError('No se encontró el pedido.')
+        // Usar API segura para obtener pedido completo
+        const resPedido = await fetch(`/api/pedidos/completo?id=${currentId}`)
+        const dataPedido = await resPedido.json()
+
+        if (!resPedido.ok || !dataPedido.pedido) {
+          setError('No se encontró el pedido en la base de datos.')
           setLoading(false)
           return
         }
+
+        const pedidoData = dataPedido.pedido
 
         if (pedidoData.user_id !== user.id) {
           setError('No tienes permisos para pagar este pedido.')
@@ -78,16 +93,15 @@ export default function CheckoutPage() {
     }
 
     cargar()
-  }, [isLoaded, user, pedidoId, router])
+  }, [isLoaded, user, pedidoIdFromUrl, slug, router])
 
   const precioBase = useMemo(() => {
-    // Buscar precio en paquete O en servicio
     const raw =
       pedido?.paquete?.precio ??
       pedido?.paquete?.price ??
       pedido?.paquete?.precio_unico ??
       pedido?.paquete?.precio_base ??
-      pedido?.servicio?.precio ?? // <--- Añadido soporte para servicio
+      pedido?.servicio?.precio ??
       pedido?.servicio?.price ??
       0
 
@@ -120,8 +134,19 @@ export default function CheckoutPage() {
     }
   }, [pedido, total, isEIN])
 
+  // Obtener el ID actual (puede haber cambiado tras recuperación)
+  const getCurrentPedidoId = () => {
+    const urlParams = new URLSearchParams(window.location.search)
+    return urlParams.get('pedido') || pedidoIdFromUrl
+  }
+
   const handlePagar = async () => {
-    if (!pedidoId) return
+    const currentId = getCurrentPedidoId()
+    if (!currentId) {
+      setError('No se puede proceder sin un pedido válido.')
+      return
+    }
+
     setPaying(true)
     setError('')
 
@@ -131,7 +156,7 @@ export default function CheckoutPage() {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: isEIN ? JSON.stringify({ pedidoId, slug }) : JSON.stringify({ pedidoId }),
+        body: isEIN ? JSON.stringify({ pedidoId: currentId, slug }) : JSON.stringify({ pedidoId: currentId }),
       })
 
       const json = await res.json().catch(() => ({}))
@@ -168,20 +193,22 @@ export default function CheckoutPage() {
         </div>
 
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push(`/servicios/${slug}/onboarding`)}
           className="mt-6 text-sm text-gray-600 underline"
         >
-          ← Atrás
+          ← Reiniciar proceso
         </button>
       </div>
     )
   }
 
+  const currentPedidoId = getCurrentPedidoId()
+
   return (
     <div className="max-w-2xl">
       <button
         onClick={() =>
-          router.push(`/servicios/${slug}/onboarding/${isEIN ? '' : 'revision'}?pedido=${pedidoId}`)
+          router.push(`/servicios/${slug}/onboarding/${isEIN ? '' : 'revision'}?pedido=${currentPedidoId}`)
         }
         className="text-sm text-gray-600 underline"
       >
@@ -235,7 +262,7 @@ export default function CheckoutPage() {
       </button>
 
       <p className="text-sm text-gray-500 mt-3">
-        Al hacer clic en “Pagar”, serás redirigido a Stripe para completar el pago de forma segura.
+        Al hacer clic en "Pagar", serás redirigido a Stripe para completar el pago de forma segura.
       </p>
     </div>
   )

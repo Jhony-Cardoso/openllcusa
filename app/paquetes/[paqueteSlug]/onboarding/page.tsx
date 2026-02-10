@@ -8,8 +8,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { PaqueteModel } from '@/lib/models/paquete';
-import { PedidoModel } from '@/lib/models/pedido';
 import { Database } from '@/lib/supabase/database.types';
 import { Check, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 
@@ -23,12 +21,13 @@ export default function OnboardingPaso1Page() {
 
   const [paquete, setPaquete] = useState<Paquete | null>(null);
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
 
   const paqueteSlug = params.paqueteSlug as string;
 
   // ============================================
-  // Cargar información del paquete
+  // Cargar información del paquete vía API segura
   // ============================================
   useEffect(() => {
     async function cargarPaquete() {
@@ -39,18 +38,24 @@ export default function OnboardingPaso1Page() {
           return;
         }
 
-        // Obtener paquete por slug
-        const paqueteData = await PaqueteModel.obtenerPorSlug(paqueteSlug);
+        console.log('🔍 [PAQUETE ONBOARDING] Cargando paquete:', paqueteSlug);
 
-        if (!paqueteData) {
-          setError('Paquete no encontrado');
+        // Usar API segura en lugar de modelo directo (evita RLS)
+        const response = await fetch(`/api/paquetes?slug=${paqueteSlug}`);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('❌ Error cargando paquete:', errorData);
+          setError(errorData.error || 'Paquete no encontrado');
           setLoading(false);
           return;
         }
 
+        const paqueteData = await response.json();
+        console.log('✅ Paquete cargado:', paqueteData);
         setPaquete(paqueteData);
       } catch (err) {
-        console.error('Error cargando paquete:', err);
+        console.error('💥 Error cargando paquete:', err);
         setError('Error al cargar el paquete. Por favor, recarga la página.');
       } finally {
         setLoading(false);
@@ -64,9 +69,8 @@ export default function OnboardingPaso1Page() {
   // Continuar al siguiente paso (Estado)
   // ============================================
   const handleContinuar = async () => {
-    // Si el usuario no está autenticado, redirigir al login con URL de retorno
+    // Si el usuario no está autenticado, redirigir al login
     if (!isUserLoaded || !user) {
-      // Guardar la URL actual para volver después del login
       const returnUrl = `/paquetes/${paqueteSlug}/onboarding`;
       router.push(`/sign-in?redirect_url=${encodeURIComponent(returnUrl)}`);
       return;
@@ -77,30 +81,50 @@ export default function OnboardingPaso1Page() {
       return;
     }
 
-    // Buscar o crear pedido en borrador
-    const pedidosUsuario = await PedidoModel.obtenerPorUsuario(user.id);
+    setCreating(true);
+    setError('');
 
-    const pedidoExistente = pedidosUsuario.find(
-      (p) =>
-        p.paquete_id === paquete.id &&
-        (p.estado_pedido === 'borrador' || p.estado_pedido === 'datos_completos')
-    );
+    try {
+      // Buscar borrador existente vía API segura
+      console.log('🔍 Buscando borrador para paquete:', paquete.id);
+      const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${paquete.id}&tipo=paquete`);
+      const dataBorrador = await resBorrador.json();
 
-    let pedidoId: string;
+      let pedidoId: string;
 
-    if (pedidoExistente) {
-      pedidoId = pedidoExistente.id;
-    } else {
-      const nuevoPedido = await PedidoModel.crear(user.id, paquete.id);
-      if (!nuevoPedido) {
-        setError('Error al crear el pedido. Inténtalo de nuevo.');
-        return;
+      if (dataBorrador?.pedido?.id) {
+        // Reutilizar borrador existente
+        pedidoId = dataBorrador.pedido.id;
+        console.log('♻️ Reutilizando borrador:', pedidoId);
+      } else {
+        // Crear nuevo pedido vía API segura
+        console.log('📝 Creando nuevo pedido para paquete:', paquete.id);
+        const resPedido = await fetch('/api/pedidos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paqueteId: paquete.id,
+            tipo: 'paquete'
+          })
+        });
+
+        if (!resPedido.ok) {
+          throw new Error('Error al crear el pedido');
+        }
+
+        const nuevoPedido = await resPedido.json();
+        pedidoId = nuevoPedido.id;
+        console.log('✅ Nuevo pedido creado:', pedidoId);
       }
-      pedidoId = nuevoPedido.id;
-    }
 
-    // Navegar al paso 2 (Estado)
-    router.push(`/paquetes/${paqueteSlug}/onboarding/estado?pedido=${pedidoId}`);
+      // Navegar al paso 2 (Estado)
+      router.push(`/paquetes/${paqueteSlug}/onboarding/estado?pedido=${pedidoId}`);
+    } catch (err) {
+      console.error('Error creando/recuperando pedido:', err);
+      setError('Error al crear el pedido. Inténtalo de nuevo.');
+    } finally {
+      setCreating(false);
+    }
   };
 
   // ============================================
@@ -204,10 +228,20 @@ export default function OnboardingPaso1Page() {
       <div className="flex justify-end">
         <button
           onClick={handleContinuar}
-          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+          disabled={creating}
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
         >
-          Continuar al siguiente paso
-          <ChevronRight className="h-5 w-5" />
+          {creating ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Preparando...
+            </>
+          ) : (
+            <>
+              Continuar al siguiente paso
+              <ChevronRight className="h-5 w-5" />
+            </>
+          )}
         </button>
       </div>
     </div>

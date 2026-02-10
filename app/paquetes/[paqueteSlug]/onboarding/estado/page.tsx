@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { EstadoUsaModel } from '@/lib/models/estado-usa'
-import { PedidoModel } from '@/lib/models/pedido'
 import type { Database } from '@/lib/supabase/database.types'
 import { AlertCircle, Loader2 } from 'lucide-react'
 
@@ -17,8 +15,9 @@ export default function EstadoPage() {
   const { user, isLoaded: isUserLoaded } = useUser()
 
   const paqueteSlug = (params?.paqueteSlug as string) || ''
-  const pedidoId = searchParams.get('pedido')
+  const pedidoIdFromUrl = searchParams.get('pedido')
 
+  const [pedidoId, setPedidoId] = useState<string | null>(pedidoIdFromUrl)
   const [estados, setEstados] = useState<EstadoUsa[]>([])
   const [estadoSeleccionado, setEstadoSeleccionado] = useState<EstadoUsa | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,32 +34,67 @@ export default function EstadoPage() {
           return
         }
 
-        if (!pedidoId) {
-          setError('Falta el parámetro ?pedido= en la URL. Vuelve al paso anterior.')
+        let currentPedidoId = pedidoIdFromUrl
+
+        // Si no hay ID en URL, buscar borrador vía API segura
+        if (!currentPedidoId) {
+          console.log('🔍 [PAQUETE ESTADO] No hay pedidoId en URL, buscando borrador...')
+
+          const resPaquete = await fetch(`/api/paquetes?slug=${paqueteSlug}`)
+          const infoPaquete = await resPaquete.json()
+          const targetId = infoPaquete?.id
+
+          if (targetId) {
+            const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${targetId}&tipo=paquete`)
+            const dataBorrador = await resBorrador.json()
+
+            if (dataBorrador?.pedido?.id) {
+              currentPedidoId = dataBorrador.pedido.id
+              setPedidoId(currentPedidoId)
+              console.log('✅ [PAQUETE ESTADO] Borrador encontrado:', currentPedidoId)
+
+              const newUrl = `${window.location.pathname}?pedido=${currentPedidoId}`
+              window.history.replaceState({}, '', newUrl)
+            }
+          }
+        }
+
+        if (!currentPedidoId) {
+          setError('No se encontró un pedido en curso. Por favor, vuelve al inicio del proceso.')
+          setLoading(false)
           return
         }
 
+        // Cargar estados vía API segura
         console.log('🔍 Cargando estados...')
-        const estadosData = await EstadoUsaModel.obtenerTodos()
+        const resEstados = await fetch('/api/estados')
+        const estadosData = await resEstados.json()
         console.log('📊 Estados obtenidos:', estadosData)
-        setEstados(estadosData)
 
-        console.log('🔍 Buscando pedido:', pedidoId)
-        const pedido = await PedidoModel.obtenerPorId(pedidoId)
+        if (Array.isArray(estadosData)) {
+          setEstados(estadosData)
+        } else {
+          console.error('❌ Estados no es un array:', estadosData)
+          setEstados([])
+        }
+
+        // Cargar pedido vía API segura
+        console.log('🔍 Buscando pedido:', currentPedidoId)
+        const resPedido = await fetch(`/api/pedidos/obtener?id=${currentPedidoId}`)
+        const dataPedido = await resPedido.json()
+
+        if (!resPedido.ok || !dataPedido.pedido) {
+          console.error('❌ Pedido no encontrado:', dataPedido)
+          setError('Pedido no encontrado. Vuelve al paso anterior.')
+          setLoading(false)
+          return
+        }
+
+        const pedido = dataPedido.pedido
         console.log('📦 Pedido encontrado:', pedido)
 
-        if (!pedido) {
-          setError('Pedido no encontrado. Vuelve al paso anterior.')
-          return
-        }
-
-        if (pedido.user_id !== user.id) {
-          setError('No tienes permisos para acceder a este pedido.')
-          return
-        }
-
-        if (pedido.estado_usa_id) {
-          const prev = estadosData.find((e) => e.id === pedido.estado_usa_id) || null
+        if (pedido.estado_usa_id && estadosData) {
+          const prev = estadosData.find((e: EstadoUsa) => e.id === pedido.estado_usa_id) || null
           setEstadoSeleccionado(prev)
         }
       } catch (e) {
@@ -72,7 +106,7 @@ export default function EstadoPage() {
     }
 
     cargar()
-  }, [isUserLoaded, user, pedidoId, router])
+  }, [isUserLoaded, user, pedidoIdFromUrl, paqueteSlug, router])
 
   const handleBack = () => {
     router.push(`/paquetes/${paqueteSlug}/onboarding?pedido=${pedidoId ?? ''}`)
@@ -91,11 +125,24 @@ export default function EstadoPage() {
     setSaving(true)
     setError('')
     try {
-      const ok = await PedidoModel.guardarEstado(pedidoId, estadoSeleccionado.id)
-      if (!ok) {
+      // Usar API segura para actualizar
+      const res = await fetch('/api/pedidos/actualizar', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pedidoId,
+          paso: 2,
+          datos: { estado_usa_id: estadoSeleccionado.id }
+        })
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        console.error('Error guardando estado:', errorData)
         setError('Error al guardar el estado. Inténtalo de nuevo.')
         return
       }
+
       router.push(`/paquetes/${paqueteSlug}/onboarding/datos-empresa?pedido=${pedidoId}`)
     } catch (e) {
       console.error(e)
@@ -129,6 +176,12 @@ export default function EstadoPage() {
         <div className="border border-red-200 bg-red-50 rounded-lg p-4 mb-6 flex gap-2 items-start">
           <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
           <div className="text-red-800">{error}</div>
+        </div>
+      )}
+
+      {estados.length === 0 && !error && (
+        <div className="border border-yellow-200 bg-yellow-50 rounded-lg p-4 mb-6">
+          <p className="text-yellow-800">No se encontraron estados disponibles.</p>
         </div>
       )}
 

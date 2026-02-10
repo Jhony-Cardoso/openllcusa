@@ -8,10 +8,19 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { PedidoModel } from '@/lib/models/pedido';
 import { CheckCircle2, Loader2, AlertCircle, Download, Mail, ArrowRight } from 'lucide-react';
 
-type PedidoCompleto = Awaited<ReturnType<typeof PedidoModel.obtenerCompleto>>;
+type PedidoCompleto = {
+  id: string;
+  user_id: string;
+  numero_pedido?: string | null;
+  total_pagado?: number | null;
+  email_empresa?: string | null;
+  nombre_empresa?: string | null;
+  sector?: string | null;
+  estado_usa?: { nombre: string; codigo: string; filing_inicial?: number | null } | null;
+  paquete?: { nombre: string; descripcion_corta?: string | null; precio: number } | null;
+};
 
 export default function CompletadoPage() {
   const router = useRouter();
@@ -68,11 +77,12 @@ export default function CompletadoPage() {
         if (data.paymentStatus === 'paid') {
           setPagoVerificado(true);
 
-          // 3. Obtener el pedido completo actualizado
-          const pedidoData = await PedidoModel.obtenerCompleto(pedidoId);
+          // 3. Obtener el pedido completo actualizado vía API segura
+          const resPedido = await fetch(`/api/pedidos/completo?id=${pedidoId}`);
+          const dataPedido = await resPedido.json();
 
-          if (pedidoData) {
-            setPedido(pedidoData);
+          if (resPedido.ok && dataPedido.pedido) {
+            setPedido(dataPedido.pedido);
           }
         } else {
           setError('El pago no se ha completado correctamente.');

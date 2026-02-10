@@ -8,11 +8,36 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { PedidoModel } from '@/lib/models/pedido';
 import { Loader2, AlertCircle, Lock, CreditCard } from 'lucide-react';
 
 // Tipo para el pedido completo
-type PedidoCompleto = Awaited<ReturnType<typeof PedidoModel.obtenerCompleto>>;
+type PedidoCompleto = {
+  id: string;
+  user_id: string;
+  paquete_id?: string | null;
+  servicio_id?: string | null;
+  estado_usa_id?: string | null;
+  nombre_empresa?: string | null;
+  sector?: string | null;
+  descripcion_negocio?: string | null;
+  num_socios?: number | null;
+  ingresos_estimados?: string | null;
+  email_empresa?: string | null;
+  telefono_empresa?: string | null;
+  paquete?: {
+    nombre: string;
+    precio: number;
+    descripcion_corta?: string | null;
+    precio_mensual?: number | null;
+  } | null;
+  estado_usa?: {
+    nombre: string;
+    codigo: string;
+    descripcion?: string | null;
+    filing_inicial?: number | null;
+    filing_anual?: number | null;
+  } | null;
+};
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -25,8 +50,8 @@ export default function CheckoutPage() {
   const [processingPayment, setProcessingPayment] = useState(false);
   const [error, setError] = useState('');
 
-  const slug = params.slug as string;
-  const pedidoId = searchParams.get('pedido');
+  const paqueteSlug = params.paqueteSlug as string;
+  const pedidoIdFromUrl = searchParams.get('pedido');
 
   // ============================================
   // Cargar el pedido completo
@@ -41,28 +66,48 @@ export default function CheckoutPage() {
           return;
         }
 
-        if (!pedidoId) {
+        let currentPedidoId = pedidoIdFromUrl;
+
+        // Si no hay ID en URL, buscar borrador vía API segura
+        if (!currentPedidoId) {
+          console.log('🔍 [PAQUETE CHECKOUT] No hay pedidoId en URL, buscando borrador...');
+
+          const resPaquete = await fetch(`/api/paquetes?slug=${paqueteSlug}`);
+          const infoPaquete = await resPaquete.json();
+          const targetId = infoPaquete?.id;
+
+          if (targetId) {
+            const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${targetId}&tipo=paquete`);
+            const dataBorrador = await resBorrador.json();
+
+            if (dataBorrador?.pedido?.id) {
+              currentPedidoId = dataBorrador.pedido.id;
+              console.log('✅ [PAQUETE CHECKOUT] Borrador encontrado:', currentPedidoId);
+
+              const newUrl = `${window.location.pathname}?pedido=${currentPedidoId}`;
+              window.history.replaceState({}, '', newUrl);
+            }
+          }
+        }
+
+        if (!currentPedidoId) {
           setError('No se ha encontrado el pedido.');
           setLoading(false);
           return;
         }
 
-        // Obtener pedido completo con relaciones
-        const pedidoData = await PedidoModel.obtenerCompleto(pedidoId);
+        // Usar API segura para obtener pedido completo
+        const resPedido = await fetch(`/api/pedidos/completo?id=${currentPedidoId}`);
+        const dataPedido = await resPedido.json();
 
-        if (!pedidoData) {
+        if (!resPedido.ok || !dataPedido.pedido) {
+          console.error('Error obteniendo pedido:', dataPedido);
           setError('No se ha encontrado el pedido en la base de datos.');
           setLoading(false);
           return;
         }
 
-        // Verificar que el pedido pertenece al usuario autenticado
-        if (pedidoData.user_id !== user.id) {
-          setError('No tienes permisos para acceder a este pedido.');
-          setLoading(false);
-          return;
-        }
-
+        const pedidoData = dataPedido.pedido;
         setPedido(pedidoData);
       } catch (err) {
         console.error('Error cargando pedido:', err);
@@ -73,13 +118,13 @@ export default function CheckoutPage() {
     }
 
     cargarPedido();
-  }, [isUserLoaded, user, pedidoId, router]);
+  }, [isUserLoaded, user, pedidoIdFromUrl, paqueteSlug, router]);
 
   // ============================================
   // Crear sesión de Stripe Checkout y redirigir
   // ============================================
   const handleProcederAlPago = async () => {
-    if (!pedido || !pedidoId) {
+    if (!pedido) {
       setError('Error al procesar el pago. Recarga la página.');
       return;
     }
@@ -97,7 +142,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           pedidoId: pedido.id,
           userId: user?.id,
-          slug,
+          slug: paqueteSlug,
         }),
       });
 
@@ -290,10 +335,9 @@ export default function CheckoutPage() {
               className={`
                 w-full py-3 px-4 rounded-lg font-semibold text-white
                 flex items-center justify-center gap-2 transition-all
-                ${
-                  processingPayment
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl'
+                ${processingPayment
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl'
                 }
               `}
             >

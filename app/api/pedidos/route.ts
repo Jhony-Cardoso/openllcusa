@@ -12,17 +12,24 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json()
-        const { servicioId } = body
+        const { servicioId, paqueteId, tipo } = body
 
-        if (!servicioId) {
-            return NextResponse.json({ error: 'Falta servicioId' }, { status: 400 })
+        // Aceptamos servicioId (compatibilidad) o paqueteId explícito
+        const targetId = servicioId || paqueteId
+        const esPaquete = tipo === 'paquete' || !!paqueteId
+
+        if (!targetId) {
+            return NextResponse.json({ error: 'Falta servicioId o paqueteId' }, { status: 400 })
         }
 
+        console.log('📦 [PEDIDOS API] Creando/recuperando pedido:')
+        console.log('   - userId:', userId)
+        console.log('   - targetId:', targetId)
+        console.log('   - tipo:', esPaquete ? 'paquete' : 'servicio')
+
         // 1. Asegurar que el usuario existe en profiles
-        // El email principal es necesario
         const email = user.emailAddresses[0]?.emailAddress
 
-        // Upsert del perfil para asegurar que existe
         const { error: profileError } = await supabaseAdmin
             .from('profiles')
             .upsert({
@@ -34,47 +41,70 @@ export async function POST(req: Request) {
             }, { onConflict: 'user_id' })
 
         if (profileError) {
-            console.error('Error sincronizando perfil:', profileError)
-            // No detenemos el proceso, a veces puede fallar si ya existe y no hay cambios, 
-            // pero si el error es de FK, fallará el pedido igual.
+            console.error('⚠️ Error sincronizando perfil:', profileError)
         }
 
-        // 2. ¿Ya existe un borrador para este usuario y servicio?
-        const { data: existente } = await supabaseAdmin
+        // 2. ¿Ya existe un borrador para este usuario y servicio/paquete?
+        // Buscar en ambos campos (servicio_id y paquete_id)
+        const { data: existenteServicio } = await supabaseAdmin
             .from('pedidos')
             .select('*')
             .eq('user_id', userId)
-            .eq('servicio_id', servicioId)
+            .eq('servicio_id', targetId)
             .eq('estado_pedido', 'borrador')
             .maybeSingle()
 
-        if (existente) {
-            console.log('♻️ Reutilizando pedido borrador:', existente.id)
-            return NextResponse.json(existente)
+        if (existenteServicio) {
+            console.log('♻️ [PEDIDOS API] Reutilizando borrador (servicio_id):', existenteServicio.id)
+            return NextResponse.json(existenteServicio)
+        }
+
+        const { data: existentePaquete } = await supabaseAdmin
+            .from('pedidos')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('paquete_id', targetId)
+            .eq('estado_pedido', 'borrador')
+            .maybeSingle()
+
+        if (existentePaquete) {
+            console.log('♻️ [PEDIDOS API] Reutilizando borrador (paquete_id):', existentePaquete.id)
+            return NextResponse.json(existentePaquete)
         }
 
         // 3. Crear el pedido
+        // Determinar si el ID corresponde a un servicio o paquete
+        const insertData: any = {
+            numero_pedido: `PED-${Date.now()}`,
+            user_id: userId,
+            estado_pedido: 'borrador',
+            paso_actual: 1
+        }
+
+        if (esPaquete) {
+            insertData.paquete_id = targetId
+        } else {
+            insertData.servicio_id = targetId
+        }
+
+        console.log('📝 [PEDIDOS API] Creando nuevo pedido:', insertData)
+
         const { data: pedido, error: pedidoError } = await supabaseAdmin
             .from('pedidos')
-            .insert({
-                numero_pedido: `PED-${Date.now()}`,
-                user_id: userId,
-                servicio_id: servicioId,
-                estado_pedido: 'borrador',
-                paso_actual: 1
-            })
+            .insert(insertData)
             .select()
             .single()
 
         if (pedidoError) {
-            console.error('Error creando pedido:', pedidoError)
+            console.error('❌ [PEDIDOS API] Error creando pedido:', pedidoError)
             return NextResponse.json({ error: 'Error al crear el pedido en BD' }, { status: 500 })
         }
 
+        console.log('✅ [PEDIDOS API] Pedido creado:', pedido.id)
         return NextResponse.json(pedido)
 
     } catch (error) {
-        console.error('Excepción creando pedido:', error)
+        console.error('💥 [PEDIDOS API] Excepción creando pedido:', error)
         return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
     }
 }

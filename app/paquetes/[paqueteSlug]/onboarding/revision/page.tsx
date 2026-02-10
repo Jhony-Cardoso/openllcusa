@@ -1,5 +1,5 @@
 // ============================================
-// app/servicios/[slug]/onboarding/revision/page.tsx
+// app/paquetes/[paqueteSlug]/onboarding/revision/page.tsx
 // Paso 4 del onboarding: Revisión de datos antes del pago
 // ============================================
 
@@ -8,12 +8,36 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { PedidoModel } from '@/lib/models/pedido';
-import { Database } from '@/lib/supabase/database.types';
 import { Loader2, AlertCircle, Edit2, CheckCircle2 } from 'lucide-react';
 
-// Tipos para el pedido completo con relaciones (paquete + estado)
-type PedidoCompleto = Awaited<ReturnType<typeof PedidoModel.obtenerCompleto>>;
+// Tipo para el pedido completo con relaciones (paquete + estado)
+type PedidoCompleto = {
+  id: string;
+  user_id: string;
+  paquete_id?: string | null;
+  servicio_id?: string | null;
+  estado_usa_id?: string | null;
+  nombre_empresa?: string | null;
+  sector?: string | null;
+  descripcion_negocio?: string | null;
+  num_socios?: number | null;
+  ingresos_estimados?: string | null;
+  email_empresa?: string | null;
+  telefono_empresa?: string | null;
+  paquete?: {
+    nombre: string;
+    precio: number;
+    descripcion_corta?: string | null;
+    precio_mensual?: number | null;
+  } | null;
+  estado_usa?: {
+    nombre: string;
+    codigo: string;
+    descripcion?: string | null;
+    filing_inicial?: number | null;
+    filing_anual?: number | null;
+  } | null;
+};
 
 export default function RevisionPage() {
   const router = useRouter();
@@ -41,32 +65,51 @@ export default function RevisionPage() {
           return;
         }
 
-        if (!pedidoId) {
+        let currentPedidoId = pedidoId;
+
+        // Si no hay ID en URL, buscar borrador vía API segura
+        if (!currentPedidoId) {
+          console.log('🔍 [PAQUETE REVISION] No hay pedidoId en URL, buscando borrador...');
+
+          const resPaquete = await fetch(`/api/paquetes?slug=${paqueteSlug}`);
+          const infoPaquete = await resPaquete.json();
+          const targetId = infoPaquete?.id;
+
+          if (targetId) {
+            const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${targetId}&tipo=paquete`);
+            const dataBorrador = await resBorrador.json();
+
+            if (dataBorrador?.pedido?.id) {
+              currentPedidoId = dataBorrador.pedido.id;
+              console.log('✅ [PAQUETE REVISION] Borrador encontrado:', currentPedidoId);
+
+              const newUrl = `${window.location.pathname}?pedido=${currentPedidoId}`;
+              window.history.replaceState({}, '', newUrl);
+            }
+          }
+        }
+
+        if (!currentPedidoId) {
           setError('No se ha encontrado el pedido. Vuelve al inicio del onboarding.');
           setLoading(false);
           return;
         }
 
-        console.log('🔍 [REVISION] Buscando pedido:', pedidoId);
+        console.log('🔍 [REVISION] Buscando pedido:', currentPedidoId);
 
-        // Obtener pedido completo con paquete y estado relacionados
-        const pedidoData = await PedidoModel.obtenerCompleto(pedidoId);
+        // Usar API segura para obtener pedido completo
+        const resPedido = await fetch(`/api/pedidos/completo?id=${currentPedidoId}`);
+        const dataPedido = await resPedido.json();
 
-        console.log('📦 [REVISION] Pedido obtenido:', pedidoData);
-
-        if (!pedidoData) {
-          console.error('❌ [REVISION] Pedido no encontrado en la base de datos');
+        if (!resPedido.ok || !dataPedido.pedido) {
+          console.error('❌ [REVISION] Pedido no encontrado:', dataPedido);
           setError('No se ha encontrado el pedido en la base de datos.');
           setLoading(false);
           return;
         }
 
-        // Verificar que el pedido pertenece al usuario autenticado
-        if (pedidoData.user_id !== user.id) {
-          setError('No tienes permisos para ver este pedido.');
-          setLoading(false);
-          return;
-        }
+        const pedidoData = dataPedido.pedido;
+        console.log('📦 [REVISION] Pedido obtenido:', pedidoData);
 
         setPedido(pedidoData);
       } catch (err) {

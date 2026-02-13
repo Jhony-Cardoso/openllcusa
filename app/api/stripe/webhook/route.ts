@@ -87,72 +87,106 @@ export async function POST(req: Request) {
         // Verificar que el pago fue exitoso
         if (session.payment_status === 'paid') {
           // Actualizar el pedido como pagado
-          const { error } = await supabaseAdmin
+
+          /* 
+            DEBUG: Verificar si la actualización realmente afectó filas.
+            Si userId es incorrecto, esto será 0 y no se actualizará nada, 
+            pero el código continuará ejecutándose.
+          */
+          const { error, count } = await supabaseAdmin
             .from('pedidos')
             .update({
               estado_pedido: 'pagado',
               stripe_session_id: session.id,
               stripe_payment_intent_id: session.payment_intent,
               stripe_customer_id: session.customer,
-              total_pagado: session.amount_total / 100, // Convertir de centavos a dólares
+              total_pagado: session.amount_total / 100,
               fecha_pago: new Date().toISOString(),
-              paso_actual: 6, // Paso completado
+              paso_actual: 6,
               completado_at: new Date().toISOString(),
-            })
+            }, { count: 'exact' }) // Pedir recuento de filas afectadas
             .eq('id', pedidoId)
-            .eq('user_id', userId); // Seguridad: verificar que pertenece al usuario
+            // IMPORTANTE: Quitamos la restricción de user_id por seguridad en debug, 
+            // o logueamos si 0 filas. En prod, mantenerla.
+            // .eq('user_id', userId) -> Si el ID de usuario del webhook no coincide con el de la DB, falla silenciosamente.
+            // Para arreglarlo, quitamos .eq('user_id') aquí y confiamos en el pedidoId (UUID)
+            // O mejor: lo mantenemos pero alertamos si count es 0.
+            .eq('user_id', userId);
 
           if (error) {
-            console.error('❌ [WEBHOOK] Error actualizando pedido:', error);
+            console.error('❌ [WEBHOOK] Error DB update:', error);
+          } else if (count === 0) {
+            console.warn('⚠️ [WEBHOOK] Update exitoso pero 0 filas afectadas. Posible mismatch de UserID o PedidoID inexistente.');
+            console.warn(`   PedidoID: ${pedidoId}`);
+            console.warn(`   UserId (Webhook): ${userId}`);
+            // Intentamos recuperar el pedido para ver qué UserID tiene realmente
+            const { data: pCheck } = await supabaseAdmin.from('pedidos').select('user_id').eq('id', pedidoId).single();
+            if (pCheck) console.warn(`   UserId (DB): ${pCheck.user_id}`);
           } else {
-            console.log('✅ [WEBHOOK] Pedido marcado como pagado:', pedidoId);
+            console.log('✅ [WEBHOOK] Pedido marcado como pagado. Filas:', count);
 
             // Obtener datos del pedido y servicio para el email
             const { data: pedido } = await supabaseAdmin
               .from('pedidos')
               .select(`
                 *,
-                servicios (
-                  nombre,
-                  slug
-                )
+                servicios ( nombre, slug )
               `)
               .eq('id', pedidoId)
               .single();
 
             if (pedido) {
-              // Obtener email del usuario desde Clerk
               const userEmail = session.customer_details?.email || session.customer_email;
               const userName = session.customer_details?.name || 'Usuario';
 
+              console.log(`📨 [WEBHOOK] Preparando email para: ${userEmail}`);
+
               if (userEmail) {
-                // 1. Enviar email de confirmación
-                const { EmailService } = await import('@/lib/services/email.service');
-                await EmailService.enviarConfirmacionPago({
-                  to: userEmail,
-                  nombreUsuario: userName,
-                  nombreServicio: pedido.servicios?.nombre || pedido.paquetes?.nombre || 'Servicio',
-                  montoPagado: session.amount_total / 100,
-                  pedidoId: pedidoId,
-                  fechaPago: new Date().toISOString(),
-                });
-                console.log('📧 [WEBHOOK] Email de confirmación enviado a:', userEmail);
+                try {
+                  const { EmailService } = await import('@/lib/services/email.service');
+                  console.log('   [WEBHOOK] EmailService importado. Enviando...');
+
+                  const result = await EmailService.enviarConfirmacionPago({
+                    to: userEmail,
+                    nombreUsuario: userName,
+                    nombreServicio: pedido.servicios?.nombre || pedido.paquetes?.nombre || 'Servicio',
+                    montoPagado: session.amount_total / 100,
+                    pedidoId: pedidoId,
+                    fechaPago: new Date().toISOString(),
+                  });
+
+                  if (result.success) {
+                    console.log('📧 [WEBHOOK] Email enviado EXITOSAMENTE. ID:', result.data?.id);
+                  } else {
+                    console.error('❌ [WEBHOOK] Falló envío email. Error:', result.error);
+                  }
+                } catch (e) {
+                  console.error('💥 [WEBHOOK] Excepción crítica enviando email:', e);
+                }
+              } else {
+                console.warn('⚠️ [WEBHOOK] No hay userEmail en la sesión de Stripe.');
               }
 
-              // 2. Crear notificación en el dashboard
-              const { NotificacionService } = await import('@/lib/services/notificacion.service');
-              await NotificacionService.notificarPagoExitoso(
-                userId,
-                pedidoId,
-                pedido.servicios?.nombre || 'Servicio',
-                session.amount_total / 100
-              );
-              console.log('🔔 [WEBHOOK] Notificación creada para usuario:', userId);
+              // Notificar Dashboard 
+              try {
+                const { NotificacionService } = await import('@/lib/services/notificacion.service');
+                await NotificacionService.notificarPagoExitoso(
+                  userId,
+                  pedidoId,
+                  pedido.servicios?.nombre || 'Servicio',
+                  session.amount_total / 100
+                );
+                console.log('🔔 [WEBHOOK] Notificación dashboard creada');
+              } catch (e) { console.error('Error notificacion:', e); }
 
-              // 3. Iniciar proceso automático según el servicio
-              const { TaskService } = await import('@/lib/services/task.service');
-              await TaskService.generarTareasPorPedido(pedido);
-              console.log('⚙️ [WEBHOOK] Tareas automáticas generadas');
+              // Tareas
+              try {
+                const { TaskService } = await import('@/lib/services/task.service');
+                await TaskService.generarTareasPorPedido(pedido);
+                console.log('⚙️ [WEBHOOK] Tareas generadas');
+              } catch (e) { console.error('Error tareas:', e); }
+            } else {
+              console.error('❌ [WEBHOOK] No se pudo recuperar el pedido actualizado para enviar emails.');
             }
           }
         }

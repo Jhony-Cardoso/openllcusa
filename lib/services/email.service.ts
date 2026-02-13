@@ -34,7 +34,7 @@ export class EmailService {
       const { to, nombreUsuario, nombreServicio, montoPagado, pedidoId, fechaPago } = params
 
       const { data, error } = await resend.emails.send({
-        from: 'Open LLC USA <hola@openllcusa.com>', // Cambia esto por tu dominio verificado pronto
+        from: 'Open LLC USA <onboarding@resend.dev>', // Temporal mientras se verifica el dominio oficial
         to,
         subject: `¡Confirmado! Ya estamos trabajando en tu ${nombreServicio} 🚀`,
         html: `
@@ -153,7 +153,7 @@ export class EmailService {
       const { to, nombreUsuario } = params
 
       const { data, error } = await resend.emails.send({
-        from: 'Open LLC USA <hola@openllcusa.com>', // Dominio de prueba
+        from: 'Open LLC USA <onboarding@resend.dev>', // Temporal mientras se verifica el dominio oficial
         to,
         subject: '¡Bienvenido a Open LLC USA! 🎉',
         html: `
@@ -290,7 +290,7 @@ export class EmailService {
       }
 
       const { data, error } = await resend.emails.send({
-        from: 'Open LLC System <sistema@openllcusa.com>',
+        from: 'Open LLC System <onboarding@resend.dev>',
         to: adminEmail,
         subject,
         html: `

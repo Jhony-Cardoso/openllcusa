@@ -9,8 +9,7 @@ export default function StateSelector() {
     { name: 'Wyoming', fee: 100 },
     { name: 'Delaware', fee: 150 },
     { name: 'Florida', fee: 125 },
-    { name: 'Nevada', fee: 175 },
-    { name: 'Texas', fee: 300 }
+    { name: 'Nevada', fee: 175 }
   ]
 
   return (
@@ -18,7 +17,7 @@ export default function StateSelector() {
       <label className="block text-center mb-4">
         <span className="text-lg font-semibold text-gray-900">Selecciona el estado:</span>
       </label>
-      <select 
+      <select
         value={selectedState}
         onChange={(e) => setSelectedState(e.target.value)}
         className="w-full p-3 border-2 border-gray-300 rounded-lg text-gray-900 font-medium focus:border-blue-500 focus:outline-none cursor-pointer"

@@ -211,6 +211,31 @@ export default async function PedidoDetallePage({
                     <p className="text-sm text-slate-500 italic">No hay documentos cargados todavía.</p>
                   )}
 
+                  {/* BOTÓN DESCARGA SS-4 (Solo para trámites EIN completados) */}
+                  {esEIN && pedidoFull.paso_actual >= 7 && (
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Documentos Generados</p>
+                      <a
+                        href={`/api/pedidos/${pedidoFull.id}/descargar-ss4`}
+                        target="_blank"
+                        className="flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-100 transition-all group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-blue-200 text-blue-600 shadow-sm">
+                            <FileText size={20} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-blue-900">Formulario SS-4 Firmado</p>
+                            <p className="text-[10px] text-blue-500 font-medium">Listo para enviar al IRS</p>
+                          </div>
+                        </div>
+                        <div className="bg-white p-2 rounded-lg text-blue-600 shadow-sm opacity-60 group-hover:opacity-100 transition-opacity">
+                          <Download size={18} />
+                        </div>
+                      </a>
+                    </div>
+                  )}
+
                   {/* Aquí se listarán futuros documentos como el Articles of Organization, etc. */}
                 </div>
               )}

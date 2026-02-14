@@ -5,9 +5,11 @@ import {
     ArrowLeft, Building2, User as UserIcon,
     MapPin, Globe, ShieldCheck, Mail, Phone,
     FileText, Calendar, ExternalLink, Activity,
-    CheckCircle2, Clock, Info, Briefcase, CreditCard
+    CheckCircle2, Clock, Info, Briefcase, CreditCard, Download
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
+import { FacturaModel } from '@/lib/models/factura'
+import AdminDocumentManager from '@/components/admin/AdminDocumentManager'
 
 export default async function AdminPedidoDetallePage({
     params,
@@ -30,6 +32,8 @@ export default async function AdminPedidoDetallePage({
 
     const pedido = await PedidoModel.obtenerCompleto(id, true)
     if (!pedido) redirect('/admin/pedidos')
+
+    const factura = await FacturaModel.obtenerPorPedidoId(id)
 
     const metadata = pedido.metadata || {}
     const hasOnboarding = pedido.paso_actual >= 7
@@ -148,24 +152,12 @@ export default async function AdminPedidoDetallePage({
                             Gestión de Trámite
                         </h3>
 
-                        <div className="space-y-4 text-slate-900">
-                            <p className="text-slate-400 text-xs font-black uppercase tracking-widest mb-2 ml-1">Cambiar Estado Actual</p>
-
-                            <button className="w-full flex items-center justify-between p-4 bg-slate-800 border border-slate-700 rounded-2xl hover:bg-slate-700 transition-colors group">
-                                <span className="text-sm font-bold text-slate-200">Enviar a NorthWest</span>
-                                <ArrowLeft className="rotate-180 text-blue-400 group-hover:translate-x-1 transition-transform" size={16} />
-                            </button>
-
-                            <button className="w-full flex items-center justify-between p-4 bg-slate-800 border border-slate-700 rounded-2xl hover:bg-slate-700 transition-colors">
-                                <span className="text-sm font-bold text-slate-200">Marcar como Presentado</span>
-                                <Clock className="text-amber-400" size={16} />
-                            </button>
-
-                            <button className="w-full flex items-center justify-between p-4 bg-blue-600 rounded-2xl hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
-                                <span className="text-sm font-black">Subir Documentos Finales</span>
-                                <CheckCircle2 className="text-white" size={16} />
-                            </button>
-                        </div>
+                        <AdminDocumentManager
+                            pedidoId={pedido.id}
+                            numeroPedido={pedido.numero_pedido}
+                            pasoActual={pedido.paso_actual}
+                            metadata={metadata}
+                        />
 
                         <div className="mt-8 pt-8 border-t border-slate-800 text-slate-900">
                             <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 flex gap-3">
@@ -176,6 +168,32 @@ export default async function AdminPedidoDetallePage({
                             </div>
                         </div>
                     </div>
+
+                    {/* CARD FACTURACIÓN */}
+                    {factura && (
+                        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-sm">
+                            <h3 className="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <FileText size={14} /> Facturación
+                            </h3>
+                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <div>
+                                    <p className="text-sm font-black text-slate-800">#{factura.numero_factura}</p>
+                                    <p className="text-xs text-slate-500 font-bold mt-1">${(factura as any).total}</p>
+                                </div>
+                                {(factura as any).pdf_path ? (
+                                    <a
+                                        href={`/api/facturas/${factura.id}/descargar`}
+                                        target="_blank"
+                                        className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-blue-600 shadow-sm hover:scale-110 transition-transform"
+                                    >
+                                        <Download size={18} />
+                                    </a>
+                                ) : (
+                                    <span className="text-[10px] font-bold text-amber-500 uppercase">Sin PDF</span>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     {/* CARD CLIENTE */}
                     <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm">

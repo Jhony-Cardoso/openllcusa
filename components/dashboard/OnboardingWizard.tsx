@@ -867,12 +867,12 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
             <div className={`p-6 md:p-12 text-white relative overflow-hidden ${esEIN ? 'bg-indigo-900' : 'bg-slate-900'}`}>
                 <div className="relative z-10">
                     <span className="inline-block px-3 py-1 bg-white/10 text-white text-xs font-bold rounded-full mb-4 border border-white/20">
-                        {esEIN ? 'SOLICITUD DE EIN (FORMULARIO SS-4)' : 'CONFIGURACIÓN LEGAL NECESARIA'}
+                        {esEIN ? 'SOLICITUD DE EIN ANTE EL IRS' : 'CONFIGURACIÓN LEGAL NECESARIA'}
                     </span>
                     <h2 className="text-2xl md:text-4xl font-black mb-2">¡Hola, {nombreUsuario}! 🎉</h2>
                     <p className="text-white/70 text-base md:text-lg max-w-xl">
                         {esEIN
-                            ? 'Necesitamos algunos datos específicos para rellenar el formulario SS-4 y solicitar tu número Ein al IRS.'
+                            ? 'Necesitamos algunos datos específicos para tramitar tu número EIN ante el IRS de forma rápida y segura.'
                             : 'Tu pago ha sido confirmado. Ahora solo necesitamos completar los detalles legales para constituir tu empresa hoy mismo.'
                         }
                     </p>

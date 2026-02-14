@@ -114,9 +114,9 @@ const F = {
     TRADE_NAME: 'topmostSubform[0].Page1[0].f1_3[0]',
     EXECUTOR: 'topmostSubform[0].Page1[0].f1_4[0]',
     MAILING_ADDRESS: 'topmostSubform[0].Page1[0].Line4ReadOrder[0].f1_5[0]', // 4a
-    STREET_ADDRESS: 'topmostSubform[0].Page1[0].Line4ReadOrder[0].f1_6[0]',  // 5a
-    CITY_STATE_ZIP: 'topmostSubform[0].Page1[0].f1_7[0]',               // 4b
-    CITY_STATE_FOREIGN: 'topmostSubform[0].Page1[0].f1_8[0]',           // 5b
+    STREET_ADDRESS: 'topmostSubform[0].Page1[0].f1_7[0]',  // 5a (Ahora f1_7)
+    CITY_STATE_ZIP: 'topmostSubform[0].Page1[0].f1_6[0]', // 4b (Antes f1_7)
+    CITY_STATE_FOREIGN: 'topmostSubform[0].Page1[0].f1_8[0]',
     COUNTY: 'topmostSubform[0].Page1[0].f1_9[0]',
     RESPONSIBLE_PARTY: 'topmostSubform[0].Page1[0].f1_10[0]',
     SSN_ITIN_EIN: 'topmostSubform[0].Page1[0].f1_11[0]',
@@ -125,8 +125,8 @@ const F = {
     LLC_MEMBERS: 'topmostSubform[0].Page1[0].f1_12[0]',
     LLC_US_YES: 'topmostSubform[0].Page1[0].c1_2[0]',
     LLC_US_NO: 'topmostSubform[0].Page1[0].c1_2[1]',
-    ENTITY_OTHER_CB: 'topmostSubform[0].Page1[0].c1_3[6]',
-    ENTITY_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_19[0]', // Corregido ID
+    ENTITY_OTHER_CB: 'topmostSubform[0].Page1[0].c1_3[15]', // CAMBIO: Index 15 (antes 6)
+    ENTITY_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_19[0]',
     STATE_INCORPORATED: 'topmostSubform[0].Page1[0].f1_18[0]',
     REASON_STARTED_NEW: 'topmostSubform[0].Page1[0].c1_4[0]',
     REASON_STARTED_TYPE: 'topmostSubform[0].Page1[0].f1_25[0]',
@@ -135,9 +135,9 @@ const F = {
     REASON_HIRED: 'topmostSubform[0].Page1[0].c1_4[1]',
     REASON_OTHER_CB: 'topmostSubform[0].Page1[0].c1_4[3]',
     REASON_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_26[0]',
-    DATE_STARTED: 'topmostSubform[0].Page1[0].f1_31[0]', // Corregido ID
-    CLOSING_MONTH: 'topmostSubform[0].Page1[0].f1_32[0]', // Corregido ID
-    EMPLOYEES_AGRI: 'topmostSubform[0].Page1[0].f1_33[0]', // Shifted from 30
+    DATE_STARTED: 'topmostSubform[0].Page1[0].f1_31[0]',
+    CLOSING_MONTH: 'topmostSubform[0].Page1[0].f1_32[0]',
+    EMPLOYEES_AGRI: 'topmostSubform[0].Page1[0].f1_33[0]',
     EMPLOYEES_HOUSE: 'topmostSubform[0].Page1[0].f1_34[0]', // Shifted from 31
     EMPLOYEES_OTHER: 'topmostSubform[0].Page1[0].f1_35[0]', // Shifted from 32
     FIRST_DATE_WAGES: 'topmostSubform[0].Page1[0].f1_36[0]',
@@ -164,6 +164,7 @@ export class PDFGenerator {
             const pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true })
             const form = pdfDoc.getForm()
             const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+            const page = pdfDoc.getPages()[0] // Hoisted declaration
 
             // --- Identification ---
             fillText(form, F.LEGAL_NAME, data.legalName, fontBold)
@@ -202,8 +203,16 @@ export class PDFGenerator {
             // REGLA USUARIO: Siempre Started new business.
             fillCheck(form, F.REASON_STARTED_NEW)
             // Tipo específico (vendrá del dashboard)
+            // Manual placement logic for Reason Type (Line 10)
             const reasonType = data.reasonSpecifyType || data.principalActivity || 'E-COMMERCE SERVICES'
-            fillText(form, F.REASON_STARTED_TYPE, reasonType, fontBold)
+            // fillText(form, F.REASON_STARTED_TYPE, reasonType, fontBold) // Replaced by drawText
+            page.drawText(reasonType, {
+                x: 80, // USER CONFIRMED PERFECT
+                y: 374,
+                size: 8,
+                font: fontBold,
+                color: DARK_BLUE
+            })
 
             // --- Fechas (L11, L12) ---
             fillText(form, F.DATE_STARTED, data.startDate, fontBold)
@@ -234,7 +243,7 @@ export class PDFGenerator {
             // REGLA USUARIO: Usar entidad legal Zara Designs LLC.
             fillText(form, F.DESIGNEE_NAME, data.designeeName || 'ZARA DESIGNS LLC', fontBold)
             fillText(form, F.DESIGNEE_PHONE, data.designeePhone || '307-555-0123', fontBold)
-            fillText(form, F.DESIGNEE_ADDRESS, data.designeeAddress || '30 N Gould St Ste R, Sheridan, WY 82801', fontBold)
+            fillText(form, F.DESIGNEE_ADDRESS, data.designeeAddress || 'pendiente', fontBold) // Cambiado a pedido
             fillText(form, F.DESIGNEE_FAX, data.designeeFax, fontBold)
 
             // --- Applicant ---
@@ -248,30 +257,30 @@ export class PDFGenerator {
                     const base64Data = signatureBase64.split(',')[1]
                     const sigBuffer = Buffer.from(base64Data, 'base64')
                     const sigImage = await pdfDoc.embedPng(sigBuffer)
-                    const page = pdfDoc.getPages()[0]
                     const MAX_W = 150
                     const MAX_H = 35
                     const scale = Math.min(MAX_W / sigImage.width, MAX_H / sigImage.height)
                     page.drawImage(sigImage, {
-                        x: 90,
-                        y: 28, // Mantener Y de firma
+                        x: 151,
+                        y: 36, // Ajusted Y for signature
                         width: sigImage.width * scale,
                         height: sigImage.height * scale
                     })
-                } catch (err) { }
+                } catch (err) {
+                    console.error('Error embedding signature:', err)
+                }
             }
 
             // --- Fecha Pie de Página ---
             // REGLA USUARIO: Corregir ubicación.
-            const page = pdfDoc.getPages()[0]
             const today = new Date()
             const dateStr = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}/${today.getFullYear()}`
             page.drawText(dateStr, {
-                x: 435, // Ajustado derecha
-                y: 44,  // Subido para estar EN la línea
-                size: FONT_SIZE_MAIN,
+                x: 375, // SHIFTED RIGHT (+45 units from 330)
+                y: 40,
+                size: 9,
                 font: fontBold,
-                color: DARK_BLUE
+                color: DARK_BLUE,
             })
 
             form.flatten()

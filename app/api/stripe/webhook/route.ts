@@ -167,6 +167,16 @@ export async function POST(req: Request) {
                 console.warn('⚠️ [WEBHOOK] No hay userEmail en la sesión de Stripe.');
               }
 
+              // --- GENERAR FACTURA ---
+              try {
+                console.log('🧾 [WEBHOOK] Generando factura...');
+                const { InvoiceService } = await import('@/lib/services/invoice.service');
+                await InvoiceService.generarFacturaParaPedido(pedido, session);
+                console.log('✅ [WEBHOOK] Factura generada y pdf guardado.');
+              } catch (invoiceError) {
+                console.error('❌ [WEBHOOK] Error generando factura:', invoiceError);
+              }
+
               // Notificar Dashboard 
               try {
                 const { NotificacionService } = await import('@/lib/services/notificacion.service');

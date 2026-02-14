@@ -132,11 +132,11 @@ export default async function AdminDashboardPage() {
                     <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm text-slate-900">
                         <h3 className="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-6">Soporte y Sistema</h3>
                         <div className="space-y-4">
-                            <Link href="/admin/configuracion" className="flex items-center gap-3 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+                            <Link href="/admin/analiticas" className="flex items-center gap-3 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
                                 <TrendingUp size={18} className="text-slate-400" />
                                 Analíticas de Ventas
                             </Link>
-                            <Link href="/admin/notificaciones" className="flex items-center gap-3 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+                            <Link href="/admin/alertas" className="flex items-center gap-3 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
                                 <AlertCircle size={18} className="text-slate-400" />
                                 Alertas Críticas
                             </Link>

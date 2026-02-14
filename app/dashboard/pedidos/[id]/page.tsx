@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { PedidoModel } from '@/lib/models/pedido'
+import { FacturaModel } from '@/lib/models/factura'
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard'
 
 export default async function PedidoDetallePage({
@@ -21,6 +22,7 @@ export default async function PedidoDetallePage({
   if (!userId) redirect('/sign-in')
 
   const pedidoFull = await PedidoModel.obtenerCompleto(id)
+  const factura = await FacturaModel.obtenerPorPedidoId(id)
 
   if (!pedidoFull || pedidoFull.user_id !== userId) {
     redirect('/dashboard/pedidos')
@@ -59,7 +61,7 @@ export default async function PedidoDetallePage({
   const pasos = esEIN ? [
     { id: 1, label: 'Solicitud Recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
     { id: 2, label: 'Pago Confirmado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
-    { id: 7, label: 'Firma SS-4', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
+    { id: 7, label: 'Autorización Firmada', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
     { id: 4, label: 'Tramitación ante IRS', date: 'En proceso interno', completado: pedidoFull.paso_actual >= 8 },
     { id: 5, label: 'EIN Entregado', date: 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
   ] : [
@@ -185,6 +187,30 @@ export default async function PedidoDetallePage({
                 </div>
               ) : (
                 <div className="space-y-3">
+                  {/* FACTURA DE COMPRA */}
+                  {factura && (factura as any).pdf_path && (
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100 group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-blue-200 text-blue-600">
+                          <CreditCard size={16} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-slate-900 truncate">
+                            Factura {factura.numero_factura}
+                          </p>
+                          <p className="text-[10px] text-blue-500 font-bold uppercase">Disponible</p>
+                        </div>
+                      </div>
+                      <a
+                        href={`/api/facturas/${factura.id}/descargar`}
+                        target="_blank"
+                        className="p-2 bg-white text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-600 hover:text-white transition-colors"
+                      >
+                        <Download size={16} />
+                      </a>
+                    </div>
+                  )}
+
                   {pedidoFull.metadata?.documento_identidad_path ? (
                     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 group">
                       <div className="flex items-center gap-3">
@@ -211,28 +237,33 @@ export default async function PedidoDetallePage({
                     <p className="text-sm text-slate-500 italic">No hay documentos cargados todavía.</p>
                   )}
 
-                  {/* BOTÓN DESCARGA SS-4 (Solo para trámites EIN completados) */}
-                  {esEIN && pedidoFull.paso_actual >= 7 && (
-                    <div className="mt-4 pt-4 border-t border-slate-100">
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Documentos Generados</p>
-                      <a
-                        href={`/api/pedidos/${pedidoFull.id}/descargar-ss4`}
-                        target="_blank"
-                        className="flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-100 transition-all group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-blue-200 text-blue-600 shadow-sm">
-                            <FileText size={20} />
+                  {/* SS-4 NO SE MUESTRA AL CLIENTE - Solo disponible internamente para el admin */}
+                  {/* El cliente recibirá la Carta EIN del IRS cuando esté lista */}
+
+                  {/* CARTA EIN DEL IRS - El documento que el cliente realmente quiere ver */}
+                  {pedidoFull.metadata?.carta_ein_path && (
+                    <div className="mt-6 pt-6 border-t border-slate-100">
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-green-200/20 rounded-full -mr-16 -mt-16"></div>
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CheckCircle2 className="text-green-600" size={24} />
+                            <span className="text-xs font-black text-green-700 uppercase tracking-widest">¡Completado!</span>
                           </div>
-                          <div>
-                            <p className="text-sm font-bold text-blue-900">Formulario SS-4 Firmado</p>
-                            <p className="text-[10px] text-blue-500 font-medium">Listo para enviar al IRS</p>
-                          </div>
+                          <h4 className="text-lg font-black text-green-900 mb-2">🎉 Tu Número EIN ha sido Aprobado</h4>
+                          <p className="text-sm text-green-700 mb-4">
+                            El IRS ha procesado tu solicitud exitosamente. Descarga tu Carta de Confirmación oficial.
+                          </p>
+                          <a
+                            href={`/api/pedidos/${pedidoFull.id}/descargar-carta-ein`}
+                            target="_blank"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200"
+                          >
+                            <Download size={18} />
+                            Descargar Carta EIN del IRS
+                          </a>
                         </div>
-                        <div className="bg-white p-2 rounded-lg text-blue-600 shadow-sm opacity-60 group-hover:opacity-100 transition-opacity">
-                          <Download size={18} />
-                        </div>
-                      </a>
+                      </div>
                     </div>
                   )}
 

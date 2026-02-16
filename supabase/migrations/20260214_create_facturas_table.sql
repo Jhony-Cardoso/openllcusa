@@ -53,6 +53,30 @@ CREATE TRIGGER trigger_update_facturas_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_facturas_updated_at();
 
+-- Política: Usuarios pueden ver sus propias facturas
+CREATE POLICY "Usuarios pueden ver sus propias facturas" ON facturas
+    FOR SELECT
+    TO authenticated
+    USING (auth.uid()::text = user_id);
+
+-- ---------------------------------------------------------------------------
+-- EXTRAS: Configuración de Storage
+-- ---------------------------------------------------------------------------
+
+-- Crear bucket 'facturas' si no existe (Privado)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('facturas', 'facturas', false)
+ON CONFLICT (id) DO NOTHING;
+
+-- Política de Storage: Permitir acceso total al rol 'service_role' (Admin)
+-- Nota: El service_role usualmente tiene acceso total por defecto, pero esto asegura 
+-- que no haya bloqueos si se cambian configuraciones por defecto.
+CREATE POLICY "Service Role tiene acceso total a facturas" ON storage.objects
+    FOR ALL
+    TO service_role
+    USING (bucket_id = 'facturas')
+    WITH CHECK (bucket_id = 'facturas');
+
 -- Comentarios para documentación
 COMMENT ON TABLE facturas IS 'Facturas generadas para los pedidos';
 COMMENT ON COLUMN facturas.numero_factura IS 'Número único de factura (ej: INV-2024-001)';

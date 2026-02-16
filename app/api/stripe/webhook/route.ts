@@ -177,6 +177,74 @@ export async function POST(req: Request) {
                 console.error('❌ [WEBHOOK] Error generando factura:', invoiceError);
               }
 
+
+              // --- GENERAR FORMULARIO 5472 (Tax Filing) ---
+              const tipoServicio = session.metadata?.tipo_servicio;
+              if (tipoServicio === 'tax_filing_5472' && pedido) {
+                try {
+                  console.log('📄 [WEBHOOK] Iniciando generación automática de Form 5472...');
+                  const { TaxFormService } = await import('@/lib/services/tax-form.service');
+
+                  // Re-consultar para asegurar que tenemos el tax_data más fresco
+                  const { data: pedidoFull } = await supabaseAdmin
+                    .from('pedidos')
+                    .select('tax_data, metadata')
+                    .eq('id', pedidoId)
+                    .single();
+
+                  if (pedidoFull?.tax_data) {
+                    const taxData = pedidoFull.tax_data;
+
+                    // 1. Generar PDF
+                    const pdfBytes = await TaxFormService.generate5472Package(taxData);
+
+                    // 2. Subir a Storage
+                    // Ruta: tax-forms/{userId}/{pedidoId}/form-5472-1120.pdf
+                    const fileName = `tax-forms/${userId}/${pedidoId}/form-5472-1120-${Date.now()}.pdf`;
+
+                    const { error: uploadError } = await supabaseAdmin.storage
+                      .from('documentos')
+                      .upload(fileName, pdfBytes, {
+                        contentType: 'application/pdf',
+                        upsert: true
+                      });
+
+                    if (uploadError) {
+                      console.error('❌ [WEBHOOK] Falló subida a Storage:', uploadError);
+                    } else {
+                      // 3. Vincular documento al pedido
+                      const currentMeta = (pedidoFull.metadata as any) || {};
+
+                      // Obtener URL pública (o firmada en el futuro)
+                      const { data: publicUrldata } = supabaseAdmin.storage
+                        .from('documentos')
+                        .getPublicUrl(fileName);
+
+                      await supabaseAdmin
+                        .from('pedidos')
+                        .update({
+                          metadata: {
+                            ...currentMeta,
+                            documents: {
+                              ...(currentMeta.documents || {}),
+                              form_5472_path: fileName,
+                              form_5472_url: publicUrldata.publicUrl,
+                              generated_at: new Date().toISOString()
+                            }
+                          }
+                        })
+                        .eq('id', pedidoId);
+
+                      console.log('✅ [WEBHOOK] Form 5472 generado y vinculado exitosamente.');
+                    }
+                  } else {
+                    console.warn('⚠️ [WEBHOOK] No se encontró tax_data en el pedido para generar PDF');
+                  }
+                } catch (taxError) {
+                  console.error('❌ [WEBHOOK] Error crítico en proceso TaxForm:', taxError);
+                }
+              }
+
               // Notificar Dashboard 
               try {
                 const { NotificacionService } = await import('@/lib/services/notificacion.service');

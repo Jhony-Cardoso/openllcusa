@@ -3,6 +3,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 // Solo proteger las rutas del dashboard
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
+  '/servicios/form-5472-1120/onboarding(.*)'
 ])
 
 export default clerkMiddleware(async (auth, req) => {

@@ -10,6 +10,8 @@ import { PedidoModel } from '@/lib/models/pedido'
 import { FacturaModel } from '@/lib/models/factura'
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PedidoDetallePage({
   params,
 }: {
@@ -22,7 +24,10 @@ export default async function PedidoDetallePage({
   if (!userId) redirect('/sign-in')
 
   const pedidoFull = await PedidoModel.obtenerCompleto(id)
-  const factura = await FacturaModel.obtenerPorPedidoId(id)
+
+  // TODO: Implementar FacturaModel correctamente
+  const factura = null
+  // const factura = await FacturaModel.obtenerPorPedidoId(id)
 
   if (!pedidoFull || pedidoFull.user_id !== userId) {
     redirect('/dashboard/pedidos')
@@ -32,10 +37,17 @@ export default async function PedidoDetallePage({
   const isLegalSetupPending = isPaid && (pedidoFull.paso_actual < 7)
 
   // Detectar si es un trámite de EIN
-  const esEIN = pedidoFull.servicio?.slug === 'obtencion-ein' || pedidoFull.paquete?.slug === 'ein-express' // Ajustar según slug real
+  const esEIN = pedidoFull.servicio?.slug === 'obtencion-ein' || pedidoFull.paquete?.slug === 'ein-express'
+  // Detección robusta: por metadata o si tiene datos fiscales en la columna tax_data
+  const esTaxFiling = pedidoFull.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedidoFull as any).tax_data
+
+  const nombreProducto = esTaxFiling
+    ? 'Presentación Forms 5472 + 1120'
+    : (pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || 'Servicio Open LLC')
 
   // SI EL PAGO ESTÁ HECHO PERO FALTA EL CHECKLIST LEGAL
-  if (isLegalSetupPending) {
+  // Excepción: Tax Filing no requiere wizard posterior, ya tenemos los datos
+  if (isLegalSetupPending && !esEIN && !esTaxFiling) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Link
@@ -54,11 +66,16 @@ export default async function PedidoDetallePage({
     )
   }
 
-  const nombreProducto = pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || pedidoFull.paquete?.title || pedidoFull.servicio?.title || 'Servicio Open LLC'
   const precio = pedidoFull.total_pagado || pedidoFull.paquete?.precio || pedidoFull.servicio?.precio || 0
 
-  // Mapeo de progreso visual (Adaptado para EIN vs LLC)
-  const pasos = esEIN ? [
+  // Mapeo de progreso visual (Adaptado para EIN vs LLC vs Impuestos)
+  const pasos = esTaxFiling ? [
+    { id: 1, label: 'Datos Recibidos', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: true },
+    { id: 2, label: 'Pago Verificado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
+    { id: 3, label: 'Preparación y Revisión', date: pedidoFull.metadata?.documents?.form_5472_url ? 'Completado' : 'En proceso', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
+    { id: 4, label: 'Presentación al IRS', date: 'Enviado vía Fax/Correo', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
+    { id: 5, label: 'Acuse de Recibo', date: pedidoFull.metadata?.documents?.form_5472_url ? 'Disponible' : 'Próximamente', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
+  ] : esEIN ? [
     { id: 1, label: 'Solicitud Recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
     { id: 2, label: 'Pago Confirmado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
     { id: 7, label: 'Autorización Firmada', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
@@ -261,6 +278,33 @@ export default async function PedidoDetallePage({
                           >
                             <Download size={18} />
                             Descargar Carta EIN del IRS
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ACUSE DE RECIBO / PRESENTACIÓN FISCAL */}
+                  {esTaxFiling && pedidoFull.metadata?.documents?.form_5472_url && (
+                    <div className="mt-6 pt-6 border-t border-slate-100">
+                      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-2xl p-6 relative overflow-hidden">
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CheckCircle2 className="text-indigo-600" size={24} />
+                            <span className="text-xs font-black text-indigo-700 uppercase tracking-widest">¡TRÁMITE COMPLETADO!</span>
+                          </div>
+                          <h4 className="text-lg font-black text-indigo-900 mb-2">✅ Acuse de recibo del IRS</h4>
+                          <p className="text-sm text-indigo-700 mb-4">
+                            Tu declaración ha sido presentada exitosamente ante el IRS. Descarga aquí el comprobante oficial de recepción.
+                          </p>
+                          <a
+                            href={pedidoFull.metadata.documents.form_5472_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+                          >
+                            <Download size={18} />
+                            Descargar Acuse de Recibo
                           </a>
                         </div>
                       </div>

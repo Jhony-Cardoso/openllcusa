@@ -13,7 +13,7 @@ export default function CheckoutPage() {
   const { user, isLoaded } = useUser()
 
   const slug = (params?.slug as string) || ''
-  const pedidoIdFromUrl = searchParams.get('pedido')
+  const pedidoIdFromUrl = searchParams.get('pedidoId') // Cambiado de 'pedido' a 'pedidoId'
   const isEIN = slug === 'obtencion-ein'
 
   const [pedido, setPedido] = useState<any>(null)
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
               console.log('✅ [CHECKOUT] Borrador encontrado:', currentId)
 
               // Actualizar URL sin recargar
-              const newUrl = `${window.location.pathname}?pedido=${currentId}`
+              const newUrl = `${window.location.pathname}?pedidoId=${currentId}`
               window.history.replaceState({}, '', newUrl)
             }
           }
@@ -96,6 +96,15 @@ export default function CheckoutPage() {
   }, [isLoaded, user, pedidoIdFromUrl, slug, router])
 
   const precioBase = useMemo(() => {
+    // Detectar si es Tax Filing
+    const esTaxFiling = pedido?.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedido as any)?.tax_data
+
+    // Si es Tax Filing, usar precio fijo
+    if (esTaxFiling) {
+      return 249 // $249.00 USD
+    }
+
+    // Para otros servicios, buscar en paquete o servicio
     const raw =
       pedido?.paquete?.precio ??
       pedido?.paquete?.price ??
@@ -151,12 +160,27 @@ export default function CheckoutPage() {
     setError('')
 
     try {
-      const endpoint = isEIN ? '/api/stripe/checkout-servicio' : '/api/stripe/checkout'
+      // Detectar si es Tax Filing
+      const esTaxFiling = pedido?.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedido as any)?.tax_data
+
+      // Seleccionar endpoint según el tipo de servicio
+      let endpoint = '/api/stripe/checkout' // Default para paquetes
+      let body: any = { pedidoId: currentId }
+
+      if (esTaxFiling) {
+        // Para Tax Filing, usar endpoint específico que usa el pedido existente
+        endpoint = '/api/stripe/checkout-tax-filing'
+        body = { pedidoId: currentId }
+      } else if (isEIN) {
+        // Para EIN, usar endpoint de servicios
+        endpoint = '/api/stripe/checkout-servicio'
+        body = { pedidoId: currentId, slug }
+      }
 
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: isEIN ? JSON.stringify({ pedidoId: currentId, slug }) : JSON.stringify({ pedidoId: currentId }),
+        body: JSON.stringify(body),
       })
 
       const json = await res.json().catch(() => ({}))

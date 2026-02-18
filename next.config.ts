@@ -18,6 +18,22 @@ const nextConfig: NextConfig = {
   //   return config;
   // },
 
+  // Configuración de headers para CORS (necesario para Stripe)
+  async headers() {
+    return [
+      {
+        // Aplicar a todas las rutas de API
+        source: '/api/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Credentials', value: 'true' },
+          { key: 'Access-Control-Allow-Origin', value: '*' }, // En producción, especifica dominios
+          { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT,OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, stripe-signature' },
+        ],
+      },
+    ];
+  },
+
   // Tu configuración actual y futura sigue aquí abajo sin problema
 };
 

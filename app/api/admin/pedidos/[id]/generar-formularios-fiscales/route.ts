@@ -21,8 +21,21 @@ function transformToTaxFormData(raw: any): TaxFormData {
             state: raw.llcState || raw.llc?.state || '',
             zip: raw.llcZip || raw.llc?.zip || '',
             formationDate: raw.formationDate || raw.llc?.formationDate || '',
-            activityCode: raw.activityCode || raw.llc?.activityCode || '454110',
-            activityDescription: raw.activityDescription || raw.llc?.activityDescription || 'E-Commerce Retail',
+            // Nuevos campos Part I
+            einAlternate: raw.llcEinAlternate || raw.llc?.einAlternate || '',
+            countryOfIncorporation: raw.llcCountryOfIncorporation || raw.llc?.countryOfIncorporation || 'United States',
+            taxResidenceCountries: raw.llcTaxResidenceCountries || raw.llc?.taxResidenceCountries || '',
+            activityCode: raw.llcActivityCode || raw.llc?.activityCode || '454110',
+            activityDescription: raw.llcActivityDescription || raw.llc?.activityDescription || 'E-Commerce Retail',
+            isForeignOwnedDE: raw.isForeignOwnedDE ?? raw.llc?.isForeignOwnedDE ?? true,
+            soleOwnerName: raw.soleOwnerName || raw.llc?.soleOwnerName || raw.ownerName || '',
+            soleOwnerEin: raw.soleOwnerEin || raw.llc?.soleOwnerEin || '',
+            soleOwnerReferenceId: raw.soleOwnerReferenceId || raw.llc?.soleOwnerReferenceId || raw.ownerTaxId || '',
+            isDirectOwner: raw.isDirectOwner ?? raw.llc?.isDirectOwner ?? true,
+            isOwnerUSPerson: raw.isOwnerUSPerson ?? raw.llc?.isOwnerUSPerson ?? false,
+            isOwnerForeignPerson: raw.isOwnerForeignPerson ?? raw.llc?.isOwnerForeignPerson ?? true,
+            totalAssets: Number(raw.totalAssets ?? raw.llc?.totalAssets ?? 0),
+            hasRelatedPartyTransactions: raw.hasRelatedPartyTransactions ?? raw.llc?.hasRelatedPartyTransactions ?? true,
         },
         owner: {
             name: raw.ownerName || raw.owner?.name || '',
@@ -31,6 +44,24 @@ function transformToTaxFormData(raw: any): TaxFormData {
             country: raw.ownerCountry || raw.owner?.country || '',
             taxId: raw.ownerTaxId || raw.owner?.taxId || '',
             referenceIdType: raw.ownerReferenceIdType || raw.owner?.referenceIdType || 'Foreign Tax ID',
+            // Nuevos campos Part II
+            businessCountries: raw.ownerBusinessCountries || raw.owner?.businessCountries || '',
+            taxResidenceCountries: raw.ownerTaxResidenceCountries || raw.owner?.taxResidenceCountries || '',
+            ownershipType: raw.ownershipType || raw.owner?.ownershipType || 'Direct',
+        },
+        // Part III: Related Party (opcional, normalmente igual al owner para single-member LLCs)
+        relatedParty: {
+            name: raw.relatedPartyName || raw.relatedParty?.name || raw.ownerName || '',
+            address: raw.relatedPartyAddress || raw.relatedParty?.address || raw.ownerAddress || '',
+            city: raw.relatedPartyCity || raw.relatedParty?.city || raw.ownerCity || '',
+            country: raw.relatedPartyCountry || raw.relatedParty?.country || raw.ownerCountry || '',
+            taxId: raw.relatedPartyTaxId || raw.relatedParty?.taxId || raw.ownerTaxId || '',
+            referenceIdType: raw.relatedPartyReferenceIdType || raw.relatedParty?.referenceIdType || raw.ownerReferenceIdType || 'Foreign Tax ID',
+            businessCountries: raw.relatedPartyBusinessCountries || raw.relatedParty?.businessCountries || raw.ownerBusinessCountries || '',
+            taxResidenceCountries: raw.relatedPartyTaxResidenceCountries || raw.relatedParty?.taxResidenceCountries || raw.ownerTaxResidenceCountries || '',
+            relationship: raw.relatedPartyRelationship || raw.relatedParty?.relationship || '25% Foreign Shareholder',
+            ownershipType: raw.relatedPartyOwnershipType || raw.relatedParty?.ownershipType || raw.ownershipType || 'Direct',
+            isUSPerson: raw.isRelatedPartyUSPerson ?? raw.relatedParty?.isUSPerson ?? false,
         },
         financials: {
             capitalContributionCash: Number(raw.capitalContributionCash ?? raw.financials?.capitalContributionCash ?? 0),
@@ -38,6 +69,25 @@ function transformToTaxFormData(raw: any): TaxFormData {
             capitalDistributionCash: Number(raw.capitalDistributionCash ?? raw.financials?.capitalDistributionCash ?? 0),
             capitalDistributionProperty: Number(raw.capitalDistributionProperty ?? raw.financials?.capitalDistributionProperty ?? 0),
             formationCost: Number(raw.formationCost ?? raw.financials?.formationCost ?? 0),
+        },
+        // Part V: Additional Information
+        additionalInfo: {
+            hasTradeOrBusiness: raw.hasTradeOrBusiness ?? raw.additionalInfo?.hasTradeOrBusiness ?? false,
+            isDisregardedEntity: raw.isDisregardedEntity ?? raw.additionalInfo?.isDisregardedEntity ?? true,
+        },
+        // Part VII: Additional Questions
+        additionalQuestions: {
+            paidInterestToRelatedParty: raw.paidInterestToRelatedParty ?? raw.additionalQuestions?.paidInterestToRelatedParty ?? false,
+            paidRentsToRelatedParty: raw.paidRentsToRelatedParty ?? raw.additionalQuestions?.paidRentsToRelatedParty ?? false,
+            paidRoyaltiesToRelatedParty: raw.paidRoyaltiesToRelatedParty ?? raw.additionalQuestions?.paidRoyaltiesToRelatedParty ?? false,
+            hasCostSharingArrangements: raw.hasCostSharingArrangements ?? raw.additionalQuestions?.hasCostSharingArrangements ?? false,
+            paidServicesToRelatedParty: raw.paidServicesToRelatedParty ?? raw.additionalQuestions?.paidServicesToRelatedParty ?? false,
+            receivedServicesFromRelatedParty: raw.receivedServicesFromRelatedParty ?? raw.additionalQuestions?.receivedServicesFromRelatedParty ?? false,
+            hasOtherTransactions: raw.hasOtherTransactions ?? raw.additionalQuestions?.hasOtherTransactions ?? false,
+        },
+        // Part VIII: Base Erosion
+        baseErosion: {
+            isBaseErosionTaxpayer: raw.isBaseErosionTaxpayer ?? raw.baseErosion?.isBaseErosionTaxpayer ?? false,
         },
         signature: {
             signerName: raw.signerName || raw.signature?.signerName || raw.ownerName || '',

@@ -72,9 +72,9 @@ export default async function PedidoDetallePage({
   const pasos = esTaxFiling ? [
     { id: 1, label: 'Datos Recibidos', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: true },
     { id: 2, label: 'Pago Verificado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
-    { id: 3, label: 'Preparación y Revisión', date: pedidoFull.metadata?.documents?.form_5472_url ? 'Completado' : 'En proceso', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
-    { id: 4, label: 'Presentación al IRS', date: 'Enviado vía Fax/Correo', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
-    { id: 5, label: 'Acuse de Recibo', date: pedidoFull.metadata?.documents?.form_5472_url ? 'Disponible' : 'Próximamente', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
+    { id: 3, label: 'Documentos Preparados', date: pedidoFull.metadata?.documents?.form_5472_url ? 'Completado - PDF disponible para descarga' : 'En proceso', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
+    { id: 4, label: 'Presentación al IRS', date: 'Pendiente - Nuestro equipo lo enviará próximamente', completado: false },
+    { id: 5, label: 'Acuse de Recibo del IRS', date: 'Pendiente - Se enviará cuando esté disponible', completado: false },
   ] : esEIN ? [
     { id: 1, label: 'Solicitud Recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
     { id: 2, label: 'Pago Confirmado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
@@ -90,7 +90,21 @@ export default async function PedidoDetallePage({
   ]
 
   // Generar URL de checkout si no está pagado
-  const checkoutUrl = `/servicios/${pedidoFull.servicio?.slug || 'pack'}/onboarding/checkout?pedidoId=${pedidoFull.id}`
+  // Determinar el slug correcto según el tipo de servicio
+  let slugParaCheckout = 'pack' // fallback por defecto
+
+  if (esTaxFiling) {
+    // Para Tax Filing, usar el slug específico
+    slugParaCheckout = 'form-5472-1120'
+  } else if (pedidoFull.paquete?.slug) {
+    // Si tiene paquete, usar su slug
+    slugParaCheckout = pedidoFull.paquete.slug
+  } else if (pedidoFull.servicio?.slug) {
+    // Si tiene servicio, usar su slug
+    slugParaCheckout = pedidoFull.servicio.slug
+  }
+
+  const checkoutUrl = `/servicios/${slugParaCheckout}/onboarding/checkout?pedidoId=${pedidoFull.id}`
 
   return (
     <div className="min-h-screen bg-slate-50/50 py-8 lg:py-12">
@@ -284,27 +298,27 @@ export default async function PedidoDetallePage({
                     </div>
                   )}
 
-                  {/* ACUSE DE RECIBO / PRESENTACIÓN FISCAL */}
+                  {/* FORMULARIOS FISCALES PREPARADOS */}
                   {esTaxFiling && pedidoFull.metadata?.documents?.form_5472_url && (
                     <div className="mt-6 pt-6 border-t border-slate-100">
-                      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-2xl p-6 relative overflow-hidden">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 relative overflow-hidden">
                         <div className="relative z-10">
                           <div className="flex items-center gap-2 mb-3">
-                            <CheckCircle2 className="text-indigo-600" size={24} />
-                            <span className="text-xs font-black text-indigo-700 uppercase tracking-widest">¡TRÁMITE COMPLETADO!</span>
+                            <FileText className="text-blue-600" size={24} />
+                            <span className="text-xs font-black text-blue-700 uppercase tracking-widest">DOCUMENTOS LISTOS</span>
                           </div>
-                          <h4 className="text-lg font-black text-indigo-900 mb-2">✅ Acuse de recibo del IRS</h4>
-                          <p className="text-sm text-indigo-700 mb-4">
-                            Tu declaración ha sido presentada exitosamente ante el IRS. Descarga aquí el comprobante oficial de recepción.
+                          <h4 className="text-lg font-black text-blue-900 mb-2">📄 Formularios 5472 + 1120 Preparados</h4>
+                          <p className="text-sm text-blue-700 mb-4">
+                            Tus formularios fiscales han sido generados y están listos para descarga. Nuestro equipo procederá con la presentación ante el IRS próximamente.
                           </p>
                           <a
-                            href={pedidoFull.metadata.documents.form_5472_url}
+                            href={`/api/pedidos/${pedidoFull.id}/descargar-formularios`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
                           >
                             <Download size={18} />
-                            Descargar Acuse de Recibo
+                            Descargar Formularios
                           </a>
                         </div>
                       </div>

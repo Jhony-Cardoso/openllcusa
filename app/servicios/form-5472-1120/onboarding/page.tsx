@@ -10,41 +10,146 @@ type Form5472Data = {
     // Año fiscal
     taxYear: string
 
-    // Parte I: Reporte de la Corporación (LLC)
+    // ========== PART I: Reporting Corporation ==========
+    // 1a - Name, address, and identifying number of reporting corporation
     llcName: string
-    llcEin: string
     llcAddress: string
     llcCity: string
     llcState: string
     llcZip: string
+    llcEin: string
+
+    // 1b - Employer identification number (if different from 1a)
+    llcEinAlternate?: string
+
+    // 1d - Country of incorporation or organization
+    llcCountryOfIncorporation: string // Default: "United States"
+
+    // 1e - Country(ies) under whose laws the reporting corporation files an income tax return as a resident
+    llcTaxResidenceCountries: string // Default: "United States"
+
+    // 1f - Principal business activity code number
+    llcActivityCode: string // Default: "454110"
+
+    // 1g - Principal business activity
+    llcActivityDescription: string // Default: "E-Commerce Retail"
+
+    // 1h - Date of organization
     formationDate: string
 
-    // Parte II: Accionista Extranjero (Dueño)
+    // 1j - Check if the reporting corporation is a foreign-owned U.S. DE
+    isForeignOwnedDE: boolean // Default: true
+
+    // 1k - If 1j is checked, enter the name of the sole owner
+    soleOwnerName: string
+
+    // 1L - If 1j is checked, enter the EIN or reference ID number of the sole owner
+    soleOwnerEin?: string
+    soleOwnerReferenceId?: string
+
+    // 1m - If 1j is checked, check if the sole owner is a direct owner
+    isDirectOwner: boolean // Default: true
+
+    // 1n - If 1j is checked, check if the sole owner is a U.S. person
+    isOwnerUSPerson: boolean // Default: false
+
+    // 1o - If 1j is checked, check if the sole owner is a foreign person
+    isOwnerForeignPerson: boolean // Default: true
+
+    // 2 - Total assets at end of the year
+    totalAssets: number // Default: 0
+
+    // 3 - Did the reporting corporation have any related party transactions?
+    hasRelatedPartyTransactions: boolean // Default: true
+
+    // ========== PART II: 25% Foreign Shareholder ==========
+    // 4a - Name and address of 25% foreign shareholder
     ownerName: string
     ownerAddress: string
     ownerCity: string
     ownerCountry: string
-    ownerTaxId: string // DNI/NIF/Passport o ITIN
+
+    // 4b(3) - Reference ID number
+    ownerTaxId: string
     ownerReferenceIdType: string // 'Foreign Tax ID' | 'ITIN'
 
-    // Parte IV: Transacciones Monetarias
+    // 4c - Principal country(ies) where business is conducted
+    ownerBusinessCountries: string
+
+    // 4d - Country(ies) under whose laws the 25% foreign shareholder files an income tax return as a resident
+    ownerTaxResidenceCountries: string
+
+    // 4e - Direct or indirect
+    ownershipType: 'Direct' | 'Indirect' // Default: 'Direct'
+
+    // ========== PART III: Related Party ==========
+    // 8a - Name and address of related party
+    relatedPartyName?: string
+    relatedPartyAddress?: string
+    relatedPartyCity?: string
+    relatedPartyCountry?: string
+
+    // 8b(3) - Reference ID number
+    relatedPartyTaxId?: string
+    relatedPartyReferenceIdType?: string
+
+    // 8c - Principal country(ies) where business is conducted
+    relatedPartyBusinessCountries?: string
+
+    // 8d - Country(ies) under whose laws the related party files an income tax return as a resident
+    relatedPartyTaxResidenceCountries?: string
+
+    // 8e - Relationship
+    relatedPartyRelationship?: string // e.g., "25% Foreign Shareholder"
+
+    // 8f - Direct or indirect
+    relatedPartyOwnershipType?: 'Direct' | 'Indirect'
+
+    // 8g - Check if the related party is a U.S. person
+    isRelatedPartyUSPerson?: boolean
+
+    // ========== PART IV: Monetary Transactions ==========
     capitalContributionCash: number
     capitalContributionProperty: number
     capitalDistributionCash: number
     capitalDistributionProperty: number
 
-    // Parte V: Costos de Formación
+    // ========== PART V: Additional Information ==========
     formationCost: number
-
-    // Parte VI: Declaraciones Juradas (Supporting Statements)
     hasTradeOrBusiness: boolean // Default: false
     isDisregardedEntity: boolean // Default: true
 
-    // Firma y Declaración
-    signerName: string // Nombre del firmante
-    signerTitle: string // Cargo (ej: Member, Manager, President)
-    signatureDate: string // Fecha de firma
-    signatureDataUrl: string | null // Imagen de la firma en base64
+    // ========== PART VII: Additional Questions ==========
+    // 37 - Did the reporting corporation make payments of interest to the related party?
+    paidInterestToRelatedParty: boolean // Default: false
+
+    // 39 - Did the reporting corporation make payments of rents to the related party?
+    paidRentsToRelatedParty: boolean // Default: false
+
+    // 40a - Did the reporting corporation make payments of royalties to the related party?
+    paidRoyaltiesToRelatedParty: boolean // Default: false
+
+    // 41a - Did the reporting corporation have any cost sharing arrangements?
+    hasCostSharingArrangements: boolean // Default: false
+
+    // 42a - Did the reporting corporation make payments for services to the related party?
+    paidServicesToRelatedParty: boolean // Default: false
+
+    // 42b - Did the reporting corporation receive payments for services from the related party?
+    receivedServicesFromRelatedParty: boolean // Default: false
+
+    // 43a - Did the reporting corporation have any other transactions with the related party?
+    hasOtherTransactions: boolean // Default: false
+
+    // ========== PART VIII: Base Erosion Payments ==========
+    // 45 - Is the reporting corporation a base erosion taxpayer?
+    isBaseErosionTaxpayer: boolean // Default: false
+
+    // ========== Firma y Declaración ==========
+    signerName: string
+    signerTitle: string
+    signatureDate: string
+    signatureDataUrl: string | null
 }
 
 const steps = [
@@ -62,29 +167,81 @@ export default function Form5472OnboardingPage() {
     const currentYear = new Date().getFullYear()
     const [formData, setFormData] = useState<Form5472Data>({
         taxYear: String(currentYear - 1),
+
+        // PART I: Reporting Corporation
         llcName: '',
-        llcEin: '',
         llcAddress: '',
         llcCity: '',
         llcState: '',
         llcZip: '',
+        llcEin: '',
+        llcEinAlternate: '',
+        llcCountryOfIncorporation: 'United States',
+        llcTaxResidenceCountries: '', // Vacío - puede variar según el caso
+        llcActivityCode: '454110',
+        llcActivityDescription: 'E-Commerce Retail',
         formationDate: '',
+        isForeignOwnedDE: true,
+        soleOwnerName: '',
+        soleOwnerEin: '',
+        soleOwnerReferenceId: '',
+        isDirectOwner: true,
+        isOwnerUSPerson: false,
+        isOwnerForeignPerson: true,
+        totalAssets: 0,
+        hasRelatedPartyTransactions: true,
+
+        // PART II: 25% Foreign Shareholder
         ownerName: '',
         ownerAddress: '',
         ownerCity: '',
         ownerCountry: '',
         ownerTaxId: '',
         ownerReferenceIdType: 'Foreign Tax ID',
+        ownerBusinessCountries: '',
+        ownerTaxResidenceCountries: '',
+        ownershipType: 'Direct',
+
+        // PART III: Related Party (optional, usually same as owner for single-member LLCs)
+        relatedPartyName: '',
+        relatedPartyAddress: '',
+        relatedPartyCity: '',
+        relatedPartyCountry: '',
+        relatedPartyTaxId: '',
+        relatedPartyReferenceIdType: '',
+        relatedPartyBusinessCountries: '',
+        relatedPartyTaxResidenceCountries: '',
+        relatedPartyRelationship: '25% Foreign Shareholder',
+        relatedPartyOwnershipType: 'Direct',
+        isRelatedPartyUSPerson: false,
+
+        // PART IV: Monetary Transactions
         capitalContributionCash: 0,
         capitalContributionProperty: 0,
         capitalDistributionCash: 0,
         capitalDistributionProperty: 0,
+
+        // PART V: Additional Information
         formationCost: 0,
         hasTradeOrBusiness: false,
         isDisregardedEntity: true,
+
+        // PART VII: Additional Questions
+        paidInterestToRelatedParty: false,
+        paidRentsToRelatedParty: false,
+        paidRoyaltiesToRelatedParty: false,
+        hasCostSharingArrangements: false,
+        paidServicesToRelatedParty: false,
+        receivedServicesFromRelatedParty: false,
+        hasOtherTransactions: false,
+
+        // PART VIII: Base Erosion Payments
+        isBaseErosionTaxpayer: false,
+
+        // Signature
         signerName: '',
         signerTitle: 'Member',
-        signatureDate: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
+        signatureDate: new Date().toISOString().split('T')[0],
         signatureDataUrl: null
     })
 
@@ -264,6 +421,103 @@ export default function Form5472OnboardingPage() {
                                     <label htmlFor="formationDate" className="block text-sm font-medium text-slate-700">Fecha de Formación</label>
                                     <input type="date" name="formationDate" value={formData.formationDate} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border" />
                                 </div>
+
+                                {/* Campos adicionales Part I */}
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="llcActivityCode" className="block text-sm font-medium text-slate-700">Código de Actividad (NAICS)</label>
+                                    <input
+                                        type="text"
+                                        name="llcActivityCode"
+                                        id="llcActivityCode"
+                                        value={formData.llcActivityCode}
+                                        onChange={handleChange}
+                                        placeholder="454110"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500">Código NAICS de tu actividad principal</p>
+                                </div>
+
+                                <div className="sm:col-span-6">
+                                    <label htmlFor="llcActivityDescription" className="block text-sm font-medium text-slate-700">Descripción de Actividad Principal</label>
+                                    <input
+                                        type="text"
+                                        name="llcActivityDescription"
+                                        id="llcActivityDescription"
+                                        value={formData.llcActivityDescription}
+                                        onChange={handleChange}
+                                        placeholder="E-Commerce Retail"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                    />
+                                </div>
+
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="llcCountryOfIncorporation" className="block text-sm font-medium text-slate-700">País de Incorporación</label>
+                                    <input
+                                        type="text"
+                                        name="llcCountryOfIncorporation"
+                                        id="llcCountryOfIncorporation"
+                                        value={formData.llcCountryOfIncorporation}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                        readOnly
+                                    />
+                                </div>
+
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="llcTaxResidenceCountries" className="block text-sm font-medium text-slate-700">País(es) de Residencia Fiscal</label>
+                                    <input
+                                        type="text"
+                                        name="llcTaxResidenceCountries"
+                                        id="llcTaxResidenceCountries"
+                                        value={formData.llcTaxResidenceCountries}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                    />
+                                </div>
+
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="totalAssets" className="block text-sm font-medium text-slate-700">Total de Activos al Final del Año ($)</label>
+                                    <input
+                                        type="number"
+                                        name="totalAssets"
+                                        id="totalAssets"
+                                        value={formData.totalAssets}
+                                        onChange={handleChange}
+                                        min="0"
+                                        step="0.01"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500">Valor total de los activos de la LLC</p>
+                                </div>
+
+                                <div className="sm:col-span-3">
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">¿Tuvo transacciones con partes relacionadas?</label>
+                                    <div className="flex gap-4">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                name="hasRelatedPartyTransactions"
+                                                value="true"
+                                                checked={formData.hasRelatedPartyTransactions === true}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, hasRelatedPartyTransactions: true }))}
+                                                className="form-radio h-4 w-4 text-blue-600"
+                                            />
+                                            <span className="ml-2">Sí</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                name="hasRelatedPartyTransactions"
+                                                value="false"
+                                                checked={formData.hasRelatedPartyTransactions === false}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, hasRelatedPartyTransactions: false }))}
+                                                className="form-radio h-4 w-4 text-blue-600"
+                                            />
+                                            <span className="ml-2">No</span>
+                                        </label>
+                                    </div>
+                                    <p className="mt-1 text-xs text-gray-500">Normalmente "Sí" si eres el único dueño</p>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -352,6 +606,50 @@ export default function Form5472OnboardingPage() {
                                             : 'Número de identificación fiscal de tu país (DNI, NIF, Pasaporte, etc.).'
                                         }
                                     </p>
+                                </div>
+
+                                {/* Campos adicionales Part II */}
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="ownerBusinessCountries" className="block text-sm font-medium text-slate-700">País(es) donde conduce negocios</label>
+                                    <input
+                                        type="text"
+                                        name="ownerBusinessCountries"
+                                        id="ownerBusinessCountries"
+                                        value={formData.ownerBusinessCountries}
+                                        onChange={handleChange}
+                                        placeholder="Ej: Spain, United States"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500">País(es) donde realizas tu actividad comercial</p>
+                                </div>
+
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="ownerTaxResidenceCountries" className="block text-sm font-medium text-slate-700">País(es) de Residencia Fiscal del Dueño</label>
+                                    <input
+                                        type="text"
+                                        name="ownerTaxResidenceCountries"
+                                        id="ownerTaxResidenceCountries"
+                                        value={formData.ownerTaxResidenceCountries}
+                                        onChange={handleChange}
+                                        placeholder="Ej: Spain"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500">País donde presentas tu declaración de impuestos</p>
+                                </div>
+
+                                <div className="sm:col-span-3">
+                                    <label htmlFor="ownershipType" className="block text-sm font-medium text-slate-700">Tipo de Propiedad</label>
+                                    <select
+                                        name="ownershipType"
+                                        id="ownershipType"
+                                        value={formData.ownershipType}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
+                                    >
+                                        <option value="Direct">Direct (Directa)</option>
+                                        <option value="Indirect">Indirect (Indirecta)</option>
+                                    </select>
+                                    <p className="mt-1 text-xs text-gray-500">Normalmente "Direct" si eres el dueño directo</p>
                                 </div>
                             </div>
                         </div>
@@ -479,6 +777,275 @@ export default function Form5472OnboardingPage() {
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${formData.formationCost.toFixed(2)}</dd>
                                     </div>
                                 </dl>
+                            </div>
+
+                            {/* Part VII: Additional Questions */}
+                            <div className="bg-white border border-gray-200 rounded-lg p-6">
+                                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                                    <FileText className="text-blue-600" size={18} />
+                                    Preguntas Adicionales (Part VII)
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Para la mayoría de LLCs pasivas (sin actividad comercial en USA), todas las respuestas son "No".
+                                </p>
+
+                                <div className="space-y-4">
+                                    {/* Question 37 */}
+                                    <div className="flex items-start justify-between border-b pb-3">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Pagó intereses a partes relacionadas?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 37: Interest payments</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidInterestToRelatedParty"
+                                                    checked={formData.paidInterestToRelatedParty === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidInterestToRelatedParty: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidInterestToRelatedParty"
+                                                    checked={formData.paidInterestToRelatedParty === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidInterestToRelatedParty: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Question 39 */}
+                                    <div className="flex items-start justify-between border-b pb-3">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Pagó rentas/alquileres a partes relacionadas?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 39: Rent payments</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidRentsToRelatedParty"
+                                                    checked={formData.paidRentsToRelatedParty === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidRentsToRelatedParty: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidRentsToRelatedParty"
+                                                    checked={formData.paidRentsToRelatedParty === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidRentsToRelatedParty: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Question 40a */}
+                                    <div className="flex items-start justify-between border-b pb-3">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Pagó regalías (royalties) a partes relacionadas?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 40a: Royalty payments</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidRoyaltiesToRelatedParty"
+                                                    checked={formData.paidRoyaltiesToRelatedParty === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidRoyaltiesToRelatedParty: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidRoyaltiesToRelatedParty"
+                                                    checked={formData.paidRoyaltiesToRelatedParty === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidRoyaltiesToRelatedParty: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Question 41a */}
+                                    <div className="flex items-start justify-between border-b pb-3">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Tuvo acuerdos de reparto de costos (cost sharing)?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 41a: Cost sharing arrangements</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="hasCostSharingArrangements"
+                                                    checked={formData.hasCostSharingArrangements === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, hasCostSharingArrangements: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="hasCostSharingArrangements"
+                                                    checked={formData.hasCostSharingArrangements === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, hasCostSharingArrangements: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Question 42a */}
+                                    <div className="flex items-start justify-between border-b pb-3">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Pagó por servicios a partes relacionadas?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 42a: Payments for services</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidServicesToRelatedParty"
+                                                    checked={formData.paidServicesToRelatedParty === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidServicesToRelatedParty: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="paidServicesToRelatedParty"
+                                                    checked={formData.paidServicesToRelatedParty === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, paidServicesToRelatedParty: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Question 42b */}
+                                    <div className="flex items-start justify-between border-b pb-3">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Recibió pagos por servicios de partes relacionadas?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 42b: Receipts for services</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="receivedServicesFromRelatedParty"
+                                                    checked={formData.receivedServicesFromRelatedParty === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, receivedServicesFromRelatedParty: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="receivedServicesFromRelatedParty"
+                                                    checked={formData.receivedServicesFromRelatedParty === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, receivedServicesFromRelatedParty: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Question 43a */}
+                                    <div className="flex items-start justify-between border-b pb-3">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Tuvo otras transacciones con partes relacionadas?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 43a: Other transactions</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="hasOtherTransactions"
+                                                    checked={formData.hasOtherTransactions === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, hasOtherTransactions: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="hasOtherTransactions"
+                                                    checked={formData.hasOtherTransactions === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, hasOtherTransactions: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Question 45 - Part VIII */}
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <label className="block text-sm font-medium text-slate-700">
+                                                ¿Es la LLC un contribuyente de erosión de base (base erosion taxpayer)?
+                                            </label>
+                                            <p className="text-xs text-gray-500 mt-1">Question 45 (Part VIII): Base erosion taxpayer</p>
+                                        </div>
+                                        <div className="flex gap-3 ml-4">
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="isBaseErosionTaxpayer"
+                                                    checked={formData.isBaseErosionTaxpayer === true}
+                                                    onChange={() => setFormData(prev => ({ ...prev, isBaseErosionTaxpayer: true }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">Sí</span>
+                                            </label>
+                                            <label className="inline-flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="isBaseErosionTaxpayer"
+                                                    checked={formData.isBaseErosionTaxpayer === false}
+                                                    onChange={() => setFormData(prev => ({ ...prev, isBaseErosionTaxpayer: false }))}
+                                                    className="form-radio h-4 w-4 text-blue-600"
+                                                />
+                                                <span className="ml-2 text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Sección de Firma */}

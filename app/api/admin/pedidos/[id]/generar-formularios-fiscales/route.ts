@@ -36,6 +36,13 @@ function transformToTaxFormData(raw: any): TaxFormData {
             isOwnerForeignPerson: raw.isOwnerForeignPerson ?? raw.llc?.isOwnerForeignPerson ?? true,
             totalAssets: Number(raw.totalAssets ?? raw.llc?.totalAssets ?? 0),
             hasRelatedPartyTransactions: raw.hasRelatedPartyTransactions ?? raw.llc?.hasRelatedPartyTransactions ?? true,
+            // Initial return: true si es el primer año (fecha incorporación = año fiscal)
+            isInitialReturn: raw.isInitialReturn ?? raw.llc?.isInitialReturn ?? (() => {
+                const taxYear = String(raw.taxYear || new Date().getFullYear() - 1)
+                const formDate = raw.formationDate || raw.llc?.formationDate || ''
+                // Si la formationDate contiene el taxYear, es el primer año
+                return formDate.includes(taxYear)
+            })(),
         },
         owner: {
             name: raw.ownerName || raw.owner?.name || '',
@@ -77,17 +84,20 @@ function transformToTaxFormData(raw: any): TaxFormData {
         },
         // Part VII: Additional Questions
         additionalQuestions: {
-            paidInterestToRelatedParty: raw.paidInterestToRelatedParty ?? raw.additionalQuestions?.paidInterestToRelatedParty ?? false,
-            paidRentsToRelatedParty: raw.paidRentsToRelatedParty ?? raw.additionalQuestions?.paidRentsToRelatedParty ?? false,
-            paidRoyaltiesToRelatedParty: raw.paidRoyaltiesToRelatedParty ?? raw.additionalQuestions?.paidRoyaltiesToRelatedParty ?? false,
-            hasCostSharingArrangements: raw.hasCostSharingArrangements ?? raw.additionalQuestions?.hasCostSharingArrangements ?? false,
-            paidServicesToRelatedParty: raw.paidServicesToRelatedParty ?? raw.additionalQuestions?.paidServicesToRelatedParty ?? false,
-            receivedServicesFromRelatedParty: raw.receivedServicesFromRelatedParty ?? raw.additionalQuestions?.receivedServicesFromRelatedParty ?? false,
-            hasOtherTransactions: raw.hasOtherTransactions ?? raw.additionalQuestions?.hasOtherTransactions ?? false,
+            importGoods: raw.paidInterestToRelatedParty ?? raw.additionalQuestions?.importGoods ?? false,
+            documentWarehouse: raw.paidRentsToRelatedParty ?? raw.additionalQuestions?.documentWarehouse ?? false,
+            foreignParentCSA: raw.hasCostSharingArrangements ?? raw.additionalQuestions?.foreignParentCSA ?? false,
+            interestRoyaltyDeduction: raw.paidRoyaltiesToRelatedParty ?? raw.additionalQuestions?.interestRoyaltyDeduction ?? false,
+            fdiiDeduction: raw.paidServicesToRelatedParty ?? raw.additionalQuestions?.fdiiDeduction ?? false,
+            safeHavenInterest: raw.receivedServicesFromRelatedParty ?? raw.additionalQuestions?.safeHavenInterest ?? false,
+            safeHavenOutsideRange: raw.safeHavenOutsideRange ?? raw.additionalQuestions?.safeHavenOutsideRange ?? false,
+            coveredDebtInstrument: raw.hasOtherTransactions ?? raw.additionalQuestions?.coveredDebtInstrument ?? false,
         },
-        // Part VIII: Base Erosion
+        // Part VIII: Cost Sharing Arrangement
         baseErosion: {
-            isBaseErosionTaxpayer: raw.isBaseErosionTaxpayer ?? raw.baseErosion?.isBaseErosionTaxpayer ?? false,
+            csaParticipant: raw.isBaseErosionTaxpayer ?? raw.baseErosion?.csaParticipant ?? false,
+            csaBefore2009: raw.csaBefore2009 ?? raw.baseErosion?.csaBefore2009 ?? false,
+            stockBasedCompensation: raw.stockBasedCompensation ?? raw.baseErosion?.stockBasedCompensation ?? false,
         },
         signature: {
             signerName: raw.signerName || raw.signature?.signerName || raw.ownerName || '',
@@ -100,7 +110,7 @@ function transformToTaxFormData(raw: any): TaxFormData {
 
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { userId } = await auth()
@@ -108,15 +118,17 @@ export async function POST(
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
         }
 
-        const pedidoId = params.id
+        const { id: pedidoId } = await params
         const supabaseAdmin = createAdminClient()
 
         // 1. Obtener el pedido con tax_data
-        const { data: pedido, error: pedidoError } = await supabaseAdmin
+        const { data, error: pedidoError } = await supabaseAdmin
             .from('pedidos')
             .select('*')
             .eq('id', pedidoId)
             .single()
+
+        const pedido = data as any;
 
         if (pedidoError || !pedido) {
             console.error('❌ Error obteniendo pedido:', pedidoError)
@@ -200,8 +212,8 @@ export async function POST(
 
         // 6. Actualizar metadata del pedido
         const currentMetadata = pedido.metadata || {}
-        const { error: updateError } = await supabaseAdmin
-            .from('pedidos')
+        const { error: updateError } = await (supabaseAdmin
+            .from('pedidos') as any)
             .update({
                 metadata: {
                     ...currentMetadata,
@@ -222,7 +234,6 @@ export async function POST(
 
         return NextResponse.json({
             success: true,
-            pdfUrl,
             message: 'Formularios generados exitosamente'
         })
 

@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { userId } = await auth()
@@ -14,7 +14,7 @@ export async function POST(
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
         }
 
-        const pedidoId = params.id
+        const { id: pedidoId } = await params
         const formData = await req.formData()
         const file = formData.get('acuse_recibo') as File
 
@@ -35,11 +35,13 @@ export async function POST(
         const supabaseAdmin = createAdminClient()
 
         // 1. Obtener el pedido actual
-        const { data: pedido, error: pedidoError } = await supabaseAdmin
+        const { data, error: pedidoError } = await supabaseAdmin
             .from('pedidos')
             .select('metadata, user_id')
             .eq('id', pedidoId)
             .single()
+
+        const pedido = data as any
 
         if (pedidoError || !pedido) {
             return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
@@ -72,8 +74,8 @@ export async function POST(
 
         // 4. Actualizar metadata del pedido
         const currentMetadata = pedido.metadata || {}
-        const { error: updateError } = await supabaseAdmin
-            .from('pedidos')
+        const { error: updateError } = await (supabaseAdmin
+            .from('pedidos') as any)
             .update({
                 metadata: {
                     ...currentMetadata,

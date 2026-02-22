@@ -29,6 +29,7 @@ export interface TaxFormData {
         isOwnerForeignPerson: boolean
         totalAssets: number
         hasRelatedPartyTransactions: boolean
+        isInitialReturn: boolean  // true si es el primer año que se presenta
     }
     owner: {
         name: string
@@ -71,17 +72,20 @@ export interface TaxFormData {
     }
     // Part VII: Additional Questions
     additionalQuestions: {
-        paidInterestToRelatedParty: boolean
-        paidRentsToRelatedParty: boolean
-        paidRoyaltiesToRelatedParty: boolean
-        hasCostSharingArrangements: boolean
-        paidServicesToRelatedParty: boolean
-        receivedServicesFromRelatedParty: boolean
-        hasOtherTransactions: boolean
+        importGoods: boolean               // Q37
+        documentWarehouse: boolean         // Q38a
+        foreignParentCSA: boolean          // Q39
+        interestRoyaltyDeduction: boolean  // Q40a
+        fdiiDeduction: boolean            // Q41a
+        safeHavenInterest: boolean         // Q42a
+        safeHavenOutsideRange: boolean     // Q42b
+        coveredDebtInstrument: boolean     // Q43a
     }
-    // Part VIII: Base Erosion
+    // Part VIII: Cost Sharing Arrangement
     baseErosion: {
-        isBaseErosionTaxpayer: boolean
+        csaParticipant: boolean            // Q45
+        csaBefore2009: boolean            // Q46
+        stockBasedCompensation: boolean    // Q48c
     }
     signature: {
         signerName: string
@@ -100,228 +104,98 @@ export class TaxFormService {
         const pdfDoc1120 = await PDFDocument.load(form1120Bytes)
         const form1120 = pdfDoc1120.getForm()
 
-        // ========== FORM 1120: MAPEO COMPLETO ==========
+        // ========== FORM 1120: MAPEO COMPLETO (SÓLO HEADER Y FOOTER) ==========
 
-        // --- HEADER SECTION ---
         try {
-            // Name and Address
-            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_1[0]', data.llc.name)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_2[0]', data.llc.address)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_3[0]', `${data.llc.city}, ${data.llc.state} ${data.llc.zip}`)
+            // --- TAX YEAR DATES (Header) ---
+            // Basado en el PDF irs/f1120.pdf:
+            // f1_1 (MM/DD) beginning, f2 (MM/DD) ending, f3 (YY) ending
+            const currentTaxYear = data.taxYear || new Date().getFullYear().toString()
+            const yearShort = currentTaxYear.substring(2)
 
-            // Box A - Check if consolidated return (No para LLC pasiva)
-            // Box B - Employer Identification Number (EIN)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_4[0]', data.llc.ein)
+            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_1[0]', '01/01')
+            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_2[0]', '12/31')
+            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_3[0]', yearShort)
 
-            // Box C - Date incorporated
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_5[0]', this.formatDateToUS(data.llc.formationDate))
+            // --- NAME AND ADDRESS (Box A) ---
+            // Campos descubiertos: f1_4 (Name), f1_5 (Address), f1_7 (City), f1_8 (State), f1_10 (ZIP)
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_4[0]', data.llc.name)
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_5[0]', data.llc.address)
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_7[0]', data.llc.city) // Solo ciudad, sin estado ni ZIP
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_8[0]', data.llc.state)
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_10[0]', data.llc.zip)
 
-            // Box D - Total assets (from line 15, column (d), Schedule L)
-            if (data.llc.totalAssets > 0) {
-                this.setField(form1120, 'topmostSubform[0].Page1[0].f1_6[0]', this.formatThousands(data.llc.totalAssets))
+            // --- BOX B: EIN ---
+            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_11[0]', data.llc.ein)
+
+            // --- BOX E: Checkboxes ---
+            if (data.llc.isInitialReturn) {
+                this.checkField(form1120, 'topmostSubform[0].Page1[0].c1_6[0]') // (1) Initial return
             }
 
-            // Box E - Check if initial return, final return, name change, or address change
-            // Para primera declaración, marcar "Initial return"
-            // this.checkField(form1120, 'topmostSubform[0].Page1[0].c1_1[0]') // Initial return checkbox
-
-            // Box F - Principal business activity code
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_7[0]', data.llc.activityCode)
-
-            // Box G - Principal business activity
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_8[0]', data.llc.activityDescription)
-
-            // Box H - Principal product or service
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_9[0]', data.llc.activityDescription)
-
+            // Aplanamos el formulario para asegurar que los campos se rendericen
+            form1120.flatten()
         } catch (e) {
-            console.warn('Error rellenando campos del header 1120:', e)
+            console.warn('Error rellenando header 1120:', e)
         }
 
-        // --- INCOME SECTION (Lines 1-11) ---
-        // Para LLC pasiva (disregarded entity), todos los ingresos son $0
-        try {
-            // Line 1a - Gross receipts or sales
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_10[0]', '0')
-
-            // Line 1c - Balance (1a minus 1b)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_11[0]', '0')
-
-            // Line 2 - Cost of goods sold
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_12[0]', '0')
-
-            // Line 3 - Gross profit (line 1c minus line 2)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_13[0]', '0')
-
-            // Lines 4-10 - Other income (all $0 for passive LLC)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_14[0]', '0') // Line 4 - Dividends
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_15[0]', '0') // Line 5 - Interest
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_16[0]', '0') // Line 6 - Gross rents
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_17[0]', '0') // Line 7 - Gross royalties
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_18[0]', '0') // Line 8 - Capital gain net income
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_19[0]', '0') // Line 9 - Net gain or loss
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_20[0]', '0') // Line 10 - Other income
-
-            // Line 11 - Total income
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_21[0]', '0')
-        } catch (e) {
-            console.warn('Error rellenando sección de ingresos 1120:', e)
-        }
-
-        // --- DEDUCTIONS SECTION (Lines 12-29) ---
-        // Para LLC pasiva, solo formation cost como deducción
-        try {
-            // Line 12 - Compensation of officers
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_22[0]', '0')
-
-            // Lines 13-26 - Various deductions (all $0 except formation cost)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_23[0]', '0') // Line 13 - Salaries and wages
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_24[0]', '0') // Line 14 - Repairs and maintenance
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_25[0]', '0') // Line 15 - Bad debts
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_26[0]', '0') // Line 16 - Rents
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_27[0]', '0') // Line 17 - Taxes and licenses
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_28[0]', '0') // Line 18 - Interest
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_29[0]', '0') // Line 19 - Charitable contributions
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_30[0]', '0') // Line 20 - Depreciation
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_31[0]', '0') // Line 21 - Depletion
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_32[0]', '0') // Line 22 - Advertising
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_33[0]', '0') // Line 23 - Pension, profit-sharing
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_34[0]', '0') // Line 24 - Employee benefit programs
-
-            // Line 26 - Other deductions (formation cost)
-            if (data.financials.formationCost > 0) {
-                this.setField(form1120, 'topmostSubform[0].Page1[0].f1_35[0]', this.formatThousands(data.financials.formationCost))
-            } else {
-                this.setField(form1120, 'topmostSubform[0].Page1[0].f1_35[0]', '0')
-            }
-
-            // Line 27 - Total deductions
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_36[0]', this.formatThousands(data.financials.formationCost))
-
-            // Line 28 - Taxable income before NOL and special deductions
-            const taxableIncome = 0 - data.financials.formationCost
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_37[0]', this.formatThousands(taxableIncome))
-
-            // Line 30 - Taxable income
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_38[0]', this.formatThousands(taxableIncome))
-
-            // Line 31 - Total tax (Schedule J, Part I, line 11)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_39[0]', '0')
-        } catch (e) {
-            console.warn('Error rellenando sección de deducciones 1120:', e)
-        }
-
-        // --- SCHEDULE M-3 CHECKBOX ---
-        // Check "Yes" if total assets are $10 million or more
-        try {
-            if (data.llc.totalAssets >= 10000000) {
-                this.checkField(form1120, 'topmostSubform[0].Page1[0].c1_10[0]') // Schedule M-3 Yes
-            } else {
-                this.checkField(form1120, 'topmostSubform[0].Page1[0].c1_11[0]') // Schedule M-3 No
-            }
-        } catch (e) {
-            console.warn('Error marcando Schedule M-3:', e)
-        }
-
-        // --- ADDITIONAL INFORMATION (Page 2) ---
-        try {
-            // Question 1 - Check accounting method
-            this.checkField(form1120, 'topmostSubform[0].Page2[0].c2_1[0]') // Cash method (típico para LLC pasiva)
-
-            // Question 2 - Business activity
-            this.setField(form1120, 'topmostSubform[0].Page2[0].f2_1[0]', data.llc.activityDescription)
-
-            // Question 3 - Product or service
-            this.setField(form1120, 'topmostSubform[0].Page2[0].f2_2[0]', data.llc.activityDescription)
-
-            // Question 4 - Is the corporation a subsidiary in an affiliated group?
-            this.checkField(form1120, 'topmostSubform[0].Page2[0].c2_5[0]') // No
-
-            // Question 5 - Foreign financial accounts
-            this.checkField(form1120, 'topmostSubform[0].Page2[0].c2_7[0]') // No (típicamente)
-
-            // Question 6 - Foreign shareholders
-            this.checkField(form1120, 'topmostSubform[0].Page2[0].c2_8[0]') // Yes (siempre para foreign-owned LLC)
-
-            // Question 7 - Foreign person owns 25% or more
-            this.checkField(form1120, 'topmostSubform[0].Page2[0].c2_9[0]') // Yes
-
-        } catch (e) {
-            console.warn('Error rellenando información adicional 1120:', e)
-        }
-
-        // --- TEXTO SUPERPUESTO PARA GARANTIZAR VISIBILIDAD ---
+        // --- TEXTO SUPERPUESTO Y ELEMENTOS VISUALES ---
         const page1120 = pdfDoc1120.getPages()[0]
-        const { height: h1120 } = page1120.getSize()
+        const { height: h1120, width: w1120 } = page1120.getSize()
         const fontBold = await pdfDoc1120.embedFont(StandardFonts.HelveticaBold)
+        const fontRegular = await pdfDoc1120.embedFont(StandardFonts.Helvetica)
 
-        // Texto "Foreign-Owned U.S. DE" en ROJO (muy importante)
+        // Texto "Foreign-Owned U.S. DE" en ROJO — primer texto del documento, posición más alta
         page1120.drawText('Foreign-Owned U.S. DE', {
-            x: 180,
-            y: h1120 - 40,
+            x: (w1120 / 2) - 80,
+            y: 745, // Más arriba, primer texto visible del documento
             size: 14,
             font: fontBold,
             color: rgb(1, 0, 0) // ROJO
         })
 
-        // Escribir datos clave manualmente sobre la cabecera para asegurar visibilidad
-        page1120.drawText(data.llc.name, { x: 45, y: h1120 - 95, size: 10, font: fontBold })
-        page1120.drawText(data.llc.address, { x: 45, y: h1120 - 118, size: 10, font: fontBold })
-        page1120.drawText(`${data.llc.city}, ${data.llc.state} ${data.llc.zip}`, { x: 45, y: h1120 - 140, size: 10, font: fontBold })
-        page1120.drawText(data.llc.ein, { x: 380, y: h1120 - 98, size: 10, font: fontBold })
-        page1120.drawText(this.formatDateToUS(data.llc.formationDate), { x: 380, y: h1120 - 120, size: 10, font: fontBold })
+        // NOTA: Los campos Name, Address, City, EIN ya se renderizan mediante form.flatten() arriba.
+        // NO se vuelven a dibujar manualmente para evitar texto duplicado/superpuesto.
 
-        // --- SECCIÓN DE FIRMA (Sign Here) ---
-        const fontRegular = await pdfDoc1120.embedFont(StandardFonts.Helvetica)
+        // --- SECCIÓN DE FIRMA (Footer) ---
         const signatureDateFormatted = this.formatDateToUS(data.signature.signatureDate)
 
-        // Firma del oficial (Signature of officer)
+        // Dibujo manual del Pie de firma (Footer)
+        // footerY ligeramente más bajo para que la firma quede por debajo de la línea horizontal
+        const footerY = 84
+
+        // Title ("sole member") — desplazado más a la derecha
+        page1120.drawText(data.signature.signerTitle || 'sole member', {
+            x: 355,
+            y: footerY,
+            size: 10,
+            font: fontRegular
+        })
+
+        // Signature
         if (data.signature.signatureDataUrl) {
             try {
                 const signatureImageBytes = Buffer.from(data.signature.signatureDataUrl.split(',')[1], 'base64')
                 const signatureImage = await pdfDoc1120.embedPng(signatureImageBytes)
                 page1120.drawImage(signatureImage, {
-                    x: 130,
-                    y: 98,
-                    width: 120,
-                    height: 40,
+                    x: 125,
+                    y: footerY - 5, // Firma un poco más abajo
+                    width: 100,
+                    height: 25,
                 })
             } catch (error) {
-                console.warn('Error insertando imagen de firma, usando texto:', error)
-                page1120.drawText(data.signature.signerName || 'Firmado', {
-                    x: 130,
-                    y: 105,
-                    size: 10,
-                    font: fontRegular,
-                    color: rgb(0, 0, 0)
-                })
+                page1120.drawText(data.signature.signerName || 'Firmado', { x: 125, y: footerY, size: 10, font: fontRegular })
             }
         } else {
-            page1120.drawText(data.signature.signerName || 'Firmado', {
-                x: 130,
-                y: 105,
-                size: 10,
-                font: fontRegular,
-                color: rgb(0, 0, 0)
-            })
+            page1120.drawText(data.signature.signerName || 'Firmado', { x: 125, y: footerY, size: 10, font: fontRegular })
         }
 
-        // Fecha (Date)
+        // Date — desplazada más a la derecha
         page1120.drawText(signatureDateFormatted, {
-            x: 350,
-            y: 105,
+            x: 270,
+            y: footerY,
             size: 10,
-            font: fontRegular,
-            color: rgb(0, 0, 0)
-        })
-
-        // Título (Title)
-        page1120.drawText(data.signature.signerTitle, {
-            x: 480,
-            y: 105,
-            size: 10,
-            font: fontRegular,
-            color: rgb(0, 0, 0)
+            font: fontRegular
         })
 
 
@@ -331,151 +205,194 @@ export class TaxFormService {
         const pdfDoc5472 = await PDFDocument.load(form5472Bytes)
         const form = pdfDoc5472.getForm()
 
-        // --- Relleno de Campos 5472 (Mapeo COMPLETO) ---
+        // --- Relleno de Campos 5472 (Mapeo basado en coordenadas REALES del PDF) ---
+        // MAPA DE CAMPOS VERIFICADO CON COORDENADAS:
+        // Header: f1_1(x285,w53)=begin_monthday, f1_2(x343,w21)=begin_year, f1_3(x407,w53)=end_monthday, f1_4(x466,w20)=end_year
+        // Part I:
+        //   f1_5-f1_7 = 1a (nombre, dirección, ciudad)  |  f1_8 = 1b (EIN)  |  f1_9 = 1c (total assets)
+        //   f1_10(x151,Y588) = 1d (activity description) | f1_11(x511,Y588) = 1e (activity code)
+        //   f1_12(x50,Y552)  = 1f (gross this form)      | f1_13(x239,Y552) = 1g (num forms) | f1_14(x389,Y552) = 1h (gross all)
+        //   c1_1 = 1i checkbox  |  c1_2 = 1j checkbox
+        //   f1_15(x318,Y516) = 1k (num Parts VIII)       | f1_16(x440,Y516) = 1l (country of incorporation)
+        //   f1_17(x36,Y480)  = 1m (date of incorporation)| f1_18(x152,Y480) = 1n (tax residence countries) | f1_19(x368,Y480) = 1o (business countries)
+        // Part II (Page1):
+        //   f1_20 = 4a | f1_21-23 = 4b(1-3) | f1_24-26 = 4c-4e
+        //   f1_27-47 = Secciones 5a-7e (VACÍOS para LLC single-member)
+        // Part III (Page2):
+        //   f2_1 = 8a (nombre+dirección) | f2_2-f2_4 = 8b(1-3) | f2_5 = 8c (activity) | f2_6 = 8d (code)
+        //   Checkboxes: c2_2/c2_3 = Direct/Indirect | c2_4 = U.S. person
+
+        // ========== HEADER: Fecha inicio y fin del año fiscal ==========
+        // 4 campos separados: f1_1=begin month/day, f1_2=begin year, f1_3=end month/day, f1_4=end year
+        const taxYearNum = parseInt(data.taxYear)
+        const formationDateObj = new Date(data.llc.formationDate)
+
+        if (formationDateObj.getFullYear() === taxYearNum) {
+            // LLC formada en el año fiscal: fecha inicio = fecha de incorporación
+            const parts = data.llc.formationDate.includes('-')
+                ? data.llc.formationDate.split('-')
+                : data.llc.formationDate.split('/')
+            let month: string, day: string, year: string
+            if (data.llc.formationDate.includes('-')) {
+                [year, month, day] = parts
+            } else {
+                [month, day, year] = parts
+            }
+            this.setField(form, 'topmostSubform[0].Page1[0].Pg1Header[0].f1_1[0]', `${month}/${day}`)
+            this.setField(form, 'topmostSubform[0].Page1[0].Pg1Header[0].f1_2[0]', year)
+        } else {
+            // Año fiscal estándar: 1 de enero
+            this.setField(form, 'topmostSubform[0].Page1[0].Pg1Header[0].f1_1[0]', '01/01')
+            this.setField(form, 'topmostSubform[0].Page1[0].Pg1Header[0].f1_2[0]', String(taxYearNum))
+        }
+        // Fecha fin siempre 31 de diciembre
+        this.setField(form, 'topmostSubform[0].Page1[0].Pg1Header[0].f1_3[0]', '12/31')
+        this.setField(form, 'topmostSubform[0].Page1[0].Pg1Header[0].f1_4[0]', String(taxYearNum))
 
         // ========== PART I: Reporting Corporation ==========
-        // Aplicamos sangría izquierda (10 espacios) como solicitó el usuario
         const indent = '          '
 
-        // Line 1a - Name, address, and identifying number
+        // 1a - Name, address, city/state/zip
         this.setField(form, 'topmostSubform[0].Page1[0].Line1a[0].f1_5[0]', indent + data.llc.name)
         this.setField(form, 'topmostSubform[0].Page1[0].Line1a[0].f1_6[0]', indent + data.llc.address)
         this.setField(form, 'topmostSubform[0].Page1[0].Line1a[0].f1_7[0]', indent + `${data.llc.city}, ${data.llc.state} ${data.llc.zip}`)
+
+        // 1b - EIN
         this.setField(form, 'topmostSubform[0].Page1[0].f1_8[0]', data.llc.ein)
 
-        // Line 1b - Alternate EIN (if applicable)
-        if (data.llc.einAlternate) {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_9[0]', data.llc.einAlternate)
+        // 1c - Total assets
+        if (data.llc.totalAssets > 0) {
+            this.setField(form, 'topmostSubform[0].Page1[0].f1_9[0]', this.formatThousands(data.llc.totalAssets))
         }
 
-        // Line 1d - Country of incorporation or organization
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_16[0]', data.llc.countryOfIncorporation)
+        // 1d - Principal business activity (DESCRIPTION) → f1_10 (x=151, Y=588, w=222)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_10[0]', data.llc.activityDescription)
 
-        // Line 1e - Country(ies) of tax residence
-        if (data.llc.taxResidenceCountries) {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_18[0]', data.llc.taxResidenceCountries)
-        }
+        // 1e - Principal business activity CODE → f1_11 (x=511, Y=588, w=65)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_11[0]', data.llc.activityCode)
 
-        // Line 1f - Total value of gross payments made or received (reported on THIS Form 5472)
-        // Para LLC sin actividad comercial, se deja en blanco o '0'
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_11[0]', '0')
+        // 1f - Total value gross payments THIS form → campo calculado automáticamente
+        // Fórmula IRS: SUM(all gross amounts reported on this 5472)
+        // Para una DE: suma de todos los importes brutos del statement adjunto (sin nettear)
+        const total1f =
+            (data.financials.capitalContributionCash ?? 0) +
+            (data.financials.capitalContributionProperty ?? 0) +
+            (data.financials.capitalDistributionCash ?? 0) +
+            (data.financials.capitalDistributionProperty ?? 0) +
+            (data.financials.formationCost ?? 0) +
+            (data.financials.otherTransactions ?? 0)
 
-        // Line 1g - Total number of Forms 5472 filed for the tax year
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_10[0]', '1')
+        // Los campos 1f y 1h NO usan setField (el PDF los alinea a la derecha)
+        // Los dibujamos manualmente centrados dentro del campo
+        // (1f y 1h se rellenan DESPUÉS del flatten, en el paso visual más abajo)
 
-        // Line 1h - Total value of gross payments made or received (reported on ALL Forms 5472)
-        // Es el mismo valor que 1f cuando solo hay 1 Form 5472
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_17[0]', '0')
+        // 1g - Total number of Forms 5472 filed → f1_13
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_13[0]', '1')
 
-        // Line 1i - Foreign-owned U.S. DE checkbox (c1_1 en el PDF real)
-        if (data.llc.isForeignOwnedDE) {
-            this.checkField(form, 'topmostSubform[0].Page1[0].Line1i_ReadOrder[0].c1_1[0]')
-        }
+        // 1i - Consolidated filing checkbox (c1_1) → NO marcar para LLC single-member
 
-        // Line 1j - Initial return checkbox (c1_2)
-        if (data.llc.isDirectOwner) {
+        // 1j - Initial year: marcar SOLO si es la primera declaración (isInitialReturn)
+        if (data.llc.isInitialReturn) {
             this.checkField(form, 'topmostSubform[0].Page1[0].Line1j_ReadOrder[0].c1_2[0]')
         }
 
-        // Line 2 - Check if foreign-owned DE (c1_3)
-        if (data.llc.isOwnerForeignPerson) {
-            this.checkField(form, 'topmostSubform[0].Page1[0].c1_3[0]')
-        }
+        // 1k - Total number of Parts VIII → f1_15 (x=318, Y=516)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_15[0]', '0')
 
-        // Line 2 - Total assets
-        if (data.llc.totalAssets > 0) {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_19[0]', this.formatThousands(data.llc.totalAssets))
-        }
+        // 1l - Country of incorporation → f1_16 (x=440, Y=516)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_16[0]', 'United States')
 
-        // Line 3 - Check here if foreign-owned domestic disregarded entity (c1_4 = Yes checkbox)
-        // Para LLC extranjera de un solo miembro, siempre se marca
+        // 1m - Date of incorporation → f1_17 (x=36, Y=480)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_17[0]', this.formatDateToUS(data.llc.formationDate))
+
+        // 1n - Country(ies) under whose laws the corp files income tax → f1_18 (x=152, Y=480)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_18[0]', data.owner.taxResidenceCountries || data.owner.country)
+
+        // 1o - Principal country(ies) where business is conducted → f1_19 (x=368, Y=480)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_19[0]', data.owner.taxResidenceCountries || data.owner.country)
+
+        // Line 2 - Foreign-owned domestic DE checkbox (c1_3) → siempre marcar
+        this.checkField(form, 'topmostSubform[0].Page1[0].c1_3[0]')
+
+        // Line 3 - Foreign-owned DE treated as corp (c1_4) → siempre marcar
         this.checkField(form, 'topmostSubform[0].Page1[0].c1_4[0]')
 
-        // Part II surrogate foreign corporation checkbox (c1_5)
-        this.checkField(form, 'topmostSubform[0].Page1[0].c1_5[0]')
+        // c1_5: surrogate foreign corporation → NO marcar
 
-        // ========== PART II: 25% Foreign Shareholder ==========
-        // Line 4a - Name AND address del shareholder (nombre + dirección en el mismo campo)
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_20[0]', `${data.owner.name}, ${data.owner.address}, ${data.owner.city}`)
+        // ========== PART II: 25% Foreign Shareholder (Page1) ==========
+        // Sección 4: Direct 25% foreign shareholder
+        // 4a - Name and address → f1_20 (x=36, Y=372, w=540)
+        // 4a: Nombre en primera línea, dirección en segunda línea con espacio razonable entre ellas
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_20[0]', `${data.owner.name}     ${data.owner.address}, ${data.owner.city}`)
 
-        // Line 4b(1) - U.S. identifying number (ITIN si aplica, si no VACÍO)
-        // 4b(1) es para número de identificación USA - solo si tiene ITIN
+        // 4b(1) - U.S. identifying number → f1_21 (x=36, Y=336)
         if (data.owner.referenceIdType === 'ITIN') {
             this.setField(form, 'topmostSubform[0].Page1[0].f1_21[0]', data.owner.taxId)
         }
-        // Si no tiene ITIN, f1_21 queda vacío
-
-        // Line 4b(2) - Reference ID number (campo separado)
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_22[0]', data.owner.referenceIdType !== 'ITIN' ? '' : '')
-
-        // Line 4b(3) - Foreign taxpayer identification number (FTIN)
+        // 4b(2) - Reference ID → f1_22 (vacío)
+        // 4b(3) - Foreign TIN → f1_23 (x=354, Y=336)
         if (data.owner.referenceIdType === 'Foreign Tax ID') {
             this.setField(form, 'topmostSubform[0].Page1[0].f1_23[0]', data.owner.taxId)
         }
 
-        // Line 4c - Country(ies) of citizenship, organization, or incorporation
-        // (ANTES estaba en 4d - CORREGIDO)
-        if (data.owner.businessCountries) {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_24[0]', data.owner.businessCountries)
-        }
+        // 4c - Country of citizenship/incorporation → f1_24 (x=36, Y=300)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_24[0]', data.owner.country)
 
-        // Line 4d - Principal country(ies) where business is conducted
-        // (ANTES estaba en 4c - CORREGIDO)
-        if (data.owner.taxResidenceCountries) {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_25[0]', data.owner.taxResidenceCountries)
-        }
+        // 4d - Country of organization/incorporation → f1_25 (x=181, Y=300)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_25[0]', data.owner.country)
 
-        // Line 4e - Country(ies) under whose laws the direct 25% foreign shareholder files an income tax return as a resident
-        // Debe ser el PAÍS DE RESIDENCIA FISCAL del usuario (NO el nombre)
+        // 4e - Country(ies) where files income tax as resident → f1_26 (x=325, Y=300)
         this.setField(form, 'topmostSubform[0].Page1[0].f1_26[0]', data.owner.taxResidenceCountries || data.owner.country)
 
-        // Lines 5a-5e: SOLO se rellenan si hay un segundo shareholder indirecto
-        // Para LLC de un solo miembro, estos campos deben estar VACÍOS
-        // (No se mapea nada aquí intencionalmente)
+        // *** Secciones 5a-7e (f1_27 a f1_47) = VACÍAS para LLC single-member ***
+        // NO escribir nada en estos campos
 
-        // Line 4f - Direct or Indirect ownership type
-        // En Page2 los checkboxes de Part II son c2_1[0]=Direct, c2_1[1]=Indirect
+        // Direct/Indirect checkbox (Page2 top) → c2_1[0]=Direct, c2_1[1]=Indirect
         if (data.owner.ownershipType === 'Direct') {
             this.checkField(form, 'topmostSubform[0].Page2[0].c2_1[0]')
         } else {
             this.checkField(form, 'topmostSubform[0].Page2[0].c2_1[1]')
         }
 
-        // ========== PART III: Related Party ==========
-        // Para una LLC de un solo miembro extranjero, el Related Party ES el propio dueño
-        // Line 6a - Name and address of related party
+        // ========== PART III: Related Party - Section 8 (Page2) ==========
+        // Los campos de Part III están en PAGE 2, NO en Page1
+        // f2_1 = 8a (name+address) → (x=36, Y=696, w=540)
         const relatedPartyName = data.relatedParty.name || data.owner.name
         const relatedPartyAddr = data.relatedParty.address || data.owner.address
         const relatedPartyCity = data.relatedParty.city || data.owner.city
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_27[0]', `${relatedPartyName}, ${relatedPartyAddr}, ${relatedPartyCity}`)
+        // 8a: Nombre en primera parte, dirección con espacio razonable entre ellos
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_1[0]', `${relatedPartyName}     ${relatedPartyAddr}, ${relatedPartyCity}`)
 
-        // Line 6b(1) - U.S. identifying number (ITIN si aplica)
-        if (data.relatedParty.referenceIdType === 'ITIN' || data.owner.referenceIdType === 'ITIN') {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_28[0]', data.relatedParty.taxId || data.owner.taxId)
+        // 8b(1) - U.S. identifying number → f2_2 (x=36, Y=672)
+        if ((data.relatedParty.referenceIdType || data.owner.referenceIdType) === 'ITIN') {
+            this.setField(form, 'topmostSubform[0].Page2[0].f2_2[0]', data.relatedParty.taxId || data.owner.taxId)
+        }
+        // 8b(2) - Reference ID → f2_3 (vacío normalmente)
+        // 8b(3) - Foreign TIN → f2_4 (x=354, Y=672)
+        if ((data.relatedParty.referenceIdType || data.owner.referenceIdType) === 'Foreign Tax ID') {
+            this.setField(form, 'topmostSubform[0].Page2[0].f2_4[0]', data.relatedParty.taxId || data.owner.taxId)
         }
 
-        // Line 6b(3) - Foreign taxpayer identification number (FTIN)
-        if (data.relatedParty.referenceIdType === 'Foreign Tax ID' || data.owner.referenceIdType === 'Foreign Tax ID') {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_29[0]', data.relatedParty.taxId || data.owner.taxId)
-        }
+        // 8c - Principal Business Activity (descripción) → f2_5 (x=151, Y=660, w=222)
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_5[0]', data.llc.activityDescription)
 
-        // Line 6c - Country of citizenship/organization/incorporation
-        const relatedPartyCountry = data.relatedParty.businessCountries || data.owner.businessCountries || data.owner.country
-        if (relatedPartyCountry) {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_30[0]', relatedPartyCountry)
-        }
+        // 8d - Principal Business Activity Code → f2_6 (x=511, Y=660, w=65)
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_6[0]', data.llc.activityCode)
 
-        // Line 6d - Principal country(ies) where business is conducted
-        const relatedPartyTaxRes = data.relatedParty.taxResidenceCountries || data.owner.taxResidenceCountries
-        if (relatedPartyTaxRes) {
-            this.setField(form, 'topmostSubform[0].Page1[0].f1_31[0]', relatedPartyTaxRes)
-        }
+        // 8e - Relationship to reporting corp → f2_7 (x=36, Y=612, w=230, h=24)
+        const relRelationship = data.relatedParty.relationship || '25% Foreign Shareholder'
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_7[0]', relRelationship)
 
-        // Line 6e - Country under whose laws the related party files income tax return
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_32[0]', relatedPartyTaxRes || relatedPartyCountry || '')
+        // 8f - Country of citizenship/formation → MISMO VALOR que campo 4c (country of owner)
+        // Campo 4c = data.owner.country (campo f1_24). El valor de 8f debe ser idéntico al de 4c.
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_8[0]', data.owner.country)
 
-        // Line 6f - Direct or Indirect relationship
-        // c2_2[0] = Direct, c2_3[0] = Indirect para Part III
+        // 8g - Country(ies) where files income tax → MISMO VALOR que campo 4e (tax residence countries)
+        // f2_9 = 8g field en Page2 (a la derecha de 8f)
+        const taxResCountry = data.owner.taxResidenceCountries || data.owner.country
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_9[0]', taxResCountry)
+
+        // Direct/Indirect checkbox for Part III → c2_2[0]=Direct, c2_3[0]=Indirect
         const relOwnershipType = data.relatedParty.ownershipType || data.owner.ownershipType
         if (relOwnershipType === 'Direct') {
             this.checkField(form, 'topmostSubform[0].Page2[0].c2_2[0]')
@@ -483,68 +400,80 @@ export class TaxFormService {
             this.checkField(form, 'topmostSubform[0].Page2[0].c2_3[0]')
         }
 
-        // Line 6g - U.S. person checkbox (c2_4[0])
+        // U.S. person checkbox → c2_4[0]
         if (data.relatedParty.isUSPerson) {
             this.checkField(form, 'topmostSubform[0].Page2[0].c2_4[0]')
         }
 
         // ========== PART VII: Additional Questions (Page 3) ==========
-        // Cada pregunta tiene par Yes[0] / No[1] en el mismo nombre de campo
-        // Question 37 - Import goods from foreign related party?
-        this.checkField(form, data.additionalQuestions.paidInterestToRelatedParty
-            ? 'topmostSubform[0].Page3[0].c3_1[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_1[1]')  // No
+        // Reglas para Foreign-Owned U.S. DE:
+        //   - Q37: No se marca (No importa bienes de parte relacionada)
+        //   - Q38a: NO SE MARCA (ni Yes ni No) — aplica solo si Q37=Yes
+        //   - Q38c: NO SE MARCA (ni Yes ni No)
+        //   - Q39, Q40a, Q41a, Q42a, Q42b, Q43a: siempre NO ✅
 
-        // Question 38a - Inventory cost of goods?
-        this.checkField(form, data.additionalQuestions.paidRentsToRelatedParty
-            ? 'topmostSubform[0].Page3[0].c3_2[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_2[1]')  // No
+        // Question 37 - Import goods from foreign related party? → No
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_1[1]')   // No
 
-        // Question 39 - Foreign parent in CSA?
-        this.checkField(form, data.additionalQuestions.hasCostSharingArrangements
-            ? 'topmostSubform[0].Page3[0].c3_3[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_3[1]')  // No
+        // Question 38a - Forzar VACÍO (no aplica si Q37=No)
+        this.uncheckField(form, 'topmostSubform[0].Page3[0].c3_2[0]')   // Yes - vacío
+        this.uncheckField(form, 'topmostSubform[0].Page3[0].c3_2[1]')   // No  - vacío
 
-        // Question 40a - Interest or royalty deduction not allowed?
-        this.checkField(form, data.additionalQuestions.paidRoyaltiesToRelatedParty
-            ? 'topmostSubform[0].Page3[0].c3_4[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_4[1]')  // No
+        // Question 38c - Forzar VACÍO
+        this.uncheckField(form, 'topmostSubform[0].Page3[0].c3_3[0]')   // Yes - vacío
+        this.uncheckField(form, 'topmostSubform[0].Page3[0].c3_3[1]')   // No  - vacío
 
-        // Question 41a - FDII deduction claimed?
-        this.checkField(form, data.additionalQuestions.paidServicesToRelatedParty
-            ? 'topmostSubform[0].Page3[0].c3_5[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_5[1]')  // No
+        // Question 39 → No
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_4[1]')   // No
 
-        // Question 42a - Safe-haven rate loan (100%-130% AFR)?
-        this.checkField(form, data.additionalQuestions.receivedServicesFromRelatedParty
-            ? 'topmostSubform[0].Page3[0].c3_6[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_6[1]')  // No
+        // Question 40a → No
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_5[1]')   // No
 
-        // Question 42b - Safe-haven rate loan outside range? (default No)
-        this.checkField(form, 'topmostSubform[0].Page3[0].c3_7[1]') // No
+        // Question 41a → No
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_6[1]')   // No
 
-        // Question 43a - Covered debt instrument?
-        this.checkField(form, data.additionalQuestions.hasOtherTransactions
-            ? 'topmostSubform[0].Page3[0].c3_8[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_8[1]')  // No
+        // Question 42a → No
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_7[1]')   // No
+
+        // Question 42b → No
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_8[1]')   // No
+
+        // Question 43a → No
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_9[1]')   // No
 
         // ========== PART VIII: Cost Sharing Arrangement (CSA) ==========
-        // Question 45 - Did the reporting corporation become a participant in the CSA?
-        this.checkField(form, data.baseErosion.isBaseErosionTaxpayer
-            ? 'topmostSubform[0].Page3[0].c3_9[0]'   // Yes
-            : 'topmostSubform[0].Page3[0].c3_9[1]')  // No
+        // Solo se marca el campo 45 con NO ✅. El resto NO SE MARCA.
+        // Question 45 → No (c3_10 al desplazar un campo por Q38c)
+        this.checkField(form, 'topmostSubform[0].Page3[0].c3_10[1]')   // No
 
-        // Question 46 - Was the CSA in effect before January 5, 2009? (default No)
-        this.checkField(form, 'topmostSubform[0].Page3[0].c3_10[1]') // No
-
-        // Question 48c - Stock-based compensation? (default No)
-        this.checkField(form, 'topmostSubform[0].Page3[0].c3_11[1]') // No
+        // Questions 46, 48c → NO SE MARCA (se dejan en blanco)
 
         // ========== PART V: Attached Statement Checkbox ==========
         // Indicamos que hay un statement adjunto (Supporting Statements)
         this.checkField(form, 'topmostSubform[0].Page2[0].PartV[0].c2_6[0]')
 
         form.flatten()
+
+        // --- DIBUJO MANUAL DE LOS CAMPOS 1f y 1h CENTRADOS (Puesto que el aplanado alinea a la derecha) ---
+        const page1_5472 = pdfDoc5472.getPages()[0]
+        const fontReg5472 = await pdfDoc5472.embedFont(StandardFonts.Helvetica)
+        const formattedTotal1f = this.formatThousands(total1f)
+
+        // Campo 1f: x=50, Y=552, width aprox 180
+        page1_5472.drawText(formattedTotal1f, {
+            x: 50 + (180 / 2) - (formattedTotal1f.length * 3), // Centrado aproximado
+            y: 556,
+            size: 10,
+            font: fontReg5472
+        })
+
+        // Campo 1h: x=389, Y=552, width aprox 180
+        page1_5472.drawText(formattedTotal1f, {
+            x: 389 + (180 / 2) - (formattedTotal1f.length * 3), // Centrado aproximado
+            y: 556,
+            size: 10,
+            font: fontReg5472
+        })
 
         // --- PASO 3: Generar Supporting Statements ---
         // Creamos un Doc temporal para la página de statements
@@ -585,10 +514,10 @@ export class TaxFormService {
         })
         y -= 15
 
-        statementPage.drawText('REPORTABLE TRANSACTIONS (PARTS IV & V):', { x: margin, y, size: 10, font: boldFontStatement })
+        statementPage.drawText('REPORTABLE TRANSACTIONS (PART V):', { x: margin, y, size: 10, font: boldFontStatement })
         y -= 20
 
-        const financials = [
+        const financials: [string, string][] = [
             ['Capital Contribution (Cash):', `$ ${this.formatThousands(data.financials.capitalContributionCash)}`],
             ['Capital Contribution (Property):', `$ ${this.formatThousands(data.financials.capitalContributionProperty)}`],
             ['Capital Distribution (Cash):', `$ ${this.formatThousands(data.financials.capitalDistributionCash)}`],
@@ -596,9 +525,13 @@ export class TaxFormService {
             ['Formation Cost:', `$ ${this.formatThousands(data.financials.formationCost)}`]
         ]
 
+        if (data.financials.otherTransactions && data.financials.otherTransactions > 0) {
+            financials.push(['Other Reportable Transactions:', `$ ${this.formatThousands(data.financials.otherTransactions)}`]);
+        }
+
         financials.forEach(([label, value]) => {
             statementPage.drawText(label, { x: margin, y, size: 10, font })
-            statementPage.drawText(value, { x: margin + 200, y, size: 10, font: boldFontStatement })
+            statementPage.drawText(value, { x: margin + 300, y, size: 10, font: boldFontStatement }) // Movido x a 300 para más espacio
             y -= 15
         })
 
@@ -672,6 +605,15 @@ export class TaxFormService {
         }
     }
 
+    private static uncheckField(form: any, name: string) {
+        try {
+            const field = form.getCheckBox(name)
+            if (field) field.uncheck()
+        } catch (e) {
+            console.warn(`Checkbox not found or error unchecking: ${name}`)
+        }
+    }
+
     private static formatDateToUS(dateStr: string): string {
         if (!dateStr) return ''
         const parts = dateStr.split('-')
@@ -680,6 +622,28 @@ export class TaxFormService {
             return `${month}/${day}/${year}`
         }
         return dateStr
+    }
+
+    /**
+     * Formatea fecha en formato largo para el header del 5472
+     * Ej: '2025-05-24' -> 'May 24, 2025'
+     */
+    private static formatDateLong(dateStr: string): string {
+        if (!dateStr) return ''
+        const months = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December']
+        // Soporta formatos: YYYY-MM-DD y MM/DD/YYYY
+        let year: string, month: number, day: string
+        if (dateStr.includes('-')) {
+            const parts = dateStr.split('-')
+            year = parts[0]; month = parseInt(parts[1]); day = parts[2]
+        } else if (dateStr.includes('/')) {
+            const parts = dateStr.split('/')
+            month = parseInt(parts[0]); day = parts[1]; year = parts[2]
+        } else {
+            return dateStr
+        }
+        return `${months[month - 1]} ${parseInt(day)}, ${year}`
     }
 
     /**

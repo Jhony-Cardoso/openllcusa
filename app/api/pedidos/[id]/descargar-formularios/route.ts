@@ -1,27 +1,38 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { userId } = await auth()
+        const user = await currentUser()
+
         if (!userId) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
         }
 
-        const pedidoId = params.id
-
-        // Obtener pedido
+        const { id: pedidoId } = await params
         const adminDb = createAdminClient()
-        const { data: pedido, error } = await adminDb
+
+        // El ADMIN_EMAIL configurado en .env
+        const isAdmin = user?.emailAddresses.some(e => e.emailAddress === process.env.ADMIN_EMAIL)
+
+        // Obtener pedido — cast a any para evitar inferencia de tipo 'never' en Supabase sin codegen
+        let query = adminDb
             .from('pedidos')
             .select('*')
             .eq('id', pedidoId)
-            .eq('user_id', userId)
-            .single()
+
+        // Si no es admin, debe ser el dueño del pedido
+        if (!isAdmin) {
+            query = query.eq('user_id', userId)
+        }
+
+        const { data, error } = await query.single()
+        const pedido = data as any
 
         if (error || !pedido) {
             return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
@@ -33,15 +44,18 @@ export async function GET(
             return NextResponse.json({ error: 'PDF no disponible' }, { status: 404 })
         }
 
-        // Descargar el PDF desde Supabase
+        // Descargar el PDF desde Supabase (vía servidor para no filtrar IP/Puerto)
+        console.log(`🔗 Proxy descarga PDF pedido ${pedido.numero_pedido}`)
         const response = await fetch(pdfUrl)
+
         if (!response.ok) {
-            return NextResponse.json({ error: 'Error descargando PDF' }, { status: 500 })
+            console.error('❌ Error descargando desde Supabase:', response.statusText)
+            return NextResponse.json({ error: 'Error descargando PDF de la base de datos' }, { status: 500 })
         }
 
         const pdfBuffer = await response.arrayBuffer()
 
-        // Devolver el PDF sin exponer la URL interna
+        // Devolver el PDF al cliente — la IP/Puerto del servidor nunca se expone
         return new NextResponse(pdfBuffer, {
             headers: {
                 'Content-Type': 'application/pdf',
@@ -51,7 +65,7 @@ export async function GET(
         })
 
     } catch (error: any) {
-        console.error('Error descargando formularios:', error)
-        return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+        console.error('Error en proxy de descarga de formularios:', error)
+        return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
     }
 }

@@ -15,15 +15,44 @@ export async function GET() {
                 zip: '82801',
                 formationDate: '01/15/2024',
                 activityDescription: 'E-Commerce Retail',
-                activityCode: '454110'
+                activityCode: '454110',
+                einAlternate: '',
+                countryOfIncorporation: 'United States',
+                taxResidenceCountries: 'Spain',
+                isForeignOwnedDE: true,
+                soleOwnerName: 'Juan Pérez',
+                soleOwnerEin: '',
+                soleOwnerReferenceId: '12345678Z',
+                isDirectOwner: true,
+                isOwnerUSPerson: false,
+                isOwnerForeignPerson: true,
+                totalAssets: 0,
+                hasRelatedPartyTransactions: true,
+                isInitialReturn: true,
             },
             owner: {
                 name: 'Juan Pérez',
                 address: 'Calle Falsa 123',
                 city: 'Madrid',
                 country: 'Spain',
-                taxId: '12345678Z', // DNI
-                referenceIdType: 'Foreign Tax ID' as const
+                taxId: '12345678Z',
+                referenceIdType: 'Foreign Tax ID' as const,
+                businessCountries: 'Spain',
+                taxResidenceCountries: 'Spain',
+                ownershipType: 'Direct' as const,
+            },
+            relatedParty: {
+                name: 'Juan Pérez',
+                address: 'Calle Falsa 123',
+                city: 'Madrid',
+                country: 'Spain',
+                taxId: '12345678Z',
+                referenceIdType: 'Foreign Tax ID',
+                businessCountries: 'Spain',
+                taxResidenceCountries: 'Spain',
+                relationship: '25% Foreign Shareholder',
+                ownershipType: 'Direct' as const,
+                isUSPerson: false,
             },
             financials: {
                 capitalContributionCash: 1000.00,
@@ -31,6 +60,28 @@ export async function GET() {
                 capitalDistributionCash: 500.00,
                 capitalDistributionProperty: 0.00,
                 formationCost: 250.00
+            },
+            additionalInfo: {
+                hasTradeOrBusiness: false,
+                isDisregardedEntity: true,
+            },
+            additionalQuestions: {
+                paidInterestToRelatedParty: false,
+                paidRentsToRelatedParty: false,
+                paidRoyaltiesToRelatedParty: false,
+                hasCostSharingArrangements: false,
+                paidServicesToRelatedParty: false,
+                receivedServicesFromRelatedParty: false,
+                hasOtherTransactions: false,
+            },
+            baseErosion: {
+                isBaseErosionTaxpayer: false,
+            },
+            signature: {
+                signerName: 'Juan Pérez',
+                signerTitle: 'Member',
+                signatureDate: '2025-04-15',
+                signatureDataUrl: null,
             }
         }
 

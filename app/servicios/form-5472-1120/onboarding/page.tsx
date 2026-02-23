@@ -253,7 +253,42 @@ export default function Form5472OnboardingPage() {
         }))
     }
 
+    // Validación de campos requeridos por paso
+    const validateStep = (step: number): string | null => {
+        if (step === 1) {
+            if (!formData.llcName.trim()) return 'El Nombre Legal de la LLC es obligatorio.'
+            if (!formData.llcEin.trim()) return 'El EIN (Employer ID) es obligatorio.'
+            if (!formData.llcAddress.trim()) return 'La Dirección de la LLC es obligatoria.'
+            if (!formData.llcCity.trim()) return 'La Ciudad de la LLC es obligatoria.'
+            if (!formData.llcState) return 'El Estado de la LLC es obligatorio.'
+            if (!formData.llcZip.trim()) return 'El Código Postal (ZIP) es obligatorio.'
+            if (!formData.formationDate) return 'La Fecha de Formación es obligatoria.'
+            if (!formData.llcActivityCode.trim()) return 'El Código de Actividad (NAICS) es obligatorio.'
+            if (!formData.llcActivityDescription.trim()) return 'La Descripción de Actividad Principal es obligatoria.'
+        }
+        if (step === 2) {
+            if (!formData.ownerName.trim()) return 'El Nombre Completo del Dueño es obligatorio.'
+            if (!formData.ownerAddress.trim()) return 'La Dirección del Dueño es obligatoria.'
+            if (!formData.ownerCity.trim()) return 'La Ciudad del Dueño es obligatoria.'
+            if (!formData.ownerCountry.trim()) return 'El País de Residencia del Dueño es obligatorio.'
+            if (!formData.ownerTaxId.trim()) return 'El Número de Identificación Fiscal del Dueño es obligatorio.'
+            if (!formData.ownerTaxResidenceCountries.trim()) return 'El País de Residencia Fiscal del Dueño es obligatorio.'
+        }
+        // Paso 3 (Transacciones): todas las cantidades son opcionales — se admite 0
+        if (step === 4) {
+            if (!formData.signatureDataUrl && !formData.signerName.trim()) return 'La firma es obligatoria.'
+            if (!formData.signerTitle.trim()) return 'El Cargo/Título es obligatorio.'
+            if (!formData.signatureDate) return 'La Fecha de firma es obligatoria.'
+        }
+        return null
+    }
+
     const handleNext = () => {
+        const error = validateStep(currentStep)
+        if (error) {
+            alert(error)
+            return
+        }
         if (currentStep < steps.length) {
             setCurrentStep(prev => prev + 1)
             window.scrollTo(0, 0)

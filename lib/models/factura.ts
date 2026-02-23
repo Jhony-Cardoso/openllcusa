@@ -5,11 +5,12 @@ import { createAdminClient } from '../supabase/admin'
 import type { Database } from '../supabase/database.types'
 
 type FacturaRow = Database['public']['Tables']['facturas']['Row']
-type FacturaInsert = Database['public']['Tables']['facturas']['Insert']
 
 export class FacturaModel {
     /**
      * Crear una nueva factura
+     * NOTA: El esquema real usa 'estado' (no 'estado_pago') y 'pdf_url' (no 'pdf_path').
+     *       No existe 'metodo_pago' en la tabla.
      */
     static async crear(data: {
         pedidoId: string
@@ -18,8 +19,7 @@ export class FacturaModel {
         subtotal: number
         impuestos: number
         total: number
-        metodoPago: string
-        estadoPago: 'pendiente' | 'pagada' | 'cancelada'
+        estado?: 'pendiente' | 'pagada' | 'cancelada'
         metadata?: any
     }): Promise<FacturaRow | null> {
         const supabase = createAdminClient()
@@ -33,10 +33,9 @@ export class FacturaModel {
                 subtotal: data.subtotal,
                 impuestos: data.impuestos,
                 total: data.total,
-                metodo_pago: data.metodoPago,
-                estado_pago: data.estadoPago,
-                metadata: data.metadata || {},
-            })
+                estado: data.estado || 'pagada',
+                notas: data.metadata ? JSON.stringify(data.metadata) : null,
+            } as any)
             .select('*')
             .single()
 
@@ -70,6 +69,7 @@ export class FacturaModel {
 
     /**
      * Obtener factura por pedido ID
+     * Usa maybeSingle() para evitar error PGRST116 cuando no existe factura aún.
      */
     static async obtenerPorPedidoId(pedidoId: string): Promise<FacturaRow | null> {
         const supabase = createClient()
@@ -78,7 +78,7 @@ export class FacturaModel {
             .from('facturas')
             .select('*')
             .eq('pedido_id', pedidoId)
-            .single()
+            .maybeSingle()
 
         if (error) {
             console.error('❌ Error obteniendo factura por pedido:', error)
@@ -109,30 +109,23 @@ export class FacturaModel {
     }
 
     /**
-     * Actualizar estado de pago
+     * Actualizar estado de factura
+     * Usa 'estado' (campo real en DB, no 'estado_pago')
      */
     static async actualizarEstadoPago(
         facturaId: string,
-        estadoPago: 'pendiente' | 'pagada' | 'cancelada',
-        fechaPago?: Date
+        estado: 'pendiente' | 'pagada' | 'cancelada',
+        _fechaPago?: Date  // Mantenido por compatibilidad con llamadas existentes
     ): Promise<boolean> {
         const supabase = createAdminClient()
 
-        const updateData: any = {
-            estado_pago: estadoPago,
-        }
-
-        if (fechaPago) {
-            updateData.fecha_pago = fechaPago.toISOString()
-        }
-
         const { error } = await supabase
             .from('facturas')
-            .update(updateData)
+            .update({ estado } as any)
             .eq('id', facturaId)
 
         if (error) {
-            console.error('❌ Error actualizando estado de pago:', error)
+            console.error('❌ Error actualizando estado de factura:', error)
             return false
         }
 
@@ -150,21 +143,22 @@ export class FacturaModel {
     }
 
     /**
-     * Actualizar ruta del PDF
+     * Actualizar URL del PDF (campo 'pdf_url' según el esquema real de la DB)
+     * Nota: El método conserva el nombre 'actualizarPdfPath' por compatibilidad.
      */
     static async actualizarPdfPath(
         facturaId: string,
-        pdfPath: string
+        pdfUrl: string
     ): Promise<boolean> {
         const supabase = createAdminClient()
 
         const { error } = await supabase
             .from('facturas')
-            .update({ pdf_path: pdfPath })
+            .update({ pdf_url: pdfUrl } as any)
             .eq('id', facturaId)
 
         if (error) {
-            console.error('❌ Error actualizando PDF path:', error)
+            console.error('❌ Error actualizando PDF URL:', error)
             return false
         }
 

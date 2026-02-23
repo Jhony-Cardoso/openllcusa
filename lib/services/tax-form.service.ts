@@ -145,13 +145,18 @@ export class TaxFormService {
         const fontBold = await pdfDoc1120.embedFont(StandardFonts.HelveticaBold)
         const fontRegular = await pdfDoc1120.embedFont(StandardFonts.Helvetica)
 
-        // Texto "Foreign-Owned U.S. DE" en ROJO — primer texto del documento, posición más alta
+        // Color azul oscuro uniforme para todos los datos del usuario (igual que los campos del formulario)
+        const IRS_BLUE = rgb(0.063, 0.216, 0.631)
+
+        // "Foreign-Owned U.S. DE" en ROJO — colocado como sello diagonal en la esquina superior izquierda
+        // del área del header para evitar solaparse con el título principal del formulario
         page1120.drawText('Foreign-Owned U.S. DE', {
-            x: (w1120 / 2) - 80,
-            y: 745, // Más arriba, primer texto visible del documento
+            x: 250,
+            y: 687, // Entre el título y la línea "For calendar year..."
             size: 14,
             font: fontBold,
-            color: rgb(1, 0, 0) // ROJO
+            color: rgb(1, 0, 0), // ROJO
+            rotate: degrees(8)   // Ligera inclinación de sello para distinguirlo del texto impreso
         })
 
         // NOTA: Los campos Name, Address, City, EIN ya se renderizan mediante form.flatten() arriba.
@@ -164,38 +169,40 @@ export class TaxFormService {
         // footerY ligeramente más bajo para que la firma quede por debajo de la línea horizontal
         const footerY = 84
 
-        // Title ("sole member") — desplazado más a la derecha
+        // Title ("sole member") — desplazado más a la derecha, en azul oscuro
         page1120.drawText(data.signature.signerTitle || 'sole member', {
             x: 355,
-            y: footerY,
+            y: footerY + 10,
             size: 10,
-            font: fontRegular
+            font: fontRegular,
+            color: IRS_BLUE
         })
 
-        // Signature
+        // Signature (en azul oscuro si no hay imagen)
         if (data.signature.signatureDataUrl) {
             try {
                 const signatureImageBytes = Buffer.from(data.signature.signatureDataUrl.split(',')[1], 'base64')
                 const signatureImage = await pdfDoc1120.embedPng(signatureImageBytes)
                 page1120.drawImage(signatureImage, {
-                    x: 125,
+                    x: 130,
                     y: footerY - 5, // Firma un poco más abajo
                     width: 100,
                     height: 25,
                 })
             } catch (error) {
-                page1120.drawText(data.signature.signerName || 'Firmado', { x: 125, y: footerY, size: 10, font: fontRegular })
+                page1120.drawText(data.signature.signerName || 'Firmado', { x: 125, y: footerY, size: 10, font: fontRegular, color: IRS_BLUE })
             }
         } else {
-            page1120.drawText(data.signature.signerName || 'Firmado', { x: 125, y: footerY, size: 10, font: fontRegular })
+            page1120.drawText(data.signature.signerName || 'Firmado', { x: 125, y: footerY, size: 10, font: fontRegular, color: IRS_BLUE })
         }
 
-        // Date — desplazada más a la derecha
+        // Date — en azul oscuro
         page1120.drawText(signatureDateFormatted, {
             x: 270,
-            y: footerY,
+            y: footerY + 10,
             size: 10,
-            font: fontRegular
+            font: fontRegular,
+            color: IRS_BLUE
         })
 
 
@@ -322,8 +329,9 @@ export class TaxFormService {
         // ========== PART II: 25% Foreign Shareholder (Page1) ==========
         // Sección 4: Direct 25% foreign shareholder
         // 4a - Name and address → f1_20 (x=36, Y=372, w=540)
-        // 4a: Nombre en primera línea, dirección en segunda línea con espacio razonable entre ellas
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_20[0]', `${data.owner.name}     ${data.owner.address}, ${data.owner.city}`)
+        // Sangría generosa + dirección completa incluyendo país (igual que campo 8a)
+        const indent4 = '                ' // Sangría generosa (~16 espacios)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_20[0]', `${indent4}${data.owner.name}     ${data.owner.address}, ${data.owner.city}, ${data.owner.country}`)
 
         // 4b(1) - U.S. identifying number → f1_21 (x=36, Y=336)
         if (data.owner.referenceIdType === 'ITIN') {
@@ -360,8 +368,10 @@ export class TaxFormService {
         const relatedPartyName = data.relatedParty.name || data.owner.name
         const relatedPartyAddr = data.relatedParty.address || data.owner.address
         const relatedPartyCity = data.relatedParty.city || data.owner.city
-        // 8a: Nombre en primera parte, dirección con espacio razonable entre ellos
-        this.setField(form, 'topmostSubform[0].Page2[0].f2_1[0]', `${relatedPartyName}     ${relatedPartyAddr}, ${relatedPartyCity}`)
+        const relatedPartyCountry = data.relatedParty.country || data.owner.country
+        // 8a: Sangría generosa, dirección completa incluyendo país
+        const indent8 = '                ' // Sangría generosa (~16 espacios)
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_1[0]', `${indent8}${relatedPartyName}     ${relatedPartyAddr}, ${relatedPartyCity}, ${relatedPartyCountry}`)
 
         // 8b(1) - U.S. identifying number → f2_2 (x=36, Y=672)
         if ((data.relatedParty.referenceIdType || data.owner.referenceIdType) === 'ITIN') {
@@ -379,18 +389,22 @@ export class TaxFormService {
         // 8d - Principal Business Activity Code → f2_6 (x=511, Y=660, w=65)
         this.setField(form, 'topmostSubform[0].Page2[0].f2_6[0]', data.llc.activityCode)
 
-        // 8e - Relationship to reporting corp → f2_7 (x=36, Y=612, w=230, h=24)
-        const relRelationship = data.relatedParty.relationship || '25% Foreign Shareholder'
-        this.setField(form, 'topmostSubform[0].Page2[0].f2_7[0]', relRelationship)
+        // MAPEO REAL VERIFICADO POR SCREENSHOT:
+        // f2_7 → campo 8f (Principal country where business is conducted)
+        // f2_8 → campo 8g (Country where files income tax as resident)
+        // f2_9 → campo 9 de PART IV (NO hay que rellenarlo aquí)
+        // NOTA: Campo 8e usa checkboxes (c2_2/c2_3/c2_4), no tiene campo de texto f2_x propio.
 
-        // 8f - Country of citizenship/formation → MISMO VALOR que campo 4c (country of owner)
-        // Campo 4c = data.owner.country (campo f1_24). El valor de 8f debe ser idéntico al de 4c.
-        this.setField(form, 'topmostSubform[0].Page2[0].f2_8[0]', data.owner.country)
+        // 8f - Principal country(ies) where business is conducted → f2_7
+        // Debe ser el mismo valor que el campo 4c (país del dueño)
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_7[0]', data.owner.country)
 
-        // 8g - Country(ies) where files income tax → MISMO VALOR que campo 4e (tax residence countries)
-        // f2_9 = 8g field en Page2 (a la derecha de 8f)
+        // 8g - Country(ies) where files income tax as resident → f2_8
+        // Mismo valor que campo 4e (tax residence countries)
         const taxResCountry = data.owner.taxResidenceCountries || data.owner.country
-        this.setField(form, 'topmostSubform[0].Page2[0].f2_9[0]', taxResCountry)
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_8[0]', taxResCountry)
+
+        // NOTA: f2_9 corresponde al campo 9 de Part IV — NO asignar aquí
 
         // Direct/Indirect checkbox for Part III → c2_2[0]=Direct, c2_3[0]=Indirect
         const relOwnershipType = data.relatedParty.ownershipType || data.owner.ownershipType
@@ -454,17 +468,19 @@ export class TaxFormService {
 
         form.flatten()
 
-        // --- DIBUJO MANUAL DE LOS CAMPOS 1f y 1h CENTRADOS (Puesto que el aplanado alinea a la derecha) ---
+        // --- DIBUJO MANUAL DE LOS CAMPOS 1f y 1h CENTRADOS (en azul oscuro, igual que los demás campos) ---
         const page1_5472 = pdfDoc5472.getPages()[0]
         const fontReg5472 = await pdfDoc5472.embedFont(StandardFonts.Helvetica)
         const formattedTotal1f = this.formatThousands(total1f)
+        const IRS_BLUE_5472 = rgb(0.063, 0.216, 0.631) // Mismo azul oscuro uniforme IRS
 
         // Campo 1f: x=50, Y=552, width aprox 180
         page1_5472.drawText(formattedTotal1f, {
             x: 50 + (180 / 2) - (formattedTotal1f.length * 3), // Centrado aproximado
             y: 556,
             size: 10,
-            font: fontReg5472
+            font: fontReg5472,
+            color: IRS_BLUE_5472
         })
 
         // Campo 1h: x=389, Y=552, width aprox 180
@@ -472,7 +488,8 @@ export class TaxFormService {
             x: 389 + (180 / 2) - (formattedTotal1f.length * 3), // Centrado aproximado
             y: 556,
             size: 10,
-            font: fontReg5472
+            font: fontReg5472,
+            color: IRS_BLUE_5472
         })
 
         // --- PASO 3: Generar Supporting Statements ---

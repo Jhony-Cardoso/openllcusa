@@ -151,7 +151,7 @@ export class TaxFormService {
         // "Foreign-Owned U.S. DE" en ROJO — colocado como sello diagonal en la esquina superior izquierda
         // del área del header para evitar solaparse con el título principal del formulario
         page1120.drawText('Foreign-Owned U.S. DE', {
-            x: 250,
+            x: 300,
             y: 687, // Entre el título y la línea "For calendar year..."
             size: 14,
             font: fontBold,
@@ -316,7 +316,8 @@ export class TaxFormService {
         this.setField(form, 'topmostSubform[0].Page1[0].f1_18[0]', data.owner.taxResidenceCountries || data.owner.country)
 
         // 1o - Principal country(ies) where business is conducted → f1_19 (x=368, Y=480)
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_19[0]', data.owner.taxResidenceCountries || data.owner.country)
+        const businessCountries = data.owner.businessCountries || data.owner.country
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_19[0]', businessCountries)
 
         // Line 2 - Foreign-owned domestic DE checkbox (c1_3) → siempre marcar
         this.checkField(form, 'topmostSubform[0].Page1[0].c1_3[0]')
@@ -343,8 +344,8 @@ export class TaxFormService {
             this.setField(form, 'topmostSubform[0].Page1[0].f1_23[0]', data.owner.taxId)
         }
 
-        // 4c - Country of citizenship/incorporation → f1_24 (x=36, Y=300)
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_24[0]', data.owner.country)
+        // 4c - Principal country(ies) where business is conducted → f1_24 (x=36, Y=300)
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_24[0]', businessCountries)
 
         // 4d - Country of organization/incorporation → f1_25 (x=181, Y=300)
         this.setField(form, 'topmostSubform[0].Page1[0].f1_25[0]', data.owner.country)
@@ -396,8 +397,9 @@ export class TaxFormService {
         // NOTA: Campo 8e usa checkboxes (c2_2/c2_3/c2_4), no tiene campo de texto f2_x propio.
 
         // 8f - Principal country(ies) where business is conducted → f2_7
-        // Debe ser el mismo valor que el campo 4c (país del dueño)
-        this.setField(form, 'topmostSubform[0].Page2[0].f2_7[0]', data.owner.country)
+        // Debe ser el mismo valor que el campo 4c
+        const relBusinessCountries = data.relatedParty?.businessCountries || businessCountries
+        this.setField(form, 'topmostSubform[0].Page2[0].f2_7[0]', relBusinessCountries)
 
         // 8g - Country(ies) where files income tax as resident → f2_8
         // Mismo valor que campo 4e (tax residence countries)

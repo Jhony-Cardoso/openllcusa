@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
     BarChart3, Users, Package, FileText,
-    Settings, LogOut, LayoutDashboard, Search
+    Settings, LogOut, LayoutDashboard, Search, MousePointer2
 } from 'lucide-react'
 
 export default async function AdminLayout({
@@ -28,6 +28,7 @@ export default async function AdminLayout({
         { label: 'Resumen', href: '/admin', icon: LayoutDashboard },
         { label: 'Pedidos', href: '/admin/pedidos', icon: Package },
         { label: 'Clientes', href: '/admin/clientes', icon: Users },
+        { label: 'Prospectos (Leads)', href: '/admin/leads', icon: MousePointer2 },
         { label: 'Documentos', href: '/admin/documentos', icon: FileText },
     ]
 

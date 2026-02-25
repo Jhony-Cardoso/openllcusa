@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -96,6 +97,7 @@ const COMUNIDADES = [
 // COMPONENTE PRINCIPAL
 // ===================================
 export default function CalculadoraFiscal() {
+  const router = useRouter();
   const [grossIncome, setGrossIncome] = useState(50000);
   const [deductibleExpensesPercent, setDeductibleExpensesPercent] = useState(30);
   const [activity, setActivity] = useState('');
@@ -110,31 +112,40 @@ export default function CalculadoraFiscal() {
   const [showLLCWarning, setShowLLCWarning] = useState(false);
   const [cameFromQuiz, setCameFromQuiz] = useState(false);
 
-  // ✅ INTEGRACIÓN CON QUIZ - Cargar datos automáticamente
+  // ✅ GATE: Asegurar que el usuario pasó por el lead-form/quiz
   useEffect(() => {
+    const leadId = localStorage.getItem('lead-id');
     const quizFlag = localStorage.getItem('came-from-quiz');
     const quizAnswersStr = localStorage.getItem('quiz-answers');
-    
+
+    // Si no hay leadId y no viene del flujo normal (quiz), redirigir al formulario
+    // para capturar el dato antes de dar el "premio" (la calculadora)
+    if (!leadId) {
+      console.log('🔒 Acceso restringido: Redirigiendo a captación de lead...');
+      router.push('/lead-form');
+      return;
+    }
+
     if (quizFlag === 'true' && quizAnswersStr) {
       try {
         const answers = JSON.parse(quizAnswersStr);
         setCameFromQuiz(true);
-        
+
         // Pre-llenar facturación según respuesta del quiz
         if (answers.revenue === 'less-20k') setGrossIncome(15000);
         if (answers.revenue === '20k-30k') setGrossIncome(25000);
         if (answers.revenue === '30k-50k') setGrossIncome(40000);
         if (answers.revenue === '50k-80k') setGrossIncome(65000);
         if (answers.revenue === 'more-80k') setGrossIncome(100000);
-        
+
         // Pre-llenar actividad si es digital
         if (answers.digitalRemote === 'yes') {
           setActivity('Servicios profesionales');
         }
-        
+
         // Limpiar flag para que no se recargue en cada visita
         localStorage.removeItem('came-from-quiz');
-        
+
         console.log('✅ Datos cargados desde el quiz:', answers);
       } catch (error) {
         console.error('Error al cargar datos del quiz:', error);
@@ -154,7 +165,7 @@ export default function CalculadoraFiscal() {
     if (showResults) {
       const scenarios = calculateScenarios();
       const hasLLC = scenarios.some(s => s.name.includes('LLC'));
-      
+
       if (hasLLC && !localStorage.getItem('llc-warning-seen')) {
         setTimeout(() => setShowLLCWarning(true), 1000);
       }
@@ -309,7 +320,7 @@ export default function CalculadoraFiscal() {
       breakdown: [
         `Ingresos: €${netRevenue.toLocaleString()}`,
         `Impuesto personal: €0 (0%)`,
-        netRevenue > 102000 
+        netRevenue > 102000
           ? `Impuesto corporativo (9% sobre >€102k): €${corporateTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
           : `Impuesto corporativo: €0 (exento hasta €102k)`,
         `Sin Seguridad Social`,
@@ -339,14 +350,14 @@ export default function CalculadoraFiscal() {
 
       {/* Modal de primera visita */}
       <DisclaimerModal />
-      
+
       {/* Modal de advertencia para LLC */}
-      <WarningModalLLC 
+      <WarningModalLLC
         isOpen={showLLCWarning}
         onClose={() => setShowLLCWarning(false)}
         onAccept={() => {
           localStorage.setItem('llc-warning-seen', 'true');
-          setShowLLCWarning(false);          
+          setShowLLCWarning(false);
         }}
       />
 
@@ -373,8 +384,8 @@ export default function CalculadoraFiscal() {
           }}>
             <span style={{ fontSize: '1.25rem', marginRight: '0.5rem' }}>⚠️</span>
             <strong>Información orientativa:</strong> Esta calculadora NO constituye asesoramiento fiscal, legal ni financiero personalizado.{' '}
-            <a 
-              href="/legal/terms-and-conditions" 
+            <a
+              href="/legal/terms-and-conditions"
               style={{
                 textDecoration: 'underline',
                 color: '#92400e',
@@ -389,18 +400,18 @@ export default function CalculadoraFiscal() {
       </div>
 
       <div className={styles.container}>
-        
+
         {/* Header con botón quiz en la esquina */}
         <div className={styles.header}>
           <Link href="/quiz" className={styles.quizButton}>
             🤔 ¿Es una LLC para ti?
           </Link>
-          
+
           <h1 className={styles.title}>🧮 Calculadora Fiscal</h1>
           <p className={styles.subtitle}>
             Compara estructuras empresariales para emprendedores en España
           </p>
-          
+
           {/* Mensaje si vino del quiz */}
           {cameFromQuiz && (
             <div style={{
@@ -484,7 +495,7 @@ export default function CalculadoraFiscal() {
               id="legal-accept"
             />
             <label htmlFor="legal-accept" className={styles.checkboxLabel}>
-              He leído y acepto que esta calculadora proporciona <strong>estimaciones orientativas</strong> y 
+              He leído y acepto que esta calculadora proporciona <strong>estimaciones orientativas</strong> y
               que debo consultar con un asesor fiscal profesional antes de tomar decisiones.
             </label>
           </div>
@@ -502,7 +513,7 @@ export default function CalculadoraFiscal() {
         {showResults && (
           <div className={styles.results}>
             <h2 className={styles.resultsTitle}>📊 Comparativa de Escenarios</h2>
-            
+
             <div className={styles.scenariosGrid}>
               {scenarios.map((scenario, index) => (
                 <div key={index} className={styles.scenarioCard}>
@@ -533,53 +544,53 @@ export default function CalculadoraFiscal() {
                       </div>
                     ))}
                   </div>
-                  
-                   {/* ✅ NUEVO: Rango de variación */}
+
+                  {/* ✅ NUEVO: Rango de variación */}
                   <div className={styles.variationRange}>
                     <div className={styles.variationLabel}>
-                      📊 Rango de variación real: 
-                    <span className={styles.variationValue}>
-                      {index === 0 && '±8%'}  {/* Autónomo */}
-                      {index === 1 && '±12%'} {/* SL */}
-                      {index === 2 && '±25%'} {/* LLC España */}
-                      {index === 3 && '±15%'} {/* Nómada */}
-                    </span>
-                </div>
-                <div className={styles.variationBar}>
-                  <div className={styles.variationIndicator} />
-                </div>
-                <p className={styles.variationNote}>
-                   Depende de tu situación personal, deducciones aplicables y normativa autonómica
-                </p>
-              </div> 
+                      📊 Rango de variación real:
+                      <span className={styles.variationValue}>
+                        {index === 0 && '±8%'}  {/* Autónomo */}
+                        {index === 1 && '±12%'} {/* SL */}
+                        {index === 2 && '±25%'} {/* LLC España */}
+                        {index === 3 && '±15%'} {/* Nómada */}
+                      </span>
+                    </div>
+                    <div className={styles.variationBar}>
+                      <div className={styles.variationIndicator} />
+                    </div>
+                    <p className={styles.variationNote}>
+                      Depende de tu situación personal, deducciones aplicables y normativa autonómica
+                    </p>
+                  </div>
 
                   {scenario.requiresConsultation && (
                     <>
-                    <div className={styles.consultationBadge}>
-                      ⚠️ Requiere consulta especializada
-                    </div>
+                      <div className={styles.consultationBadge}>
+                        ⚠️ Requiere consulta especializada
+                      </div>
 
-                    {/* ✅ NUEVO BOTÓN */}
-                    <Link 
-                      href="/contacto" 
-                      className={styles.consultationButton}
-                    >
-                      <span className={styles.consultationButtonIcon}>📅</span>
-                       Agendar consulta
-                      <span className={styles.consultationButtonArrow}>→</span>
-                   </Link>
-                  </>
-                )}                   
+                      {/* ✅ NUEVO BOTÓN */}
+                      <Link
+                        href="/contacto"
+                        className={styles.consultationButton}
+                      >
+                        <span className={styles.consultationButtonIcon}>📅</span>
+                        Agendar consulta
+                        <span className={styles.consultationButtonArrow}>→</span>
+                      </Link>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         )}
-        
+
         {/* Botón para ir a la FAQ completa de la calculadora */}
-     <a href="/faq-calculadora" className={styles.faqButton}>
-       Ver FAQ completa de esta calculadora
-     </a>
+        <a href="/faq-calculadora" className={styles.faqButton}>
+          Ver FAQ completa de esta calculadora
+        </a>
 
         {/* DISCLAIMER LEGAL REFORZADO */}
         <div className={styles.legalNotice}>
@@ -587,12 +598,12 @@ export default function CalculadoraFiscal() {
             <span className={styles.warningIcon}>⚠️</span>
             <strong>AVISO LEGAL IMPORTANTE</strong>
           </div>
-          
+
           <div className={styles.legalContent}>
             <p>
               <strong>Esta calculadora proporciona ESTIMACIONES EDUCATIVAS ÚNICAMENTE.</strong>
             </p>
-            
+
             <ul className={styles.legalList}>
               <li>❌ <strong>NO</strong> constituye asesoramiento fiscal, legal ni financiero personalizado</li>
               <li>❌ <strong>NO</strong> garantiza resultados específicos ni exactitud absoluta</li>
@@ -600,12 +611,12 @@ export default function CalculadoraFiscal() {
               <li>✅ Debes <strong>SIEMPRE consultar con un asesor fiscal certificado</strong> antes de decidir</li>
               <li>✅ Los resultados pueden variar entre -8% y +85% según el escenario</li>
             </ul>
-            
+
             <p className={styles.legalFooter}>
-              <strong>Open LLC USA NO se hace responsable</strong> de decisiones tomadas basándose 
+              <strong>Open LLC USA NO se hace responsable</strong> de decisiones tomadas basándose
               exclusivamente en esta herramienta.
             </p>
-            
+
             <p className={styles.legalUpdate}>
               <strong>Última actualización:</strong> 2 noviembre 2025 | <strong>Versión:</strong> 2.3.2
               <br />
@@ -616,7 +627,7 @@ export default function CalculadoraFiscal() {
           </div>
         </div>
 
-         {/* ← PEGAR AQUÍ: Sección FAQ calculadora */}
+        {/* ← PEGAR AQUÍ: Sección FAQ calculadora */}
         <section
           id="faq-calculadora"
           className={styles.faqSection}
@@ -676,7 +687,7 @@ export default function CalculadoraFiscal() {
           </div>
         </section>
         {/* ← FIN SECCIÓN FAQ */}
-   
+
         {/* CTA Sticky Dinámico */}
         {scrollPosition > 500 && (
           <div className={styles.stickyCta}>

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {
     Package, TrendingUp, Users, DollarSign,
     ArrowRight, Clock, CheckCircle2, AlertCircle,
-    FileText, Activity, ExternalLink
+    FileText, Activity, ExternalLink, MousePointer2
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
@@ -135,6 +135,10 @@ export default async function AdminDashboardPage() {
                             <Link href="/admin/analiticas" className="flex items-center gap-3 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
                                 <TrendingUp size={18} className="text-slate-400" />
                                 Analíticas de Ventas
+                            </Link>
+                            <Link href="/admin/leads" className="flex items-center gap-3 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+                                <MousePointer2 size={18} className="text-slate-400" />
+                                Gestión de Leads
                             </Link>
                             <Link href="/admin/alertas" className="flex items-center gap-3 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
                                 <AlertCircle size={18} className="text-slate-400" />

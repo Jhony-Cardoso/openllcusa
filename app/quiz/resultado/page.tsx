@@ -14,48 +14,69 @@ export default function ResultadoPage() {
   const getTierInfo = (score: number) => {
     if (score >= 80) {
       return {
-        tier: 'TIER 1',
-        percentage: '67%',
-        title: '¡La LLC es perfecta para ti!',
-        description: 'Tu perfil es ideal para una LLC. Ya estás listo para dar el salto internacional.',
-        message: 'Los números son claros. Es tu momento.',
+        tier: 'TIER 1 - ELITE',
+        percentage: '85-100%',
+        title: '¡La LLC es tu Mejor Inversión Ahora! 🚀',
+        description: 'Tu perfil es 100% óptimo. Cada mes que pasas tributando como autónomo estás perdiendo dinero real y proyección internacional.',
+        message: 'Ahorro Fiscal Estimado: >4.500€/año + Expansión USA',
         color: '#10b981',
-        recommendation: 'NO lo estimes primer año: 414%. Cada mes sin LLC probablemente te cuesta 1.500 - 3.000€ en oportunidades perdidas.'
+        recommendation: 'RESULTADO: APTO TOTAL. Recomendamos el Plan Launch para aprovechar la inercia de tus clientes actuales.'
       };
     } else if (score >= 60) {
       return {
-        tier: 'TIER 2',
-        percentage: '54%',
-        title: '¡Estás muy cerca!',
-        description: 'Tu perfil muestra gran potencial. Con algunos ajustes estratégicos, la LLC será perfecta para ti.',
-        message: 'Unos pequeños cambios y estarás listo',
+        tier: 'TIER 2 - AVANZADO',
+        percentage: '65-80%',
+        title: '¡Estás a un paso de la Globalización!',
+        description: 'Tu negocio tiene la tracción necesaria. Una LLC te daría el empuje definitivo para cerrar clientes en dólares y optimizar tu carga fiscal.',
+        message: 'Potencial de Ahorro: 3.000€ - 4.500€/año',
         color: '#3b82f6',
-        recommendation: 'La LLC puede ser tu catalizador. Analicemos juntos tu situación específica.'
+        recommendation: 'RESULTADO: ALTAMENTE RECOMNDABLE. Una consultoría de 15 min despejará tus dudas sobre el nexo en España.'
       };
     } else if (score >= 40) {
       return {
-        tier: 'TIER 3',
-        percentage: '38%',
-        title: 'Hay potencial, pero necesitas prepararte',
-        description: 'Aún no es tu momento óptimo, pero puedes trabajar hacia ese objetivo.',
-        message: 'Prepárate ahora, implementa después',
+        tier: 'TIER 3 - POTENCIAL',
+        percentage: '40-60%',
+        title: 'Buen Camino, pero con Matices',
+        description: 'Hay potencial, pero tu estructura actual aún aguanta. Podrías beneficiarte de la LLC sobre todo por imagen de marca e infraestructura de pagos.',
+        message: 'Enfoque: Crecimiento y Validación USA',
         color: '#f59e0b',
-        recommendation: 'Usa nuestra calculadora para ver números exactos. Podemos crear un plan para cuando estés listo.'
+        recommendation: 'RESULTADO: VIABLE. Te sugerimos usar la calculadora para ver si el ahorro compensa el mantenimiento inicial.'
       };
     } else {
       return {
-        tier: 'TIER 4-5',
-        percentage: '25%',
-        title: 'Céntrate en crecer primero',
-        description: 'La LLC te espera cuando tu negocio alcance el nivel adecuado. Enfócate en crecimiento.',
-        message: 'Tu prioridad ahora: construir y crecer',
+        tier: 'TIER 4 - EMERGENTE',
+        percentage: '<40%',
+        title: 'Foco en Facturación Primero 📈',
+        description: 'La LLC es una herramienta de optimización. Por ahora, tu mejor inversión es el marketing y las ventas para llegar a los 30k€ anuales.',
+        message: 'Próximo Hito: 25.000€ de Facturación Anual',
         color: '#64748b',
-        recommendation: 'Alcanza los 20-30k€ anuales primero. Luego la LLC multiplicará tu impacto.'
+        recommendation: 'RESULTADO: POSTERGAR. No queremos que gastes en estructuras que aún no necesitas. ¡Sigue creciendo!'
       };
     }
   };
 
   const tierInfo = getTierInfo(score);
+
+  // ✅ ACTUALIZAR SCORE EN DB
+  useEffect(() => {
+    const updateLeadScore = async () => {
+      const leadId = localStorage.getItem('lead-id');
+      if (!leadId) return;
+
+      try {
+        await fetch(`/api/leads/${leadId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ score })
+        });
+        console.log('✅ Lead score sincronizado');
+      } catch (err) {
+        console.error('Error sincronizando score:', err);
+      }
+    };
+
+    updateLeadScore();
+  }, [score]);
 
   const handleCalculatorRedirect = () => {
     // Guardar que vino del quiz
@@ -80,7 +101,7 @@ export default function ResultadoPage() {
         <div className={styles.resultIcon}>✨</div>
 
         {/* Tier badge */}
-        <div 
+        <div
           className={styles.tierBadge}
           style={{ backgroundColor: tierInfo.color }}
         >
@@ -101,7 +122,7 @@ export default function ResultadoPage() {
         {/* Plan de acción personalizado */}
         <div className={styles.actionPlan}>
           <h3>💡 Tu plan de acción personalizado</h3>
-          
+
           {score >= 60 ? (
             <div className={styles.benefitsBox}>
               <p><strong>Beneficios para ti:</strong> Ahorro fiscal Q3i - ~800€ + Nuevos contratos USA estimados ~18.000€ + Imagen internacional</p>
@@ -123,37 +144,61 @@ export default function ResultadoPage() {
 
         {/* Información importante */}
         <div className={styles.importantNote}>
-          <strong>⚠️ Importante:</strong> Este quiz proporciona orientación general basada en tus respuestas. 
-          Tu caso específico puede tener particularidades que requieren análisis personalizado. 
+          <strong>⚠️ Importante:</strong> Este quiz proporciona orientación general basada en tus respuestas.
+          Tu caso específico puede tener particularidades que requieren análisis personalizado.
           La consulta inicial es gratuita y sin compromiso.
         </div>
 
-        {/* CTAs principales */}
+        {/* CTAs principales - Dinámicos según Score */}
         <div className={styles.resultCtas}>
-          {score >= 60 ? (
-            <>
-              <button 
+          {score >= 80 ? (
+            /* TIER 1: Venta Directa o Consultoría Hot */
+            <div className="flex flex-col gap-4 w-full">
+              <button
+                onClick={() => window.location.href = '/precios'}
+                className={styles.ctaPrimary}
+              >
+                🚀 Comenzar con mi LLC (Planes)
+              </button>
+              <button
+                onClick={() => window.location.href = '/contacto'}
+                className={styles.ctaSecondary}
+              >
+                📞 Agendar Llamada de Estrategia
+              </button>
+              <button
+                onClick={handleCalculatorRedirect}
+                className="text-blue-600 font-bold text-sm underline mt-2 hover:text-blue-800 transition-colors"
+              >
+                O prefiero ver mi ahorro detallado en la calculadora
+              </button>
+            </div>
+          ) : score >= 60 ? (
+            /* TIER 2: Interés alto, necesita un empujón */
+            <div className="flex flex-col gap-4 w-full">
+              <button
                 onClick={() => window.location.href = '/contacto'}
                 className={styles.ctaPrimary}
               >
                 📞 Agendar Llamada Ahora (15 min)
               </button>
-              <button 
-                onClick={() => setShowDetails(!showDetails)}
+              <button
+                onClick={handleCalculatorRedirect}
                 className={styles.ctaSecondary}
               >
-                Ver Precios y Paquetes Detallados
+                🧮 Ver Ahorro en Calculadora Fiscal
               </button>
-            </>
+            </div>
           ) : (
+            /* TIER 3/4/5: No apto todavía, el gancho es la calculadora */
             <>
-              <button 
+              <button
                 onClick={handleCalculatorRedirect}
                 className={styles.ctaPrimary}
               >
                 🧮 Ir a Calculadora Fiscal
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/quiz')}
                 className={styles.ctaSecondary}
               >
@@ -176,10 +221,10 @@ export default function ResultadoPage() {
         {/* Historias reales */}
         <div className={styles.testimonials}>
           <h3>💬 Historias reales de personas como tú:</h3>
-          
+
           <div className={styles.testimonialCard}>
             <p>
-              "Estaba en TIER 1 (84 puntos). En 4 meses recuperé la inversión con un solo cliente USA. 
+              "Estaba en TIER 1 (84 puntos). En 4 meses recuperé la inversión con un solo cliente USA.
               Hoy facturo 40% más que antes de la LLC."
             </p>
             <div className={styles.testimonialAuthor}>
@@ -191,7 +236,7 @@ export default function ResultadoPage() {
 
           <div className={styles.testimonialCard}>
             <p>
-              "El quiz me dio 72%. En 6 meses conseguí 3 clientes USA que nunca hubiera podido cerrar 
+              "El quiz me dio 72%. En 6 meses conseguí 3 clientes USA que nunca hubiera podido cerrar
               como autónoma."
             </p>
             <div className={styles.testimonialAuthor}>
@@ -207,13 +252,13 @@ export default function ResultadoPage() {
           <h3>¿Quieres profundizar en tu caso específico?</h3>
           <p>Usa nuestra <strong>calculadora fiscal</strong> para ver números exactos de tu situación</p>
           <div className={styles.finalButtons}>
-            <button 
+            <button
               onClick={handleCalculatorRedirect}
               className={styles.btnCalculator}
             >
               🧮 Ir a Calculadora Fiscal
             </button>
-            <button 
+            <button
               onClick={() => router.push('/quiz')}
               className={styles.btnRepeat}
             >

@@ -70,6 +70,16 @@ export async function GET(request: Request) {
                 'Obtención de EIN (Test)',
                 197.00
             )
+        } else if (tipo === 'lead') {
+            // 1. Enviar email de Lead profesional
+            emailResult = await EmailService.enviarEmailBienvenidaLead({
+                to,
+                nombre: 'Juan de Prueba',
+                situacion: 'Freelance buscando optimizar impuestos'
+            })
+
+            // Simular resultado de notificación (no hay notif de sistema para leads aún)
+            notifResult = { success: true, data: { id: 'n/a' } }
         } else {
             return NextResponse.json({ error: 'Tipo inválido' }, { status: 400 })
         }

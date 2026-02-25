@@ -27,13 +27,14 @@ export default function LeadForm() {
     situacion: ""
   });
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const seguirQuiz = (e: React.FormEvent) => {
+  const seguirQuiz = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step === 1) {
       if (!form.nombre.trim() || !form.email.trim() || !form.situacion) {
@@ -43,8 +44,29 @@ export default function LeadForm() {
       setError(null);
       setStep(2);
     } else {
-      // Aquí podrías guardar los datos (API call)
-      router.push("/quiz");
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+
+        if (!response.ok) throw new Error("Error al procesar la solicitud");
+
+        const data = await response.json();
+        if (data.leadId) {
+          localStorage.setItem("lead-id", data.leadId);
+          localStorage.setItem("lead-name", form.nombre);
+        }
+
+        router.push("/quiz");
+      } catch (err) {
+        setError("Hubo un problema al guardar tus datos. Por favor, intenta de nuevo.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -124,8 +146,12 @@ export default function LeadForm() {
               <li>✔️ Recomendaciones adaptadas a tu situación</li>
               <li>✔️ Herramienta 100% gratuita</li>
             </ul>
-            <button className={styles.btnPrimary} type="submit">
-              Comenzar Ahora
+            <button
+              className={styles.btnPrimary}
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Registrando..." : "Comenzar Ahora"}
             </button>
             <p className={styles.tiempo}>⏱️ Tiempo estimado: menos de 2 minutos</p>
           </section>

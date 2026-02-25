@@ -234,15 +234,24 @@ export default function QuizPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer>({});
 
+  // ✅ GATE: Asegurar que el usuario pasó por el lead-form
+  useEffect(() => {
+    const leadId = localStorage.getItem('lead-id');
+    if (!leadId) {
+      console.log('🔒 Acceso restringido al Quiz: Redirigiendo a captación...');
+      router.push('/lead-form');
+    }
+  }, [router]);
+
   const handleAnswer = (questionId: number, value: string) => {
     // Mapear pregunta a clave correcta
     const questionKey = questionId === 1 ? 'digitalRemote' :
-                        questionId === 2 ? 'revenue' :
-                        questionId === 3 ? 'usClients' :
-                        questionId === 4 ? 'paymentProcessors' :
-                        questionId === 5 ? 'complexity' :
-                        questionId === 6 ? 'branding' :
-                        questionId === 7 ? 'values' : 'relocation';
+      questionId === 2 ? 'revenue' :
+        questionId === 3 ? 'usClients' :
+          questionId === 4 ? 'paymentProcessors' :
+            questionId === 5 ? 'complexity' :
+              questionId === 6 ? 'branding' :
+                questionId === 7 ? 'values' : 'relocation';
 
     const newAnswers = { ...answers, [questionKey]: value };
     setAnswers(newAnswers);
@@ -250,7 +259,7 @@ export default function QuizPage() {
     // Si es la última pregunta, guardar y mostrar resultado
     if (currentQuestion === QUESTIONS.length - 1) {
       localStorage.setItem('quiz-answers', JSON.stringify(newAnswers));
-      
+
       // Calcular score y redirigir a resultado
       const score = calculateScore(newAnswers);
       router.push(`/quiz/resultado?score=${score}`);
@@ -262,7 +271,7 @@ export default function QuizPage() {
 
   const calculateScore = (answers: QuizAnswer): number => {
     let score = 0;
-    
+
     // Scoring benévolo
     if (answers.digitalRemote === 'yes' || answers.digitalRemote === 'partial') score += 15;
     if (answers.revenue === '30k-50k' || answers.revenue === '50k-80k' || answers.revenue === 'more-80k') score += 20;
@@ -320,8 +329,8 @@ export default function QuizPage() {
           <span className={styles.progressPercent}>{Math.round(progress)}%</span>
         </div>
         <div className={styles.progressBar}>
-          <div 
-            className={styles.progressFill} 
+          <div
+            className={styles.progressFill}
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -329,10 +338,10 @@ export default function QuizPage() {
 
       <div className={styles.questionCard}>
         <div className={styles.questionIcon}>{question.icon}</div>
-        
+
         <h2 className={styles.questionTitle}>{question.title}</h2>
         <p className={styles.questionSubtitle}>{question.subtitle}</p>
-        
+
         {question.badge && (
           <span className={styles.importantBadge}>⭐ {question.badge}</span>
         )}

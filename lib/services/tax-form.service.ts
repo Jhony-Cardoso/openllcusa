@@ -126,7 +126,13 @@ export class TaxFormService {
             this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_10[0]', data.llc.zip)
 
             // --- BOX B: EIN ---
-            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_11[0]', data.llc.ein)
+            const einFormatted = data.llc.ein.replace(/\D/g, '').replace(/^(\d{2})(\d{7}).*/, '$1-$2')
+            this.setField(form1120, 'topmostSubform[0].Page1[0].f1_11[0]', einFormatted)
+
+            // Si el campo anterior falló por ser strict, intentamos sin guion
+            if (!form1120.getTextField('topmostSubform[0].Page1[0].f1_11[0]').getText()) {
+                this.setField(form1120, 'topmostSubform[0].Page1[0].f1_11[0]', data.llc.ein.replace(/\D/g, ''))
+            }
 
             // --- BOX E: Checkboxes ---
             if (data.llc.isInitialReturn) {
@@ -265,7 +271,8 @@ export class TaxFormService {
         this.setField(form, 'topmostSubform[0].Page1[0].Line1a[0].f1_7[0]', indent + `${data.llc.city}, ${data.llc.state} ${data.llc.zip}`)
 
         // 1b - EIN
-        this.setField(form, 'topmostSubform[0].Page1[0].f1_8[0]', data.llc.ein)
+        const ein5472 = data.llc.ein.replace(/\D/g, '').replace(/^(\d{2})(\d{7}).*/, '$1-$2')
+        this.setField(form, 'topmostSubform[0].Page1[0].f1_8[0]', ein5472)
 
         // 1c - Total assets
         if (data.llc.totalAssets > 0) {
@@ -577,31 +584,7 @@ export class TaxFormService {
         pdfDocFinal.setProducer('Tax Filing Service')
         pdfDocFinal.setKeywords([])
 
-        // Añadir marca de agua en todas las páginas
-        const watermarkFont = await pdfDocFinal.embedFont(StandardFonts.HelveticaBold)
-        const pages = pdfDocFinal.getPages()
-        const watermarkText = 'BORRADOR - PENDIENTE DE PRESENTACIÓN AL IRS'
-
-        for (const page of pages) {
-            const { width, height } = page.getSize()
-
-            // Repetir la marca de agua de abajo a arriba cubriendo toda la página
-            const watermarkSize = 28
-            const spacing = 150 // Espacio vertical entre repeticiones
-            const startY = 60   // Empezar desde abajo
-
-            for (let y = startY; y < height + 100; y += spacing) {
-                page.drawText(watermarkText, {
-                    x: -20,             // Empezar desde el borde izquierdo
-                    y: y,
-                    size: watermarkSize,
-                    font: watermarkFont,
-                    color: rgb(0.55, 0.55, 0.55), // Gris más oscuro
-                    rotate: degrees(45),
-                    opacity: 0.55,      // Más opaco
-                })
-            }
-        }
+        // La marca de agua ha sido eliminada a petición para permitir la visualización limpia en el visor (Aprobación Anti-Multas)
 
         return await pdfDocFinal.save()
     }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { LeadModel } from '@/lib/models/lead'
 import { EmailService } from '@/lib/services/email.service'
 import { WebhookService } from '@/lib/services/webhook.service'
+import { TelegramService } from '@/lib/services/telegram.service'
 
 export async function PATCH(
     req: Request,
@@ -31,6 +32,13 @@ export async function PATCH(
             // a) Email directo
             if (score >= 80) {
                 await EmailService.enviarSeguimientoTier1({ to: lead.email, nombre: lead.nombre })
+
+                // 🔔 Alerta Telegram (Lead VIP)
+                await TelegramService.alertarTier1({
+                    nombre: lead.nombre,
+                    email: lead.email,
+                    score: score
+                })
             }
             else if (score >= 60) {
                 await EmailService.enviarSeguimientoTier2({ to: lead.email, nombre: lead.nombre })

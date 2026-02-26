@@ -57,7 +57,7 @@ export async function POST(req: Request) {
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?success=true&order_id=${pedidoId}`,
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}?verify_session={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/form-5472-1120/onboarding/checkout?pedidoId=${pedidoId}`,
             metadata: {
                 pedidoId: pedidoId,

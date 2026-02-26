@@ -4,7 +4,7 @@ import Stripe from 'stripe'
 import { PedidoModel } from '@/lib/models/pedido'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 })
 
 export async function POST(request: NextRequest) {
@@ -71,8 +71,8 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/servicios/${slug}/onboarding/completado?session_id={CHECKOUT_SESSION_ID}&pedido=${pedido.id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/${slug}/onboarding/checkout?pedido=${pedidoId}&canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/pedidos/${pedido.id}?verify_session={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/${slug}/onboarding/checkout?pedido=${pedido.id}&canceled=true`,
       metadata: {
         pedidoId: pedido.id,
         userId,

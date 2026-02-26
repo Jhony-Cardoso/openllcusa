@@ -85,12 +85,12 @@ export default async function DashboardPage() {
                   if (!pedido) return null
                   const isPaid = pedido.estado_pedido === 'pagado'
 
-                  // Detectar tipo de servicio (igual que en la página de detalle)
+                  // Detectar tipo de servicio (prioridad a Tax Filing)
                   const esTaxFiling = pedido.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedido as any).tax_data
 
                   const nombre = esTaxFiling
-                    ? 'Presentación Forms 5472 + 1120'
-                    : (pedido.paquete?.nombre || pedido.servicio?.nombre || 'Trámite')
+                    ? 'Preparación Formulario 5472 + 1120'
+                    : (pedido.paquete?.nombre || pedido.servicio?.nombre || 'Trámite LLC')
 
                   return (
                     <Link key={pedido.id} href={`/dashboard/pedidos/${pedido.id}`}>

@@ -67,7 +67,7 @@ export async function POST(req: Request) {
             ],
             mode: 'payment',
             // Usamos NEXT_PUBLIC_BASE_URL que es la que está definida en .env.local (ngrok o dominio real)
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard?success=true&order_id=${pedido.id}`,
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedido.id}?verify_session={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/form-5472-1120/onboarding?canceled=true`,
             metadata: {
                 pedidoId: pedido.id,

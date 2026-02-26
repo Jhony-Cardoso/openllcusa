@@ -24,8 +24,10 @@ export default async function PedidosPage() {
 
       return {
         id: completo.id,
-        numero: completo.numero_pedido || `#\${completo.id.slice(0, 5)}`,
-        servicio: completo.paquete?.nombre || completo.servicio?.nombre || completo.paquete?.title || completo.servicio?.title || 'Servicio Open LLC',
+        numero: completo.numero_pedido || `#${completo.id.slice(0, 5)}`,
+        servicio: (completo.metadata as any)?.tipo_servicio === 'tax_filing_5472' || !!(completo as any).tax_data
+          ? 'Presentación Forms 5472 + 1120'
+          : (completo.paquete?.nombre || completo.servicio?.nombre || completo.paquete?.title || completo.servicio?.title || 'Servicio Open LLC'),
         descripcion: completo.paquete?.tagline || completo.servicio?.tagline || (completo.paquete_id ? 'Paquete de formación' : 'Servicio individual'),
         fecha: new Date(completo.created_at).toLocaleDateString('es-ES'),
         monto: completo.total_pagado ? `$\${completo.total_pagado}` : '$0',

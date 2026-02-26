@@ -51,12 +51,18 @@ export class LeadModel {
         try {
             const supabase = createAdminClient()
 
+            // 1. Obtener metadatos actuales para no sobrescribirlos
+            const { data: currentLead } = await supabase.from('leads').select('metadata').eq('id', id).single()
+            const currentMetadata = currentLead?.metadata || {}
+
+            // 2. Fusionar
+            const mergedMetadata = { ...currentMetadata, ...(data.metadata || {}) }
+
+            const updateData = { ...data, metadata: mergedMetadata }
+
             const { data: lead, error } = await supabase
                 .from('leads')
-                .update({
-                    ...data,
-                    updated_at: new Date().toISOString()
-                })
+                .update(updateData)
                 .eq('id', id)
                 .select()
                 .single()

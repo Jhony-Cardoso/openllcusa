@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, ArrowRight, ArrowLeft, CheckCircle, FileText, DollarSign, Building, User } from 'lucide-react'
 import SignaturePad from '@/components/ui/SignaturePad'
@@ -163,6 +163,39 @@ export default function Form5472OnboardingPage() {
     const router = useRouter()
     const [currentStep, setCurrentStep] = useState(1)
     const [loading, setLoading] = useState(false)
+    const [isAutoFilling, setIsAutoFilling] = useState(true)
+
+    useEffect(() => {
+        async function fetchAutoFillData() {
+            try {
+                const res = await fetch('/api/user/llc-data')
+                if (res.ok) {
+                    const result = await res.json()
+                    const { data } = result
+                    if (data) {
+                        setFormData(prev => ({
+                            ...prev,
+                            llcName: data.name || prev.llcName,
+                            llcEin: data.ein || prev.llcEin,
+                            llcState: data.state || prev.llcState,
+                            formationDate: data.formationDate || prev.formationDate,
+                            soleOwnerName: data.soleOwnerName || prev.soleOwnerName,
+                            ownerName: data.soleOwnerName || prev.ownerName,
+                            llcAddress: data.address || prev.llcAddress,
+                            llcCity: data.city || prev.llcCity,
+                            llcZip: data.zip || prev.llcZip,
+                            signerName: data.soleOwnerName || prev.signerName,
+                        }))
+                    }
+                }
+            } catch (err) {
+                console.error('Error auto-rellenando datos', err)
+            } finally {
+                setIsAutoFilling(false)
+            }
+        }
+        fetchAutoFillData()
+    }, [])
 
     const currentYear = new Date().getFullYear()
     const [formData, setFormData] = useState<Form5472Data>({
@@ -253,11 +286,32 @@ export default function Form5472OnboardingPage() {
         }))
     }
 
+    const handleEinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value.replace(/\D/g, '') // Solo números
+        if (value.length > 9) value = value.slice(0, 9)
+
+        // Aplicar máscara XX-XXXXXXX
+        if (value.length > 2) {
+            value = value.slice(0, 2) + '-' + value.slice(2)
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            llcEin: value
+        }))
+    }
+
     // Validación de campos requeridos por paso
     const validateStep = (step: number): string | null => {
         if (step === 1) {
             if (!formData.llcName.trim()) return 'El Nombre Legal de la LLC es obligatorio.'
             if (!formData.llcEin.trim()) return 'El EIN (Employer ID) es obligatorio.'
+
+            const einRegex = /^\d{2}-\d{7}$/
+            if (!einRegex.test(formData.llcEin)) {
+                return 'El EIN debe tener el formato XX-XXXXXXX (2 números, guion, 7 números).'
+            }
+
             if (!formData.llcAddress.trim()) return 'La Dirección de la LLC es obligatoria.'
             if (!formData.llcCity.trim()) return 'La Ciudad de la LLC es obligatoria.'
             if (!formData.llcState) return 'El Estado de la LLC es obligatorio.'
@@ -307,12 +361,98 @@ export default function Form5472OnboardingPage() {
     const handleSubmit = async () => {
         setLoading(true)
         try {
-            console.log('Iniciando proceso de pago fiscal...', formData)
+            // Mapeo de datos para TaxFormService (Estructura anidada requerida)
+            const nestedData = {
+                taxYear: formData.taxYear,
+                llc: {
+                    name: formData.llcName,
+                    ein: formData.llcEin,
+                    address: formData.llcAddress,
+                    city: formData.llcCity,
+                    state: formData.llcState,
+                    zip: formData.llcZip,
+                    formationDate: formData.formationDate,
+                    einAlternate: formData.llcEinAlternate,
+                    countryOfIncorporation: formData.llcCountryOfIncorporation,
+                    taxResidenceCountries: formData.llcTaxResidenceCountries,
+                    activityCode: formData.llcActivityCode,
+                    activityDescription: formData.llcActivityDescription,
+                    isForeignOwnedDE: formData.isForeignOwnedDE,
+                    soleOwnerName: formData.soleOwnerName,
+                    soleOwnerEin: formData.soleOwnerEin,
+                    soleOwnerReferenceId: formData.soleOwnerReferenceId,
+                    isDirectOwner: formData.isDirectOwner,
+                    isOwnerUSPerson: formData.isOwnerUSPerson,
+                    isOwnerForeignPerson: formData.isOwnerForeignPerson,
+                    totalAssets: formData.totalAssets,
+                    hasRelatedPartyTransactions: formData.hasRelatedPartyTransactions,
+                    isInitialReturn: false
+                },
+                owner: {
+                    name: formData.ownerName,
+                    address: formData.ownerAddress,
+                    city: formData.ownerCity,
+                    country: formData.ownerCountry,
+                    taxId: formData.ownerTaxId,
+                    referenceIdType: formData.ownerReferenceIdType,
+                    businessCountries: formData.ownerBusinessCountries,
+                    taxResidenceCountries: formData.ownerTaxResidenceCountries,
+                    ownershipType: formData.ownershipType
+                },
+                relatedParty: {
+                    name: formData.relatedPartyName || formData.ownerName,
+                    address: formData.relatedPartyAddress || formData.ownerAddress,
+                    city: formData.relatedPartyCity || formData.ownerCity,
+                    country: formData.relatedPartyCountry || formData.ownerCountry,
+                    taxId: formData.relatedPartyTaxId || formData.ownerTaxId,
+                    referenceIdType: formData.relatedPartyReferenceIdType || formData.ownerReferenceIdType,
+                    businessCountries: formData.relatedPartyBusinessCountries || formData.ownerBusinessCountries,
+                    taxResidenceCountries: formData.relatedPartyTaxResidenceCountries || formData.ownerTaxResidenceCountries,
+                    relationship: formData.relatedPartyRelationship || '25% Foreign Shareholder',
+                    ownershipType: formData.relatedPartyOwnershipType || 'Direct',
+                    isUSPerson: formData.isRelatedPartyUSPerson || false
+                },
+                financials: {
+                    capitalContributionCash: formData.capitalContributionCash,
+                    capitalContributionProperty: formData.capitalContributionProperty,
+                    capitalDistributionCash: formData.capitalDistributionCash,
+                    capitalDistributionProperty: formData.capitalDistributionProperty,
+                    formationCost: formData.formationCost,
+                    otherTransactions: 0
+                },
+                additionalInfo: {
+                    hasTradeOrBusiness: formData.hasTradeOrBusiness,
+                    isDisregardedEntity: formData.isDisregardedEntity
+                },
+                additionalQuestions: {
+                    importGoods: false,
+                    documentWarehouse: false,
+                    foreignParentCSA: false,
+                    interestRoyaltyDeduction: false,
+                    fdiiDeduction: false,
+                    safeHavenInterest: false,
+                    safeHavenOutsideRange: false,
+                    coveredDebtInstrument: false
+                },
+                baseErosion: {
+                    csaParticipant: false,
+                    csaBefore2009: false,
+                    stockBasedCompensation: false
+                },
+                signature: {
+                    signerName: formData.signerName,
+                    signerTitle: formData.signerTitle,
+                    signatureDate: formData.signatureDate,
+                    signatureDataUrl: formData.signatureDataUrl
+                }
+            }
+
+            console.log('Iniciando proceso de pago fiscal...', nestedData)
 
             const res = await fetch('/api/orders/tax-filing/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ taxData: formData })
+                body: JSON.stringify({ taxData: nestedData })
             })
 
             const data = await res.json()
@@ -413,7 +553,7 @@ export default function Form5472OnboardingPage() {
                                         id="llcEin"
                                         placeholder="XX-XXXXXXX"
                                         value={formData.llcEin}
-                                        onChange={handleChange}
+                                        onChange={handleEinChange}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border"
                                         required
                                     />

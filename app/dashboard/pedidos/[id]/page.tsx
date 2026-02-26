@@ -9,21 +9,54 @@ import Link from 'next/link'
 import { PedidoModel } from '@/lib/models/pedido'
 import { FacturaModel } from '@/lib/models/factura'
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard'
+import TaxFormViewer from '@/components/dashboard/TaxFormViewer'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PedidoDetallePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ verify_session?: string }>
 }) {
   const { userId } = await auth()
   const user = await currentUser()
   const { id } = await params
+  const resolvedSearchParams = await searchParams
+  const verifySessionId = resolvedSearchParams?.verify_session
 
   if (!userId) redirect('/sign-in')
 
-  const pedidoFull = await PedidoModel.obtenerCompleto(id)
+  let pedidoFull = await PedidoModel.obtenerCompleto(id)
+
+  if (!pedidoFull || pedidoFull.user_id !== userId) {
+    redirect('/dashboard/pedidos')
+  }
+
+  // --- Verificación invisible síncrona ---
+  if (verifySessionId && pedidoFull.estado_pedido !== 'pagado') {
+    try {
+      // Importación dinámica para no afectar otras rutas de servidor si no es necesario
+      const { stripe } = await import('@/lib/stripe')
+      const session = await stripe.checkout.sessions.retrieve(verifySessionId)
+
+      if (session.payment_status === 'paid' && session.metadata?.pedidoId === pedidoFull.id) {
+        console.log(`[Dashboard] Verificación síncrona exitosa, marcando pedido ${pedidoFull.id} como pagado.`)
+        await PedidoModel.marcarComoPagado(pedidoFull.id, {
+          payment_intent_id: (session.payment_intent as string) || undefined,
+          session_id: verifySessionId,
+          customer_id: (session.customer as string) || undefined,
+          amount: session.amount_total ? session.amount_total / 100 : 0,
+        })
+
+        // Forzamos redirección para limpiar la URL y evitar re-ejecuciones molestas al refrescar
+        redirect(`/dashboard/pedidos/${pedidoFull.id}`)
+      }
+    } catch (e) {
+      console.error('[Dashboard] Error verificando sesión de Stripe (Sync):', e)
+    }
+  }
 
   // TODO: Implementar FacturaModel correctamente
   const factura = null
@@ -43,7 +76,7 @@ export default async function PedidoDetallePage({
 
   const nombreProducto = esTaxFiling
     ? 'Presentación Forms 5472 + 1120'
-    : (pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || 'Servicio Open LLC')
+    : (pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || 'Trámite LLC')
 
   // SI EL PAGO ESTÁ HECHO PERO FALTA EL CHECKLIST LEGAL
   // Excepción: Tax Filing no requiere wizard posterior, ya tenemos los datos
@@ -72,7 +105,7 @@ export default async function PedidoDetallePage({
   const pasos = esTaxFiling ? [
     { id: 1, label: 'Datos Recibidos', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: true },
     { id: 2, label: 'Pago Verificado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
-    { id: 3, label: 'Documentos Preparados', date: pedidoFull.metadata?.documents?.form_5472_url ? 'Completado - PDF disponible para descarga' : 'En proceso', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
+    { id: 3, label: 'Documentos Preparados', date: pedidoFull.metadata?.documents?.form_5472_url ? (pedidoFull.metadata?.documents?.form_5472_approved ? 'Completado - Copia oficial lista' : 'Pendiente de tu revisión y aprobación') : 'En proceso de preparación por nuestro equipo', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
     { id: 4, label: 'Presentación al IRS', date: 'Pendiente - Nuestro equipo lo enviará próximamente', completado: false },
     { id: 5, label: 'Acuse de Recibo del IRS', date: 'Pendiente - Se enviará cuando esté disponible', completado: false },
   ] : esEIN ? [
@@ -198,6 +231,18 @@ export default async function PedidoDetallePage({
                   </div>
                 ))}
               </div>
+
+              {/* FORMULARIOS FISCALES PREPARADOS (Visor y Aprobación) - Movido aquí para mayor visibilidad */}
+              {esTaxFiling && pedidoFull.metadata?.documents?.form_5472_url && (
+                <div className="mt-8 border-t pt-8">
+                  <TaxFormViewer
+                    pedidoId={pedidoFull.id}
+                    documentUrl={pedidoFull.metadata.documents.form_5472_path || pedidoFull.metadata.documents.form_5472_url}
+                    isApproved={!!pedidoFull.metadata.documents.form_5472_approved}
+                    isCompleted={pedidoFull.estado_pedido === 'completado'}
+                  />
+                </div>
+              )}
             </section>
           </div>
 
@@ -292,33 +337,6 @@ export default async function PedidoDetallePage({
                           >
                             <Download size={18} />
                             Descargar Carta EIN del IRS
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* FORMULARIOS FISCALES PREPARADOS */}
-                  {esTaxFiling && pedidoFull.metadata?.documents?.form_5472_url && (
-                    <div className="mt-6 pt-6 border-t border-slate-100">
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 relative overflow-hidden">
-                        <div className="relative z-10">
-                          <div className="flex items-center gap-2 mb-3">
-                            <FileText className="text-blue-600" size={24} />
-                            <span className="text-xs font-black text-blue-700 uppercase tracking-widest">DOCUMENTOS LISTOS</span>
-                          </div>
-                          <h4 className="text-lg font-black text-blue-900 mb-2">📄 Formularios 5472 + 1120 Preparados</h4>
-                          <p className="text-sm text-blue-700 mb-4">
-                            Tus formularios fiscales han sido generados y están listos para descarga. Nuestro equipo procederá con la presentación ante el IRS próximamente.
-                          </p>
-                          <a
-                            href={`/api/pedidos/${pedidoFull.id}/descargar-formularios`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-                          >
-                            <Download size={18} />
-                            Descargar Formularios
                           </a>
                         </div>
                       </div>

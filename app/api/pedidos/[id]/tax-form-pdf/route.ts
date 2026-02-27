@@ -36,18 +36,47 @@ export async function GET(
 
         // 3. Obtener el path del archivo desde metadata
         const metadata = (pedido.metadata as any) || {}
-        let filePath = metadata.documents?.form_5472_path
+        let filePath: string | null = metadata.documents?.form_5472_path || null
 
-        // Fallback para pedidos antiguos que solo tienen form_5472_url (sin form_5472_path)
+        // Fallback para pedidos sin form_5472_path (generados antes de esa feature)
         if (!filePath && metadata.documents?.form_5472_url) {
             const url = metadata.documents.form_5472_url as string
-            // La URL de Supabase Storage tiene el formato:
-            // https://<project>.supabase.co/storage/v1/object/public/<bucket>/<path...>
-            const storageMarker = '/object/public/documentos/'
-            const markerIdx = url.indexOf(storageMarker)
-            if (markerIdx !== -1) {
-                filePath = url.substring(markerIdx + storageMarker.length).split('?')[0]
-                console.log('[TAX-FORM-PDF] Path extraído de URL (fallback para pedido antiguo):', filePath)
+
+            // CASO 1: URL pública formato /object/public/<bucket>/<path>
+            const publicMarker = '/object/public/documentos/'
+            const publicIdx = url.indexOf(publicMarker)
+            if (publicIdx !== -1) {
+                filePath = url.substring(publicIdx + publicMarker.length).split('?')[0]
+                console.log('[TAX-FORM-PDF] Path extraído de URL pública:', filePath)
+            }
+
+            // CASO 2: URL firmada formato /object/sign/<bucket>/<path>?token=<jwt>
+            // El path también está codificado dentro del JWT (campo "url" en el payload)
+            if (!filePath) {
+                const signMarker = '/object/sign/documentos/'
+                const signIdx = url.indexOf(signMarker)
+                if (signIdx !== -1) {
+                    filePath = url.substring(signIdx + signMarker.length).split('?')[0]
+                    console.log('[TAX-FORM-PDF] Path extraído de URL firmada:', filePath)
+                }
+            }
+
+            // CASO 3: Extraer del token JWT si el path no se pudo obtener del URL
+            if (!filePath && url.includes('token=')) {
+                try {
+                    const token = url.split('token=')[1].split('&')[0]
+                    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
+                    if (payload.url) {
+                        // payload.url es algo como: "documentos/tax-forms/form-5472-1120-UUID.pdf"
+                        const bucketPrefix = 'documentos/'
+                        filePath = payload.url.startsWith(bucketPrefix)
+                            ? payload.url.substring(bucketPrefix.length)
+                            : payload.url
+                        console.log('[TAX-FORM-PDF] Path extraído del JWT:', filePath)
+                    }
+                } catch (jwtErr) {
+                    console.error('[TAX-FORM-PDF] Error parseando JWT:', jwtErr)
+                }
             }
         }
 

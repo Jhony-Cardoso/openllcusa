@@ -231,18 +231,6 @@ export default async function PedidoDetallePage({
                   </div>
                 ))}
               </div>
-
-              {/* FORMULARIOS FISCALES PREPARADOS (Visor y Aprobación) - Movido aquí para mayor visibilidad */}
-              {esTaxFiling && pedidoFull.metadata?.documents?.form_5472_url && (
-                <div className="mt-8 border-t pt-8">
-                  <TaxFormViewer
-                    pedidoId={pedidoFull.id}
-                    documentUrl={pedidoFull.metadata.documents.form_5472_path || pedidoFull.metadata.documents.form_5472_url}
-                    isApproved={!!pedidoFull.metadata.documents.form_5472_approved}
-                    isCompleted={pedidoFull.estado_pedido === 'completado'}
-                  />
-                </div>
-              )}
             </section>
           </div>
 
@@ -366,6 +354,16 @@ export default async function PedidoDetallePage({
           </div>
 
         </div>
+
+        {/* VISOR COMPLETO — fuera de la grilla para máximo ancho */}
+        {esTaxFiling && pedidoFull.metadata?.documents?.form_5472_url && isPaid && (
+          <TaxFormViewer
+            pedidoId={pedidoFull.id}
+            isApproved={!!pedidoFull.metadata.documents.form_5472_approved}
+            isCompleted={pedidoFull.estado_pedido === 'completado'}
+          />
+        )}
+
       </div>
     </div>
   )

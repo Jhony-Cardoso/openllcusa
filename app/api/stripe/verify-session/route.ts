@@ -11,7 +11,7 @@ import { EmailService } from '@/lib/services/email.service'
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 })
 
 export async function POST(request: NextRequest) {
@@ -54,8 +54,14 @@ export async function POST(request: NextRequest) {
         customer_id: (session.customer as string) || undefined,
         amount: totalAmount,
       })
+    }
 
-      // DISPARAR EMAILS POST-PAGO
+    // DISPARAR EMAILS POST-PAGO DE FORMA RESILIENTE (solo si no se enviaron ya)
+    const metadata = (pedido?.metadata as any) || {}
+    const emailEnviado = metadata.email_confirmacion_enviado === true;
+
+    if (!emailEnviado) {
+      const totalAmount = session.amount_total ? session.amount_total / 100 : 0;
       try {
         const user = await currentUser()
         const pedidoCompleto = await PedidoModel.obtenerCompleto(pedidoId)
@@ -65,7 +71,7 @@ export async function POST(request: NextRequest) {
           pedidoCompleto?.paquete?.title ||
           pedidoCompleto?.servicio?.nombre ||
           pedidoCompleto?.servicio?.title ||
-          'Servicio Open LLC'
+          (session.metadata?.tipo_servicio === 'tax_filing_5472' ? 'Presentación Forms 5472 + 1120' : 'Servicio Open LLC')
 
         // 1. Email al Cliente
         await EmailService.enviarConfirmacionPago({
@@ -83,14 +89,22 @@ export async function POST(request: NextRequest) {
           pedidoId: pedidoCompleto?.numero_pedido || pedidoId,
           nombreServicio: nombreProducto,
           monto: totalAmount,
-          cliente: `${user?.firstName} ${user?.lastName} (${user?.emailAddresses[0].emailAddress})`
+          cliente: `${user?.firstName} ${user?.lastName} (${user?.emailAddresses[0].emailAddress || ''})`
         })
 
-        console.log('📬 Emails post-pago enviados correctamente')
+        // 3. Marcar en Base de Datos que ya se ha enviado el email
+        const adminClient = await import('@/lib/supabase/admin');
+        const supabase = adminClient.createAdminClient();
+        await supabase.from('pedidos').update({
+          metadata: { ...metadata, email_confirmacion_enviado: true }
+        } as any).eq('id', pedidoId);
+
+        console.log('📬 [VERIFY] Emails post-pago enviados y registrados correctamente')
       } catch (emailError) {
-        console.error('❌ Error enviando emails post-pago:', emailError)
-        // No bloqueamos la respuesta al cliente si el email falla
+        console.error('❌ [VERIFY] Error enviando emails post-pago:', emailError)
       }
+    } else {
+      console.log('📬 [VERIFY] Email de confirmación ya había sido enviado previamente. Saltando...');
     }
 
     // Devolver pedido completo para UI

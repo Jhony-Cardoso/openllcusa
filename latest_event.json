@@ -1,0 +1,155 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "evt_1T5HzKJEd1MIEnRaSxwxynpc",
+      "object": "event",
+      "api_version": "2025-12-15.clover",
+      "created": 1772163914,
+      "data": {
+        "object": {
+          "id": "cs_test_a1W27aCOdW0LfvZdtORcqAPiA14KRtq2acJH8dt5nycq7uwEEYodQWXSWL",
+          "object": "checkout.session",
+          "adaptive_pricing": {
+            "enabled": true
+          },
+          "after_expiration": null,
+          "allow_promotion_codes": null,
+          "amount_subtotal": 24900,
+          "amount_total": 24900,
+          "automatic_tax": {
+            "enabled": false,
+            "liability": null,
+            "provider": null,
+            "status": null
+          },
+          "billing_address_collection": null,
+          "branding_settings": {
+            "background_color": "#ffffff",
+            "border_style": "rounded",
+            "button_color": "#0074d4",
+            "display_name": "Entorno de prueba de New business",
+            "font_family": "default",
+            "icon": null,
+            "logo": null
+          },
+          "cancel_url": "https://myrl-squiffy-eusebia.ngrok-free.dev/servicios/form-5472-1120/onboarding?canceled=true",
+          "client_reference_id": null,
+          "client_secret": null,
+          "collected_information": {
+            "business_name": null,
+            "individual_name": null,
+            "shipping_details": null
+          },
+          "consent": null,
+          "consent_collection": null,
+          "created": 1772163877,
+          "currency": "usd",
+          "currency_conversion": null,
+          "custom_fields": [],
+          "custom_text": {
+            "after_submit": null,
+            "shipping_address": null,
+            "submit": null,
+            "terms_of_service_acceptance": null
+          },
+          "customer": null,
+          "customer_account": null,
+          "customer_creation": "if_required",
+          "customer_details": {
+            "address": {
+              "city": null,
+              "country": "ES",
+              "line1": null,
+              "line2": null,
+              "postal_code": null,
+              "state": null
+            },
+            "business_name": null,
+            "email": "richard.lagarth@gmail.com",
+            "individual_name": null,
+            "name": "Richard Capitas",
+            "phone": null,
+            "tax_exempt": "none",
+            "tax_ids": []
+          },
+          "customer_email": "richard.lagarth@gmail.com",
+          "discounts": [],
+          "expires_at": 1772250277,
+          "invoice": null,
+          "invoice_creation": {
+            "enabled": false,
+            "invoice_data": {
+              "account_tax_ids": null,
+              "custom_fields": null,
+              "description": null,
+              "footer": null,
+              "issuer": null,
+              "metadata": {},
+              "rendering_options": null
+            }
+          },
+          "livemode": false,
+          "locale": null,
+          "metadata": {
+            "pedidoId": "f5fa17cd-3869-42b3-9aa4-803827278adf",
+            "tipo_servicio": "tax_filing_5472",
+            "userId": "user_39SIVdPgvQY3l9kAWICz7l8OBM9"
+          },
+          "mode": "payment",
+          "origin_context": null,
+          "payment_intent": "pi_3T5HzJJEd1MIEnRa0SuIHIJH",
+          "payment_link": null,
+          "payment_method_collection": "if_required",
+          "payment_method_configuration_details": {
+            "id": "pmc_1StqH1JEd1MIEnRadeFUknkc",
+            "parent": null
+          },
+          "payment_method_options": {
+            "card": {
+              "request_three_d_secure": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "card",
+            "link",
+            "cashapp",
+            "amazon_pay"
+          ],
+          "payment_status": "paid",
+          "permissions": null,
+          "phone_number_collection": {
+            "enabled": false
+          },
+          "recovered_from": null,
+          "saved_payment_method_options": null,
+          "setup_intent": null,
+          "shipping_address_collection": null,
+          "shipping_cost": null,
+          "shipping_options": [],
+          "status": "complete",
+          "submit_type": null,
+          "subscription": null,
+          "success_url": "https://myrl-squiffy-eusebia.ngrok-free.dev/dashboard/pedidos/f5fa17cd-3869-42b3-9aa4-803827278adf?verify_session={CHECKOUT_SESSION_ID}",
+          "total_details": {
+            "amount_discount": 0,
+            "amount_shipping": 0,
+            "amount_tax": 0
+          },
+          "ui_mode": "hosted",
+          "url": null,
+          "wallet_options": null
+        }
+      },
+      "livemode": false,
+      "pending_webhooks": 1,
+      "request": {
+        "id": null,
+        "idempotency_key": null
+      },
+      "type": "checkout.session.completed"
+    }
+  ],
+  "has_more": true,
+  "url": "/v1/events"
+}

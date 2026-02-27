@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { EmailService } from '@/lib/services/email.service';
+import { InvoiceService } from '@/lib/services/invoice.service';
+import { TaxFormService } from '@/lib/services/tax-form.service';
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 function required(name: string, value: string | undefined) {
@@ -126,14 +129,8 @@ export async function POST(req: Request) {
             console.log('✅ [WEBHOOK] Pedido marcado como pagado. Filas:', count);
 
             // Obtener datos del pedido y servicio para el email
-            const { data: pedido } = await supabaseAdmin
-              .from('pedidos')
-              .select(`
-                *,
-                servicios ( nombre, slug )
-              `)
-              .eq('id', pedidoId)
-              .single();
+            const { PedidoModel } = await import('@/lib/models/pedido');
+            const pedido = await PedidoModel.obtenerCompleto(pedidoId);
 
             if (pedido) {
               const userEmail = session.customer_details?.email || session.customer_email;
@@ -143,25 +140,36 @@ export async function POST(req: Request) {
 
               if (userEmail) {
                 try {
-                  const { EmailService } = await import('@/lib/services/email.service');
-                  console.log('   [WEBHOOK] EmailService importado. Enviando...');
+                  const nombreProducto = pedido.servicio?.nombre || pedido.paquete?.nombre || (session.metadata?.tipo_servicio === 'tax_filing_5472' ? 'Presentación Forms 5472 + 1120' : 'Servicio Open LLC');
+                  const importe = session.amount_total ? session.amount_total / 100 : 0;
 
                   const result = await EmailService.enviarConfirmacionPago({
                     to: userEmail,
                     nombreUsuario: userName,
-                    nombreServicio: pedido.servicios?.nombre || pedido.paquetes?.nombre || 'Servicio',
-                    montoPagado: session.amount_total / 100,
+                    nombreServicio: nombreProducto,
+                    montoPagado: importe,
                     pedidoId: pedidoId,
                     fechaPago: new Date().toISOString(),
                   });
 
                   if (result.success) {
-                    console.log('📧 [WEBHOOK] Email enviado EXITOSAMENTE. ID:', result.data?.id);
+                    console.log('📧 [WEBHOOK] Email enviado EXITOSAMENTE al cliente. ID:', result.data?.id);
                   } else {
-                    console.error('❌ [WEBHOOK] Falló envío email. Error:', result.error);
+                    console.error('❌ [WEBHOOK] Falló envío email al cliente. Error:', result.error);
                   }
+
+                  // 2. Notificación al Admin
+                  await EmailService.notificarEquipo({
+                    tipo: 'nuevo_pedido',
+                    pedidoId: pedidoId,
+                    nombreServicio: nombreProducto,
+                    monto: importe,
+                    cliente: `${userName} (${userEmail})`
+                  });
+                  console.log('📬 [WEBHOOK] Email de notificación al equipo enviado.');
+
                 } catch (e) {
-                  console.error('💥 [WEBHOOK] Excepción crítica enviando email:', e);
+                  console.error('💥 [WEBHOOK] Excepción crítica enviando emails:', e);
                 }
               } else {
                 console.warn('⚠️ [WEBHOOK] No hay userEmail en la sesión de Stripe.');
@@ -170,7 +178,6 @@ export async function POST(req: Request) {
               // --- GENERAR FACTURA ---
               try {
                 console.log('🧾 [WEBHOOK] Generando factura...');
-                const { InvoiceService } = await import('@/lib/services/invoice.service');
                 await InvoiceService.generarFacturaParaPedido(pedido, session);
                 console.log('✅ [WEBHOOK] Factura generada y pdf guardado.');
               } catch (invoiceError) {
@@ -183,7 +190,6 @@ export async function POST(req: Request) {
               if (tipoServicio === 'tax_filing_5472' && pedido) {
                 try {
                   console.log('📄 [WEBHOOK] Iniciando generación automática de Form 5472...');
-                  const { TaxFormService } = await import('@/lib/services/tax-form.service');
 
                   // Re-consultar para asegurar que tenemos el tax_data más fresco
                   const { data: pedidoFull } = await supabaseAdmin

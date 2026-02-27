@@ -40,7 +40,7 @@ export class EmailService {
       const { to, nombreUsuario, nombreServicio, montoPagado, pedidoId, fechaPago } = params
 
       const { data, error } = await resend.emails.send({
-        from: 'Open LLC USA <onboarding@resend.dev>', // Temporal mientras se verifica el dominio oficial
+        from: 'Open LLC USA <noreply@updates.openllcusa.com>',
         to,
         subject: `¡Confirmado! Ya estamos trabajando en tu ${nombreServicio} 🚀`,
         html: `
@@ -159,7 +159,7 @@ export class EmailService {
       const { to, nombreUsuario } = params
 
       const { data, error } = await resend.emails.send({
-        from: 'Open LLC USA <onboarding@resend.dev>', // Temporal mientras se verifica el dominio oficial
+        from: 'Open LLC USA <noreply@updates.openllcusa.com>',
         to,
         subject: '¡Bienvenido a Open LLC USA! 🎉',
         html: `
@@ -254,7 +254,7 @@ export class EmailService {
     try {
       const { to, nombre, situacion } = params
       const { data, error } = await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@openllcusa.com>',
+        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
         to,
         subject: `🚀 Hola ${nombre}, aquí tienes tu hoja de ruta para EE.UU.`,
         html: `
@@ -363,7 +363,7 @@ export class EmailService {
       }
 
       const { data, error } = await resend.emails.send({
-        from: 'Open LLC System <onboarding@resend.dev>',
+        from: 'Open LLC System <sistema@updates.openllcusa.com>',
         to: adminEmail,
         subject,
         html: `
@@ -394,8 +394,8 @@ export class EmailService {
   static async enviarSeguimientoTier1(params: { to: string; nombre: string }) {
     try {
       const { to, nombre } = params
-      await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@openllcusa.com>',
+      const { data, error } = await resend.emails.send({
+        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
         to,
         subject: `⚡ ${nombre}, tu estructura en EE.UU. está lista para despegar`,
         html: `
@@ -407,7 +407,7 @@ export class EmailService {
               <h3 style="margin-top:0;">Próximo paso recomendado:</h3>
               <p>Dado tu volumen y tipo de negocio, te sugiero que hablemos 15 minutos para validar tu nexo en España y elegir el estado (Delaware vs Wyoming) que más te conviene.</p>
               <div align="center">
-                <a href="https://calendly.com/tu-link" style="background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Agendar Llamada Estratégica Gratis →</a>
+                <a href="https://openllcusa.com/contacto" style="background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Agendar Llamada Estratégica Gratis →</a>
               </div>
             </div>
             <p style="margin-top: 25px;">Si prefieres empezar ya mismo sin llamada, puedes ver nuestros planes aquí: <a href="${process.env.NEXT_PUBLIC_BASE_URL}/precios">Ver Planes de LLC</a></p>
@@ -415,9 +415,16 @@ export class EmailService {
           </div>
         `
       })
-      return { success: true }
+
+      if (error) {
+        console.error('❌ Error enviando Tier 1 email (Resend):', error)
+        return { success: false, error }
+      }
+
+      console.log('✅ Email Tier 1 enviado con éxito:', data?.id)
+      return { success: true, data }
     } catch (error) {
-      console.error('Error Tier 1 email:', error)
+      console.error('💥 Excepción Tier 1 email:', error)
       return { success: false, error }
     }
   }
@@ -429,7 +436,7 @@ export class EmailService {
     try {
       const { to, nombre } = params
       await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@openllcusa.com>',
+        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
         to,
         subject: `🤔 ¿Dudas sobre la LLC en España, ${nombre}?`,
         html: `
@@ -460,7 +467,7 @@ export class EmailService {
     try {
       const { to, nombre } = params
       await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@openllcusa.com>',
+        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
         to,
         subject: `📈 Hoja de ruta para tus primeros 30k€, ${nombre}`,
         html: `

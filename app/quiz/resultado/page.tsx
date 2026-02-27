@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '../quiz.module.css';
@@ -10,6 +10,7 @@ export default function ResultadoPage() {
   const router = useRouter();
   const score = parseInt(searchParams.get('score') || '0');
   const [showDetails, setShowDetails] = useState(false);
+  const scoreSynced = useRef(false);
 
   const getTierInfo = (score: number) => {
     if (score >= 80) {
@@ -59,6 +60,9 @@ export default function ResultadoPage() {
 
   // ✅ ACTUALIZAR SCORE EN DB
   useEffect(() => {
+    if (scoreSynced.current) return;
+    scoreSynced.current = true;
+
     const updateLeadScore = async () => {
       const leadId = localStorage.getItem('lead-id');
       if (!leadId) return;

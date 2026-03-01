@@ -3,7 +3,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { PedidoModel } from '@/lib/models/pedido'
-import { supabase } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(
     request: Request,
@@ -60,7 +60,8 @@ export async function POST(
         }
 
         // Actualizar en la base de datos
-        const { error: updateError } = await supabase
+        const adminClient = createAdminClient()
+        const { error: updateError } = await adminClient
             .from('pedidos')
             .update(updateData)
             .eq('id', pedido.id)
@@ -73,11 +74,68 @@ export async function POST(
             )
         }
 
+        // 4. Notificar al usuario por Email
+        try {
+            let targetEmail = ''
+
+            // 1. Intentar por profiles de Supabase
+            const { data: profile } = await adminClient
+                .from('profiles')
+                .select('email')
+                .eq('user_id', pedido.user_id)
+                .single()
+
+            if (profile?.email) {
+                targetEmail = profile.email
+            } else {
+                // 2. Fallback: Intentar obtener desde Clerk directamente
+                console.log(`[API Estado] Profile no encontrado para \${pedido.user_id}, intentando Clerk...`)
+                try {
+                    const { createClerkClient } = await import('@clerk/nextjs/server')
+                    const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
+                    const clerkUser = await clerk.users.getUser(pedido.user_id)
+                    targetEmail = clerkUser.emailAddresses[0]?.emailAddress || ''
+                } catch (clerkErr) {
+                    console.error('❌ Error obteniendo usuario de Clerk:', clerkErr)
+                }
+            }
+
+            if (targetEmail) {
+                const { EmailService } = await import('@/lib/services/email.service')
+                const nombreServicio = pedido.paquete?.nombre || pedido.servicio?.nombre || 'Trámite LLC'
+
+                // Mapear estado legible
+                const estados: Record<string, string> = {
+                    'pendiente': 'Pendiente de Envío',
+                    'enviado_irs': 'Enviado al IRS',
+                    'en_revision': 'En Revisión por el IRS',
+                    'aprobado': 'Aprobado - Trámite Completado',
+                    'rechazado': 'Rechazado'
+                }
+
+                const estadoLegible = estados[estado_tramitacion] || `Cambio de Estado (Paso \${paso_actual})`
+
+                await EmailService.enviarNotificacionEstado({
+                    to: targetEmail,
+                    nombreUsuario: pedido.metadata?.member_nombre_completo || 'Emprendedor',
+                    nombreServicio,
+                    pedidoId: pedido.id,
+                    nuevoEstado: estadoLegible,
+                    notas: notas_admin
+                })
+                console.log(`✅ Email de estado enviado a: \${targetEmail}`)
+            } else {
+                console.warn(`⚠️ No se pudo encontrar email para el usuario \${pedido.user_id}. Notificación no enviada.`)
+            }
+        } catch (emailErr) {
+            console.error('⚠️ [API Actualizar Estado] No se pudo enviar el email de notificación:', emailErr)
+        }
+
         console.log(`✅ Estado actualizado para pedido ${pedido.numero_pedido}: paso ${paso_actual}`)
 
         return NextResponse.json({
             success: true,
-            message: 'Estado actualizado exitosamente',
+            message: 'Estado actualizado exitosamente y cliente notificado',
             data: {
                 pedidoId: pedido.id,
                 numeroPedido: pedido.numero_pedido,

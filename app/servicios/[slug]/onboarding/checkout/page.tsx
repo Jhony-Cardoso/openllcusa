@@ -96,12 +96,12 @@ export default function CheckoutPage() {
   }, [isLoaded, user, pedidoIdFromUrl, slug, router])
 
   const precioBase = useMemo(() => {
-    // Detectar si es Tax Filing
-    const esTaxFiling = pedido?.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedido as any)?.tax_data
+    // Determinar si es Tax Filing basándose en el slug de la URL
+    const esTaxFiling = slug === 'form-5472-1120'
 
-    // Si es Tax Filing, usar precio fijo
+    // Si es Tax Filing, usar precio fijo de $249
     if (esTaxFiling) {
-      return 249 // $249.00 USD
+      return 249
     }
 
     // Para otros servicios, buscar en paquete o servicio
@@ -160,8 +160,8 @@ export default function CheckoutPage() {
     setError('')
 
     try {
-      // Detectar si es Tax Filing
-      const esTaxFiling = pedido?.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedido as any)?.tax_data
+      // Determinar el endpoint basado en el slug de la URL actual
+      const esTaxFiling = slug === 'form-5472-1120'
 
       // Seleccionar endpoint según el tipo de servicio
       let endpoint = '/api/stripe/checkout' // Default para paquetes

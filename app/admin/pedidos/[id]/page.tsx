@@ -39,8 +39,15 @@ export default async function AdminPedidoDetallePage({
     const metadata = pedido.metadata || {}
     const hasOnboarding = pedido.paso_actual >= 7
 
-    // Detectar tipo de servicio
-    const esTaxFiling = pedido.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedido as any).tax_data
+    // Detectar tipo de servicio de forma robusta
+    const taxDataObj = (pedido as any).tax_data
+    const hasRealTaxData = taxDataObj && Object.keys(taxDataObj).length > 0
+
+    const esTaxFiling =
+        pedido.servicio?.slug === 'form-5472-1120' ||
+        pedido.metadata?.tipo_servicio === 'tax_filing_5472' ||
+        hasRealTaxData
+
     const esEIN = pedido.servicio?.slug === 'obtencion-ein' || pedido.paquete?.slug === 'ein-express'
 
     // DEBUG: Ver qué datos tenemos

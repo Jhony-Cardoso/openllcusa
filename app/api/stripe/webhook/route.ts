@@ -107,26 +107,22 @@ export async function POST(req: Request) {
               fecha_pago: new Date().toISOString(),
               paso_actual: 6,
               completado_at: new Date().toISOString(),
-            }, { count: 'exact' }) // Pedir recuento de filas afectadas
-            .eq('id', pedidoId)
-            // IMPORTANTE: Quitamos la restricción de user_id por seguridad en debug, 
-            // o logueamos si 0 filas. En prod, mantenerla.
-            // .eq('user_id', userId) -> Si el ID de usuario del webhook no coincide con el de la DB, falla silenciosamente.
-            // Para arreglarlo, quitamos .eq('user_id') aquí y confiamos en el pedidoId (UUID)
-            // O mejor: lo mantenemos pero alertamos si count es 0.
-            .eq('user_id', userId);
+            }, { count: 'exact' })
+            .eq('id', pedidoId);
 
           if (error) {
             console.error('❌ [WEBHOOK] Error DB update:', error);
           } else if (count === 0) {
-            console.warn('⚠️ [WEBHOOK] Update exitoso pero 0 filas afectadas. Posible mismatch de UserID o PedidoID inexistente.');
-            console.warn(`   PedidoID: ${pedidoId}`);
-            console.warn(`   UserId (Webhook): ${userId}`);
-            // Intentamos recuperar el pedido para ver qué UserID tiene realmente
-            const { data: pCheck } = await supabaseAdmin.from('pedidos').select('user_id').eq('id', pedidoId).single();
-            if (pCheck) console.warn(`   UserId (DB): ${pCheck.user_id}`);
+            console.warn('⚠️ [WEBHOOK] Update exitoso pero 0 filas afectadas. PedidoID inexistente.');
+            console.warn(`   PedidoID enviado: ${pedidoId}`);
           } else {
-            console.log('✅ [WEBHOOK] Pedido marcado como pagado. Filas:', count);
+            console.log('✅ [WEBHOOK] Pedido marcado como pagado via Webhook. Filas:', count);
+
+            // Validación de seguridad opcional: comprobar si el usuario coincide
+            const { data: pCheck } = await supabaseAdmin.from('pedidos').select('user_id').eq('id', pedidoId).single();
+            if (pCheck && pCheck.user_id !== userId) {
+              console.warn(`🚨 [WEBHOOK] ALERTA DE SEGURIDAD: El pago fue realizado por el usuario ${userId} pero el pedido pertenece a ${pCheck.user_id}`);
+            }
 
             // Obtener datos del pedido y servicio para el email
             const { PedidoModel } = await import('@/lib/models/pedido');

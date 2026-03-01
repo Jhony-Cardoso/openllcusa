@@ -254,56 +254,24 @@ export class EmailService {
     try {
       const { to, nombre, situacion } = params
       const { data, error } = await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
+        from: 'Axel de Open LLC USA <hola@updates.openllcusa.com>',
         to,
+        replyTo: 'josemanuel@openllcusa.com',
         subject: `🚀 Hola ${nombre}, aquí tienes tu hoja de ruta para EE.UU.`,
         html: `
-          <!DOCTYPE html>
-          <html lang="es">
-            <head>
-              <meta charset="utf-8">
-              <style>
-                .body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; }
-                .header { background: #1e293b; padding: 40px 20px; text-align: center; border-radius: 12px 12px 0 0; }
-                .content { padding: 40px 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; }
-                .button { background: #0ea5e9; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin: 20px 0; }
-                .footer { padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; }
-                .badge { background: #f0f9ff; color: #0369a1; padding: 4px 12px; border-radius: 99px; font-size: 14px; font-weight: 600; }
-              </style>
-            </head>
-            <body class="body">
-              <div class="header">
-                <h1 style="color: white; margin: 0; font-size: 24px;">Open LLC USA</h1>
-              </div>
-              <div class="content">
-                <h2 style="color: #1e293b;">¡Excelente decisión, ${nombre}! 👏</h2>
-                <p>He recibido tu solicitud. Me alegra ver que estás buscando optimizar tu situación como:</p>
-                <div style="margin: 20px 0;">
-                  <span class="badge">${situacion}</span>
-                </div>
-                <p>Mientras procesamos los resultados de tu diagnóstico, quería confirmarte que **estás en el lugar adecuado**. Ayudamos a emprendedores internacionales a eliminar la burocracia y los impuestos innecesarios mediante estructuras seguras en EE.UU.</p>
-                
-                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 25px 0;">
-                  <h3 style="margin-top: 0; font-size: 16px;">Próximos pasos:</h3>
-                  <ol style="margin-bottom: 0;">
-                    <li>Completa el diagnóstico (si no lo has hecho ya).</li>
-                    <li>Revisa tu panel de control personalizado.</li>
-                    <li>Agenda una llamada si tu facturación supera los $30k/año.</li>
-                  </ol>
-                </div>
+          <div style="font-family: sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px;">
+            <p>Hola <strong>${nombre}</strong>,</p>
+            <p>He recibido tu solicitud. Me alegra mucho ver que estás buscando optimizar tu situación como <strong>${situacion}</strong>.</p>
+            
+            <p>He empezado a revisar tu perfil para ver cómo podemos ayudarte a eliminar la burocracia y los impuestos innecesarios mediante una estructura legal y segura en Estados Unidos.</p>
+            
+            <p>Si aún no has terminado de completar los datos de tu diagnóstico, te recomiendo hacerlo ahora desde este enlace:</p>
+            <p><a href="${process.env.NEXT_PUBLIC_BASE_URL}/quiz" style="color: #0ea5e9; font-weight: bold; text-decoration: underline;">Continuar con mi Diagnóstico Personalizado →</a></p>
 
-                <div align="center">
-                  <a href="${process.env.NEXT_PUBLIC_BASE_URL}/quiz" class="button">Continuar con mi Diagnóstico →</a>
-                </div>
+            <p>Una vez terminado, podré darte una hoja de ruta exacta para tu caso.</p>
 
-                <p style="font-size: 14px; color: #64748b;">Un saludo,<br><strong>Jose Manuel</strong><br>Fundador, Open LLC USA</p>
-              </div>
-              <div class="footer">
-                © 2026 Open LLC USA. Todos los derechos reservados. <br>
-                Este email fue enviado a ${to} porque mostraste interés en nuestros servicios.
-              </div>
-            </body>
-          </html>
+            <p style="margin-top: 30px;">Un saludo,<br><strong>Axel</strong><br>Fundador, Open LLC USA</p>
+          </div>
         `
       })
       if (error) throw error
@@ -395,23 +363,23 @@ export class EmailService {
     try {
       const { to, nombre } = params
       const { data, error } = await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
+        from: 'Axel de Open LLC USA <hola@updates.openllcusa.com>',
         to,
-        subject: `⚡ ${nombre}, tu estructura en EE.UU. está lista para despegar`,
+        replyTo: 'josemanuel@openllcusa.com',
+        subject: `Tu estructura en EE.UU. está lista, ${nombre} 🚀`,
         html: `
-          <div style="font-family: sans-serif; color: #1e293b; max-width: 600px;">
-            <h2 style="color: #0ea5e9;">¡Felicidades por tu resultado! 🚀</h2>
+          <div style="font-family: sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px;">
             <p>Hola <strong>${nombre}</strong>,</p>
-            <p>Tu diagnóstico indica que eres el perfil ideal para una LLC. En tu situación, la optimización fiscal y la protección de activos no son un lujo, sino una necesidad para dejar de perder dinero cada mes.</p>
-            <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; border: 1px solid #bae6fd;">
-              <h3 style="margin-top:0;">Próximo paso recomendado:</h3>
-              <p>Dado tu volumen y tipo de negocio, te sugiero que hablemos 15 minutos para validar tu nexo en España y elegir el estado (Delaware vs Wyoming) que más te conviene.</p>
-              <div align="center">
-                <a href="https://openllcusa.com/contacto" style="background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Agendar Llamada Estratégica Gratis →</a>
-              </div>
-            </div>
-            <p style="margin-top: 25px;">Si prefieres empezar ya mismo sin llamada, puedes ver nuestros planes aquí: <a href="${process.env.NEXT_PUBLIC_BASE_URL}/precios">Ver Planes de LLC</a></p>
-            <p>Un saludo,<br><strong>Jose Manuel</strong></p>
+            <p>He revisado tu resultado del diagnóstico y tengo buenas noticias: <strong>tu perfil es ideal para operar con una LLC</strong>. En tu situación actual, la optimización fiscal no es solo una opción, sino una necesidad para proteger tu crecimiento.</p>
+            
+            <p>Como ya tienes cierto volumen, mi consejo es que hablemos 15 minutos. Quiero validar personalmente tu nexo en España y ayudarte a elegir el estado que mejor te encaje.</p>
+            
+            <p>Puedes elegir el hueco que mejor te venga aquí:</p>
+            <p><a href="https://openllcusa.com/contacto" style="color: #0ea5e9; font-weight: bold; text-decoration: underline;">Reservar mi Llamada de Estrategia →</a></p>
+
+            <p>Si prefieres empezar por tu cuenta sin llamada, puedes ver nuestros planes aquí: <a href="${process.env.NEXT_PUBLIC_BASE_URL}/precios">Ver Planes de LLC</a></p>
+
+            <p style="margin-top: 30px;">Un saludo,<br><strong>Axel</strong></p>
           </div>
         `
       })
@@ -436,9 +404,10 @@ export class EmailService {
     try {
       const { to, nombre } = params
       await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
+        from: 'Axel de Open LLC USA <hola@updates.openllcusa.com>',
         to,
-        subject: `🤔 ¿Dudas sobre la LLC en España, ${nombre}?`,
+        replyTo: 'josemanuel@openllcusa.com',
+        subject: `Dudas sobre la LLC en España, ${nombre}?`,
         html: `
           <div style="font-family: sans-serif; color: #1e293b; max-width: 600px;">
             <p>Hola <strong>${nombre}</strong>,</p>
@@ -449,7 +418,7 @@ export class EmailService {
               <a href="${process.env.NEXT_PUBLIC_BASE_URL}/blog/guia-legal-espana" style="border: 2px solid #0ea5e9; color: #0ea5e9; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Leer Guía de Seguridad Jurídica →</a>
             </div>
             <p>Cuando estés listo para dar el paso, aquí estaré para ayudarte.</p>
-            <p>Un saludo,<br><strong>Jose Manuel</strong></p>
+            <p>Un saludo,<br><strong>Axel</strong></p>
           </div>
         `
       })
@@ -467,7 +436,7 @@ export class EmailService {
     try {
       const { to, nombre } = params
       await resend.emails.send({
-        from: 'Jose | Open LLC USA <noreply@updates.openllcusa.com>',
+        from: 'Axel de Open LLC USA <hola@updates.openllcusa.com>',
         to,
         subject: `📈 Hoja de ruta para tus primeros 30k€, ${nombre}`,
         html: `
@@ -477,13 +446,93 @@ export class EmailService {
             <p>Montar una LLC demasiado pronto puede ser un gasto innecesario si aún no facturas lo suficiente. Mi consejo: céntrate en llegar a los 2.500€/mes.</p>
             <p>Para ayudarte, te envío este recurso sobre cómo escalar servicios digitales y conseguir tus primeros clientes en el mercado USA.</p>
             <p>He guardado tus resultados. Cuando alcances ese hito, escríbeme y montaremos tu estructura para proteger ese crecimiento.</p>
-            <p>Un saludo,<br><strong>Jose Manuel</strong></p>
+            <p>Un saludo,<br><strong>Axel</strong></p>
           </div>
         `
       })
       return { success: true }
     } catch (error) {
       console.error('Error Tier 3 email:', error)
+      return { success: false, error }
+    }
+  }
+
+  /**
+   * EMAIL AUTOMATIZADO: Notificación de Cambio de Estado / Progreso
+   */
+  static async enviarNotificacionEstado(params: {
+    to: string;
+    nombreUsuario: string;
+    nombreServicio: string;
+    pedidoId: string;
+    nuevoEstado: string;
+    notas?: string;
+  }) {
+    try {
+      const { to, nombreUsuario, nombreServicio, pedidoId, nuevoEstado, notas } = params
+
+      const { data, error } = await resend.emails.send({
+        from: 'Axel de Open LLC USA <noreply@updates.openllcusa.com>',
+        to,
+        replyTo: 'josemanuel@openllcusa.com',
+        subject: `Actualización de tu trámite: \${nuevoEstado} 🚀`,
+        html: `
+          <div style="font-family: sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px;">
+            <p>Hola <strong>${nombreUsuario}</strong>,</p>
+            <p>Tenemos novedades sobre tu trámite de <strong>${nombreServicio}</strong> (Pedido #${pedidoId.split('-')[0]}).</p>
+            
+            <div style="background-color: #f0f9ff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 24px 0;">
+              <p style="margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #0ea5e9; font-weight: bold;">Nuevo Estado:</p>
+              <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 800; color: #1e293b;">${nuevoEstado}</p>
+              ${notas ? `<p style="margin: 12px 0 0 0; font-size: 14px; color: #475569; font-style: italic;">"${notas}"</p>` : ''}
+            </div>
+
+            <p>Ya puedes entrar en tu panel para ver los detalles y descargar cualquier documento nuevo si está disponible.</p>
+
+            <div align="center" style="margin: 32px 0;">
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}" style="background-color: #0ea5e9; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Ir a mi Dashboard →</a>
+            </div>
+
+            <p style="margin-top: 30px;">Seguimos avanzando,<br><strong>Axel</strong><br>Open LLC USA</p>
+          </div>
+        `
+      })
+
+      if (error) {
+        console.error('❌ Error Resend enviando actualización de estado:', error)
+        return { success: false, error }
+      }
+      return { success: true, data }
+    } catch (error) {
+      console.error('❌ Error enviando email de actualización de estado:', error)
+      return { success: false, error }
+    }
+  }
+
+  /**
+   * Notificación genérica para el equipo admin
+   */
+  static async enviarNotificacionAdmin(params: { subject: string; html: string }) {
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL || 'josemanuel@openllcusa.com'
+      const { data, error } = await resend.emails.send({
+        from: 'Open LLC System <sistema@updates.openllcusa.com>',
+        to: adminEmail,
+        subject: params.subject,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #334155;">
+            <h2 style="color: #1e293b;">Notificación Administrativa</h2>
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin: 20px 0;">
+              ${params.html}
+            </div>
+            <p style="font-size: 11px; color: #94a3b8; text-align: center;">Este es un aviso automático de Open LLC USA Control Panel.</p>
+          </div>
+        `
+      })
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('❌ Error enviando notificación admin:', error)
       return { success: false, error }
     }
   }

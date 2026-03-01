@@ -3,7 +3,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { PedidoModel } from '@/lib/models/pedido'
-import { supabase } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(
@@ -69,7 +69,8 @@ export async function POST(
         const storagePath = `pedidos/${pedido.id}/documentos/${uniqueFileName}`
 
         // Subir a Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase
+        const adminClient = createAdminClient()
+        const { data: uploadData, error: uploadError } = await adminClient
             .storage
             .from('documentos')
             .upload(storagePath, buffer, {
@@ -95,7 +96,7 @@ export async function POST(
         }
 
         // Actualizar pedido en la base de datos
-        const { error: updateError } = await supabase
+        const { error: updateError } = await adminClient
             .from('pedidos')
             .update({
                 metadata: updatedMetadata,
@@ -114,9 +115,35 @@ export async function POST(
 
         console.log(`✅ Carta EIN subida exitosamente para pedido ${pedido.numero_pedido}`)
 
+        // 4. Notificar al usuario por Email
+        try {
+            const adminClient = (await import('@/lib/supabase/admin')).createAdminClient()
+            const { data: profile } = await adminClient
+                .from('profiles')
+                .select('email')
+                .eq('user_id', pedido.user_id)
+                .single()
+
+            if (profile) {
+                const { EmailService } = await import('@/lib/services/email.service')
+                const nombreServicio = pedido.paquete?.nombre || pedido.servicio?.nombre || 'Obtención del EIN'
+
+                await EmailService.enviarNotificacionEstado({
+                    to: profile.email,
+                    nombreUsuario: pedido.metadata?.member_nombre_completo || 'Emprendedor',
+                    nombreServicio,
+                    pedidoId: pedido.id,
+                    nuevoEstado: '✅ EIN Entregado y Disponible',
+                    notas: 'Ya puedes descargar tu carta oficial del IRS desde el panel de documentos.'
+                })
+            }
+        } catch (emailErr) {
+            console.error('⚠️ [API Subir EIN] No se pudo enviar el email de notificación:', emailErr)
+        }
+
         return NextResponse.json({
             success: true,
-            message: 'Carta EIN subida exitosamente',
+            message: 'Carta EIN subida exitosamente y cliente notificado',
             data: {
                 path: storagePath,
                 fileName: file.name,

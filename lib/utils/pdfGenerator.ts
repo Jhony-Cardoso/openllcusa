@@ -47,14 +47,39 @@ const findField = (form: any, fullName: string) => {
     try {
         return form.getField(fullName)
     } catch (e) {
-        const shortName = fullName.split('.').pop()
-        if (shortName && shortName !== fullName) {
-            try {
-                return form.getField(shortName)
-            } catch (e2) {
-                return null
-            }
+        // Fallback: tratar de buscar por nombre corto y variaciones (f1_2 vs f1_02)
+        const nameParts = fullName.split('.')
+        let shortName = nameParts[nameParts.length - 1].replace('[0]', '')
+
+        if (!shortName) return null
+
+        // Intento 1: buscar directamente por el nombre corto
+        try {
+            return form.getField(shortName)
+        } catch (e2) { }
+
+        // Intento 2: buscar variaciones con/sin cero inicial (f1_02 vs f1_2)
+        const variations = []
+        if (shortName.startsWith('f1_')) {
+            const num = shortName.replace('f1_', '')
+            if (num.length === 1) variations.push(`f1_0\${num}`)
+            if (num.startsWith('0')) variations.push(`f1_\${num.substring(1)}`)
         }
+
+        for (const name of variations) {
+            try { return form.getField(name) } catch (e) { }
+            try { return form.getField(`\${name}[0]`) } catch (e) { }
+        }
+
+        // Intento 3: Búsqueda exhaustiva por sufijo (la más robusta)
+        const allFields = form.getFields()
+        const found = allFields.find((f: any) => {
+            const n = f.getName()
+            return n === shortName || n.endsWith('.' + shortName) || n.endsWith('.' + shortName + '[0]') || n === shortName + '[0]'
+        })
+
+        if (found) return found
+
         return null
     }
 }
@@ -110,50 +135,50 @@ const fillCheck = (form: any, fullName: string, shouldCheck: boolean = true) => 
 }
 
 const F = {
-    LEGAL_NAME: 'topmostSubform[0].Page1[0].f1_2[0]',
-    TRADE_NAME: 'topmostSubform[0].Page1[0].f1_3[0]',
-    EXECUTOR: 'topmostSubform[0].Page1[0].f1_4[0]',
-    MAILING_ADDRESS: 'topmostSubform[0].Page1[0].Line4ReadOrder[0].f1_5[0]', // 4a
-    STREET_ADDRESS: 'topmostSubform[0].Page1[0].f1_7[0]',  // 5a (Ahora f1_7)
-    CITY_STATE_ZIP: 'topmostSubform[0].Page1[0].f1_6[0]', // 4b (Antes f1_7)
-    CITY_STATE_FOREIGN: 'topmostSubform[0].Page1[0].f1_8[0]',
-    COUNTY: 'topmostSubform[0].Page1[0].f1_9[0]',
-    RESPONSIBLE_PARTY: 'topmostSubform[0].Page1[0].f1_10[0]',
-    SSN_ITIN_EIN: 'topmostSubform[0].Page1[0].f1_11[0]',
-    LLC_YES: 'topmostSubform[0].Page1[0].c1_1[0]',
-    LLC_NO: 'topmostSubform[0].Page1[0].c1_1[1]',
-    LLC_MEMBERS: 'topmostSubform[0].Page1[0].f1_12[0]',
-    LLC_US_YES: 'topmostSubform[0].Page1[0].c1_2[0]',
-    LLC_US_NO: 'topmostSubform[0].Page1[0].c1_2[1]',
-    ENTITY_OTHER_CB: 'topmostSubform[0].Page1[0].c1_3[15]', // CAMBIO: Index 15 (antes 6)
-    ENTITY_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_19[0]',
-    STATE_INCORPORATED: 'topmostSubform[0].Page1[0].f1_18[0]',
-    REASON_STARTED_NEW: 'topmostSubform[0].Page1[0].c1_4[0]',
-    REASON_STARTED_TYPE: 'topmostSubform[0].Page1[0].f1_25[0]',
-    REASON_BANKING: 'topmostSubform[0].Page1[0].c1_4[4]',
-    REASON_BANKING_TEXT: 'topmostSubform[0].Page1[0].f1_28[0]',
-    REASON_HIRED: 'topmostSubform[0].Page1[0].c1_4[1]',
-    REASON_OTHER_CB: 'topmostSubform[0].Page1[0].c1_4[3]',
-    REASON_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_26[0]',
-    DATE_STARTED: 'topmostSubform[0].Page1[0].f1_31[0]',
-    CLOSING_MONTH: 'topmostSubform[0].Page1[0].f1_32[0]',
-    EMPLOYEES_AGRI: 'topmostSubform[0].Page1[0].f1_33[0]',
-    EMPLOYEES_HOUSE: 'topmostSubform[0].Page1[0].f1_34[0]', // Shifted from 31
-    EMPLOYEES_OTHER: 'topmostSubform[0].Page1[0].f1_35[0]', // Shifted from 32
-    FIRST_DATE_WAGES: 'topmostSubform[0].Page1[0].f1_36[0]',
-    ACTIVITY_OTHER_CB: 'topmostSubform[0].Page1[0].c1_6[11]',
-    ACTIVITY_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_37[0]',
-    PRINCIPAL_LINE: 'topmostSubform[0].Page1[0].f1_38[0]',
-    PREV_EIN_YES: 'topmostSubform[0].Page1[0].c1_7[0]',
-    PREV_EIN_NO: 'topmostSubform[0].Page1[0].c1_7[1]',
-    PREV_EIN: 'topmostSubform[0].Page1[0].f1_39[0]',
-    DESIGNEE_NAME: 'topmostSubform[0].Page1[0].f1_40[0]',
-    DESIGNEE_PHONE: 'topmostSubform[0].Page1[0].f1_41[0]',
-    DESIGNEE_ADDRESS: 'topmostSubform[0].Page1[0].f1_42[0]',
-    DESIGNEE_FAX: 'topmostSubform[0].Page1[0].f1_43[0]',
-    APPLICANT_NAME: 'topmostSubform[0].Page1[0].f1_44[0]',
-    APPLICANT_PHONE: 'topmostSubform[0].Page1[0].f1_45[0]',
-    APPLICANT_FAX: 'topmostSubform[0].Page1[0].f1_46[0]',
+    LEGAL_NAME: 'f1_02', // 1
+    TRADE_NAME: 'f1_03', // 2
+    EXECUTOR: 'f1_04',   // 3
+    MAILING_ADDRESS: 'f1_05', // 4a
+    STREET_ADDRESS: 'f1_07',  // 5a
+    CITY_STATE_ZIP: 'f1_06',  // 4b
+    CITY_STATE_FOREIGN: 'f1_08', // 5b
+    COUNTY: 'f1_09', // 6
+    RESPONSIBLE_PARTY: 'f1_10',
+    SSN_ITIN_EIN: 'f1_11',
+    LLC_YES: 'c1_1[0]',
+    LLC_NO: 'c1_1[1]',
+    LLC_MEMBERS: 'f1_12',
+    LLC_US_YES: 'c1_2[0]',
+    LLC_US_NO: 'c1_2[1]',
+    ENTITY_OTHER_CB: 'c1_3[15]',
+    ENTITY_OTHER_TEXT: 'f1_19',
+    STATE_INCORPORATED: 'f1_18',
+    REASON_STARTED_NEW: 'c1_4[0]',
+    REASON_STARTED_TYPE: 'f1_25',
+    REASON_BANKING: 'c1_4[4]',
+    REASON_BANKING_TEXT: 'f1_28',
+    REASON_HIRED: 'c1_4[1]',
+    REASON_OTHER_CB: 'c1_4[3]',
+    REASON_OTHER_TEXT: 'f1_26',
+    DATE_STARTED: 'f1_31',
+    CLOSING_MONTH: 'f1_32',
+    EMPLOYEES_AGRI: 'f1_33',
+    EMPLOYEES_HOUSE: 'f1_34',
+    EMPLOYEES_OTHER: 'f1_35',
+    FIRST_DATE_WAGES: 'f1_36',
+    ACTIVITY_OTHER_CB: 'c1_6[11]',
+    ACTIVITY_OTHER_TEXT: 'f1_37',
+    PRINCIPAL_LINE: 'f1_38',
+    PREV_EIN_YES: 'c1_7[0]',
+    PREV_EIN_NO: 'c1_7[1]',
+    PREV_EIN: 'f1_39',
+    DESIGNEE_NAME: 'f1_40',
+    DESIGNEE_PHONE: 'f1_41',
+    DESIGNEE_ADDRESS: 'f1_42',
+    DESIGNEE_FAX: 'f1_43',
+    APPLICANT_NAME: 'f1_44',
+    APPLICANT_PHONE: 'f1_45',
+    APPLICANT_FAX: 'f1_46',
 }
 
 export class PDFGenerator {
@@ -164,7 +189,7 @@ export class PDFGenerator {
             const pdfDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true })
             const form = pdfDoc.getForm()
             const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
-            const page = pdfDoc.getPages()[0] // Hoisted declaration
+            const page = pdfDoc.getPages()[0]
 
             // --- Identification ---
             fillText(form, F.LEGAL_NAME, data.legalName, fontBold)
@@ -175,7 +200,7 @@ export class PDFGenerator {
             fillText(form, F.MAILING_ADDRESS, data.mailingAddress, fontBold)
             fillText(form, F.CITY_STATE_ZIP, data.cityStateZip, fontBold)
 
-            // L5a y L5b solo si son diferentes (deben venir vacíos si son iguales)
+            // L5a y L5b solo si son diferentes
             fillText(form, F.STREET_ADDRESS, data.streetAddress, fontBold)
             fillText(form, F.CITY_STATE_FOREIGN, data.cityStateZipForeign, fontBold)
 
@@ -191,23 +216,14 @@ export class PDFGenerator {
             fillCheck(form, F.LLC_US_NO, data.llcOrganizedInUS === false)
 
             // --- Entity Type (L9a) ---
-            // REGLA USUARIO: Marcar Other + DISREGARDED ENTITY. Nada más.
             fillCheck(form, F.ENTITY_OTHER_CB)
             fillText(form, F.ENTITY_OTHER_TEXT, 'DISREGARDED ENTITY', fontBold)
 
-            // --- State (L9b) ---
-            // REGLA USUARIO: No marcar nada.
-            // fillText(form, F.STATE_INCORPORATED, data.stateOfFormation, fontBold)
-
             // --- Reason (L10) ---
-            // REGLA USUARIO: Siempre Started new business.
             fillCheck(form, F.REASON_STARTED_NEW)
-            // Tipo específico (vendrá del dashboard)
-            // Manual placement logic for Reason Type (Line 10)
             const reasonType = data.reasonSpecifyType || data.principalActivity || 'E-COMMERCE SERVICES'
-            // fillText(form, F.REASON_STARTED_TYPE, reasonType, fontBold) // Replaced by drawText
             page.drawText(reasonType, {
-                x: 80, // USER CONFIRMED PERFECT
+                x: 80,
                 y: 374,
                 size: 8,
                 font: fontBold,
@@ -216,8 +232,7 @@ export class PDFGenerator {
 
             // --- Fechas (L11, L12) ---
             fillText(form, F.DATE_STARTED, data.startDate, fontBold)
-            // REGLA USUARIO: Siempre DECEMBER
-            fillText(form, F.CLOSING_MONTH, 'DECEMBER', fontBold)
+            fillText(form, F.CLOSING_MONTH, data.closingMonth || 'DECEMBER', fontBold)
 
             // --- Employees (L13) ---
             fillText(form, F.EMPLOYEES_AGRI, data.employeesAgricultural || '0', fontBold)
@@ -240,10 +255,9 @@ export class PDFGenerator {
             }
 
             // --- Designee (Third Party) ---
-            // REGLA USUARIO: Usar entidad legal Zara Designs LLC.
             fillText(form, F.DESIGNEE_NAME, data.designeeName || 'ZARA DESIGNS LLC', fontBold)
             fillText(form, F.DESIGNEE_PHONE, data.designeePhone || '307-555-0123', fontBold)
-            fillText(form, F.DESIGNEE_ADDRESS, data.designeeAddress || 'pendiente', fontBold) // Cambiado a pedido
+            fillText(form, F.DESIGNEE_ADDRESS, data.designeeAddress || '1603 CAPITOL AVE STE 413, CHEYENNE, WY 82001', fontBold)
             fillText(form, F.DESIGNEE_FAX, data.designeeFax, fontBold)
 
             // --- Applicant ---
@@ -257,12 +271,12 @@ export class PDFGenerator {
                     const base64Data = signatureBase64.split(',')[1]
                     const sigBuffer = Buffer.from(base64Data, 'base64')
                     const sigImage = await pdfDoc.embedPng(sigBuffer)
-                    const MAX_W = 150
-                    const MAX_H = 35
+                    const MAX_W = 160
+                    const MAX_H = 40
                     const scale = Math.min(MAX_W / sigImage.width, MAX_H / sigImage.height)
                     page.drawImage(sigImage, {
-                        x: 151,
-                        y: 36, // Ajusted Y for signature
+                        x: 110, // Más a la izquierda para estar pegado a "Signature"
+                        y: 42,  // Altura adecuada
                         width: sigImage.width * scale,
                         height: sigImage.height * scale
                     })
@@ -272,11 +286,10 @@ export class PDFGenerator {
             }
 
             // --- Fecha Pie de Página ---
-            // REGLA USUARIO: Corregir ubicación.
             const today = new Date()
             const dateStr = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}/${today.getFullYear()}`
             page.drawText(dateStr, {
-                x: 375, // SHIFTED RIGHT (+45 units from 330)
+                x: 375,
                 y: 40,
                 size: 9,
                 font: fontBold,
@@ -292,3 +305,41 @@ export class PDFGenerator {
         }
     }
 }
+
+/**
+ * Función auxiliar para generar el PDF del SS-4 desde la API
+ */
+export async function generarSS4PDF(metadata: any, pedidoId: string): Promise<Uint8Array> {
+    const data: SS4Data = {
+        legalName: metadata.ss4_legal_name || metadata.empresa_nombre || metadata.member_nombre_completo || 'N/A',
+        tradeName: metadata.ss4_trade_name || metadata.empresa_nombre_alternativo || '',
+        executorName: '',
+        mailingAddress: metadata.member_direccion || metadata.empresa_direccion || 'N/A',
+        cityStateZip: metadata.ss4_city_state_zip || metadata.empresa_ciudad_estado_zip || '',
+        streetAddress: metadata.empresa_calle || '',
+        cityStateZipForeign: '',
+        county: metadata.ss4_county || metadata.empresa_condado || 'FOREIGN',
+        responsiblePartyName: metadata.member_nombre_completo || 'N/A',
+        responsiblePartySSN: metadata.member_tax_id_valor || metadata.member_ssn_itin || 'FOREIGN',
+        isLLC: true,
+        llcMemberCount: metadata.empresa_num_socios || '1',
+        llcOrganizedInUS: true,
+        entityType: metadata.ss4_tipo_entidad || 'Other',
+        stateOfFormation: metadata.empresa_estado_usa || 'WYOMING',
+        reasonForApplying: metadata.ss4_razon_solicitud || 'Started new business',
+        reasonSpecifyType: metadata.ss4_actividad_principal || metadata.empresa_actividad || 'E-COMMERCE',
+        startDate: metadata.ss4_fecha_inicio || metadata.empresa_fecha_inicio || new Date().toLocaleDateString(),
+        closingMonth: metadata.ss4_cierre_fiscal || 'DECEMBER',
+        principalActivity: metadata.ss4_actividad_principal || metadata.empresa_actividad || 'E-COMMERCE',
+        principalProduct: metadata.ss4_principal_producto || metadata.empresa_producto || 'DIGITAL SERVICES',
+        applicantNameAndTitle: (metadata.member_nombre_completo || 'N/A') + ', MANAGING MEMBER',
+        applicantPhone: metadata.member_telefono || '',
+        designeeName: 'ZARA DESIGNS LLC',
+        designeePhone: '307-555-0123',
+        designeeAddress: '1603 CAPITOL AVE STE 413, CHEYENNE, WY 82001'
+    }
+
+    const signature = metadata.firma_digital || metadata.firma_base64;
+    return await PDFGenerator.generarSS4(data, signature)
+}
+

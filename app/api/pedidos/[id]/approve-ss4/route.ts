@@ -31,17 +31,13 @@ export async function POST(
             return NextResponse.json({ error: 'No autorizado para este pedido' }, { status: 403 })
         }
 
-        // 2. Modificar el bloque documents
+        // 2. Modificar el bloque de metadata para SS-4
         const currentMeta = (pedido.metadata as any) || {}
-        const newDocs = {
-            ...(currentMeta.documents || {}),
-            form_5472_approved: true,
-            form_5472_approved_at: new Date().toISOString()
-        }
 
         const updatedMeta = {
             ...currentMeta,
-            documents: newDocs
+            borrador_ss4_approved: true,
+            borrador_ss4_approved_at: new Date().toISOString()
         }
 
         // 3. Guardar en base de datos
@@ -58,24 +54,23 @@ export async function POST(
         try {
             const { EmailService } = await import('@/lib/services/email.service')
             await EmailService.enviarNotificacionAdmin({
-                subject: `✅ Formulario 5472 APROBADO - Pedido #${pedido.numero_pedido}`,
+                subject: `✅ Borrador SS-4 APROBADO - Pedido #${pedido.numero_pedido}`,
                 html: `
-                    <p>El cliente <strong>${pedido.user_id}</strong> ha aprobado el Formulario 5472 + 1120.</p>
+                    <p>El cliente <strong>${pedido.user_id}</strong> ha aprobado el borrador del Formulario SS-4.</p>
                     <p><strong>Pedido:</strong> #${pedido.numero_pedido}</p>
-                    <p>Ya puedes proceder con la presentación al IRS.</p>
+                    <p>Ya puedes proceder con la tramitación ante el IRS.</p>
                     <div align="center" style="margin-top: 20px;">
                         <a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin/pedidos/${pedido.id}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Ver Pedido en Admin</a>
                     </div>
                 `
             })
         } catch (err) {
-            console.error('[ApproveTaxForm] Error notificando admin:', err)
+            console.error('[ApproveSS4] Error notificando admin:', err)
         }
 
-        return NextResponse.json({ success: true, message: 'Documento aprobado correctamente' })
-
+        return NextResponse.json({ success: true, message: 'Borrador aprobado exitosamente' })
     } catch (error: any) {
-        console.error('[API] Error al aprobar formulario:', error)
-        return NextResponse.json({ error: error.message || 'Error interno' }, { status: 500 })
+        console.error('Error approving SS4:', error)
+        return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
     }
 }

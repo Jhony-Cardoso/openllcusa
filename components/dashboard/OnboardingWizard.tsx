@@ -51,6 +51,8 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
         ss4_empleados_previstos: '0', // Línea 13
         ss4_actividad_principal: '', // Línea 16
         ss4_principal_producto: '', // Línea 18
+        ss4_city_state_zip: '', // Línea 4b
+        ss4_county: '', // Línea 6
         firma_digital: '', // Nuevo campo para la firma
     })
 
@@ -72,11 +74,18 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
     const validateStep = (currentStep: number) => {
         // VALIDACIÓN COMÚN: PASO 1 (Responsable)
         if (currentStep === 1) {
-            if (!formData.member_nombre_completo.trim() ||
-                !formData.member_direccion.trim()) {
-                alert('Por favor, completa los campos obligatorios del responsable.')
+            // En EIN el nombre es obligatorio. La dirección se pide en el paso 2.
+            if (!formData.member_nombre_completo.trim()) {
+                alert('Por favor, indica el nombre completo del responsable.')
                 return false
             }
+
+            // En LLC (no EIN), la dirección personal SÍ es obligatoria en el paso 1
+            if (!esEIN && !formData.member_direccion.trim()) {
+                alert('Por favor, indica tu dirección personal completa.')
+                return false
+            }
+
             if (!esEIN && (!formData.member_fecha_nacimiento || !formData.member_nacionalidad.trim())) {
                 alert('Por favor, completa fecha de nacimiento y nacionalidad.')
                 return false
@@ -92,6 +101,11 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                 }
                 if (!formData.ss4_tipo_entidad.trim()) {
                     alert('El tipo de entidad es obligatorio (Línea 9a del SS-4).')
+                    return false
+                }
+                // Validar dirección de la LLC (Líneas 4a, 4b y 6)
+                if (!formData.member_direccion.trim() || !formData.ss4_city_state_zip.trim() || !formData.ss4_county.trim()) {
+                    alert('Por favor, completa todos los campos de la dirección de la LLC (Calle, Ciudad/Estado/ZIP y Condado).')
                     return false
                 }
             }
@@ -224,14 +238,25 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                 Parte Responsable (Responsible Party)
                             </h3>
                             <p className="text-slate-500">
-                                Indica quién será el responsable ante el IRS (Línea 7a del SS-4).
+                                Indica quién será el responsable ante el IRS (Línea 7a del SS-4). Solo necesitamos su nombre e identificación.
                             </p>
+                        </div>
+
+                        {/* SUGERENCIA IDIOMA */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-start gap-4">
+                            <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
+                                <Globe className="text-amber-600" size={20} />
+                            </div>
+                            <div className="text-sm text-amber-900 leading-relaxed font-medium">
+                                <p className="font-bold mb-1">💡 Sugerencia importante:</p>
+                                <p>Todos los datos deben escribirse en <strong>INGLÉS</strong> (excepto tu nombre y dirección personal). Si no dominas el idioma, te sugerimos usar <a href="https://translate.google.com" target="_blank" className="underline hover:text-amber-700">Google Translate</a> para las descripciones de negocio.</p>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-900">
                             <div className="space-y-2 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    Nombre Completo <span className="text-rose-500">*</span>
+                                    Nombre Completo (Línea 7a) <span className="text-rose-500">*</span>
                                 </label>
                                 <div className="relative">
                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -245,26 +270,9 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                 </div>
                             </div>
 
-                            <div className="space-y-2 md:col-span-2 text-slate-900">
-                                <label className="text-sm font-bold text-slate-700 ml-1">
-                                    Dirección Postal (Mailing Address) <span className="text-rose-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-4 top-4 text-slate-400" size={18} />
-                                    <textarea
-                                        placeholder="Calle, ciudad, código postal y país (No puede ser un PO Box)"
-                                        rows={3}
-                                        className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
-                                        value={formData.member_direccion}
-                                        onChange={(e) => updateField('member_direccion', e.target.value)}
-                                    />
-                                </div>
-                                <p className="text-xs text-slate-500 ml-2">Esta dirección se usará en las líneas 4a y 4b del SS-4.</p>
-                            </div>
-
-                            <div className="space-y-6 md:col-span-2">
+                            <div className="space-y-6 md:col-span-2 mt-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Identificación Fiscal (Línea 7b)</label>
+                                    <label className="text-sm font-bold text-slate-700 ml-1 font-bold">Identificación Fiscal (Línea 7b)</label>
                                     <select
                                         className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-800"
                                         value={formData.member_tax_id_tipo}
@@ -279,7 +287,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
 
                                 {formData.member_tax_id_tipo !== 'foreign' && (
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700 ml-1">Número Fiscal</label>
+                                        <label className="text-sm font-bold text-slate-700 ml-1 font-bold">Número Fiscal (Línea 7b)</label>
                                         <input
                                             type="text"
                                             placeholder={formData.member_tax_id_tipo === 'ssn' ? 'XXX-XX-XXXX' : '9XX-XX-XXXX'}
@@ -293,22 +301,23 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                         </div>
                     </div>
                 )
+
             case 2:
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                         <div>
                             <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                                Datos de la Entidad
+                                Datos de la Entidad (SS-4)
                             </h3>
                             <p className="text-slate-500">
-                                Información legal para el encabezado del SS-4.
+                                Información legal de tu LLC para el SS-4.
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-6 text-slate-900">
-                            <div className="space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-900">
+                            <div className="space-y-2 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    Nombre Legal de la Entidad o Individuo (Línea 1) <span className="text-rose-500">*</span>
+                                    Nombre Legal de la Entidad (Línea 1) <span className="text-rose-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -317,10 +326,10 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                     value={formData.ss4_legal_name}
                                     onChange={(e) => updateField('ss4_legal_name', e.target.value)}
                                 />
-                                <p className="text-xs text-slate-400 ml-2">Exactamente como aparece en los documentos de constitución.</p>
+                                <p className="text-xs text-slate-400 ml-2 font-bold uppercase tracking-wider">Exactamente como aparece en los documentos de constitución.</p>
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-2 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
                                     Nombre Comercial (Trade Name / DBA) (Línea 2)
                                 </label>
@@ -333,7 +342,59 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                 />
                             </div>
 
-                            <div className="space-y-2">
+                            {/* DIRECCIÓN DE LA LLC */}
+                            <div className="space-y-2 md:col-span-2 border-t pt-6 mt-2">
+                                <label className="text-sm font-black text-blue-600 uppercase tracking-widest ml-1 mb-2 block">
+                                    Dirección de la LLC en Estados Unidos
+                                </label>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-700 ml-1">
+                                            Dirección Postal (Calle y Número) (Línea 4a) <span className="text-rose-500">*</span>
+                                        </label>
+                                        <div className="relative">
+                                            <MapPin className="absolute left-4 top-4 text-slate-400" size={18} />
+                                            <textarea
+                                                placeholder="Dirección física o de agente registrado"
+                                                rows={2}
+                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                value={formData.member_direccion}
+                                                onChange={(e) => updateField('member_direccion', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-slate-700 ml-1">
+                                                Ciudad, Estado y Código Postal (Línea 4b) <span className="text-rose-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="Ej: Cheyenne, WY 82001"
+                                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                value={formData.ss4_city_state_zip}
+                                                onChange={(e) => updateField('ss4_city_state_zip', e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-slate-700 ml-1">
+                                                Condado / Provincia (Línea 6) <span className="text-rose-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="Ej: Laramie"
+                                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                value={formData.ss4_county}
+                                                onChange={(e) => updateField('ss4_county', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-2 border-t pt-6">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
                                     Tipo de Entidad (Línea 9a) <span className="text-rose-500">*</span>
                                 </label>
@@ -352,6 +413,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                         </div>
                     </div>
                 )
+
             case 3:
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -413,7 +475,6 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                     value={formData.ss4_empleados_previstos}
                                     onChange={(e) => updateField('ss4_empleados_previstos', e.target.value)}
                                 />
-                                <p className="text-xs text-slate-400 ml-2">Pon 0 si no tienes pensado contratar empleados inmediatamente.</p>
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
@@ -428,7 +489,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Producto/Servicio Principal (Línea 18)</label>
+                                <label className="text-sm font-bold text-slate-700 ml-1">Producto/Servicio Principal (Línea 17)</label>
                                 <input
                                     type="text"
                                     placeholder="Ej: Venta de ropa online, Servicios de marketing..."
@@ -440,7 +501,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                         </div>
                     </div>
                 )
-            case 4: // New Signature Step for EIN
+            case 4:
                 return (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
@@ -451,30 +512,26 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                 <div>
                                     <h4 className="font-semibold mb-1">Autorización de Tercero Designado</h4>
                                     <p className="leading-relaxed">
-                                        Al firmar este documento, autorizo a <strong>Open LLC USA</strong> a recibir el Número de Identificación de Empleador (EIN) de mi entidad y a responder cualquier pregunta sobre el formulario SS-4.
+                                        Al firmar este documento, autorizo a <strong>Open LLC USA</strong> a recibir el Número de Identificación de Empleador (EIN) de mi entidad.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="bg-white border rounded-xl p-5 shadow-sm">
-                            <label className="block text-sm font-medium text-slate-700 mb-3">
+                            <label className="block text-sm font-medium text-slate-700 mb-3 ml-1">
                                 Firma del Solicitante (Ratón o Pantalla Táctil)
                             </label>
-
-                            <div className="h-48 border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 relative overflow-hidden">
-                                <SignaturePad
-                                    onChange={(signature) => setFormData(prev => ({ ...prev, firma_digital: signature || '' }))}
-                                />
-                            </div>
-
-                            <p className="text-center text-xs text-slate-400 mt-2">
-                                La firma debe ser clara y legible.
+                            <SignaturePad
+                                onChange={(signature) => updateField('firma_digital', signature || '')}
+                            />
+                            <p className="text-center text-xs text-slate-400 mt-4 font-medium uppercase tracking-widest">
+                                Haz el dibujo de tu firma dentro del recuadro
                             </p>
                         </div>
                     </div>
                 )
-            case 5: // New Review Step for EIN
+            case 5:
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                         <div className="text-center mb-10">
@@ -482,32 +539,28 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                 <CheckCircle2 size={40} />
                             </div>
                             <h3 className="text-3xl font-black text-slate-900 mb-2">¡Todo listo para revisar!</h3>
-                            <p className="text-slate-500 text-lg">Revisa que la información sea correcta antes de enviarla a nuestros expertos.</p>
+                            <p className="text-slate-500 text-lg">Revisa que la información sea correcta antes de enviarla.</p>
                         </div>
 
                         <div className="bg-slate-50 rounded-3xl border border-slate-100 p-8 space-y-4 text-slate-900">
                             <div className="flex justify-between items-center py-3 border-b border-slate-200/50">
-                                <span className="text-slate-500 font-medium">Responsable</span>
+                                <span className="text-slate-500 font-medium font-bold">Responsable</span>
                                 <span className="font-bold">{formData.member_nombre_completo}</span>
                             </div>
                             <div className="flex justify-between items-center py-3 border-b border-slate-200/50">
-                                <span className="text-slate-500 font-medium">Entidad Legal</span>
+                                <span className="text-slate-500 font-medium font-bold">Entidad Legal</span>
                                 <span className="font-bold">{formData.ss4_legal_name}</span>
                             </div>
-                            <div className="flex justify-between items-center py-3 border-b border-slate-200/50">
-                                <span className="text-slate-500 font-medium">Actividad</span>
-                                <span className="font-bold text-right truncate max-w-[200px]">{formData.ss4_actividad_principal}</span>
-                            </div>
                             <div className="flex justify-between items-center py-3">
-                                <span className="text-slate-500 font-medium">Identificación Fiscal Responsable</span>
+                                <span className="text-slate-500 font-medium font-bold">Identificación Fiscal</span>
                                 <span className="font-bold uppercase">{formData.member_tax_id_tipo}</span>
                             </div>
                             <div className="border-t pt-4">
-                                <span className="block text-slate-500 mb-2">Firma Digital Registrada</span>
+                                <span className="block text-slate-500 mb-2 font-bold">Firma Digital Registrada</span>
                                 {formData.firma_digital ? (
                                     <img src={formData.firma_digital} alt="Firma" className="h-16 border rounded bg-white p-1" />
                                 ) : (
-                                    <p className="text-red-500 text-xs">Falta firma</p>
+                                    <p className="text-red-500 text-xs font-bold uppercase">Falta firma</p>
                                 )}
                             </div>
                         </div>
@@ -519,9 +572,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             <div className="flex-1 text-center md:text-left">
                                 <h4 className="text-xl font-bold mb-1">{idUploaded ? 'Documento Adjuntado' : 'Carga de Identificación'}</h4>
                                 <p className="text-blue-100 text-sm">
-                                    {idUploaded
-                                        ? `Archivo: ${idFile?.name}`
-                                        : 'Adjunta el pasaporte del responsable en formato PDF o Imagen.'}
+                                    {idUploaded ? `Archivo cargado correctamente` : 'Adjunta el pasaporte del responsable en formato PDF o Imagen.'}
                                 </p>
                             </div>
                             <div className="relative w-full md:w-auto">
@@ -535,33 +586,24 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                 />
                                 <label
                                     htmlFor="id-upload"
-                                    className={`block text-center px-6 py-3 bg-white font-black rounded-xl transition-colors whitespace-nowrap cursor-pointer ${uploadingId || idUploaded ? 'opacity-50 cursor-default text-slate-400' : 'text-blue-600 hover:bg-blue-50'
-                                        }`}
+                                    className={`block text-center px-6 py-3 bg-white font-black rounded-xl transition-colors whitespace-nowrap cursor-pointer ${uploadingId || idUploaded ? 'opacity-50 cursor-default text-slate-400' : 'text-blue-600 hover:bg-blue-50'}`}
                                 >
                                     {uploadingId ? 'Subiendo...' : idUploaded ? '¡Listo!' : 'Adjuntar Documento'}
                                 </label>
                             </div>
                         </div>
 
-                        {/* DECLARACIÓN LEGAL EIN */}
-                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 transition-all hover:border-slate-300">
-                            <label className="flex items-start gap-4 cursor-pointer group">
-                                <div className="relative flex items-center mt-1">
-                                    <input
-                                        type="checkbox"
-                                        className="peer sr-only"
-                                        checked={termsAccepted}
-                                        onChange={(e) => setTermsAccepted(e.target.checked)}
-                                    />
-                                    <div className="w-6 h-6 border-2 border-slate-300 rounded md:rounded-lg peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all flex items-center justify-center">
-                                        <Check size={14} className="text-white opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
-                                    </div>
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-bold text-slate-900 text-sm mb-1">Declaración de Veracidad y Autorización</p>
-                                    <p className="text-xs text-slate-500 leading-relaxed text-justify">
-                                        Declaro bajo pena de perjurio que he examinado la información proporcionada en esta solicitud y que, según mi leal saber y entender, es verdadera, correcta y completa. Autorizo a <strong>Open LLC USA</strong> a actuar como mi tercero designado (Third Party Designee) para completar y firmar el Formulario SS-4 en mi nombre y recibir mi Número de Identificación de Empleador (EIN) del IRS.
-                                    </p>
+                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+                            <label className="flex items-start gap-4 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="mt-1"
+                                    checked={termsAccepted}
+                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                />
+                                <div className="flex-1 text-slate-600 text-xs leading-relaxed text-justify">
+                                    <p className="font-bold text-slate-900 mb-1">Declaración de Veracidad y Autorización</p>
+                                    Declaro bajo pena de perjurio que la información proporcionada es verdadera, correcta y completa. Autorizo a <strong>Open LLC USA</strong> a completar y firmar el Formulario SS-4 en mi nombre.
                                 </div>
                             </label>
                         </div>

@@ -15,7 +15,8 @@ export default async function AdminDashboardPage() {
         totalPedidos: pedidos.length,
         gananciasEstimadas: pedidos.filter(p => p.estado_pedido === 'pagado').reduce((acc, curr) => acc + (curr.total_pagado || 0), 0),
         pedidosPendientes: pedidos.filter(p => p.estado_pedido !== 'pagado').length,
-        onboardingPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 7).length
+        onboardingPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 7).length,
+        tramitacionPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && (p.paso_actual === 7 || p.paso_actual === 8)).length
     }
 
     const pedidosRecientes = pedidos.slice(0, 5)
@@ -53,25 +54,43 @@ export default async function AdminDashboardPage() {
                         </div>
 
                         <div className="divide-y divide-slate-50">
-                            {pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 7).length === 0 ? (
-                                <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">¡Todo al día! No hay onboarding pendiente.</div>
+                            {pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 9).length === 0 ? (
+                                <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">¡Todo al día! No hay pedidos pendientes de acción.</div>
                             ) : (
-                                pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 7).slice(0, 5).map(p => (
-                                    <div key={p.id} className="p-6 flex items-center justify-between group hover:bg-slate-50/50 transition-colors">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                                <AlertCircle size={24} />
+                                pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 9)
+                                    .sort((a, b) => (b.paso_actual >= 7 ? 1 : -1)) // Priorizar los que ya completaron onboarding (opcional)
+                                    .slice(0, 10).map(p => {
+                                        const isWaitingOnboarding = p.paso_actual < 7;
+                                        const isReadyForAdmin = p.paso_actual === 7;
+                                        const isIRSProcessing = p.paso_actual === 8;
+
+                                        return (
+                                            <div key={p.id} className="p-6 flex items-center justify-between group hover:bg-slate-50/50 transition-colors">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${isReadyForAdmin ? 'bg-blue-50 text-blue-600' : isIRSProcessing ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                        {isReadyForAdmin ? <FileText size={24} /> : isIRSProcessing ? <Activity size={24} /> : <AlertCircle size={24} />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-black text-slate-900 leading-tight">
+                                                            #{p.numero_pedido.split('-')[1]} - {p.paquetes?.nombre || p.servicios?.nombre || 'Servicio'}
+                                                        </p>
+                                                        <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isReadyForAdmin ? 'text-blue-600' : isIRSProcessing ? 'text-indigo-600' : 'text-amber-500'}`}>
+                                                            {isReadyForAdmin ? (
+                                                                <span className="flex items-center gap-1"><CheckCircle2 size={10} /> Checklist Recibido - Listo para tramitar</span>
+                                                            ) : isIRSProcessing ? (
+                                                                <span className="flex items-center gap-1"><Activity size={10} /> En tramitación ante el IRS</span>
+                                                            ) : (
+                                                                <span className="flex items-center gap-1"><Clock size={10} /> Esperando Checklist del cliente</span>
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <Link href={`/admin/pedidos/${p.id}`} className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-slate-800 transition-all opacity-0 group-hover:opacity-100">
+                                                    Gestionar
+                                                </Link>
                                             </div>
-                                            <div>
-                                                <p className="font-black text-slate-900">#{p.numero_pedido.split('-')[1]} - {p.paquetes?.nombre || 'Servicio'}</p>
-                                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Esperando Checklist Legal del cliente</p>
-                                            </div>
-                                        </div>
-                                        <Link href={`/admin/pedidos/${p.id}`} className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-slate-800 transition-all opacity-0 group-hover:opacity-100">
-                                            Gestionar
-                                        </Link>
-                                    </div>
-                                ))
+                                        )
+                                    })
                             )}
                         </div>
                     </section>

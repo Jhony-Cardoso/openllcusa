@@ -10,6 +10,7 @@ import { PedidoModel } from '@/lib/models/pedido'
 import { FacturaModel } from '@/lib/models/factura'
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard'
 import TaxFormViewer from '@/components/dashboard/TaxFormViewer'
+import SS4FormViewer from '@/components/dashboard/SS4FormViewer'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,27 +36,44 @@ export default async function PedidoDetallePage({
   }
 
   // --- Verificación invisible síncrona ---
+  // Si venimos de Stripe con éxito, intentamos marcar como pagado DE INMEDIATO
+  let shouldRedirect = false
   if (verifySessionId && pedidoFull.estado_pedido !== 'pagado') {
     try {
-      // Importación dinámica para no afectar otras rutas de servidor si no es necesario
       const { stripe } = await import('@/lib/stripe')
       const session = await stripe.checkout.sessions.retrieve(verifySessionId)
 
       if (session.payment_status === 'paid' && session.metadata?.pedidoId === pedidoFull.id) {
-        console.log(`[Dashboard] Verificación síncrona exitosa, marcando pedido ${pedidoFull.id} como pagado.`)
-        await PedidoModel.marcarComoPagado(pedidoFull.id, {
-          payment_intent_id: (session.payment_intent as string) || undefined,
-          session_id: verifySessionId,
-          customer_id: (session.customer as string) || undefined,
-          amount: session.amount_total ? session.amount_total / 100 : 0,
-        })
+        console.log(`[Dashboard] Verificación síncrona exitosa para pedido: ${pedidoFull.id}`)
 
-        // Forzamos redirección para limpiar la URL y evitar re-ejecuciones molestas al refrescar
-        redirect(`/dashboard/pedidos/${pedidoFull.id}`)
+        const { supabaseAdmin } = await import('@/lib/supabase-admin')
+        const { error: updError, count } = await supabaseAdmin
+          .from('pedidos')
+          .update({
+            estado_pedido: 'pagado',
+            stripe_session_id: verifySessionId,
+            stripe_payment_intent_id: session.payment_intent as string || null,
+            total_pagado: session.amount_total ? session.amount_total / 100 : 0,
+            fecha_pago: new Date().toISOString(),
+            paso_actual: 6,
+            completado_at: new Date().toISOString()
+          }, { count: 'exact' })
+          .eq('id', pedidoFull.id)
+
+        if (!updError && count && count > 0) {
+          console.log('✅ Pedido actualizado a pagado via Sync Check.')
+          shouldRedirect = true
+        } else {
+          console.error('❌ No se pudo actualizar el pedido en Sync Check:', updError)
+        }
       }
     } catch (e) {
       console.error('[Dashboard] Error verificando sesión de Stripe (Sync):', e)
     }
+  }
+
+  if (shouldRedirect) {
+    redirect(`/dashboard/pedidos/${pedidoFull.id}`)
   }
 
   // TODO: Implementar FacturaModel correctamente
@@ -69,10 +87,20 @@ export default async function PedidoDetallePage({
   const isPaid = pedidoFull.estado_pedido === 'pagado'
   const isLegalSetupPending = isPaid && (pedidoFull.paso_actual < 7)
 
-  // Detectar si es un trámite de EIN
+  // Detectar tipo de trámite de forma robusta
   const esEIN = pedidoFull.servicio?.slug === 'obtencion-ein' || pedidoFull.paquete?.slug === 'ein-express'
-  // Detección robusta: por metadata o si tiene datos fiscales en la columna tax_data
-  const esTaxFiling = pedidoFull.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedidoFull as any).tax_data
+
+  // Tax Filing se detecta por: 
+  // 1. Slug específico
+  // 2. Metadata explícita
+  // 3. Opcionalmente tax_data PERO solo si tiene campos reales (evitando el default '{}')
+  const taxDataObj = pedidoFull.tax_data as any
+  const hasRealTaxData = taxDataObj && Object.keys(taxDataObj).length > 0
+
+  const esTaxFiling =
+    pedidoFull.servicio?.slug === 'form-5472-1120' ||
+    pedidoFull.metadata?.tipo_servicio === 'tax_filing_5472' ||
+    hasRealTaxData
 
   const nombreProducto = esTaxFiling
     ? 'Presentación Forms 5472 + 1120'
@@ -80,7 +108,9 @@ export default async function PedidoDetallePage({
 
   // SI EL PAGO ESTÁ HECHO PERO FALTA EL CHECKLIST LEGAL
   // Excepción: Tax Filing no requiere wizard posterior, ya tenemos los datos
-  if (isLegalSetupPending && !esEIN && !esTaxFiling) {
+  const showWizard = isPaid && !esTaxFiling && (pedidoFull.paso_actual || 0) < 7
+
+  if (showWizard) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Link
@@ -112,7 +142,7 @@ export default async function PedidoDetallePage({
     { id: 1, label: 'Solicitud Recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
     { id: 2, label: 'Pago Confirmado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
     { id: 7, label: 'Autorización Firmada', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
-    { id: 4, label: 'Tramitación ante IRS', date: 'En proceso interno', completado: pedidoFull.paso_actual >= 8 },
+    { id: 4, label: 'Tramitación ante IRS', date: pedidoFull.paso_actual >= 8 ? (pedidoFull.metadata?.borrador_ss4_path ? (pedidoFull.metadata?.borrador_ss4_approved ? 'Borrador Aprobado - Enviando al IRS' : 'Borrador listo - Revísalo abajo') : 'Preparando borrador') : 'En espera', completado: pedidoFull.paso_actual >= 8 },
     { id: 5, label: 'EIN Entregado', date: 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
   ] : [
     { id: 1, label: 'Información recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
@@ -301,10 +331,7 @@ export default async function PedidoDetallePage({
                     <p className="text-sm text-slate-500 italic">No hay documentos cargados todavía.</p>
                   )}
 
-                  {/* SS-4 NO SE MUESTRA AL CLIENTE - Solo disponible internamente para el admin */}
-                  {/* El cliente recibirá la Carta EIN del IRS cuando esté lista */}
-
-                  {/* CARTA EIN DEL IRS - El documento que el cliente realmente quiere ver */}
+                  {/* CARTA EIN DEL IRS */}
                   {pedidoFull.metadata?.carta_ein_path && (
                     <div className="mt-6 pt-6 border-t border-slate-100">
                       <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 relative overflow-hidden">
@@ -330,8 +357,6 @@ export default async function PedidoDetallePage({
                       </div>
                     </div>
                   )}
-
-                  {/* Aquí se listarán futuros documentos como el Articles of Organization, etc. */}
                 </div>
               )}
             </section>
@@ -361,6 +386,15 @@ export default async function PedidoDetallePage({
             pedidoId={pedidoFull.id}
             isApproved={!!pedidoFull.metadata.documents.form_5472_approved}
             isCompleted={pedidoFull.estado_pedido === 'completado'}
+          />
+        )}
+
+        {/* VISOR SS-4 — para trámites de EIN */}
+        {esEIN && pedidoFull.metadata?.borrador_ss4_path && isPaid && (
+          <SS4FormViewer
+            pedidoId={pedidoFull.id}
+            isApproved={!!pedidoFull.metadata.borrador_ss4_approved}
+            isCompleted={pedidoFull.paso_actual >= 9}
           />
         )}
 

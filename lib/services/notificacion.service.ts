@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase-admin'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export interface CrearNotificacionParams {
     userId: string
@@ -17,6 +17,7 @@ export class NotificacionService {
         try {
             const { userId, pedidoId, tipo, titulo, mensaje, url } = params
 
+            const supabaseAdmin = createAdminClient()
             const { data, error } = await supabaseAdmin
                 .from('notificaciones')
                 .insert({
@@ -104,11 +105,12 @@ export class NotificacionService {
      */
     static async marcarComoLeida(notificacionId: string, userId: string) {
         try {
+            const supabaseAdmin = createAdminClient()
             const { error } = await supabaseAdmin
                 .from('notificaciones')
                 .update({ leido: true, updated_at: new Date().toISOString() })
                 .eq('id', notificacionId)
-                .eq('user_id', userId) // Seguridad: solo el dueño puede marcar como leída
+                .eq('user_id', userId)
 
             if (error) {
                 console.error('❌ Error marcando notificación como leída:', error)
@@ -127,6 +129,7 @@ export class NotificacionService {
      */
     static async marcarTodasComoLeidas(userId: string) {
         try {
+            const supabaseAdmin = createAdminClient()
             const { error } = await supabaseAdmin
                 .from('notificaciones')
                 .update({ leido: true, updated_at: new Date().toISOString() })
@@ -150,6 +153,7 @@ export class NotificacionService {
      */
     static async obtenerPorUsuario(userId: string, limite: number = 10) {
         try {
+            const supabaseAdmin = createAdminClient()
             const { data, error } = await supabaseAdmin
                 .from('notificaciones')
                 .select('*')
@@ -174,6 +178,7 @@ export class NotificacionService {
      */
     static async contarNoLeidas(userId: string) {
         try {
+            const supabaseAdmin = createAdminClient()
             const { count, error } = await supabaseAdmin
                 .from('notificaciones')
                 .select('*', { count: 'exact', head: true })

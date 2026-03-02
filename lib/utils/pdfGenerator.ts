@@ -19,7 +19,7 @@ export interface SS4Data {
     entityType?: string
     stateOfFormation?: string
     reasonForApplying?: string
-    reasonSpecifyType?: string // Este será el campo del dashboard
+    reasonSpecifyType?: string
     startDate?: string
     closingMonth?: string
     employeesAgricultural?: string
@@ -43,85 +43,64 @@ const DARK_BLUE = rgb(0, 0, 0.55)
 const FONT_SIZE_MAIN = 9
 const FONT_SIZE_SMALL = 8
 
+// Busca un campo de formulario PDF por su nombre completo o parcial
 const findField = (form: any, fullName: string) => {
     try {
         return form.getField(fullName)
     } catch (e) {
-        // Fallback: tratar de buscar por nombre corto y variaciones (f1_2 vs f1_02)
+        // Fallback: búsqueda por nombre corto (parte final de la ruta)
         const nameParts = fullName.split('.')
-        let shortName = nameParts[nameParts.length - 1].replace('[0]', '')
-
+        const shortName = nameParts[nameParts.length - 1].replace('[0]', '')
         if (!shortName) return null
 
-        // Intento 1: buscar directamente por el nombre corto
-        try {
-            return form.getField(shortName)
-        } catch (e2) { }
-
-        // Intento 2: buscar variaciones con/sin cero inicial (f1_02 vs f1_2)
-        const variations = []
-        if (shortName.startsWith('f1_')) {
-            const num = shortName.replace('f1_', '')
-            if (num.length === 1) variations.push(`f1_0\${num}`)
-            if (num.startsWith('0')) variations.push(`f1_\${num.substring(1)}`)
-        }
-
-        for (const name of variations) {
-            try { return form.getField(name) } catch (e) { }
-            try { return form.getField(`\${name}[0]`) } catch (e) { }
-        }
-
-        // Intento 3: Búsqueda exhaustiva por sufijo (la más robusta)
+        // Búsqueda exhaustiva en todos los campos del PDF
         const allFields = form.getFields()
         const found = allFields.find((f: any) => {
             const n = f.getName()
-            return n === shortName || n.endsWith('.' + shortName) || n.endsWith('.' + shortName + '[0]') || n === shortName + '[0]'
+            return (
+                n === shortName ||
+                n === shortName + '[0]' ||
+                n.endsWith('.' + shortName) ||
+                n.endsWith('.' + shortName + '[0]')
+            )
         })
-
-        if (found) return found
-
-        return null
+        return found || null
     }
 }
 
+// Escribe texto en un campo de formulario PDF con sangría de 4 espacios
 const fillText = (form: any, fullName: string, val: string | undefined, font: any) => {
     if (!val) return
     const field = findField(form, fullName)
 
     if (field && field.constructor.name === 'PDFTextField') {
-        let text = val.toUpperCase()
+        // Sangría fija de 4 espacios en todos los campos (igual que línea 7a)
+        let text = '         ' + val.toUpperCase()
 
-        // Check MaxLength
+        // Truncar si excede el maxLength del campo
         const maxLength = field.getMaxLength()
-
-        // Sangría condicional: Solo si hay margen amplio
-        if (maxLength === undefined || maxLength > (text.length + 10)) {
-            text = '        ' + text
-        }
-
-        // Truncar si excede
         if (maxLength !== undefined && text.length > maxLength) {
-            text = val.toUpperCase() // Reset sin sangría
-            if (text.length > maxLength) {
-                text = text.substring(0, maxLength)
-            }
+            text = val.toUpperCase().substring(0, maxLength)
         }
 
         try {
             field.setText(text)
             try {
                 field.updateAppearances(font)
-                field.setFontSize(text.length > 35 ? FONT_SIZE_SMALL : FONT_SIZE_MAIN)
+                field.setFontSize(val.length > 35 ? FONT_SIZE_SMALL : FONT_SIZE_MAIN)
                 field.setFontColor(DARK_BLUE)
-            } catch (e) {
-                // Ignorar fallo de apariencia, flatten resolverá
+            } catch (e2) {
+                // Ignorar fallo de apariencia — flatten lo resolverá
             }
         } catch (e) {
-            console.warn(`Error setting text for ${fullName}:`, e)
+            console.warn(`[PDF] No se pudo escribir en campo "${fullName}":`, e)
         }
+    } else {
+        console.warn(`[PDF] Campo no encontrado: "${fullName}"`)
     }
 }
 
+// Marca un checkbox de formulario PDF
 const fillCheck = (form: any, fullName: string, shouldCheck: boolean = true) => {
     if (!shouldCheck) return
     const field = findField(form, fullName)
@@ -134,51 +113,53 @@ const fillCheck = (form: any, fullName: string, shouldCheck: boolean = true) => 
     }
 }
 
+// Nombres EXACTOS de los campos del SS-4 del IRS
+// Verificados ejecutando: node scripts/inspect-ss4-fields.mjs
 const F = {
-    LEGAL_NAME: 'f1_02', // 1
-    TRADE_NAME: 'f1_03', // 2
-    EXECUTOR: 'f1_04',   // 3
-    MAILING_ADDRESS: 'f1_05', // 4a
-    STREET_ADDRESS: 'f1_07',  // 5a
-    CITY_STATE_ZIP: 'f1_06',  // 4b
-    CITY_STATE_FOREIGN: 'f1_08', // 5b
-    COUNTY: 'f1_09', // 6
-    RESPONSIBLE_PARTY: 'f1_10',
-    SSN_ITIN_EIN: 'f1_11',
-    LLC_YES: 'c1_1[0]',
-    LLC_NO: 'c1_1[1]',
-    LLC_MEMBERS: 'f1_12',
-    LLC_US_YES: 'c1_2[0]',
-    LLC_US_NO: 'c1_2[1]',
-    ENTITY_OTHER_CB: 'c1_3[15]',
-    ENTITY_OTHER_TEXT: 'f1_19',
-    STATE_INCORPORATED: 'f1_18',
-    REASON_STARTED_NEW: 'c1_4[0]',
-    REASON_STARTED_TYPE: 'f1_25',
-    REASON_BANKING: 'c1_4[4]',
-    REASON_BANKING_TEXT: 'f1_28',
-    REASON_HIRED: 'c1_4[1]',
-    REASON_OTHER_CB: 'c1_4[3]',
-    REASON_OTHER_TEXT: 'f1_26',
-    DATE_STARTED: 'f1_31',
-    CLOSING_MONTH: 'f1_32',
-    EMPLOYEES_AGRI: 'f1_33',
-    EMPLOYEES_HOUSE: 'f1_34',
-    EMPLOYEES_OTHER: 'f1_35',
-    FIRST_DATE_WAGES: 'f1_36',
-    ACTIVITY_OTHER_CB: 'c1_6[11]',
-    ACTIVITY_OTHER_TEXT: 'f1_37',
-    PRINCIPAL_LINE: 'f1_38',
-    PREV_EIN_YES: 'c1_7[0]',
-    PREV_EIN_NO: 'c1_7[1]',
-    PREV_EIN: 'f1_39',
-    DESIGNEE_NAME: 'f1_40',
-    DESIGNEE_PHONE: 'f1_41',
-    DESIGNEE_ADDRESS: 'f1_42',
-    DESIGNEE_FAX: 'f1_43',
-    APPLICANT_NAME: 'f1_44',
-    APPLICANT_PHONE: 'f1_45',
-    APPLICANT_FAX: 'f1_46',
+    LEGAL_NAME: 'topmostSubform[0].Page1[0].f1_2[0]',                   // Línea 1
+    TRADE_NAME: 'topmostSubform[0].Page1[0].f1_3[0]',                   // Línea 2
+    EXECUTOR: 'topmostSubform[0].Page1[0].f1_4[0]',                   // Línea 3
+    MAILING_ADDRESS: 'topmostSubform[0].Page1[0].Line4ReadOrder[0].f1_5[0]', // Línea 4a
+    CITY_STATE_ZIP: 'topmostSubform[0].Page1[0].Line4ReadOrder[0].f1_6[0]', // Línea 4b
+    STREET_ADDRESS: 'topmostSubform[0].Page1[0].f1_7[0]',                   // Línea 5a
+    CITY_STATE_FOREIGN: 'topmostSubform[0].Page1[0].f1_8[0]',                   // Línea 5b
+    COUNTY: 'topmostSubform[0].Page1[0].f1_9[0]',                   // Línea 6
+    RESPONSIBLE_PARTY: 'topmostSubform[0].Page1[0].f1_10[0]',                  // Línea 7a
+    SSN_ITIN_EIN: 'topmostSubform[0].Page1[0].f1_11[0]',                  // Línea 7b
+    LLC_YES: 'topmostSubform[0].Page1[0].c1_1[0]',
+    LLC_NO: 'topmostSubform[0].Page1[0].c1_1[1]',
+    LLC_MEMBERS: 'topmostSubform[0].Page1[0].f1_12[0]',
+    LLC_US_YES: 'topmostSubform[0].Page1[0].c1_2[0]',
+    LLC_US_NO: 'topmostSubform[0].Page1[0].c1_2[1]',
+    ENTITY_OTHER_CB: 'topmostSubform[0].Page1[0].c1_3[15]',
+    ENTITY_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_19[0]',
+    STATE_INCORPORATED: 'topmostSubform[0].Page1[0].f1_18[0]',
+    REASON_STARTED_NEW: 'topmostSubform[0].Page1[0].c1_4[0]',
+    REASON_STARTED_TYPE: 'topmostSubform[0].Page1[0].f1_25[0]',
+    REASON_BANKING: 'topmostSubform[0].Page1[0].c1_4[4]',
+    REASON_BANKING_TEXT: 'topmostSubform[0].Page1[0].f1_28[0]',
+    REASON_HIRED: 'topmostSubform[0].Page1[0].c1_4[1]',
+    REASON_OTHER_CB: 'topmostSubform[0].Page1[0].c1_4[3]',
+    REASON_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_26[0]',
+    DATE_STARTED: 'topmostSubform[0].Page1[0].f1_31[0]',
+    CLOSING_MONTH: 'topmostSubform[0].Page1[0].f1_32[0]',
+    EMPLOYEES_AGRI: 'topmostSubform[0].Page1[0].f1_33[0]',
+    EMPLOYEES_HOUSE: 'topmostSubform[0].Page1[0].f1_34[0]',
+    EMPLOYEES_OTHER: 'topmostSubform[0].Page1[0].f1_35[0]',
+    FIRST_DATE_WAGES: 'topmostSubform[0].Page1[0].f1_36[0]',
+    ACTIVITY_OTHER_CB: 'topmostSubform[0].Page1[0].c1_6[11]',
+    ACTIVITY_OTHER_TEXT: 'topmostSubform[0].Page1[0].f1_37[0]',
+    PRINCIPAL_LINE: 'topmostSubform[0].Page1[0].f1_38[0]',
+    PREV_EIN_YES: 'topmostSubform[0].Page1[0].c1_7[0]',
+    PREV_EIN_NO: 'topmostSubform[0].Page1[0].c1_7[1]',
+    PREV_EIN: 'topmostSubform[0].Page1[0].f1_39[0]',
+    DESIGNEE_NAME: 'topmostSubform[0].Page1[0].f1_40[0]',
+    DESIGNEE_PHONE: 'topmostSubform[0].Page1[0].f1_41[0]',
+    DESIGNEE_ADDRESS: 'topmostSubform[0].Page1[0].f1_42[0]',
+    DESIGNEE_FAX: 'topmostSubform[0].Page1[0].f1_43[0]',
+    APPLICANT_NAME: 'topmostSubform[0].Page1[0].f1_44[0]',
+    APPLICANT_PHONE: 'topmostSubform[0].Page1[0].f1_45[0]',
+    APPLICANT_FAX: 'topmostSubform[0].Page1[0].f1_46[0]',
 }
 
 export class PDFGenerator {
@@ -191,38 +172,37 @@ export class PDFGenerator {
             const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
             const page = pdfDoc.getPages()[0]
 
-            // --- Identification ---
+            // --- Identificación (Líneas 1, 2, 3) ---
             fillText(form, F.LEGAL_NAME, data.legalName, fontBold)
             fillText(form, F.TRADE_NAME, data.tradeName, fontBold)
             fillText(form, F.EXECUTOR, data.executorName, fontBold)
 
-            // Mapeo Direcciones Corregido (L4a y L4b)
+            // --- Dirección (Líneas 4a, 4b, 5a, 5b, 6) ---
             fillText(form, F.MAILING_ADDRESS, data.mailingAddress, fontBold)
             fillText(form, F.CITY_STATE_ZIP, data.cityStateZip, fontBold)
-
-            // L5a y L5b solo si son diferentes
             fillText(form, F.STREET_ADDRESS, data.streetAddress, fontBold)
             fillText(form, F.CITY_STATE_FOREIGN, data.cityStateZipForeign, fontBold)
-
             fillText(form, F.COUNTY, data.county, fontBold)
+
+            // --- Responsable (Líneas 7a, 7b) ---
             fillText(form, F.RESPONSIBLE_PARTY, data.responsiblePartyName, fontBold)
             fillText(form, F.SSN_ITIN_EIN, data.responsiblePartySSN || 'Foreign', fontBold)
 
-            // --- LLC (L8) ---
+            // --- LLC (Línea 8) ---
             fillCheck(form, F.LLC_YES, data.isLLC !== false)
             fillCheck(form, F.LLC_NO, data.isLLC === false)
             fillText(form, F.LLC_MEMBERS, data.llcMemberCount || '1', fontBold)
             fillCheck(form, F.LLC_US_YES, data.llcOrganizedInUS !== false)
             fillCheck(form, F.LLC_US_NO, data.llcOrganizedInUS === false)
 
-            // --- Entity Type (L9a) ---
+            // --- Tipo de Entidad (Línea 9a) ---
             fillCheck(form, F.ENTITY_OTHER_CB)
             fillText(form, F.ENTITY_OTHER_TEXT, 'DISREGARDED ENTITY', fontBold)
 
-            // --- Reason (L10) ---
+            // --- Razón (Línea 10) - Drawtext directo por ser campo especial ---
             fillCheck(form, F.REASON_STARTED_NEW)
             const reasonType = data.reasonSpecifyType || data.principalActivity || 'E-COMMERCE SERVICES'
-            page.drawText(reasonType, {
+            page.drawText(reasonType.toUpperCase(), {
                 x: 80,
                 y: 374,
                 size: 8,
@@ -230,23 +210,22 @@ export class PDFGenerator {
                 color: DARK_BLUE
             })
 
-            // --- Fechas (L11, L12) ---
+            // --- Fechas (Líneas 11, 12) ---
             fillText(form, F.DATE_STARTED, data.startDate, fontBold)
             fillText(form, F.CLOSING_MONTH, data.closingMonth || 'DECEMBER', fontBold)
 
-            // --- Employees (L13) ---
+            // --- Empleados (Línea 13) ---
             fillText(form, F.EMPLOYEES_AGRI, data.employeesAgricultural || '0', fontBold)
             fillText(form, F.EMPLOYEES_HOUSE, data.employeesHousehold || '0', fontBold)
             fillText(form, F.EMPLOYEES_OTHER, data.employeesOther || '0', fontBold)
-
             fillText(form, F.FIRST_DATE_WAGES, data.firstDateWages || 'N/A', fontBold)
 
-            // --- Activity (L16, L17) ---
+            // --- Actividad (Líneas 16, 17) ---
             fillCheck(form, F.ACTIVITY_OTHER_CB)
             fillText(form, F.ACTIVITY_OTHER_TEXT, data.principalActivity || 'E-COMMERCE SERVICES', fontBold)
             fillText(form, F.PRINCIPAL_LINE, data.principalProduct || 'DIGITAL GOODS AND SERVICES', fontBold)
 
-            // --- Previous EIN (L18) ---
+            // --- EIN Previo (Línea 18) ---
             if (data.hasPreviousEIN) {
                 fillCheck(form, F.PREV_EIN_YES)
                 fillText(form, F.PREV_EIN, data.previousEIN, fontBold)
@@ -254,29 +233,29 @@ export class PDFGenerator {
                 fillCheck(form, F.PREV_EIN_NO)
             }
 
-            // --- Designee (Third Party) ---
+            // --- Tercero Designado ---
             fillText(form, F.DESIGNEE_NAME, data.designeeName || 'ZARA DESIGNS LLC', fontBold)
             fillText(form, F.DESIGNEE_PHONE, data.designeePhone || '307-555-0123', fontBold)
             fillText(form, F.DESIGNEE_ADDRESS, data.designeeAddress || '1603 CAPITOL AVE STE 413, CHEYENNE, WY 82001', fontBold)
             fillText(form, F.DESIGNEE_FAX, data.designeeFax, fontBold)
 
-            // --- Applicant ---
+            // --- Solicitante ---
             fillText(form, F.APPLICANT_NAME, data.applicantNameAndTitle || data.responsiblePartyName, fontBold)
             fillText(form, F.APPLICANT_PHONE, data.applicantPhone, fontBold)
             fillText(form, F.APPLICANT_FAX, data.applicantFax, fontBold)
 
-            // --- Incrustar firma ---
+            // --- Firma digital ---
             if (signatureBase64 && signatureBase64.startsWith('data:image')) {
                 try {
                     const base64Data = signatureBase64.split(',')[1]
                     const sigBuffer = Buffer.from(base64Data, 'base64')
                     const sigImage = await pdfDoc.embedPng(sigBuffer)
                     const MAX_W = 160
-                    const MAX_H = 40
+                    const MAX_H = 34
                     const scale = Math.min(MAX_W / sigImage.width, MAX_H / sigImage.height)
                     page.drawImage(sigImage, {
-                        x: 110, // Más a la izquierda para estar pegado a "Signature"
-                        y: 42,  // Altura adecuada
+                        x: 70,
+                        y: 35,
                         width: sigImage.width * scale,
                         height: sigImage.height * scale
                     })
@@ -285,11 +264,11 @@ export class PDFGenerator {
                 }
             }
 
-            // --- Fecha Pie de Página ---
+            // --- Fecha al pie ---
             const today = new Date()
             const dateStr = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}/${today.getFullYear()}`
             page.drawText(dateStr, {
-                x: 375,
+                x: 365,
                 y: 40,
                 size: 9,
                 font: fontBold,
@@ -339,7 +318,6 @@ export async function generarSS4PDF(metadata: any, pedidoId: string): Promise<Ui
         designeeAddress: '1603 CAPITOL AVE STE 413, CHEYENNE, WY 82001'
     }
 
-    const signature = metadata.firma_digital || metadata.firma_base64;
+    const signature = metadata.firma_digital || metadata.firma_base64
     return await PDFGenerator.generarSS4(data, signature)
 }
-

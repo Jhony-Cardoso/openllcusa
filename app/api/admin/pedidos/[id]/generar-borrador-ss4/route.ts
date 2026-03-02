@@ -86,8 +86,9 @@ export async function POST(
             }
 
             if (targetEmail) {
+                console.log(`[API Borrador] Preparando envío de email a: ${targetEmail}`);
                 const { EmailService } = await import('@/lib/services/email.service')
-                await EmailService.enviarNotificacionEstado({
+                const emailResult = await EmailService.enviarNotificacionEstado({
                     to: targetEmail,
                     nombreUsuario: pedido.metadata?.member_nombre_completo || 'Emprendedor',
                     nombreServicio: pedido.paquete?.nombre || pedido.servicio?.nombre || 'Obtención del EIN',

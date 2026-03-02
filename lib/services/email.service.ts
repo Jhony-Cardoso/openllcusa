@@ -475,7 +475,7 @@ export class EmailService {
         from: 'Axel de Open LLC USA <noreply@updates.openllcusa.com>',
         to,
         replyTo: 'josemanuel@openllcusa.com',
-        subject: `Actualización de tu trámite: \${nuevoEstado} 🚀`,
+        subject: `Actualización de tu trámite: ${nuevoEstado} 🚀`,
         html: `
           <div style="font-family: sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px;">
             <p>Hola <strong>${nombreUsuario}</strong>,</p>

@@ -19,18 +19,38 @@ export default function NotificacionesWidget() {
     const [mostrar, setMostrar] = useState(false)
     const [cargando, setCargando] = useState(false)
     const [noLeidas, setNoLeidas] = useState(0)
+    const [errorCount, setErrorCount] = useState(0)
+    const MAX_ERRORS = 3 // Tras 3 errores consecutivos, dejamos de hacer polling
 
     const cargarNotificaciones = async () => {
+        // Si ya hay demasiados errores, no volvemos a intentar
+        if (errorCount >= MAX_ERRORS) return
+
         setCargando(true)
         try {
-            const response = await fetch('/api/notificaciones?limite=5')
+            const controller = new AbortController()
+            // Timeout de 8 segundos para no bloquear indefinidamente
+            const timeout = setTimeout(() => controller.abort(), 8000)
+
+            const response = await fetch('/api/notificaciones?limite=5', {
+                signal: controller.signal
+            })
+            clearTimeout(timeout)
+
             if (response.ok) {
                 const data = await response.json()
                 setNotificaciones(data)
                 setNoLeidas(data.filter((n: Notificacion) => !n.leido).length)
+                setErrorCount(0) // Reset errores en éxito
+            } else {
+                console.warn(`[NotificacionesWidget] Error ${response.status} - pausando polling`)
+                setErrorCount(prev => prev + 1)
             }
-        } catch (error) {
-            console.error('Error cargando notificaciones:', error)
+        } catch (error: any) {
+            if (error?.name !== 'AbortError') {
+                console.warn('[NotificacionesWidget] Error de red, pausando polling:', error?.message)
+                setErrorCount(prev => prev + 1)
+            }
         } finally {
             setCargando(false)
         }

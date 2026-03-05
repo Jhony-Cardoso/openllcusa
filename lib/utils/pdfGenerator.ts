@@ -285,32 +285,53 @@ export class PDFGenerator {
     }
 }
 
+import { PedidoModel } from '@/lib/models/pedido'
+
 /**
  * Función auxiliar para generar el PDF del SS-4 desde la API
  */
 export async function generarSS4PDF(metadata: any, pedidoId: string): Promise<Uint8Array> {
+    const pedido = await PedidoModel.obtenerCompleto(pedidoId);
+
+    // Nombre legal de la entidad (SS-4 L-1):
+    // Prioridad al campo que el cliente rellenó en el wizard → nombre en BD → nombre del propietario
+    const legalName =
+        metadata.ss4_legal_name ||
+        pedido?.nombre_empresa ||
+        metadata.member_nombre_completo ||
+        'N/A';
+
+    // Dirección postal de la ENTIDAD (SS-4 L-4a / L-4b / L-6):
+    // El cliente las rellena explícitamente en el Step 4 del wizard.
+    // NO usar member_direccion — esa es la dirección PERSONAL del propietario, no va en el SS-4.
+    const mailingAddress = metadata.ss4_mailing_address || 'N/A';
+    const cityStateZip = metadata.ss4_city_state_zip || 'N/A';
+    const county = metadata.ss4_county || 'N/A';
+
     const data: SS4Data = {
-        legalName: metadata.ss4_legal_name || metadata.empresa_nombre || metadata.member_nombre_completo || 'N/A',
-        tradeName: metadata.ss4_trade_name || metadata.empresa_nombre_alternativo || '',
+        legalName,
+        tradeName: metadata.ss4_trade_name || '',
         executorName: '',
-        mailingAddress: metadata.member_direccion || metadata.empresa_direccion || 'N/A',
-        cityStateZip: metadata.ss4_city_state_zip || metadata.empresa_ciudad_estado_zip || '',
-        streetAddress: metadata.empresa_calle || '',
+        mailingAddress,
+        cityStateZip,
+        streetAddress: '',   // L-5a solo si dirección física ≠ postal; no lo pedimos
         cityStateZipForeign: '',
-        county: metadata.ss4_county || metadata.empresa_condado || 'FOREIGN',
+        county,
         responsiblePartyName: metadata.member_nombre_completo || 'N/A',
-        responsiblePartySSN: metadata.member_tax_id_valor || metadata.member_ssn_itin || 'FOREIGN',
+        responsiblePartySSN: metadata.member_tax_id_tipo === 'foreign'
+            ? 'FOREIGN'
+            : (metadata.member_tax_id_valor || 'N/A'),
         isLLC: true,
-        llcMemberCount: metadata.empresa_num_socios || '1',
+        llcMemberCount: metadata.ss4_num_miembros || metadata.empresa_num_socios || '1',
         llcOrganizedInUS: true,
-        entityType: metadata.ss4_tipo_entidad || 'Other',
+        entityType: metadata.ss4_tipo_entidad || 'LLC',
         stateOfFormation: metadata.empresa_estado_usa || 'WYOMING',
         reasonForApplying: metadata.ss4_razon_solicitud || 'Started new business',
-        reasonSpecifyType: metadata.ss4_actividad_principal || metadata.empresa_actividad || 'E-COMMERCE',
-        startDate: metadata.ss4_fecha_inicio || metadata.empresa_fecha_inicio || new Date().toLocaleDateString(),
+        reasonSpecifyType: metadata.ss4_actividad_principal || 'E-COMMERCE',
+        startDate: metadata.ss4_fecha_inicio || new Date().toLocaleDateString(),
         closingMonth: metadata.ss4_cierre_fiscal || 'DECEMBER',
-        principalActivity: metadata.ss4_actividad_principal || metadata.empresa_actividad || 'E-COMMERCE',
-        principalProduct: metadata.ss4_principal_producto || metadata.empresa_producto || 'DIGITAL SERVICES',
+        principalActivity: metadata.ss4_actividad_principal || 'E-COMMERCE',
+        principalProduct: metadata.ss4_principal_producto || 'DIGITAL SERVICES',
         applicantNameAndTitle: (metadata.member_nombre_completo || 'N/A') + ', MANAGING MEMBER',
         applicantPhone: metadata.member_telefono || '',
         designeeName: 'ZARA DESIGNS LLC',

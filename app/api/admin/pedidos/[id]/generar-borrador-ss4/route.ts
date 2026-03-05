@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server'
 import { PedidoModel } from '@/lib/models/pedido'
 import { generarSS4PDF } from '@/lib/utils/pdfGenerator'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { EmailService } from '@/lib/services/email.service'
+import { NotificacionService } from '@/lib/services/notificacion.service'
 import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(
@@ -87,7 +89,6 @@ export async function POST(
 
             if (targetEmail) {
                 console.log(`[API Borrador] Preparando envío de email a: ${targetEmail}`);
-                const { EmailService } = await import('@/lib/services/email.service')
                 const emailResult = await EmailService.enviarNotificacionEstado({
                     to: targetEmail,
                     nombreUsuario: pedido.metadata?.member_nombre_completo || 'Emprendedor',
@@ -96,10 +97,21 @@ export async function POST(
                     nuevoEstado: '🔍 Borrador SS-4 listo para tu revisión',
                     notas: 'Hemos preparado el borrador del Formulario SS-4. Por favor, revísalo y apruébalo en tu dashboard para que podamos enviarlo al IRS.'
                 })
-                console.log(`✅ Email de borrador enviado a: ${targetEmail}`)
+                console.log(`✅ Email de borrador enviado a: ${targetEmail}`, emailResult)
             } else {
                 console.warn(`⚠️ No se pudo encontrar email para el usuario ${pedido.user_id}. Notificación no enviada.`)
             }
+
+            // Enviar notificación in-app
+            await NotificacionService.crear({
+                userId: pedido.user_id,
+                pedidoId: pedido.id,
+                tipo: 'actualizacion_pedido',
+                titulo: '📄 Borrador SS-4 listo',
+                mensaje: 'Hemos preparado el borrador de tu Formulario SS-4. Revísalo y apruébalo para continuar.',
+                url: `/dashboard/pedidos/${pedido.id}`
+            });
+            console.log(`✅ Notificación in-app de borrador creada para el usuario ${pedido.user_id}`)
         } catch (emailErr) {
             console.error('⚠️ [API Generar Borrador SS4] No se pudo enviar el email:', emailErr)
         }

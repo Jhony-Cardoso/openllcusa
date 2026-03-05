@@ -26,34 +26,38 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
 
     // Estado para todos los datos del checklist
     const [formData, setFormData] = useState({
-        // Miembro / Responsable
-        member_nombre_completo: '',
-        member_fecha_nacimiento: '',
-        member_nacionalidad: '',
-        member_residencia_pais: '',
-        member_direccion: '',
-        member_tax_id_tipo: 'foreign', // ssn, itin, foreign
-        member_tax_id_valor: '',
+        // --- DATOS DEL PROPIETARIO (Member / Responsible Party) ---
+        member_nombre_completo: '',        // SS-4 L-7a y Artículos LLC
+        member_fecha_nacimiento: '',       // Artículos LLC
+        member_nacionalidad: '',           // Artículos LLC
+        member_residencia_pais: '',        // Artículos LLC
+        member_direccion: '',              // Dirección personal del propietario (para KYC, NO va en L-4)
+        member_tax_id_tipo: 'foreign',     // SS-4 L-7b: 'ssn', 'itin', 'foreign'
+        member_tax_id_valor: '',           // SS-4 L-7b
 
-        // Empresa (LLC Formation)
-        empresa_designador: 'LLC',
-        empresa_proposito: 'Any lawful business',
-        empresa_tipo_gestion: 'Member-Managed',
+        // --- DATOS DE LA LLC (Para Artículos de Organización Estatales) ---
+        empresa_designador: 'LLC',         // Sufijo legal: LLC, L.L.C., etc.
+        empresa_proposito: 'Any lawful business', // Propósito para el Estado
+        empresa_tipo_gestion: 'Member-Managed',   // Member o Manager Managed
         empresa_sitio_web: '',
 
-        // SS-4 / EIN Específico
-        ss4_legal_name: '', // Línea 1
-        ss4_trade_name: '', // Línea 2
-        ss4_tipo_entidad: 'LLC', // Línea 9a
-        ss4_razon_solicitud: 'Started new business', // Línea 10
-        ss4_fecha_inicio: new Date().toISOString().split('T')[0], // Línea 11
-        ss4_cierre_fiscal: 'December', // Línea 12
-        ss4_empleados_previstos: '0', // Línea 13
-        ss4_actividad_principal: '', // Línea 16
-        ss4_principal_producto: '', // Línea 18
-        ss4_city_state_zip: '', // Línea 4b
-        ss4_county: '', // Línea 6
-        firma_digital: '', // Nuevo campo para la firma
+        // --- DATOS IRS - FORMULARIO SS-4 ---
+        ss4_legal_name: '',                // SS-4 L-1: Nombre legal de la ENTIDAD (ej: "ACME Solutions LLC")
+        ss4_trade_name: '',                // SS-4 L-2: Nombre comercial / DBA (si distinto de L-1)
+        ss4_mailing_address: '',           // SS-4 L-4a: CALLE de la dirección postal de la ENTIDAD
+        ss4_city_state_zip: '',            // SS-4 L-4b: Ciudad, Estado, ZIP de la ENTIDAD
+        ss4_county: '',                    // SS-4 L-6: CONDADO y Estado donde está el negocio
+        ss4_tipo_entidad: 'LLC',           // SS-4 L-9a: Tipo de entidad
+        ss4_num_miembros: '1',             // SS-4 L-8b: Nº de miembros de la LLC
+        ss4_razon_solicitud: 'Started new business', // SS-4 L-10
+        ss4_fecha_inicio: new Date().toISOString().split('T')[0], // SS-4 L-11
+        ss4_cierre_fiscal: 'December',     // SS-4 L-12: Mes de cierre del año fiscal
+        ss4_empleados_previstos: '0',      // SS-4 L-13
+        ss4_actividad_principal: '',       // SS-4 L-16: Actividad principal (en inglés)
+        ss4_principal_producto: '',        // SS-4 L-17: Producto/servicio principal (en inglés)
+
+        // --- FIRMA ---
+        firma_digital: '',                 // Firma del Responsible Party para el SS-4
     })
 
     const [idFile, setIdFile] = useState<File | null>(null)
@@ -134,10 +138,30 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                 }
             }
         } else {
-            // VALIDACIÓN LLC FORMATION (Original)
+            // VALIDACIÓN LLC FORMATION
             if (currentStep === 2) {
                 if (!formData.empresa_proposito.trim()) {
                     alert('Por favor, indica el propósito de la empresa.')
+                    return false
+                }
+            }
+            if (currentStep === 4) {
+                if (!formData.ss4_legal_name.trim()) {
+                    alert('Por favor, indica el nombre legal completo de la LLC (Línea 1 del SS-4).')
+                    return false
+                }
+                if (!formData.ss4_mailing_address.trim() || !formData.ss4_city_state_zip.trim() || !formData.ss4_county.trim()) {
+                    alert('Por favor, completa la dirección postal de la entidad (Líneas 4a, 4b y 6 del SS-4).')
+                    return false
+                }
+                if (!formData.ss4_actividad_principal.trim() || !formData.ss4_principal_producto.trim()) {
+                    alert('Por favor, completa la actividad principal y el producto o servicio para el SS-4.')
+                    return false
+                }
+            }
+            if (currentStep === 5) { // Firma Digital
+                if (!formData.firma_digital || formData.firma_digital.length < 100) {
+                    alert('Por favor, proporciona tu firma digital.')
                     return false
                 }
             }
@@ -183,17 +207,22 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
     }
 
     const handleSubmit = async () => {
-        // The document upload is now the last step for both flows, which is step 5 for EIN and step 4 for LLC
-        const finalStepForDocUpload = esEIN ? 5 : 4;
+        // The document upload is now the last step for both flows (step 5 for EIN, 6 for LLC PAcks
+        const finalStepForDocUpload = esEIN ? 5 : 6;
 
         if (!idUploaded && step === finalStepForDocUpload) {
             alert('Por favor, adjunta tu documento de identidad antes de finalizar.')
             return
         }
+        if (!termsAccepted && !esEIN) {
+            alert('Para conformar la LLC debes aceptar la declaración legal.')
+            return
+        }
+
         setLoading(true)
         try {
-            // If esEIN, we send the firma_digital as well
-            const payload = esEIN ? { ...formData, esEIN, firma_digital: formData.firma_digital } : { ...formData, esEIN };
+            // El backend acepta toda la metadata, así que mandamos el formData entero, incluyendo firma.
+            const payload = { ...formData, esEIN, firma_digital: formData.firma_digital };
 
             const res = await fetch(`/api/pedidos/${pedidoId}/onboarding`, {
                 method: 'POST',
@@ -213,18 +242,19 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
         }
     }
 
-    // DEFINICIÓN DE PASOS SEGÚN TIPO
     const steps = esEIN ? [
         { id: 1, label: 'Responsable', icon: User },
         { id: 2, label: 'Entidad SS-4', icon: Building2 },
         { id: 3, label: 'Negocio SS-4', icon: FileText },
-        { id: 4, label: 'Firma', icon: PenTool },
+        { id: 4, label: 'Firma SS-4', icon: PenTool },
         { id: 5, label: 'Documentos', icon: FileCheck },
     ] : [
         { id: 1, label: 'Propietario', icon: User },
-        { id: 2, label: 'Empresa', icon: Building2 },
-        { id: 3, label: 'Gestión y Tax', icon: ShieldEllipsis },
-        { id: 4, label: 'Documentación', icon: FileCheck },
+        { id: 2, label: 'LLC', icon: Building2 },
+        { id: 3, label: 'Estructura', icon: ShieldEllipsis },
+        { id: 4, label: 'IRS SS-4', icon: FileText },
+        { id: 5, label: 'Firma SS-4', icon: PenTool },
+        { id: 6, label: 'Documentación', icon: FileCheck },
     ]
 
     // RENDERIZADO DE PASOS PARA EIN
@@ -817,27 +847,218 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
             case 4:
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <div>
+                            <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                                Cuestionario del IRS &mdash; Formulario SS-4
+                            </h3>
+                            <p className="text-slate-500 mb-4">
+                                Datos necesarios para solicitar el EIN (Employer Identification Number) ante el IRS.
+                            </p>
+                        </div>
+
+                        {/* AVISO DE INGLÉS */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+                            <Globe className="text-amber-600 shrink-0 mt-0.5" size={20} />
+                            <p className="text-sm text-amber-900">
+                                <strong>Importante:</strong> Los campos marcados con 🇺🇸 deben completarse en <strong>inglés</strong>, exactamente como aparecerán en el formulario oficial del IRS.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-900">
+
+                            {/* L-1: Nombre legal de la LLC */}
+                            <div className="space-y-1 md:col-span-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    🇺🇸 Nombre legal de la LLC (SS-4 Línea 1) <span className="text-rose-500">*</span>
+                                </label>
+                                <p className="text-xs text-slate-400 ml-1">El nombre exacto con el que se registró la LLC, incluyendo el sufijo (LLC, L.L.C., etc.)</p>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: ACME Solutions LLC"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_legal_name}
+                                    onChange={(e) => updateField('ss4_legal_name', e.target.value)}
+                                />
+                            </div>
+
+                            {/* L-2: Nombre comercial / DBA */}
+                            <div className="space-y-1 md:col-span-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    🇺🇸 Nombre comercial / DBA (SS-4 Línea 2 — opcional)
+                                </label>
+                                <p className="text-xs text-slate-400 ml-1">Solo si tu negocio usa un nombre público distinto al legal. Dejar en blanco si no aplica.</p>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Acme Store (opcional)"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_trade_name}
+                                    onChange={(e) => updateField('ss4_trade_name', e.target.value)}
+                                />
+                            </div>
+
+                            {/* Separador: Dirección de la entidad */}
+                            <div className="md:col-span-2 pt-2 border-t border-slate-100">
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Dirección de correspondencia de la LLC (NO tu dirección personal)</p>
+                            </div>
+
+                            {/* L-4a: Dirección postal de la ENTIDAD - calle */}
+                            <div className="space-y-1 md:col-span-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    🇺🇸 Calle / Número / Suite (SS-4 Línea 4a) <span className="text-rose-500">*</span>
+                                </label>
+                                <p className="text-xs text-slate-400 ml-1">Para LLC en Wyoming: la dirección de tu Registered Agent (la proporcionamos nosotros). Para otras jurisdicciones: la dirección física del negocio.</p>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: 1603 Capitol Ave Ste 413"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_mailing_address}
+                                    onChange={(e) => updateField('ss4_mailing_address', e.target.value)}
+                                />
+                            </div>
+
+                            {/* L-4b: Ciudad, Estado, ZIP */}
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    🇺🇸 Ciudad, Estado y ZIP (SS-4 Línea 4b) <span className="text-rose-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Cheyenne, WY 82001"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_city_state_zip}
+                                    onChange={(e) => updateField('ss4_city_state_zip', e.target.value)}
+                                />
+                            </div>
+
+                            {/* L-6: Condado y Estado del negocio */}
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    🇺🇸 Condado y Estado del negocio (SS-4 Línea 6) <span className="text-rose-500">*</span>
+                                </label>
+                                <p className="text-xs text-slate-400 ml-1">Para WY: Laramie, WY</p>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Laramie, WY"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_county}
+                                    onChange={(e) => updateField('ss4_county', e.target.value)}
+                                />
+                            </div>
+
+                            {/* Separador: Detalles del negocio */}
+                            <div className="md:col-span-2 pt-2 border-t border-slate-100">
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Detalles de la actividad empresarial</p>
+                            </div>
+
+                            {/* L-10: Razón de la solicitud */}
+                            <div className="space-y-1 md:col-span-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Razón de la solicitud (SS-4 Línea 10)</label>
+                                <select
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_razon_solicitud}
+                                    onChange={(e) => updateField('ss4_razon_solicitud', e.target.value)}
+                                >
+                                    <option value="Started new business">Started new business (Nuevo Negocio)</option>
+                                    <option value="Banking purpose">Banking purpose (Cuenta bancaria)</option>
+                                    <option value="Changed type of organization">Changed type of organization</option>
+                                    <option value="Hired employees">Hired employees (Contratar empleados)</option>
+                                </select>
+                            </div>
+
+                            {/* L-11: Fecha de inicio */}
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Fecha de inicio del negocio (SS-4 Línea 11)</label>
+                                <input
+                                    type="date"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_fecha_inicio}
+                                    onChange={(e) => updateField('ss4_fecha_inicio', e.target.value)}
+                                />
+                            </div>
+
+                            {/* L-12: Mes de cierre fiscal */}
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Mes de cierre fiscal (SS-4 Línea 12)</label>
+                                <select
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_cierre_fiscal}
+                                    onChange={(e) => updateField('ss4_cierre_fiscal', e.target.value)}
+                                >
+                                    {meses.map(m => (
+                                        <option key={m} value={m}>{m}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* L-16: Actividad principal */}
+                            <div className="space-y-1 md:col-span-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    🇺🇸 Actividad principal del negocio (SS-4 Línea 16) <span className="text-rose-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Online Retail, Software Development, Consulting..."
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_actividad_principal}
+                                    onChange={(e) => updateField('ss4_actividad_principal', e.target.value)}
+                                />
+                            </div>
+
+                            {/* L-17: Producto/servicio principal */}
+                            <div className="space-y-1 md:col-span-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    🇺🇸 Producto o servicio principal (SS-4 Línea 17) <span className="text-rose-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Ej: Digital marketing services, E-commerce products..."
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                    value={formData.ss4_principal_producto}
+                                    onChange={(e) => updateField('ss4_principal_producto', e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )
+            case 5:
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
+                            <div className="flex items-start gap-3">
+                                <div className="p-1 bg-blue-100 rounded-full shrink-0">
+                                    <PenTool size={16} className="text-blue-600" />
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold mb-1">Firma para Autorización (SS-4 y LLC)</h4>
+                                    <p className="leading-relaxed">
+                                        Al firmar, autorizo a <strong>Open LLC USA</strong> a actuar como Tercero Designado para obtener el EIN de mi empresa ante el IRS y a gestionar la conformación en el Estado.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white border rounded-xl p-5 shadow-sm">
+                            <label className="block text-sm font-medium text-slate-700 mb-3 ml-1">
+                                Firma del Propietario (Ratón o Pantalla Táctil) <span className="text-rose-500">*</span>
+                            </label>
+                            <SignaturePad
+                                onChange={(signature) => updateField('firma_digital', signature || '')}
+                            />
+                            <p className="text-center text-xs text-slate-400 mt-4 font-medium uppercase tracking-widest">
+                                Dibuja tu firma dentro del recuadro
+                            </p>
+                        </div>
+                    </div>
+                )
+            case 6:
+                return (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                         <div className="text-center mb-10">
                             <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <FileCheck size={40} />
                             </div>
                             <h3 className="text-3xl font-black text-slate-900 mb-2">¡Todo listo para revisar!</h3>
-                            <p className="text-slate-500 text-lg">Revisa que la información sea correcta antes de enviarla a nuestros expertos.</p>
-                        </div>
-
-                        <div className="bg-slate-50 rounded-3xl border border-slate-100 p-8 space-y-4 text-slate-900">
-                            <div className="flex justify-between items-center py-3 border-b border-slate-200/50">
-                                <span className="text-slate-500 font-medium">Propietario</span>
-                                <span className="font-bold">{formData.member_nombre_completo}</span>
-                            </div>
-                            <div className="flex justify-between items-center py-3 border-b border-slate-200/50">
-                                <span className="text-slate-500 font-medium">Designador</span>
-                                <span className="font-bold">{formData.empresa_designador}</span>
-                            </div>
-                            <div className="flex justify-between items-center py-3">
-                                <span className="text-slate-500 font-medium">Identificación Fiscal Responsable</span>
-                                <span className="font-bold uppercase">{formData.member_tax_id_tipo}</span>
-                            </div>
+                            <p className="text-slate-500 text-lg">Para cumplir con la verificación KYC, sube tu pasaporte.</p>
                         </div>
 
                         <div className={`rounded-[2rem] p-6 md:p-8 text-white flex flex-col md:flex-row items-center gap-6 transition-all ${idUploaded ? 'bg-emerald-600' : 'bg-blue-600'}`}>

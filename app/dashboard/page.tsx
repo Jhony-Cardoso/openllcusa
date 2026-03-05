@@ -86,7 +86,9 @@ export default async function DashboardPage() {
                   const isPaid = pedido.estado_pedido === 'pagado'
 
                   // Detectar tipo de servicio (prioridad a Tax Filing)
-                  const esTaxFiling = pedido.metadata?.tipo_servicio === 'tax_filing_5472' || !!(pedido as any).tax_data
+                  const taxData = (pedido as any).tax_data;
+                  const hasTaxData = taxData && Object.keys(taxData).length > 0;
+                  const esTaxFiling = pedido.metadata?.tipo_servicio === 'tax_filing_5472' || hasTaxData;
 
                   const nombre = esTaxFiling
                     ? 'Preparación Formulario 5472 + 1120'

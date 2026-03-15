@@ -52,6 +52,7 @@ export async function PATCH(req: Request) {
         }
 
         // Actualizar
+        console.log('📝 [PEDIDOS ACTUALIZAR] updateData:', JSON.stringify(updateData))
         const { data: pedidoActualizado, error: updateError } = await supabaseAdmin
             .from('pedidos')
             .update(updateData)
@@ -61,7 +62,10 @@ export async function PATCH(req: Request) {
 
         if (updateError) {
             console.error('❌ Error actualizando pedido:', updateError)
-            return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
+            return NextResponse.json(
+                { error: `Error al actualizar: ${updateError.message}`, details: updateError },
+                { status: 500 }
+            )
         }
 
         console.log('✅ Pedido actualizado:', pedidoActualizado.id)

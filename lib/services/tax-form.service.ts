@@ -64,6 +64,17 @@ export interface TaxFormData {
         capitalDistributionProperty: number
         formationCost: number
         otherTransactions?: number
+        // Lista desglosada de transacciones (para el Federal Supporting Statement)
+        transactions?: Array<{
+            date: string           // 'YYYY-MM-DD' o 'MM/DD/YYYY'
+            type: 'contribution' | 'distribution'
+            concept: string        // Ej: 'Initial capital contribution'
+            amountUSD: number
+            isMonetary: boolean    // false = no monetario (bienes, software...)
+            paymentMethod?: string // Wire, ACH, Transfer, etc.
+            referenceId?: string   // Ej: WIRE-2025-001
+            description: string    // Texto para el statement IRS (en inglés)
+        }>
     }
     // Part V: Additional Information
     additionalInfo: {
@@ -501,65 +512,245 @@ export class TaxFormService {
             color: IRS_BLUE_5472
         })
 
-        // --- PASO 3: Generar Supporting Statements ---
-        // Creamos un Doc temporal para la página de statements
+        // --- PASO 3: Generar Federal Supporting Statements (desglosado) ---
         const pdfDocStatements = await PDFDocument.create()
-        const statementPage = pdfDocStatements.addPage()
-        const { width, height } = statementPage.getSize()
-        const font = await pdfDocStatements.embedFont(StandardFonts.Helvetica)
-        const boldFontStatement = await pdfDocStatements.embedFont(StandardFonts.HelveticaBold)
-
-        let y = height - 50
+        const fontSt = await pdfDocStatements.embedFont(StandardFonts.Helvetica)
+        const boldSt = await pdfDocStatements.embedFont(StandardFonts.HelveticaBold)
+        const IRS_BLUE_ST = rgb(0.063, 0.216, 0.631)
+        const GRAY_ST = rgb(0.4, 0.4, 0.4)
         const margin = 50
+        const RIGHT_COL = 430
+        const PAGE_W = 612
+        const PAGE_H = 792
+        const LINE_H = 14
 
-        statementPage.drawText('FEDERAL SUPPORTING STATEMENTS', { x: margin, y, size: 14, font: boldFontStatement })
-        y -= 20
-        statementPage.drawText(`Tax Year: ${data.taxYear}`, { x: margin, y, size: 12, font })
-        y -= 30
-        statementPage.drawText(`Entity Name: ${data.llc.name}`, { x: margin, y, size: 10, font: boldFontStatement })
-        y -= 15
-        statementPage.drawText(`EIN: ${data.llc.ein}`, { x: margin, y, size: 10, font: boldFontStatement })
-        y -= 30
-
-        const lines = [
-            "FORM 5472 - PART V - ADDITIONAL INFORMATION",
-            "",
-            "THE LLC IS A FOREIGN-OWNED DISREGARDED ENTITY.",
-            "THE LLC IS NOT ENGAGED IN U.S. TRADE OR BUSINESS, AND THE LLC DOES NOT",
-            "GENERATE ANY U.S. SOURCE OF INCOME THAT IS EFFECTIVELY CONNECTED WITH",
-            "A U.S. TRADE OR BUSINESS.",
-            "",
-            "THE FORM 5472 IS FILED TO DISCLOSE THE CAPITAL CONTRIBUTION/DISTRIBUTION",
-            "BETWEEN THE LLC AND SOLE MEMBER AND THE FORMATION COST OF THE LLC.",
-            ""
-        ]
-
-        lines.forEach(line => {
-            statementPage.drawText(line, { x: margin, y, size: 10, font })
-            y -= 15
-        })
-        y -= 15
-
-        statementPage.drawText('REPORTABLE TRANSACTIONS (PART V):', { x: margin, y, size: 10, font: boldFontStatement })
-        y -= 20
-
-        const financials: [string, string][] = [
-            ['Capital Contribution (Cash):', `$ ${this.formatThousands(data.financials.capitalContributionCash)}`],
-            ['Capital Contribution (Property):', `$ ${this.formatThousands(data.financials.capitalContributionProperty)}`],
-            ['Capital Distribution (Cash):', `$ ${this.formatThousands(data.financials.capitalDistributionCash)}`],
-            ['Capital Distribution (Property):', `$ ${this.formatThousands(data.financials.capitalDistributionProperty)}`],
-            ['Formation Cost:', `$ ${this.formatThousands(data.financials.formationCost)}`]
-        ]
-
-        if (data.financials.otherTransactions && data.financials.otherTransactions > 0) {
-            financials.push(['Other Reportable Transactions:', `$ ${this.formatThousands(data.financials.otherTransactions)}`]);
+        // Helper: añade página nueva al doc de statements
+        const addStatPage = () => {
+            const pg = pdfDocStatements.addPage([PAGE_W, PAGE_H])
+            return { pg, y: PAGE_H - 50 }
         }
 
-        financials.forEach(([label, value]) => {
-            statementPage.drawText(label, { x: margin, y, size: 10, font })
-            statementPage.drawText(value, { x: margin + 300, y, size: 10, font: boldFontStatement }) // Movido x a 300 para más espacio
-            y -= 15
+        // Helper: dibuja texto truncado si es muy largo
+        const drawSafe = (pg: any, text: string, x: number, yPos: number, sz: number, ft: any, col = rgb(0, 0, 0)) => {
+            const maxLen = Math.floor((PAGE_W - x - margin) / (sz * 0.55))
+            const safe = text.length > maxLen ? text.substring(0, maxLen - 3) + '...' : text
+            pg.drawText(safe, { x, y: yPos, size: sz, font: ft, color: col })
+        }
+
+        // Helper: línea separadora
+        const drawLine = (pg: any, yPos: number, col = rgb(0.8, 0.8, 0.8)) => {
+            pg.drawLine({ start: { x: margin, y: yPos }, end: { x: PAGE_W - margin, y: yPos }, thickness: 0.5, color: col })
+        }
+
+        let { pg: sp, y: sy } = addStatPage()
+
+        // ===== ENCABEZADO =====
+        sp.drawRectangle({ x: 0, y: PAGE_H - 80, width: PAGE_W, height: 80, color: rgb(0.063, 0.216, 0.631) })
+        sp.drawText('ATTACHED STATEMENT', { x: margin, y: PAGE_H - 30, size: 16, font: boldSt, color: rgb(1, 1, 1) })
+        sp.drawText('Federal Supporting Statements – Form 5472', { x: margin, y: PAGE_H - 48, size: 10, font: fontSt, color: rgb(0.8, 0.9, 1) })
+        sp.drawText(`Tax Year: ${data.taxYear}   |   Prepared: ${new Date().toLocaleDateString('en-US')}`, { x: margin, y: PAGE_H - 65, size: 9, font: fontSt, color: rgb(0.8, 0.9, 1) })
+        sy = PAGE_H - 100
+
+        // ===== DATOS ENTIDAD =====
+        sp.drawText('Reporting Corporation (Foreign-Owned U.S. Disregarded Entity):', { x: margin, y: sy, size: 9, font: boldSt, color: GRAY_ST })
+        sy -= LINE_H
+        drawSafe(sp, `${data.llc.name}`, margin, sy, 11, boldSt, IRS_BLUE_ST)
+        sp.drawText(`EIN: ${data.llc.ein}`, { x: RIGHT_COL, y: sy, size: 10, font: fontSt, color: IRS_BLUE_ST })
+        sy -= LINE_H
+        drawSafe(sp, `${data.llc.address}, ${data.llc.city}, ${data.llc.state} ${data.llc.zip}`, margin, sy, 9, fontSt, GRAY_ST)
+        sy -= LINE_H
+        sp.drawText('Foreign Related Party (100% Sole Member):', { x: margin, y: sy, size: 9, font: boldSt, color: GRAY_ST })
+        sy -= LINE_H
+        drawSafe(sp, `${data.owner.name}   |   ${data.owner.address}, ${data.owner.city}, ${data.owner.country}`, margin, sy, 10, fontSt)
+        sp.drawText(`Foreign TIN: ${data.owner.taxId}`, { x: RIGHT_COL, y: sy, size: 9, font: fontSt, color: GRAY_ST })
+        sy -= LINE_H
+        sp.drawText('Reference: Part V – Transactions Between Foreign-Owned U.S. DE and Foreign Related Party', { x: margin, y: sy, size: 9, font: fontSt, color: GRAY_ST })
+        sy -= LINE_H + 4
+        drawLine(sp, sy, IRS_BLUE_ST)
+        sy -= 12
+
+        // ===== TEXTO INTRODUCTORIO IRS =====
+        const introLines = [
+            'This statement provides the required detailed description of all reportable transactions under IRC §6038A',
+            `and the instructions for Form 5472 for the tax year ending December 31, ${data.taxYear}. All amounts are in`,
+            'U.S. Dollars (USD). No interest was charged on any loan. No property was transferred in exchange for services.',
+            'This entity is a single-member disregarded entity owned by a foreign individual. No ECI was generated.'
+        ]
+        introLines.forEach(line => {
+            sp.drawText(line, { x: margin, y: sy, size: 8.5, font: fontSt, color: GRAY_ST })
+            sy -= 13
         })
+        sy -= 8
+
+        // ===== TRANSACCIONES DESGLOSADAS =====
+        const txs = data.financials.transactions || []
+        const contributions = txs.filter(t => t.type === 'contribution')
+        const distributions = txs.filter(t => t.type === 'distribution')
+
+        // ---- Totales calculados desde transacciones (o desde campos legacy) ----
+        const totalContribCash = contributions.filter(t => t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+            || data.financials.capitalContributionCash
+        const totalContribNM = contributions.filter(t => !t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+            || data.financials.capitalContributionProperty
+        const totalDistribCash = distributions.filter(t => t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+            || data.financials.capitalDistributionCash
+        const totalDistribNM = distributions.filter(t => !t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+            || data.financials.capitalDistributionProperty
+        const formationCost = data.financials.formationCost
+
+        // ---- Helper para dibujar bloque de sección ----
+        const drawSection = (title: string, rows: typeof txs, sectionColor: any) => {
+            // Comprueba si queda espacio; si no, añade página
+            if (sy < 140) {
+                ({ pg: sp, y: sy } = addStatPage())
+                sy = PAGE_H - 50
+            }
+            // Cabecera de sección
+            sp.drawRectangle({ x: margin, y: sy - 2, width: PAGE_W - 2 * margin, height: 16, color: sectionColor, opacity: 0.12 })
+            sp.drawText(title, { x: margin + 4, y: sy, size: 10, font: boldSt, color: sectionColor })
+            sy -= LINE_H + 4
+
+            if (rows.length === 0) {
+                sp.drawText('No transactions of this type reported.', { x: margin + 8, y: sy, size: 9, font: fontSt, color: GRAY_ST })
+                sy -= LINE_H + 4
+                return
+            }
+
+            // Cabecera de columnas
+            sp.drawText('Date', { x: margin + 4, y: sy, size: 8, font: boldSt, color: GRAY_ST })
+            sp.drawText('Concept / Description', { x: margin + 68, y: sy, size: 8, font: boldSt, color: GRAY_ST })
+            sp.drawText('Method', { x: margin + 295, y: sy, size: 8, font: boldSt, color: GRAY_ST })
+            sp.drawText('Mon.', { x: margin + 352, y: sy, size: 8, font: boldSt, color: GRAY_ST })
+            sp.drawText('Amount (USD)', { x: RIGHT_COL, y: sy, size: 8, font: boldSt, color: GRAY_ST })
+            sy -= 3
+            drawLine(sp, sy)
+            sy -= LINE_H - 2
+
+            rows.forEach((tx, idx) => {
+                if (sy < 80) {
+                    ({ pg: sp, y: sy } = addStatPage())
+                    sy = PAGE_H - 50
+                }
+                const bg = idx % 2 === 0 ? rgb(0.97, 0.97, 0.97) : rgb(1, 1, 1)
+                sp.drawRectangle({ x: margin, y: sy - 3, width: PAGE_W - 2 * margin, height: LINE_H + 1, color: bg })
+
+                // Formatear fecha
+                let fdate = tx.date
+                try {
+                    const d = new Date(tx.date)
+                    if (!isNaN(d.getTime())) fdate = d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
+                } catch {}
+
+                sp.drawText(fdate, { x: margin + 4, y: sy, size: 8, font: fontSt })
+                const descLine = tx.description || tx.concept
+                drawSafe(sp, `${tx.concept}`, margin + 68, sy, 8, boldSt)
+                if (descLine !== tx.concept) {
+                    sy -= 10
+                    if (sy < 80) {
+                        ({ pg: sp, y: sy } = addStatPage())
+                        sy = PAGE_H - 50
+                    }
+                    drawSafe(sp, descLine, margin + 68, sy, 7.5, fontSt, GRAY_ST)
+                    sy += 10
+                }
+                sp.drawText(tx.paymentMethod || '—', { x: margin + 295, y: sy, size: 8, font: fontSt, color: GRAY_ST })
+                sp.drawText(tx.isMonetary ? 'Yes' : 'No', { x: margin + 355, y: sy, size: 8, font: fontSt, color: tx.isMonetary ? IRS_BLUE_ST : rgb(0.6, 0.3, 0) })
+                const amtStr = tx.isMonetary ? `$ ${this.formatThousandsUS(tx.amountUSD)}` : `FMV $${this.formatThousandsUS(tx.amountUSD)}`
+                sp.drawText(amtStr, { x: RIGHT_COL, y: sy, size: 8.5, font: boldSt, color: IRS_BLUE_ST })
+                sy -= LINE_H + 2
+            })
+            // Sub-total row
+            if (sy < 60) {
+                ({ pg: sp, y: sy } = addStatPage())
+                sy = PAGE_H - 50
+            }
+            const subCash = rows.filter(t => t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+            const subNM = rows.filter(t => !t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+            drawLine(sp, sy + 2)
+            sp.drawText('Subtotal monetary:', { x: margin + 200, y: sy - 2, size: 8.5, font: boldSt })
+            sp.drawText(`$ ${this.formatThousandsUS(subCash)}`, { x: RIGHT_COL, y: sy - 2, size: 8.5, font: boldSt, color: IRS_BLUE_ST })
+            sy -= LINE_H + 2
+            if (subNM > 0) {
+                sp.drawText('Subtotal non-monetary (FMV):', { x: margin + 200, y: sy - 2, size: 8.5, font: boldSt })
+                sp.drawText(`$ ${this.formatThousandsUS(subNM)}`, { x: RIGHT_COL, y: sy - 2, size: 8.5, font: boldSt, color: rgb(0.6, 0.3, 0) })
+                sy -= LINE_H + 2
+            }
+            sy -= 6
+        }
+
+        // Si hay transacciones desglosadas, las mostramos. Si no, usamos los totales legacy.
+        if (txs.length > 0) {
+            drawSection('1. Cash Contributions from Foreign Related Party (Part V)', contributions, IRS_BLUE_ST)
+            drawSection('2. Cash Distributions to Foreign Related Party (Part V)', distributions, rgb(0.1, 0.5, 0.2))
+        } else {
+            // Modo legacy: solo totales (comportamiento anterior)
+            if (sy < 140) { ({ pg: sp, y: sy } = addStatPage()); sy = PAGE_H - 50 }
+            sp.drawRectangle({ x: margin, y: sy - 2, width: PAGE_W - 2 * margin, height: 16, color: IRS_BLUE_ST, opacity: 0.12 })
+            sp.drawText('REPORTABLE TRANSACTIONS SUMMARY (PART V)', { x: margin + 4, y: sy, size: 10, font: boldSt, color: IRS_BLUE_ST })
+            sy -= LINE_H + 8
+            const legacyRows: [string, number][] = [
+                ['Capital Contribution (Cash):', data.financials.capitalContributionCash],
+                ['Capital Contribution (Property / Non-monetary):', data.financials.capitalContributionProperty],
+                ['Capital Distribution (Cash):', data.financials.capitalDistributionCash],
+                ['Capital Distribution (Property / Non-monetary):', data.financials.capitalDistributionProperty],
+                ['Formation Cost:', data.financials.formationCost],
+            ]
+            if (data.financials.otherTransactions && data.financials.otherTransactions > 0)
+                legacyRows.push(['Other Reportable Transactions:', data.financials.otherTransactions])
+            legacyRows.forEach(([label, val]) => {
+                sp.drawText(label, { x: margin + 8, y: sy, size: 9.5, font: fontSt })
+                sp.drawText(`$ ${this.formatThousandsUS(val)}`, { x: RIGHT_COL, y: sy, size: 9.5, font: boldSt, color: IRS_BLUE_ST })
+                sy -= LINE_H + 2
+            })
+            sy -= 6
+        }
+
+        // ===== RESUMEN DE TOTALES =====
+        if (sy < 120) { ({ pg: sp, y: sy } = addStatPage()); sy = PAGE_H - 50 }
+        sy -= 4
+        drawLine(sp, sy, IRS_BLUE_ST)
+        sy -= 4
+        sp.drawText('Summary of Totals (Part V):', { x: margin, y: sy, size: 10, font: boldSt, color: IRS_BLUE_ST })
+        sy -= LINE_H + 2
+        const summaryRows: [string, number, any][] = [
+            ['Total monetary contributions:', totalContribCash, IRS_BLUE_ST],
+            ['Total monetary distributions:', totalDistribCash, rgb(0.1, 0.5, 0.2)],
+            ...(totalContribNM > 0 ? [['Total non-monetary contributions (FMV):', totalContribNM, rgb(0.6, 0.3, 0)] as [string, number, any]] : []),
+            ...(totalDistribNM > 0 ? [['Total non-monetary distributions (FMV):', totalDistribNM, rgb(0.6, 0.3, 0)] as [string, number, any]] : []),
+            ...(formationCost > 0 ? [['Formation cost:', formationCost, GRAY_ST] as [string, number, any]] : []),
+        ]
+        summaryRows.forEach(([label, val, col]) => {
+            sp.drawText(label as string, { x: margin + 8, y: sy, size: 9.5, font: fontSt })
+            sp.drawText(`$ ${this.formatThousandsUS(val as number)}`, { x: RIGHT_COL, y: sy, size: 9.5, font: boldSt, color: col })
+            sy -= LINE_H + 2
+        })
+        sy -= 8
+
+        // ===== INFORMACIÓN ADICIONAL =====
+        if (sy < 100) { ({ pg: sp, y: sy } = addStatPage()); sy = PAGE_H - 50 }
+        sp.drawText('Additional Information:', { x: margin, y: sy, size: 9, font: boldSt, color: GRAY_ST })
+        sy -= LINE_H
+        const addlLines = [
+            '• All transactions were with the 100% foreign sole member.',
+            '• No interest was charged on any loan. No property was transferred in exchange for services.',
+            '• All amounts are supported by bank statements and documentation available upon request.',
+            '• This entity is a FODE single-member LLC; no Effectively Connected Income (ECI) was generated.',
+            '• This statement is prepared in accordance with the Instructions for Form 5472 (Rev. December 2024).'
+        ]
+        addlLines.forEach(line => {
+            sp.drawText(line, { x: margin + 4, y: sy, size: 8.5, font: fontSt, color: GRAY_ST })
+            sy -= 13
+        })
+        sy -= 8
+
+        // ===== FIRMA DEL PREPARADOR =====
+        if (sy < 80) { ({ pg: sp, y: sy } = addStatPage()); sy = PAGE_H - 50 }
+        drawLine(sp, sy)
+        sy -= 14
+        sp.drawText(`Prepared by: ${data.signature.signerName || ''}`, { x: margin, y: sy, size: 9, font: boldSt })
+        sp.drawText(`Date: ${this.formatDateToUS(data.signature.signatureDate)}`, { x: RIGHT_COL, y: sy, size: 9, font: fontSt, color: GRAY_ST })
+        sy -= 13
+        sp.drawText(`Title: ${data.signature.signerTitle || 'Sole Member / Preparer'}`, { x: margin, y: sy, size: 8.5, font: fontSt, color: GRAY_ST })
 
         // --- PASO 4: Unir Todo en Documento Final ---
         const pdfDocFinal = await PDFDocument.create()
@@ -572,9 +763,10 @@ export class TaxFormService {
         const pages5472 = await pdfDocFinal.copyPages(pdfDoc5472, pdfDoc5472.getPageIndices())
         pages5472.forEach(page => pdfDocFinal.addPage(page))
 
-        // Copiar hoja de Statement
-        const [statPage] = await pdfDocFinal.copyPages(pdfDocStatements, [0])
-        pdfDocFinal.addPage(statPage)
+        // Copiar TODAS las hojas del Statement (puede ser más de 1 si hay muchas transacciones)
+        const statIndices = pdfDocStatements.getPageIndices()
+        const statPages = await pdfDocFinal.copyPages(pdfDocStatements, statIndices)
+        statPages.forEach(page => pdfDocFinal.addPage(page))
 
         // Limpiar metadata para eliminar información sensible (IPs, URLs internas, etc.)
         pdfDocFinal.setTitle('IRS Forms 5472 & 1120')
@@ -646,6 +838,17 @@ export class TaxFormService {
             return dateStr
         }
         return `${months[month - 1]} ${parseInt(day)}, ${year}`
+    }
+
+    /**
+     * Formatea un número con separador de miles americano (coma) y decimales (punto)
+     * Ej: 1234.56 -> 1,234.56  (formato IRS)
+     */
+    private static formatThousandsUS(amount: number): string {
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount)
     }
 
     /**

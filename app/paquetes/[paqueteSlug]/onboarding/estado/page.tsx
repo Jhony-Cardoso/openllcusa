@@ -125,7 +125,8 @@ export default function EstadoPage() {
     setSaving(true)
     setError('')
     try {
-      // Usar API segura para actualizar
+      console.log('📤 [ESTADO] Guardando estado_usa_id:', estadoSeleccionado.id, 'para pedido:', pedidoId)
+
       const res = await fetch('/api/pedidos/actualizar', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -136,17 +137,26 @@ export default function EstadoPage() {
         })
       })
 
+      let responseData: any = null
+      try {
+        responseData = await res.json()
+      } catch {
+        // No JSON en respuesta
+      }
+
+      console.log('📥 [ESTADO] Respuesta API:', res.status, responseData)
+
       if (!res.ok) {
-        const errorData = await res.json()
-        console.error('Error guardando estado:', errorData)
-        setError('Error al guardar el estado. Inténtalo de nuevo.')
+        const mensajeError = responseData?.error || responseData?.message || `Error HTTP ${res.status}`
+        console.error('❌ Error guardando estado:', mensajeError, responseData)
+        setError(`Error al guardar: ${mensajeError}`)
         return
       }
 
       router.push(`/paquetes/${paqueteSlug}/onboarding/datos-empresa?pedido=${pedidoId}`)
-    } catch (e) {
-      console.error(e)
-      setError('Error al guardar. Por favor, inténtalo de nuevo.')
+    } catch (e: any) {
+      console.error('💥 Excepción al guardar estado:', e)
+      setError(`Error de red: ${e?.message || 'Por favor, recarga la página e inténtalo de nuevo.'}`)
     } finally {
       setSaving(false)
     }

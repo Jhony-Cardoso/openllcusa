@@ -2,10 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, ArrowRight, ArrowLeft, CheckCircle, FileText, DollarSign, Building, User } from 'lucide-react'
+import { Loader2, ArrowRight, ArrowLeft, CheckCircle, FileText, DollarSign, Building, User, Plus, Trash2, Info } from 'lucide-react'
 import SignaturePad from '@/components/ui/SignaturePad'
 
 // Tipos para el formulario 5472
+type Transaction = {
+    id: string
+    date: string              // 'YYYY-MM-DD'
+    type: 'contribution' | 'distribution'
+    concept: string           // Concepto breve
+    amountUSD: number
+    isMonetary: boolean       // false = no monetario (bienes, software...)
+    paymentMethod: string     // Wire, ACH, Transfer...
+    referenceId: string       // Referencia bancaria / TX ID
+    description: string       // Descripción para el IRS (en inglés)
+}
+
 type Form5472Data = {
     // Año fiscal
     taxYear: string
@@ -114,12 +126,14 @@ type Form5472Data = {
     capitalDistributionCash: number
     capitalDistributionProperty: number
 
-    // ========== PART V: Additional Information ==========
+    // Formación y costos
     formationCost: number
-    hasTradeOrBusiness: boolean // Default: false
-    isDisregardedEntity: boolean // Default: true
+    hasTradeOrBusiness: boolean
+    isDisregardedEntity: boolean
 
-    // ========== PART VII: Additional Questions ==========
+    // Transacciones desglosadas (reemplaza los campos simples de Part IV/V)
+    transactions: Transaction[]
+
     // 37 - Did the reporting corporation make payments of interest to the related party?
     paidInterestToRelatedParty: boolean // Default: false
 
@@ -248,16 +262,17 @@ export default function Form5472OnboardingPage() {
         relatedPartyOwnershipType: 'Direct',
         isRelatedPartyUSPerson: false,
 
-        // PART IV: Monetary Transactions
+        // PART IV / V: Monetary Transactions + Formation
         capitalContributionCash: 0,
         capitalContributionProperty: 0,
         capitalDistributionCash: 0,
         capitalDistributionProperty: 0,
-
-        // PART V: Additional Information
         formationCost: 0,
         hasTradeOrBusiness: false,
         isDisregardedEntity: true,
+
+        // Transacciones desglosadas (lista vacía por defecto)
+        transactions: [] as Transaction[],
 
         // PART VII: Additional Questions
         paidInterestToRelatedParty: false,
@@ -351,6 +366,42 @@ export default function Form5472OnboardingPage() {
         }
     }
 
+    // ===== Manejo de transacciones =====
+    const newEmptyTx = (): Transaction => ({
+        id: Math.random().toString(36).slice(2),
+        date: '',
+        type: 'contribution',
+        concept: '',
+        amountUSD: 0,
+        isMonetary: true,
+        paymentMethod: 'Wire',
+        referenceId: '',
+        description: ''
+    })
+
+    const addTransaction = () =>
+        setFormData(prev => ({ ...prev, transactions: [...prev.transactions, newEmptyTx()] }))
+
+    const removeTransaction = (id: string) =>
+        setFormData(prev => ({ ...prev, transactions: prev.transactions.filter(t => t.id !== id) }))
+
+    const updateTransaction = (id: string, field: keyof Transaction, value: any) =>
+        setFormData(prev => ({
+            ...prev,
+            transactions: prev.transactions.map(t =>
+                t.id === id ? { ...t, [field]: field === 'amountUSD' ? parseFloat(value) || 0 : value } : t
+            )
+        }))
+
+    // Subtotales dinámicos
+    const totalContribCash = formData.transactions.filter(t => t.type === 'contribution' && t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+    const totalContribNM = formData.transactions.filter(t => t.type === 'contribution' && !t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+    const totalDistribCash = formData.transactions.filter(t => t.type === 'distribution' && t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+    const totalDistribNM = formData.transactions.filter(t => t.type === 'distribution' && !t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
+    const grandTotal = totalContribCash + totalContribNM + totalDistribCash + totalDistribNM
+
+    const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
     const handleBack = () => {
         if (currentStep > 1) {
             setCurrentStep(prev => prev - 1)
@@ -413,12 +464,13 @@ export default function Form5472OnboardingPage() {
                     isUSPerson: formData.isRelatedPartyUSPerson || false
                 },
                 financials: {
-                    capitalContributionCash: formData.capitalContributionCash,
-                    capitalContributionProperty: formData.capitalContributionProperty,
-                    capitalDistributionCash: formData.capitalDistributionCash,
-                    capitalDistributionProperty: formData.capitalDistributionProperty,
+                    capitalContributionCash: totalContribCash,
+                    capitalContributionProperty: totalContribNM,
+                    capitalDistributionCash: totalDistribCash,
+                    capitalDistributionProperty: totalDistribNM,
                     formationCost: formData.formationCost,
-                    otherTransactions: 0
+                    otherTransactions: 0,
+                    transactions: formData.transactions.map(({ id, ...rest }) => rest)
                 },
                 additionalInfo: {
                     hasTradeOrBusiness: formData.hasTradeOrBusiness,
@@ -834,73 +886,221 @@ export default function Form5472OnboardingPage() {
                     {currentStep === 3 && (
                         <div className="space-y-6">
                             <h2 className="text-xl font-semibold text-slate-900 border-b pb-2 flex items-center gap-2">
-                                <DollarSign className="text-blue-600" size={20} /> Transacciones Reportables
+                                <DollarSign className="text-blue-600" size={20} /> Transacciones Reportables (Part V)
                             </h2>
 
-                            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
-                                <div className="flex">
-                                    <div className="ml-3">
-                                        <p className="text-sm text-blue-700">
-                                            Debes declarar cualquier movimiento de capital (dinero o bienes) entre tú y la LLC durante el año fiscal.
-                                            Si solo abriste la cuenta bancaria y no operaste, pon la cantidad depositada como "Capital Contribution".
-                                        </p>
+                            {/* Aviso IRS */}
+                            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                                <div className="flex gap-2">
+                                    <Info size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
+                                    <div className="text-sm text-blue-800">
+                                        <p className="font-semibold mb-1">El IRS exige detalle por transacción — no basta con el total.</p>
+                                        <p>Registra cada contribución (dinero o bienes que entraron a la LLC desde ti) y cada distribución (retiros que salieron de la LLC hacia ti). Estos datos se trasladarán directamente al <strong>Federal Supporting Statement</strong> adjunto al Form 5472.</p>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* Tabla de transacciones */}
                             <div className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700">Aportación de Capital (Dinero)</label>
-                                        <div className="mt-1 relative rounded-md shadow-sm">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <span className="text-gray-500 sm:text-sm">$</span>
-                                            </div>
-                                            <input
-                                                type="number"
-                                                name="capitalContributionCash"
-                                                value={formData.capitalContributionCash}
-                                                onChange={handleChange}
-                                                className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md p-3 border"
-                                                placeholder="0.00"
-                                            />
-                                        </div>
-                                    </div>
+                                {formData.transactions.length === 0 && (
+                                    <p className="text-sm text-slate-500 italic text-center py-4 border border-dashed rounded-lg">
+                                        Aún no has añadido transacciones. Haz clic en “Añadir transacción” para comenzar.
+                                    </p>
+                                )}
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700">Distribución de Capital (Retiros)</label>
-                                        <div className="mt-1 relative rounded-md shadow-sm">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <span className="text-gray-500 sm:text-sm">$</span>
-                                            </div>
-                                            <input
-                                                type="number"
-                                                name="capitalDistributionCash"
-                                                value={formData.capitalDistributionCash}
-                                                onChange={handleChange}
-                                                className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md p-3 border"
-                                                placeholder="0.00"
-                                            />
+                                {formData.transactions.map((tx, idx) => (
+                                    <div key={tx.id} className="border border-slate-200 rounded-xl p-4 bg-slate-50 relative">
+                                        {/* Badge numeración + botón eliminar */}
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                                                tx.type === 'contribution'
+                                                    ? 'bg-blue-100 text-blue-700'
+                                                    : 'bg-green-100 text-green-700'
+                                            }`}>
+                                                #{idx + 1} — {tx.type === 'contribution' ? 'Contribución ↑' : 'Distribución ↓'}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeTransaction(tx.id)}
+                                                className="text-red-400 hover:text-red-600 transition-colors"
+                                                title="Eliminar transacción"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
-                                    </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700">Costos de Formación (Primer año)</label>
-                                        <div className="mt-1 relative rounded-md shadow-sm">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <span className="text-gray-500 sm:text-sm">$</span>
+                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-6">
+                                            {/* Fecha */}
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">Fecha *</label>
+                                                <input
+                                                    type="date"
+                                                    value={tx.date}
+                                                    onChange={e => updateTransaction(tx.id, 'date', e.target.value)}
+                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                    required
+                                                />
                                             </div>
-                                            <input
-                                                type="number"
-                                                name="formationCost"
-                                                value={formData.formationCost}
-                                                onChange={handleChange}
-                                                className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md p-3 border"
-                                                placeholder="0.00"
-                                            />
-                                            <p className="mt-1 text-xs text-gray-500">Gastos pagados para crear la LLC (Estado, Agente, Servicios).</p>
+
+                                            {/* Tipo */}
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">Tipo *</label>
+                                                <select
+                                                    value={tx.type}
+                                                    onChange={e => updateTransaction(tx.id, 'type', e.target.value)}
+                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                >
+                                                    <option value="contribution">↑ Contribución (entró a la LLC)</option>
+                                                    <option value="distribution">↓ Distribución (salió de la LLC)</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Importe USD */}
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">Importe USD *</label>
+                                                <div className="relative">
+                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 text-sm">$</span>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        value={tx.amountUSD || ''}
+                                                        onChange={e => updateTransaction(tx.id, 'amountUSD', e.target.value)}
+                                                        className="w-full rounded-md border border-slate-300 pl-6 pr-2 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                        placeholder="0.00"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Concepto */}
+                                            <div className="sm:col-span-3">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">Naturaleza / Concepto *</label>
+                                                <input
+                                                    type="text"
+                                                    value={tx.concept}
+                                                    onChange={e => updateTransaction(tx.id, 'concept', e.target.value)}
+                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="Ej: Initial capital contribution"
+                                                />
+                                            </div>
+
+                                            {/* Método de pago */}
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">Método de pago</label>
+                                                <select
+                                                    value={tx.paymentMethod}
+                                                    onChange={e => updateTransaction(tx.id, 'paymentMethod', e.target.value)}
+                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                >
+                                                    <option value="Wire">Wire</option>
+                                                    <option value="ACH">ACH</option>
+                                                    <option value="Transfer">Transfer</option>
+                                                    <option value="Check">Check</option>
+                                                    <option value="N/A">N/A (no monetario)</option>
+                                                </select>
+                                            </div>
+
+                                            {/* ¿Monetario? */}
+                                            <div className="sm:col-span-1">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">¿En efectivo?</label>
+                                                <select
+                                                    value={tx.isMonetary ? 'yes' : 'no'}
+                                                    onChange={e => updateTransaction(tx.id, 'isMonetary', e.target.value === 'yes')}
+                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                >
+                                                    <option value="yes">✅ Sí</option>
+                                                    <option value="no">📳 No (bienes)</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Referencia bancaria */}
+                                            <div className="sm:col-span-3">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">Referencia bancaria / TX ID</label>
+                                                <input
+                                                    type="text"
+                                                    value={tx.referenceId}
+                                                    onChange={e => updateTransaction(tx.id, 'referenceId', e.target.value)}
+                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="Ej: WIRE-2025-001"
+                                                />
+                                            </div>
+
+                                            {/* Descripción IRS */}
+                                            <div className="sm:col-span-6">
+                                                <label className="block text-xs font-medium text-slate-600 mb-1">
+                                                    Descripción para el IRS <span className="text-slate-400">(en inglés, aparece en el Statement oficial)</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={tx.description}
+                                                    onChange={e => updateTransaction(tx.id, 'description', e.target.value)}
+                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="Ej: Cash contribution from foreign owner to capitalize the LLC for business operations"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
+                                ))}
+
+                                {/* Botón añadir */}
+                                <button
+                                    type="button"
+                                    onClick={addTransaction}
+                                    className="flex items-center gap-2 w-full justify-center border-2 border-dashed border-blue-300 rounded-xl py-3 text-blue-600 hover:border-blue-500 hover:bg-blue-50 transition-all text-sm font-medium"
+                                >
+                                    <Plus size={16} /> Añadir transacción
+                                </button>
+                            </div>
+
+                            {/* Subtotales en vivo */}
+                            {formData.transactions.length > 0 && (
+                                <div className="bg-slate-900 rounded-xl p-5 text-white">
+                                    <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Resumen de totales</p>
+                                    <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <p className="text-slate-400 text-xs">Contribuciones monetarias</p>
+                                            <p className="font-bold text-blue-300 text-lg">${fmt(totalContribCash)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-slate-400 text-xs">Distribuciones monetarias</p>
+                                            <p className="font-bold text-green-300 text-lg">${fmt(totalDistribCash)}</p>
+                                        </div>
+                                        {totalContribNM > 0 && (
+                                            <div>
+                                                <p className="text-slate-400 text-xs">Contribs. no monetarias (FMV)</p>
+                                                <p className="font-bold text-orange-300 text-lg">${fmt(totalContribNM)}</p>
+                                            </div>
+                                        )}
+                                        {totalDistribNM > 0 && (
+                                            <div>
+                                                <p className="text-slate-400 text-xs">Distribs. no monetarias (FMV)</p>
+                                                <p className="font-bold text-orange-300 text-lg">${fmt(totalDistribNM)}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="border-t border-slate-700 mt-3 pt-3 flex justify-between">
+                                        <p className="text-slate-400 text-xs font-semibold">TOTAL BRUTO (campo 1f del 5472)</p>
+                                        <p className="font-bold text-white text-lg">${fmt(grandTotal)}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Costo de Formación */}
+                            <div className="border border-slate-200 rounded-xl p-4">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Costos de Formación de la LLC ($)</label>
+                                <p className="text-xs text-slate-500 mb-2">Gastos pagados para crear la LLC (registro de estado, agente registrado, servicios profesionales).</p>
+                                <div className="relative max-w-xs">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                                    <input
+                                        type="number"
+                                        name="formationCost"
+                                        value={formData.formationCost}
+                                        onChange={handleChange}
+                                        min="0"
+                                        step="0.01"
+                                        className="w-full rounded-md border border-slate-300 pl-7 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="0.00"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -940,16 +1140,32 @@ export default function Form5472OnboardingPage() {
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{formData.ownerTaxId} ({formData.ownerReferenceIdType})</dd>
                                     </div>
                                     <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
-                                        <dt className="text-sm font-medium text-gray-500">Aportación Capital</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${formData.capitalContributionCash.toFixed(2)}</dd>
+                                        <dt className="text-sm font-medium text-gray-500">Contribuciones monetarias</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-bold text-blue-700">${fmt(totalContribCash)}</dd>
                                     </div>
                                     <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt className="text-sm font-medium text-gray-500">Distribución Capital</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${formData.capitalDistributionCash.toFixed(2)}</dd>
+                                        <dt className="text-sm font-medium text-gray-500">Distribuciones monetarias</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-bold text-green-700">${fmt(totalDistribCash)}</dd>
                                     </div>
+                                    {totalContribNM > 0 && (
+                                        <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
+                                            <dt className="text-sm font-medium text-gray-500">Contribs. no monetarias (FMV)</dt>
+                                            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-bold text-orange-600">${fmt(totalContribNM)}</dd>
+                                        </div>
+                                    )}
+                                    {totalDistribNM > 0 && (
+                                        <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                            <dt className="text-sm font-medium text-gray-500">Distribs. no monetarias (FMV)</dt>
+                                            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-bold text-orange-600">${fmt(totalDistribNM)}</dd>
+                                        </div>
+                                    )}
                                     <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 bg-gray-50">
                                         <dt className="text-sm font-medium text-gray-500">Costo Formación</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${formData.formationCost.toFixed(2)}</dd>
+                                    </div>
+                                    <div className="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Nº de transacciones</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{formData.transactions.length} transacción(es) registrada(s)</dd>
                                     </div>
                                 </dl>
                             </div>

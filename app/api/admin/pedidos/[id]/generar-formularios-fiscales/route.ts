@@ -13,6 +13,7 @@ import { TaxFormService, TaxFormData } from '@/lib/services/tax-form.service'
 function transformToTaxFormData(raw: any): TaxFormData {
     return {
         taxYear: raw.taxYear || String(new Date().getFullYear() - 1),
+        assistedFilling: !!raw.assistedFilling,
         llc: {
             name: raw.llcName || raw.llc?.name || '',
             ein: raw.llcEin || raw.llc?.ein || '',
@@ -76,6 +77,7 @@ function transformToTaxFormData(raw: any): TaxFormData {
             capitalDistributionCash: Number(raw.capitalDistributionCash ?? raw.financials?.capitalDistributionCash ?? 0),
             capitalDistributionProperty: Number(raw.capitalDistributionProperty ?? raw.financials?.capitalDistributionProperty ?? 0),
             formationCost: Number(raw.formationCost ?? raw.financials?.formationCost ?? 0),
+            transactions: raw.transactions || raw.financials?.transactions || [],
         },
         // Part V: Additional Information
         additionalInfo: {

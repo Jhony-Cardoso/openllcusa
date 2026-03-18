@@ -6,6 +6,7 @@ import path from 'path'
 // Definición de tipos
 export interface TaxFormData {
     taxYear: string
+    assistedFilling?: boolean
     llc: {
         name: string
         ein: string
@@ -146,7 +147,11 @@ export class TaxFormService {
             }
 
             // --- BOX E: Checkboxes ---
-            if (data.llc.isInitialReturn) {
+            const formationYear = data.llc.formationDate?.split(/[-/]/).pop()?.trim();
+            const taxYear = data.taxYear?.trim();
+            const isInitialByDate = formationYear && taxYear && formationYear === taxYear;
+            
+            if (data.llc.isInitialReturn || isInitialByDate) {
                 this.checkField(form1120, 'topmostSubform[0].Page1[0].c1_6[0]') // (1) Initial return
             }
 
@@ -317,7 +322,10 @@ export class TaxFormService {
         // 1i - Consolidated filing checkbox (c1_1) → NO marcar para LLC single-member
 
         // 1j - Initial year: marcar SOLO si es la primera declaración (isInitialReturn)
-        if (data.llc.isInitialReturn) {
+        const formationYearTxt = data.llc.formationDate?.split(/[-/]/).pop()?.trim();
+        const isInitialYear = data.llc.isInitialReturn || (formationYearTxt && formationYearTxt === data.taxYear?.trim());
+        
+        if (isInitialYear) {
             this.checkField(form, 'topmostSubform[0].Page1[0].Line1j_ReadOrder[0].c1_2[0]')
         }
 
@@ -666,16 +674,16 @@ export class TaxFormService {
             }
             const subCash = rows.filter(t => t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
             const subNM = rows.filter(t => !t.isMonetary).reduce((s, t) => s + t.amountUSD, 0)
-            drawLine(sp, sy + 2)
-            sp.drawText('Subtotal monetary:', { x: margin + 200, y: sy - 2, size: 8.5, font: boldSt })
-            sp.drawText(`$ ${this.formatThousandsUS(subCash)}`, { x: RIGHT_COL, y: sy - 2, size: 8.5, font: boldSt, color: IRS_BLUE_ST })
-            sy -= LINE_H + 2
+            drawLine(sp, sy + 10)
+            sp.drawText('Subtotal monetary:', { x: margin + 200, y: sy - 8, size: 8.5, font: boldSt })
+            sp.drawText(`$ ${this.formatThousandsUS(subCash)}`, { x: RIGHT_COL, y: sy - 8, size: 8.5, font: boldSt, color: IRS_BLUE_ST })
+            sy -= LINE_H + 4
             if (subNM > 0) {
                 sp.drawText('Subtotal non-monetary (FMV):', { x: margin + 200, y: sy - 2, size: 8.5, font: boldSt })
                 sp.drawText(`$ ${this.formatThousandsUS(subNM)}`, { x: RIGHT_COL, y: sy - 2, size: 8.5, font: boldSt, color: rgb(0.6, 0.3, 0) })
                 sy -= LINE_H + 2
             }
-            sy -= 6
+            sy -= 40 // Espacio extra para separar de la siguiente sección (Evitar pegado)
         }
 
         // Si hay transacciones desglosadas, las mostramos. Si no, usamos los totales legacy.
@@ -707,11 +715,11 @@ export class TaxFormService {
 
         // ===== RESUMEN DE TOTALES =====
         if (sy < 120) { ({ pg: sp, y: sy } = addStatPage()); sy = PAGE_H - 50 }
-        sy -= 4
-        drawLine(sp, sy, IRS_BLUE_ST)
-        sy -= 4
+        sy -= 10
+        drawLine(sp, sy + 2, IRS_BLUE_ST)
+        sy -= 22
         sp.drawText('Summary of Totals (Part V):', { x: margin, y: sy, size: 10, font: boldSt, color: IRS_BLUE_ST })
-        sy -= LINE_H + 2
+        sy -= LINE_H + 4
         const summaryRows: [string, number, any][] = [
             ['Total monetary contributions:', totalContribCash, IRS_BLUE_ST],
             ['Total monetary distributions:', totalDistribCash, rgb(0.1, 0.5, 0.2)],

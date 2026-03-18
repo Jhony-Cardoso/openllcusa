@@ -8,6 +8,9 @@ import {
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminPedidosPage() {
     const pedidos = await PedidoModel.listarTodosAdmin()
 
@@ -16,6 +19,14 @@ export default async function AdminPedidosPage() {
         pagados: pedidos.filter(p => p.estado_pedido === 'pagado').length,
         pendientes: pedidos.filter(p => p.estado_pedido !== 'pagado').length,
         onboardingCompletado: pedidos.filter(p => p.paso_actual >= 7).length
+    }
+
+    // Helper compartido: nombre legible del servicio para cualquier tipo de pedido
+    const getNombrePedido = (p: any) => {
+        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
+            (p.tax_data && Object.keys(p.tax_data).length > 0)
+        if (esTaxFiling) return 'Form 5472 + 1120'
+        return p.paquetes?.nombre || p.servicios?.nombre || 'Servicio'
     }
 
     return (
@@ -77,7 +88,7 @@ export default async function AdminPedidosPage() {
                             {pedidos.map((p) => {
                                 const isPaid = p.estado_pedido === 'pagado'
                                 const onboardingDone = p.paso_actual >= 7
-                                const servicio = p.paquetes?.nombre || p.servicios?.nombre || 'Servicio'
+                                const servicio = getNombrePedido(p)
                                 const estadoUsa = p.estados_usa?.codigo || 'N/A'
 
                                 return (

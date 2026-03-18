@@ -41,7 +41,7 @@ const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(({ onChan
                 if (ctx) {
                     ctx.lineCap = 'round'
                     ctx.lineJoin = 'round'
-                    ctx.strokeStyle = '#000'
+                    ctx.strokeStyle = '#1037A0' // Azul oscuro IRS oficial
                     ctx.lineWidth = 2
                 }
             }

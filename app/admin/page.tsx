@@ -8,6 +8,9 @@ import {
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminDashboardPage() {
     const pedidos = await PedidoModel.listarTodosAdmin()
 
@@ -18,6 +21,26 @@ export default async function AdminDashboardPage() {
         onboardingPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 7).length,
         tramitacionPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && (p.paso_actual === 7 || p.paso_actual === 8)).length
     }
+
+    // Helper: nombre del servicio para cualquier tipo de pedido
+    const getNombrePedido = (p: any) => {
+        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
+            (p.tax_data && Object.keys(p.tax_data).length > 0)
+        if (esTaxFiling) return 'Form 5472 + 1120'
+        return p.paquetes?.nombre || p.servicios?.nombre || p.paquete?.nombre || p.servicio?.nombre || 'Servicio'
+    }
+
+    // Pedidos que requieren atención: flujo normal (paso_actual < 9) + tax filing pagados sin documentos
+    const pedidosParaAtencion = pedidos.filter(p => {
+        if (p.estado_pedido !== 'pagado') return false
+        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
+            (p.tax_data && Object.keys(p.tax_data).length > 0)
+        if (esTaxFiling) {
+            // Aparece si aún no tiene el PDF del form 5472 adjunto
+            return !p.metadata?.documents?.form_5472_url
+        }
+        return p.paso_actual < 9
+    })
 
     const pedidosRecientes = pedidos.slice(0, 5)
 
@@ -54,15 +77,26 @@ export default async function AdminDashboardPage() {
                         </div>
 
                         <div className="divide-y divide-slate-50">
-                            {pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 9).length === 0 ? (
+                            {pedidosParaAtencion.length === 0 ? (
                                 <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">¡Todo al día! No hay pedidos pendientes de acción.</div>
                             ) : (
-                                pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 9)
-                                    .sort((a, b) => (b.paso_actual >= 7 ? 1 : -1)) // Priorizar los que ya completaron onboarding (opcional)
+                                pedidosParaAtencion
+                                    .sort((a, b) => {
+                                        const aTax = a.metadata?.tipo_servicio === 'tax_filing_5472' || (a.tax_data && Object.keys(a.tax_data).length > 0);
+                                        const bTax = b.metadata?.tipo_servicio === 'tax_filing_5472' || (b.tax_data && Object.keys(b.tax_data).length > 0);
+                                        const aPriority = aTax || a.paso_actual >= 7;
+                                        const bPriority = bTax || b.paso_actual >= 7;
+                                        if (aPriority && !bPriority) return -1;
+                                        if (!aPriority && bPriority) return 1;
+                                        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                                    })
                                     .slice(0, 10).map(p => {
-                                        const isWaitingOnboarding = p.paso_actual < 7;
-                                        const isReadyForAdmin = p.paso_actual === 7;
-                                        const isIRSProcessing = p.paso_actual === 8;
+                                        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
+                                            (p.tax_data && Object.keys(p.tax_data).length > 0)
+                                        const isWaitingOnboarding = !esTaxFiling && p.paso_actual < 7;
+                                        const isReadyForAdmin = esTaxFiling || p.paso_actual === 7;
+                                        const isIRSProcessing = !esTaxFiling && p.paso_actual === 8;
+                                        const nombre = getNombrePedido(p)
 
                                         return (
                                             <div key={p.id} className="p-6 flex items-center justify-between group hover:bg-slate-50/50 transition-colors">
@@ -72,10 +106,12 @@ export default async function AdminDashboardPage() {
                                                     </div>
                                                     <div>
                                                         <p className="font-black text-slate-900 leading-tight">
-                                                            #{p.numero_pedido.split('-')[1]} - {p.paquetes?.nombre || p.servicios?.nombre || 'Servicio'}
+                                                            #{p.numero_pedido.split('-')[1]} - {nombre}
                                                         </p>
                                                         <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${isReadyForAdmin ? 'text-blue-600' : isIRSProcessing ? 'text-indigo-600' : 'text-amber-500'}`}>
-                                                            {isReadyForAdmin ? (
+                                                            {esTaxFiling ? (
+                                                                <span className="flex items-center gap-1"><FileText size={10} /> Datos fiscales recibidos — Pendiente preparar documentos</span>
+                                                            ) : isReadyForAdmin ? (
                                                                 <span className="flex items-center gap-1"><CheckCircle2 size={10} /> Checklist Recibido - Listo para tramitar</span>
                                                             ) : isIRSProcessing ? (
                                                                 <span className="flex items-center gap-1"><Activity size={10} /> En tramitación ante el IRS</span>
@@ -116,7 +152,7 @@ export default async function AdminDashboardPage() {
                                     {pedidosRecientes.map(p => (
                                         <tr key={p.id} className="border-b border-slate-50 last:border-0">
                                             <td className="px-8 py-4">
-                                                <p className="font-bold text-slate-900 text-sm">{p.paquetes?.nombre || p.servicios?.nombre || 'Paquete'}</p>
+                                                <p className="font-bold text-slate-900 text-sm">{getNombrePedido(p)}</p>
                                                 <p className="text-[10px] text-slate-400 font-bold uppercase">{new Date(p.created_at).toLocaleDateString()}</p>
                                             </td>
                                             <td className="px-8 py-4">

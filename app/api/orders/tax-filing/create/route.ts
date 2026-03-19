@@ -76,8 +76,8 @@ export async function POST(req: Request) {
             },
         })
 
-        // 5. Devolver URL
-        return NextResponse.json({ url: session.url })
+        // 5. Devolver URL y pedidoId
+        return NextResponse.json({ url: session.url, pedidoId: pedido.id })
 
     } catch (error: any) {
         console.error('Error procesando pedido fiscal:', error)

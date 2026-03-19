@@ -30,6 +30,9 @@ export default function AdminTaxFilingManager({
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [estadoTramitacion, setEstadoTramitacion] = useState(metadata?.estado_tramitacion || 'pendiente')
     const [notasAdmin, setNotasAdmin] = useState(metadata?.notas_admin || '')
+    const [isEditing, setIsEditing] = useState(false)
+    const [editData, setEditData] = useState<any>(taxData || {})
+    const [saving, setSaving] = useState(false)
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -113,6 +116,28 @@ export default function AdminTaxFilingManager({
         }
     }
 
+    const handleSaveTaxData = async () => {
+        setSaving(true)
+        setMessage(null)
+        try {
+            const response = await fetch(`/api/admin/pedidos/${pedidoId}/actualizar-datos-fiscales`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taxData: editData }),
+            })
+
+            if (!response.ok) throw new Error('Error al guardar los datos')
+
+            setMessage({ type: 'success', text: '✅ Datos fiscales actualizados. Ya puedes generar el PDF final.' })
+            setIsEditing(false)
+            // No recargamos para no perder el scroll, el componente ya tiene el estado local
+        } catch (error: any) {
+            setMessage({ type: 'error', text: error.message })
+        } finally {
+            setSaving(false)
+        }
+    }
+
     const hasFormularios = metadata?.documents?.form_5472_url
     const hasAcuseRecibo = metadata?.acuse_recibo_path
 
@@ -182,7 +207,109 @@ export default function AdminTaxFilingManager({
                         </div>
                     </div>
                 )}
+
+                {/* DETALLES DE ASISTENCIA EXPERTA */}
+                {taxData?.assistedFilling && (
+                    <div className="mt-6 pt-6 border-t border-indigo-100 space-y-4">
+                        <div className="flex items-center gap-2 text-indigo-800 font-black text-[10px] uppercase tracking-widest">
+                            <AlertCircle size={14} /> Modo Asistencia Experta Activo
+                        </div>
+                        
+                        {taxData.assistedFillingNotes && (
+                            <div className="bg-white/60 rounded-xl p-4 border border-indigo-100">
+                                <p className="text-xs font-bold text-indigo-600 mb-2 uppercase tracking-tight">Notas del Cliente:</p>
+                                <p className="text-sm text-indigo-900 leading-relaxed italic">"{taxData.assistedFillingNotes}"</p>
+                            </div>
+                        )}
+
+                        {taxData.bankStatements && taxData.bankStatements.length > 0 && (
+                            <div>
+                                <p className="text-xs font-bold text-indigo-600 mb-3 uppercase tracking-tight">Extractos Bancarios Adjuntos:</p>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {taxData.bankStatements.map((url: string, i: number) => {
+                                        // Intentar sacar el nombre del archivo de la URL
+                                        const fileName = url.split('/').pop()?.split('-').slice(1).join('-') || `Extracto ${i+1}`
+                                        return (
+                                            <a 
+                                                key={i} 
+                                                href={url} 
+                                                target="_blank" 
+                                                className="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-indigo-100 hover:border-indigo-400 transition-colors group"
+                                            >
+                                                <span className="text-xs font-bold text-indigo-900 truncate max-w-[200px]">{fileName}</span>
+                                                <Download size={14} className="text-indigo-400 group-hover:text-indigo-600" />
+                                            </a>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
+
+            {/* SECCIÓN: EDITOR DE DATOS (Solo si Alex necesita completar) */}
+            {taxData && (
+                <div className="bg-white border border-slate-200 rounded-2xl p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                            <Activity size={16} className="text-blue-600" />
+                            Completar / Editar Información
+                        </h4>
+                        <button 
+                            onClick={() => setIsEditing(!isEditing)}
+                            className="text-xs font-black text-blue-600 hover:underline px-3 py-1 bg-blue-50 rounded-lg"
+                        >
+                            {isEditing ? 'Cancelar Edición' : 'Editar Datos Fiscales'}
+                        </button>
+                    </div>
+
+                    {!isEditing ? (
+                        <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                            Si el cliente usó el Modo Asistencia, los campos de transacciones y preguntas adicionales estarán vacíos. Haz clic en <strong>Editar</strong> para completarlos antes de generar el PDF final.
+                        </p>
+                    ) : (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-top-4">
+                            {/* Editor de Transacciones Simplicado (Solo Totales para Alex) */}
+                            <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                                <div className="col-span-2">
+                                    <h5 className="text-[10px] font-black text-slate-400 uppercase mb-3">Totales Supporting Statement (Parte IV)</h5>
+                                </div>
+                                <EditorItem label="Contribuciones Cash ($)" value={editData.financials?.capitalContributionCash || 0} 
+                                    onChange={(v) => setEditData({...editData, financials: {...(editData.financials||{}), capitalContributionCash: parseFloat(v)||0}})} />
+                                <EditorItem label="Contribuciones Non-Cash ($)" value={editData.financials?.capitalContributionProperty || 0} 
+                                    onChange={(v) => setEditData({...editData, financials: {...(editData.financials||{}), capitalContributionProperty: parseFloat(v)||0}})} />
+                                <EditorItem label="Distribuciones Cash ($)" value={editData.financials?.capitalDistributionCash || 0} 
+                                    onChange={(v) => setEditData({...editData, financials: {...(editData.financials||{}), capitalDistributionCash: parseFloat(v)||0}})} />
+                                <EditorItem label="Distribuciones Non-Cash ($)" value={editData.financials?.capitalDistributionProperty || 0} 
+                                    onChange={(v) => setEditData({...editData, financials: {...(editData.financials||{}), capitalDistributionProperty: parseFloat(v)||0}})} />
+                            </div>
+
+                            {/* Preguntas Parte VII */}
+                            <div className="space-y-3 border-t pt-4">
+                                <h5 className="text-[10px] font-black text-slate-400 uppercase mb-2">Preguntas Parte VII (Checkboxes)</h5>
+                                <CheckItem label="¿Pagó intereses a la parte relacionada?" checked={editData.additionalQuestions?.importGoods || false} 
+                                    onChange={(c) => setEditData({...editData, additionalQuestions: {...(editData.additionalQuestions||{}), importGoods: c}})} />
+                                <CheckItem label="¿Pagó alquileres?" checked={editData.additionalQuestions?.documentWarehouse || false} 
+                                    onChange={(c) => setEditData({...editData, additionalQuestions: {...(editData.additionalQuestions||{}), documentWarehouse: c}})} />
+                                <CheckItem label="¿Tiene Cost Sharing Arrangements?" checked={editData.additionalQuestions?.foreignParentCSA || false} 
+                                    onChange={(c) => setEditData({...editData, additionalQuestions: {...(editData.additionalQuestions||{}), foreignParentCSA: c}})} />
+                                <CheckItem label="¿Pagó Royalties?" checked={editData.additionalQuestions?.interestRoyaltyDeduction || false} 
+                                    onChange={(c) => setEditData({...editData, additionalQuestions: {...(editData.additionalQuestions||{}), interestRoyaltyDeduction: c}})} />
+                            </div>
+
+                            <button 
+                                onClick={handleSaveTaxData}
+                                disabled={saving}
+                                className="w-full py-3 bg-blue-600 text-white rounded-xl font-black text-sm hover:bg-blue-700 transition-all shadow-lg flex items-center justify-center gap-2"
+                            >
+                                {saving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+                                Guardar Cambios para el PDF
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* SECCIÓN: GENERAR FORMULARIOS */}
             {!hasFormularios && (
@@ -345,5 +472,33 @@ export default function AdminTaxFilingManager({
                 </div>
             </div>
         </div>
+    )
+}
+
+function EditorItem({ label, value, onChange }: { label: string, value: any, onChange: (v: string) => void }) {
+    return (
+        <div>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1 ml-1">{label}</label>
+            <input 
+                type="number"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-slate-800 text-sm focus:border-blue-500 outline-none"
+            />
+        </div>
+    )
+}
+
+function CheckItem({ label, checked, onChange }: { label: string, checked: boolean, onChange: (c: boolean) => void }) {
+    return (
+        <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors">
+            <input 
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => onChange(e.target.checked)}
+                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
+            />
+            <span className="text-xs font-bold text-slate-700">{label}</span>
+        </label>
     )
 }

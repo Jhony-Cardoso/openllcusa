@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, ArrowRight, ArrowLeft, CheckCircle, FileText, DollarSign, Building, User, Plus, Trash2, Info, ExternalLink } from 'lucide-react'
+import { Loader2, ArrowRight, ArrowLeft, CheckCircle, FileText, DollarSign, Building, User, Plus, Trash2, Info, ExternalLink, HelpCircle, Upload } from 'lucide-react'
 import SignaturePad from '@/components/ui/SignaturePad'
 
 // Tipos para el formulario 5472
@@ -165,6 +165,8 @@ type Form5472Data = {
     signatureDate: string
     signatureDataUrl: string | null
     assistedFilling: boolean
+    bankStatements: string[]
+    assistedFillingNotes: string
 }
 
 const steps = [
@@ -179,6 +181,7 @@ export default function Form5472OnboardingPage() {
     const [currentStep, setCurrentStep] = useState(1)
     const [loading, setLoading] = useState(false)
     const [isAutoFilling, setIsAutoFilling] = useState(true)
+    const [statementFiles, setStatementFiles] = useState<File[]>([])
 
     useEffect(() => {
         async function fetchAutoFillData() {
@@ -216,6 +219,8 @@ export default function Form5472OnboardingPage() {
     const [formData, setFormData] = useState<Form5472Data>({
         taxYear: String(currentYear - 1),
         assistedFilling: false,
+        bankStatements: [],
+        assistedFillingNotes: '',
 
         // PART I: Reporting Corporation
         llcName: '',
@@ -315,6 +320,29 @@ export default function Form5472OnboardingPage() {
         setFormData(prev => ({
             ...prev,
             llcEin: value
+        }))
+    }
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files) return
+        
+        const newFiles = Array.from(files)
+        setStatementFiles(prev => [...prev, ...newFiles])
+        
+        // Mantener solo los nombres para la UI reactiva de formData
+        const fileNames = newFiles.map(f => f.name)
+        setFormData(prev => ({
+            ...prev,
+            bankStatements: [...prev.bankStatements, ...fileNames]
+        }))
+    }
+
+    const removeStatement = (name: string) => {
+        setStatementFiles(prev => prev.filter(f => f.name !== name))
+        setFormData(prev => ({
+            ...prev,
+            bankStatements: prev.bankStatements.filter(f => f !== name)
         }))
     }
 
@@ -498,7 +526,11 @@ export default function Form5472OnboardingPage() {
                     signerTitle: formData.signerTitle,
                     signatureDate: formData.signatureDate,
                     signatureDataUrl: formData.signatureDataUrl
-                }
+                },
+                // Nuevos campos de asistencia
+                assistedFilling: formData.assistedFilling,
+                assistedFillingNotes: formData.assistedFillingNotes,
+                bankStatements: formData.bankStatements
             }
 
             console.log('Iniciando proceso de pago fiscal...', nestedData)
@@ -513,6 +545,26 @@ export default function Form5472OnboardingPage() {
 
             if (!res.ok) {
                 throw new Error(data.error || 'Error al procesar el pedido')
+            }
+
+            // Si hay archivos seleccionados, los subimos ahora que tenemos el pedidoId (data.pedidoId)
+            const pedidoId = data.pedidoId
+            if (pedidoId && statementFiles.length > 0) {
+                console.log('Subiendo extractos bancarios para el pedido...', pedidoId)
+                for (const file of statementFiles) {
+                    const fileFormData = new FormData()
+                    fileFormData.append('file', file)
+                    fileFormData.append('pedidoId', pedidoId)
+                    
+                    try {
+                        await fetch('/api/orders/tax-filing/upload-bank-statements', {
+                            method: 'POST',
+                            body: fileFormData
+                        })
+                    } catch (err) {
+                        console.error('Error subiendo uno de los archivos:', file.name, err)
+                    }
+                }
             }
 
             if (data.url) {
@@ -913,13 +965,75 @@ export default function Form5472OnboardingPage() {
                                         </div>
                                         
                                         {formData.assistedFilling && (
-                                            <div className="mt-4 p-4 bg-white border border-amber-200 rounded-xl space-y-2 animate-in fade-in slide-in-from-top-2">
-                                                <p className="text-sm text-amber-800 font-bold flex items-center gap-2">
-                                                    <CheckCircle size={16} /> ASISTENCIA PERSONALIZADA ACTIVADA
-                                                </p>
+                                            <div className="mt-4 p-5 bg-white border border-amber-200 rounded-xl space-y-4 animate-in fade-in slide-in-from-top-2">
+                                                <div className="flex items-center gap-2">
+                                                    <CheckCircle className="text-amber-600" size={18} />
+                                                    <p className="text-sm text-amber-800 font-bold">ASISTENCIA PERSONALIZADA ACTIVADA</p>
+                                                </div>
+                                                
                                                 <p className="text-xs text-amber-700 leading-relaxed font-medium">
                                                     Al elegir esta opción, puedes saltar este formulario de transacciones. Un experto de Open LLC USA revisará tu pedido y te contactará para solicitarte los datos o extractos necesarios para completar el informe <strong>Federal Supporting Statement</strong> por ti.
                                                 </p>
+
+                                                {/* Sección de Adjuntos */}
+                                                <div className="pt-4 border-t border-amber-100">
+                                                    <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                                        <Upload size={16} className="text-blue-600" /> Adjuntar extractos bancarios
+                                                    </h4>
+                                                    
+                                                    <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg p-6 text-center">
+                                                        <input 
+                                                            type="file" 
+                                                            id="bank-upload" 
+                                                            className="hidden" 
+                                                            multiple
+                                                            onChange={handleFileChange}
+                                                        />
+                                                        <label 
+                                                            htmlFor="bank-upload"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-all text-xs font-bold uppercase tracking-wider"
+                                                        >
+                                                            <Plus size={14} /> Seleccionar archivos
+                                                        </label>
+                                                        <p className="mt-3 text-[11px] text-slate-500 leading-tight">
+                                                            <strong>IMPORTANTE:</strong> El extracto debe abarcar el <strong>año calendario completo</strong> y de <strong>todas las cuentas bancarias</strong> que posea la LLC.
+                                                        </p>
+                                                    </div>
+
+                                                    {formData.bankStatements.length > 0 && (
+                                                        <div className="mt-3 space-y-2">
+                                                            {formData.bankStatements.map((f, i) => (
+                                                                <div key={i} className="flex items-center justify-between bg-blue-50 px-3 py-2 rounded-lg border border-blue-100">
+                                                                    <span className="text-xs font-medium text-blue-800 truncate">{f}</span>
+                                                                    <button 
+                                                                        type="button" 
+                                                                        onClick={() => removeStatement(f)}
+                                                                        className="text-red-400 hover:text-red-600 p-1"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Notas adicionales */}
+                                                <div className="pt-4 border-t border-amber-100">
+                                                    <label className="block text-xs font-bold text-slate-800 mb-2">
+                                                        Notas sobre aportaciones o reintegros:
+                                                    </label>
+                                                    <textarea 
+                                                        rows={3}
+                                                        value={formData.assistedFillingNotes}
+                                                        onChange={(e) => setFormData(p => ({ ...p, assistedFillingNotes: e.target.value }))}
+                                                        placeholder="Ej: He realizado una transferencia de $5,000 el 15 de marzo como capital inicial..."
+                                                        className="w-full text-xs p-3 border border-slate-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-slate-50"
+                                                    />
+                                                    <p className="mt-2 text-[10px] text-slate-500 italic">
+                                                        Escribe aquí cualquier aclaración que ayude al asesor a identificar contribuciones o distribuciones en tus extractos.
+                                                    </p>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

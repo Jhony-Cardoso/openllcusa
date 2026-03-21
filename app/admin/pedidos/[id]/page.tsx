@@ -77,10 +77,11 @@ export default async function AdminPedidoDetallePage({
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* GRID PRINCIPAL: MÁS ANCHO PARA TAX FILING */}
+            <div className={`grid grid-cols-1 ${esTaxFiling ? 'lg:grid-cols-12' : 'lg:grid-cols-3'} gap-8`}>
 
                 {/* COLUMNA IZQUIERDA: INFORMACIÓN LEGAL (DEL CHECKLIST) */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className={`${esTaxFiling ? 'lg:col-span-5' : 'lg:col-span-2'} space-y-8`}>
 
                     {/* SECCIÓN MIRA: PROPIETARIO - Solo para LLC/EIN */}
                     {!esTaxFiling && (
@@ -166,7 +167,7 @@ export default async function AdminPedidoDetallePage({
                 </div>
 
                 {/* COLUMNA DERECHA: ACCIONES Y ESTADO */}
-                <div className="space-y-8">
+                <div className={`${esTaxFiling ? 'lg:col-span-7' : ''} space-y-8`}>
 
                     {/* CARD ACCIONES */}
                     <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-xl shadow-slate-200">

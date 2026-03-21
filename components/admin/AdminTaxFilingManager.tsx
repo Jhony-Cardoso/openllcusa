@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload, CheckCircle2, AlertCircle, Loader2, FileText, Download, Send } from 'lucide-react'
+import { Upload, CheckCircle2, AlertCircle, Loader2, FileText, Download, Send, Activity, Plus, Trash2, Calendar, DollarSign } from 'lucide-react'
 
 interface AdminTaxFilingManagerProps {
     pedidoId: string
@@ -26,6 +26,9 @@ export default function AdminTaxFilingManager({
 
     const [uploading, setUploading] = useState(false)
     const [generating, setGenerating] = useState(false)
+    const [sendingDraft, setSendingDraft] = useState(false)
+    const [showDraftModal, setShowDraftModal] = useState(false)
+    const [draftNotes, setDraftNotes] = useState('')
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [estadoTramitacion, setEstadoTramitacion] = useState(metadata?.estado_tramitacion || 'pendiente')
@@ -120,17 +123,44 @@ export default function AdminTaxFilingManager({
         setSaving(true)
         setMessage(null)
         try {
+            // Sincronizar totales AUTOMÁTICAMENTE antes de guardar (Punto 2)
+            const txs = editData.financials?.transactions || []
+            let capCash = 0, capProp = 0, distCash = 0, distProp = 0
+            
+            txs.forEach((t: any) => {
+                const amount = parseFloat(t.amountUSD) || 0
+                if (t.type === 'contribution') {
+                    if (t.isMonetary) capCash += amount
+                    else capProp += amount
+                } else if (t.type === 'distribution') {
+                    if (t.isMonetary) distCash += amount
+                    else distProp += amount
+                }
+            })
+
+            const updatedEditData = {
+                ...editData,
+                financials: {
+                    ...editData.financials,
+                    capitalContributionCash: capCash,
+                    capitalContributionProperty: capProp,
+                    capitalDistributionCash: distCash,
+                    capitalDistributionProperty: distProp
+                }
+            }
+
             const response = await fetch(`/api/admin/pedidos/${pedidoId}/actualizar-datos-fiscales`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ taxData: editData }),
+                body: JSON.stringify({ taxData: updatedEditData }),
             })
 
             if (!response.ok) throw new Error('Error al guardar los datos')
 
             setMessage({ type: 'success', text: '✅ Datos fiscales actualizados. Ya puedes generar el PDF final.' })
             setIsEditing(false)
-            // No recargamos para no perder el scroll, el componente ya tiene el estado local
+            // Recargar para sincronizar props y estado interno si es necesario
+            setTimeout(() => window.location.reload(), 2000)
         } catch (error: any) {
             setMessage({ type: 'error', text: error.message })
         } finally {
@@ -138,8 +168,81 @@ export default function AdminTaxFilingManager({
         }
     }
 
+    // Gestion de transacciones en el editor
+    const addTx = () => {
+        const newTx = {
+            id: Math.random().toString(36).slice(2),
+            date: '',
+            type: 'contribution',
+            concept: '',
+            amountUSD: 0,
+            isMonetary: true,
+            paymentMethod: '',
+            description: ''
+        }
+        setEditData({
+            ...editData,
+            financials: {
+                ...editData.financials,
+                transactions: [...(editData.financials?.transactions || []), newTx]
+            }
+        })
+    }
+
+    const removeTx = (id: string) => {
+        setEditData({
+            ...editData,
+            financials: {
+                ...editData.financials,
+                transactions: editData.financials.transactions.filter((t: any) => t.id !== id)
+            }
+        })
+    }
+
+    const updateTx = (id: string, field: string, value: any) => {
+        setEditData({
+            ...editData,
+            financials: {
+                ...editData.financials,
+                transactions: editData.financials.transactions.map((t: any) => 
+                    t.id === id ? { ...t, [field]: field === 'amountUSD' ? parseFloat(value) || 0 : value } : t
+                )
+            }
+        })
+    }
+
+    const handleSendDraft = async () => {
+        setSendingDraft(true)
+        setMessage(null)
+        setShowDraftModal(false)
+
+        try {
+            const response = await fetch(`/api/admin/pedidos/${pedidoId}/enviar-borrador`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notasAdmin: draftNotes || undefined }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al enviar el borrador')
+            }
+
+            setMessage({ type: 'success', text: `✅ Borrador enviado correctamente. ${data.message || ''}` })
+            setDraftNotes('')
+            setTimeout(() => window.location.reload(), 2500)
+        } catch (error: any) {
+            setMessage({ type: 'error', text: error.message })
+        } finally {
+            setSendingDraft(false)
+        }
+    }
+
     const hasFormularios = metadata?.documents?.form_5472_url
     const hasAcuseRecibo = metadata?.acuse_recibo_path
+    const borradorEnviadoAt = metadata?.borrador_enviado_at
+    const borradorEnviadoA = metadata?.borrador_enviado_a
 
     return (
         <div className="space-y-6">
@@ -209,7 +312,7 @@ export default function AdminTaxFilingManager({
                 )}
 
                 {/* DETALLES DE ASISTENCIA EXPERTA */}
-                {taxData?.assistedFilling && (
+                {(taxData?.assistedFilling || taxData?.assistedFillingNotes || (taxData?.bankStatements && taxData?.bankStatements.length > 0)) && (
                     <div className="mt-6 pt-6 border-t border-indigo-100 space-y-4">
                         <div className="flex items-center gap-2 text-indigo-800 font-black text-[10px] uppercase tracking-widest">
                             <AlertCircle size={14} /> Modo Asistencia Experta Activo
@@ -226,19 +329,34 @@ export default function AdminTaxFilingManager({
                             <div>
                                 <p className="text-xs font-bold text-indigo-600 mb-3 uppercase tracking-tight">Extractos Bancarios Adjuntos:</p>
                                 <div className="grid grid-cols-1 gap-2">
-                                    {taxData.bankStatements.map((url: string, i: number) => {
-                                        // Intentar sacar el nombre del archivo de la URL
-                                        const fileName = url.split('/').pop()?.split('-').slice(1).join('-') || `Extracto ${i+1}`
-                                        return (
+                                    {taxData.bankStatements.map((value: string, i: number) => {
+                                        // Ahora guardamos PATHS relativos, no URLs directas (Punto 1)
+                                        const isPath = value.startsWith('tax-forms/')
+                                        const isUrl = value.startsWith('http')
+                                        
+                                        const fileName = (isPath || isUrl)
+                                            ? (value.split('/').pop()?.split('-').slice(1).join('-') || `Archivo ${i+1}`)
+                                            : value
+                                        
+                                        const downloadUrl = isPath 
+                                            ? `/api/admin/pedidos/${pedidoId}/descargar-extracto?path=${encodeURIComponent(value)}`
+                                            : isUrl ? value : null
+                                        
+                                        return downloadUrl ? (
                                             <a 
                                                 key={i} 
-                                                href={url} 
+                                                href={downloadUrl} 
                                                 target="_blank" 
                                                 className="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-indigo-100 hover:border-indigo-400 transition-colors group"
                                             >
                                                 <span className="text-xs font-bold text-indigo-900 truncate max-w-[200px]">{fileName}</span>
                                                 <Download size={14} className="text-indigo-400 group-hover:text-indigo-600" />
                                             </a>
+                                        ) : (
+                                            <div key={i} className="flex items-center justify-between bg-indigo-50/50 px-4 py-3 rounded-xl border border-dashed border-indigo-200">
+                                                <span className="text-xs font-bold text-indigo-400 truncate max-w-[200px]">{fileName}</span>
+                                                <span className="text-[9px] font-black text-indigo-300 uppercase">Procesando...</span>
+                                            </div>
                                         )
                                     })}
                                 </div>
@@ -298,6 +416,109 @@ export default function AdminTaxFilingManager({
                                     onChange={(c) => setEditData({...editData, additionalQuestions: {...(editData.additionalQuestions||{}), interestRoyaltyDeduction: c}})} />
                             </div>
 
+                            {/* Gestión de Transacciones Individuales */}
+                            <div className="border-t pt-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h5 className="text-[10px] font-black text-slate-400 uppercase">Listado de Transacciones Reportables (Part IV)</h5>
+                                    <button 
+                                        type="button"
+                                        onClick={addTx}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black hover:bg-emerald-100 transition-colors"
+                                    >
+                                        <Plus size={14} /> Añadir Transacción
+                                    </button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {(!editData.financials?.transactions || editData.financials.transactions.length === 0) ? (
+                                        <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-2xl">
+                                            <p className="text-xs text-slate-400 font-medium italic">No hay transacciones individuales registradas aún.</p>
+                                        </div>
+                                    ) : (
+                                        editData.financials.transactions.map((tx: any, idx: number) => (
+                                            <div key={tx.id || idx} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl relative group animate-in zoom-in-95 duration-200">
+                                                <button 
+                                                    onClick={() => removeTx(tx.id)}
+                                                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-red-200"
+                                                >
+                                                    <Trash2 size={12} />
+                                                </button>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                                    <div className="md:col-span-1">
+                                                        <label className="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Fecha</label>
+                                                        <input 
+                                                            type="date" 
+                                                            value={tx.date || ''} 
+                                                            onChange={(e) => updateTx(tx.id, 'date', e.target.value)}
+                                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900"
+                                                        />
+                                                    </div>
+                                                    <div className="md:col-span-1">
+                                                        <label className="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Tipo</label>
+                                                        <select
+                                                            value={tx.type || 'contribution'}
+                                                            onChange={(e) => updateTx(tx.id, 'type', e.target.value)}
+                                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900"
+                                                        >
+                                                            <option value="contribution">Aportación (+)</option>
+                                                            <option value="distribution">Reintegro (-)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="md:col-span-1">
+                                                        <label className="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Importe ($)</label>
+                                                        <input 
+                                                            type="number" 
+                                                            value={tx.amountUSD || 0} 
+                                                            onChange={(e) => updateTx(tx.id, 'amountUSD', e.target.value)}
+                                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900"
+                                                        />
+                                                    </div>
+                                                    <div className="md:col-span-1">
+                                                        <label className="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Naturaleza</label>
+                                                        <select
+                                                            value={tx.isMonetary ? 'monetary' : 'property'}
+                                                            onChange={(e) => updateTx(tx.id, 'isMonetary', e.target.value === 'monetary')}
+                                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900"
+                                                        >
+                                                            <option value="monetary">Monetaria (Efectivo/Wire)</option>
+                                                            <option value="property">No Monetaria (Bienes/PP&E)</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="md:col-span-2 mt-2">
+                                                        <label className="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Método de Pago</label>
+                                                        <select
+                                                            value={tx.paymentMethod || ''}
+                                                            onChange={(e) => updateTx(tx.id, 'paymentMethod', e.target.value)}
+                                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-900"
+                                                        >
+                                                            <option value="">— Sin especificar —</option>
+                                                            <option value="Wire">Wire Transfer</option>
+                                                            <option value="ACH">ACH Transfer</option>
+                                                            <option value="Check">Check</option>
+                                                            <option value="Cash">Cash</option>
+                                                            <option value="Credit Card">Credit Card</option>
+                                                            <option value="Zelle">Zelle</option>
+                                                            <option value="Crypto">Cryptocurrency</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="md:col-span-2 mt-2">
+                                                        <label className="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1">Concepto / Descripción</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={tx.description || tx.concept || ''} 
+                                                            onChange={(e) => { updateTx(tx.id, 'description', e.target.value); updateTx(tx.id, 'concept', e.target.value) }}
+                                                            placeholder="Ej: Inyección de capital inicial desde cuenta personal..."
+                                                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-900"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
                             <button 
                                 onClick={handleSaveTaxData}
                                 disabled={saving}
@@ -306,6 +527,87 @@ export default function AdminTaxFilingManager({
                                 {saving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
                                 Guardar Cambios para el PDF
                             </button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* SECCIÓN: ENVIAR BORRADOR AL CLIENTE */}
+            {taxData && (
+                <div className="bg-white border border-slate-200 rounded-2xl p-6">
+                    <div className="flex items-start justify-between mb-4">
+                        <div>
+                            <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                <Send size={16} className="text-violet-600" />
+                                Enviar Borrador al Cliente
+                            </h4>
+                            <p className="text-xs text-slate-500 mt-1 font-medium">
+                                Genera el PDF en tiempo real y lo envía por email con el PDF adjunto.
+                            </p>
+                        </div>
+                        {borradorEnviadoAt && (
+                            <div className="flex-shrink-0 ml-4">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 text-violet-700 rounded-full text-[10px] font-black uppercase tracking-wide border border-violet-100">
+                                    <CheckCircle2 size={11} />
+                                    Enviado
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    {borradorEnviadoAt && (
+                        <div className="mb-4 p-3 bg-violet-50 border border-violet-100 rounded-xl">
+                            <p className="text-[11px] text-violet-700 font-medium">
+                                Último envío: <strong>{new Date(borradorEnviadoAt).toLocaleString('es-ES')}</strong> → {borradorEnviadoA}
+                            </p>
+                        </div>
+                    )}
+
+                    {!showDraftModal ? (
+                        <button
+                            onClick={() => setShowDraftModal(true)}
+                            disabled={sendingDraft}
+                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition-all shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {sendingDraft ? (
+                                <><Loader2 size={18} className="animate-spin" /> Enviando...</>   
+                            ) : (
+                                <><Send size={18} /> {borradorEnviadoAt ? 'Re-enviar Borrador' : 'Enviar Borrador al Cliente'}</>
+                            )}
+                        </button>
+                    ) : (
+                        <div className="space-y-3 animate-in fade-in slide-in-from-top-3">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-2">
+                                    Nota opcional para el cliente
+                                </label>
+                                <textarea
+                                    value={draftNotes}
+                                    onChange={(e) => setDraftNotes(e.target.value)}
+                                    rows={3}
+                                    placeholder="Ej: Hemos revisado tus extractos y preparado el borrador. Por favor, verifica los importes de las contribuciones..."
+                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl font-medium text-slate-800 text-sm focus:border-violet-400 outline-none resize-none transition-colors"
+                                />
+                            </div>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleSendDraft}
+                                    disabled={sendingDraft}
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition-all shadow-lg shadow-violet-100 disabled:opacity-50"
+                                >
+                                    {sendingDraft ? (
+                                        <><Loader2 size={16} className="animate-spin" /> Generando y enviando...</>
+                                    ) : (
+                                        <><Send size={16} /> Confirmar y Enviar</>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => { setShowDraftModal(false); setDraftNotes('') }}
+                                    className="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors text-sm"
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -481,9 +783,9 @@ function EditorItem({ label, value, onChange }: { label: string, value: any, onC
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1 ml-1">{label}</label>
             <input 
                 type="number"
-                value={value}
+                value={value || 0}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-slate-800 text-sm focus:border-blue-500 outline-none"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg font-bold text-slate-900 text-sm focus:border-blue-500 outline-none"
             />
         </div>
     )

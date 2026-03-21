@@ -18,6 +18,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   const pedidoId = searchParams.get('pedido')
 
   const getCurrentStep = () => {
+    if (pathname.includes('/completado')) return 6
     if (pathname.includes('/estado')) return 2
     if (pathname.includes('/datos-empresa')) return 3
     if (pathname.includes('/revision')) return 4
@@ -33,6 +34,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
     { id: 3, name: 'Datos', path: '/datos-empresa' },
     { id: 4, name: 'Revisión', path: '/revision' },
     { id: 5, name: 'Pago', path: '/checkout' },
+    { id: 6, name: 'Completado', path: '/completado' },
   ]
 
   const goTo = (path: string) => {

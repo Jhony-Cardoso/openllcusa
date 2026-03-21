@@ -34,15 +34,35 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Error al subir el archivo' }, { status: 500 })
         }
 
-        // Obtener URL (puede ser privada o pública, usaremos pública para simplificar el Dashboard Admin por ahora)
-        const { data: urlData } = supabaseAdmin
-            .storage
-            .from('documentos')
-            .getPublicUrl(`tax-forms/statements/${pedidoId}/${fileName}`)
+        const relativePath = `tax-forms/statements/${pedidoId}/${fileName}`
+
+        // 4. ACTUALIZAR tax_data en el pedido para que el admin vea el link
+        const { data: pedido, error: getError } = await createAdminClient()
+            .from('pedidos')
+            .select('tax_data')
+            .eq('id', pedidoId)
+            .single()
+
+        if (!getError && pedido) {
+            const taxData = (pedido.tax_data as any) || {}
+            const statements = (taxData.bankStatements || []) as string[]
+            
+            // Si el nombre temporal ya está, lo filtramos. Añadimos el PATH relativo.
+            const newStatements = [...statements.filter(s => !s.startsWith('http') && s !== file.name), relativePath]
+            
+            await createAdminClient().from('pedidos' as any)
+                .update({ 
+                    tax_data: { 
+                        ...taxData, 
+                        bankStatements: newStatements 
+                    } 
+                })
+                .eq('id', pedidoId)
+        }
 
         return NextResponse.json({ 
             success: true, 
-            url: urlData.publicUrl,
+            path: relativePath,
             name: file.name
         })
 

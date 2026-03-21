@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
             },
             line_items: lineItems,
             mode: 'payment',
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}?verify_session={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paquetes/${slug}/onboarding/completado?session_id={CHECKOUT_SESSION_ID}&pedido=${pedidoId}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paquetes/${slug}/onboarding/checkout?pedido=${pedidoId}`,
             metadata: {
                 pedidoId: pedido.id,

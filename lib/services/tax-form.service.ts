@@ -1,5 +1,5 @@
 
-import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib'
+import { PDFDocument, StandardFonts, rgb, degrees, TextAlignment } from 'pdf-lib'
 import fs from 'fs'
 import path from 'path'
 
@@ -14,6 +14,7 @@ export interface TaxFormData {
         city: string
         state: string
         zip: string
+        addressRoom?: string
         formationDate: string // MM/DD/YYYY
         // Part I additional fields
         einAlternate?: string
@@ -125,16 +126,43 @@ export class TaxFormService {
             const currentTaxYear = data.taxYear || new Date().getFullYear().toString()
             const yearShort = currentTaxYear.substring(2)
 
-            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_1[0]', '01/01')
+            // Punto 3: Lógica de fecha de inicio (Initial Return)
+            const parts = (data.llc.formationDate || '').split(/[-/]/);
+            const formationYear = parts.find(p => p.length === 4);
+            const isInitialYear = formationYear === currentTaxYear;
+
+            let beginDate = '01/01';
+            if (isInitialYear && parts.length >= 3) {
+                // Si format es YYYY-MM-DD (estándar HTML5 date)
+                if (parts[0].length === 4) {
+                    beginDate = `${parts[1]}/${parts[2]}`; // MM/DD
+                } else {
+                    // Si format es MM/DD/YYYY o DD/MM/YYYY (menos probable pero posible)
+                    beginDate = `${parts[0]}/${parts[1]}`;
+                }
+            }
+
+            this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_1[0]', beginDate)
             this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_2[0]', '12/31')
             this.setField(form1120, 'topmostSubform[0].Page1[0].PgHeader[0].f1_3[0]', yearShort)
 
             // --- NAME AND ADDRESS (Box A) ---
             // Campos descubiertos: f1_4 (Name), f1_5 (Address), f1_7 (City), f1_8 (State), f1_10 (ZIP)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_4[0]', data.llc.name)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_5[0]', data.llc.address)
-            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_7[0]', data.llc.city) // Solo ciudad, sin estado ni ZIP
-            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_8[0]', data.llc.state)
+            const indent1120 = '  ' // sangría izquierda uniforme para campos de dirección 1120
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_4[0]', indent1120 + data.llc.name)
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_5[0]', indent1120 + data.llc.address)
+            if (data.llc.addressRoom) {
+                this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_6[0]', data.llc.addressRoom)
+            }
+            this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_7[0]', indent1120 + data.llc.city)
+            // State or province: alineación centrada
+            try {
+                const stateField1120 = form1120.getTextField('topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_8[0]')
+                stateField1120.setAlignment(TextAlignment.Center)
+                stateField1120.setText(data.llc.state)
+            } catch {
+                this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_8[0]', data.llc.state)
+            }
             this.setField(form1120, 'topmostSubform[0].Page1[0].NameFieldsReadOrder[0].f1_10[0]', data.llc.zip)
 
             // --- BOX B: EIN ---
@@ -146,13 +174,12 @@ export class TaxFormService {
                 this.setField(form1120, 'topmostSubform[0].Page1[0].f1_11[0]', data.llc.ein.replace(/\D/g, ''))
             }
 
-            // --- BOX E: Checkboxes ---
-            const formationYear = data.llc.formationDate?.split(/[-/]/).pop()?.trim();
-            const taxYear = data.taxYear?.trim();
-            const isInitialByDate = formationYear && taxYear && formationYear === taxYear;
-            
+            // --- BOX E: Checkboxes (Punto 3) ---
+            const isInitialByDate = isInitialYear;
+
             if (data.llc.isInitialReturn || isInitialByDate) {
-                this.checkField(form1120, 'topmostSubform[0].Page1[0].c1_6[0]') // (1) Initial return
+                // (1) Initial return checkbox
+                this.checkField(form1120, 'topmostSubform[0].Page1[0].c1_6[0]')
             }
 
             // Aplanamos el formulario para asegurar que los campos se rendericen
@@ -324,7 +351,7 @@ export class TaxFormService {
         // 1j - Initial year: marcar SOLO si es la primera declaración (isInitialReturn)
         const formationYearTxt = data.llc.formationDate?.split(/[-/]/).pop()?.trim();
         const isInitialYear = data.llc.isInitialReturn || (formationYearTxt && formationYearTxt === data.taxYear?.trim());
-        
+
         if (isInitialYear) {
             this.checkField(form, 'topmostSubform[0].Page1[0].Line1j_ReadOrder[0].c1_2[0]')
         }
@@ -588,7 +615,7 @@ export class TaxFormService {
             sp.drawText(line, { x: margin, y: sy, size: 8.5, font: fontSt, color: GRAY_ST })
             sy -= 13
         })
-        sy -= 8
+        sy -= 25  // Aumentado de 8 a 25 para más separación antes de la primera sección
 
         // ===== TRANSACCIONES DESGLOSADAS =====
         const txs = data.financials.transactions || []
@@ -647,21 +674,34 @@ export class TaxFormService {
                 try {
                     const d = new Date(tx.date)
                     if (!isNaN(d.getTime())) fdate = d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
-                } catch {}
+                } catch { }
 
                 sp.drawText(fdate, { x: margin + 4, y: sy, size: 8, font: fontSt })
-                const descLine = tx.description || tx.concept
-                drawSafe(sp, `${tx.concept}`, margin + 68, sy, 8, boldSt)
-                if (descLine !== tx.concept) {
+
+                // Concepto: preferir campo 'concept'; si está vacío, usar 'description'
+                const conceptText = (tx.concept || tx.description || '').trim()
+                // Descripción extra (2ª línea): solo si ambos campos existen y son distintos
+                const descText = (tx.description || '').trim()
+                const showExtraLine = !!(descText && conceptText && descText !== conceptText)
+
+                if (conceptText) {
+                    drawSafe(sp, conceptText, margin + 68, sy, 8, boldSt)
+                }
+                if (showExtraLine) {
                     sy -= 10
                     if (sy < 80) {
                         ({ pg: sp, y: sy } = addStatPage())
                         sy = PAGE_H - 50
                     }
-                    drawSafe(sp, descLine, margin + 68, sy, 7.5, fontSt, GRAY_ST)
+                    drawSafe(sp, descText, margin + 68, sy, 7.5, fontSt, GRAY_ST)
                     sy += 10
                 }
-                sp.drawText(tx.paymentMethod || '—', { x: margin + 295, y: sy, size: 8, font: fontSt, color: GRAY_ST })
+
+                // Método: solo dibujar si existe; dejar vacío si no hay valor
+                const methodText = (tx.paymentMethod || '').trim()
+                if (methodText) {
+                    sp.drawText(methodText, { x: margin + 295, y: sy, size: 8, font: fontSt, color: GRAY_ST })
+                }
                 sp.drawText(tx.isMonetary ? 'Yes' : 'No', { x: margin + 355, y: sy, size: 8, font: fontSt, color: tx.isMonetary ? IRS_BLUE_ST : rgb(0.6, 0.3, 0) })
                 const amtStr = tx.isMonetary ? `$ ${this.formatThousandsUS(tx.amountUSD)}` : `FMV $${this.formatThousandsUS(tx.amountUSD)}`
                 sp.drawText(amtStr, { x: RIGHT_COL, y: sy, size: 8.5, font: boldSt, color: IRS_BLUE_ST })

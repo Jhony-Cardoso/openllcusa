@@ -510,6 +510,226 @@ export class EmailService {
   }
 
   /**
+   * Enviar borrador de formularios fiscales (5472 + 1120) al cliente con PDF adjunto
+   */
+  static async enviarBorradorFiscal(params: {
+    to: string
+    nombreUsuario: string
+    pedidoId: string
+    numeroPedido: string
+    taxYear: string
+    llcName: string
+    pdfBytes: Uint8Array
+    notasAdmin?: string
+  }) {
+    try {
+      const { to, nombreUsuario, pedidoId, numeroPedido, taxYear, llcName, pdfBytes, notasAdmin } = params
+
+      const fileName = `Borrador_Form5472_1120_${taxYear}_${llcName.replace(/\s+/g, '_')}.pdf`
+      const dashboardUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}`
+
+      const { data, error } = await resend.emails.send({
+        from: 'Axel de Open LLC USA <axel@updates.openllcusa.com>',
+        to,
+        replyTo: 'axel@openllcusa.com',
+        subject: `📄 Borrador listo para revisar: Form 5472 + 1120 (${taxYear}) — ${llcName}`,
+        attachments: [
+          {
+            filename: fileName,
+            content: Buffer.from(pdfBytes).toString('base64'),
+          },
+        ],
+        html: `
+          <!DOCTYPE html>
+          <html lang="es">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Borrador Formularios Fiscales - Open LLC USA</title>
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f4f8; color: #1a202c;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
+                <tr>
+                  <td align="center" style="padding: 40px 16px;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.08);">
+
+                      <!-- HEADER GRADIENTE -->
+                      <tr>
+                        <td style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 60%, #0ea5e9 100%); padding: 0;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="padding: 40px 40px 20px 40px;">
+                                <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 700; letter-spacing: 3px; color: #93c5fd; text-transform: uppercase;">Open LLC USA</p>
+                                <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.2; letter-spacing: -0.5px;">
+                                  Tus formularios fiscales están<br>listos para revisar
+                                </h1>
+                                <p style="margin: 12px 0 0 0; font-size: 15px; color: #bfdbfe; line-height: 1.5;">
+                                  Hemos preparado el borrador del <strong style="color: #ffffff;">Form 5472 + 1120</strong> para el año fiscal <strong style="color: #ffffff;">${taxYear}</strong>.
+                                </p>
+                              </td>
+                            </tr>
+                            <!-- BADGE PDF ADJUNTO -->
+                            <tr>
+                              <td style="padding: 0 40px 32px 40px;">
+                                <div style="display: inline-block; background-color: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 8px 18px; margin-top: 12px;">
+                                  <span style="font-size: 13px; color: #ffffff; font-weight: 700;">📎 PDF adjunto a este email</span>
+                                </div>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+
+                      <!-- CUERPO PRINCIPAL -->
+                      <tr>
+                        <td style="padding: 40px;">
+
+                          <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.7; color: #374151;">
+                            Hola <strong>${nombreUsuario}</strong>, 👋 adjunto a este email encontrarás el borrador de tus declaraciones informativas ante el IRS. Por favor, revísalos con atención antes de que procedamos a su presentación oficial.
+                          </p>
+
+                          <!-- RESUMEN DEL TRÁMITE -->
+                          <div style="background: linear-gradient(135deg, #eff6ff, #f0f9ff); border: 1px solid #bfdbfe; border-radius: 14px; padding: 24px; margin-bottom: 28px;">
+                            <p style="margin: 0 0 16px 0; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #2563eb;">📋 Resumen del trámite</p>
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td style="padding: 8px 0; border-bottom: 1px solid #dbeafe;">
+                                  <span style="font-size: 13px; color: #6b7280; font-weight: 500;">LLC / Entidad:</span>
+                                </td>
+                                <td align="right" style="padding: 8px 0; border-bottom: 1px solid #dbeafe;">
+                                  <span style="font-size: 13px; color: #1e40af; font-weight: 700;">${llcName}</span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="padding: 8px 0; border-bottom: 1px solid #dbeafe;">
+                                  <span style="font-size: 13px; color: #6b7280; font-weight: 500;">Año Fiscal:</span>
+                                </td>
+                                <td align="right" style="padding: 8px 0; border-bottom: 1px solid #dbeafe;">
+                                  <span style="font-size: 13px; color: #1e40af; font-weight: 700;">${taxYear}</span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="padding: 8px 0; border-bottom: 1px solid #dbeafe;">
+                                  <span style="font-size: 13px; color: #6b7280; font-weight: 500;">Formularios:</span>
+                                </td>
+                                <td align="right" style="padding: 8px 0; border-bottom: 1px solid #dbeafe;">
+                                  <span style="font-size: 13px; color: #1e40af; font-weight: 700;">Form 5472 + Form 1120</span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="padding: 8px 0;">
+                                  <span style="font-size: 13px; color: #6b7280; font-weight: 500;">Nº Pedido:</span>
+                                </td>
+                                <td align="right" style="padding: 8px 0;">
+                                  <span style="font-size: 12px; color: #9ca3af; font-family: monospace; font-weight: 600;">#${numeroPedido}</span>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+
+                          ${notasAdmin ? `
+                          <!-- NOTAS DEL EQUIPO -->
+                          <div style="background-color: #fefce8; border: 1px solid #fde68a; border-radius: 14px; padding: 20px; margin-bottom: 28px;">
+                            <p style="margin: 0 0 8px 0; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #92400e;">💬 Nota de tu gestor</p>
+                            <p style="margin: 0; font-size: 14px; color: #78350f; line-height: 1.6; font-style: italic;">"${notasAdmin}"</p>
+                          </div>
+                          ` : ''}
+
+                          <!-- INSTRUCCIONES -->
+                          <div style="margin-bottom: 32px;">
+                            <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 700; color: #111827;">¿Qué debes hacer ahora?</p>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                              
+                              <div style="display: flex; align-items: flex-start; gap: 16px; padding: 14px; background-color: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
+                                <div style="min-width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb, #3b82f6); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 6px;">
+                                  <span style="color: #fff; font-weight: 800; font-size: 14px; line-height: 1;">1</span>
+                                </div>
+                                <div>
+                                  <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 700; color: #111827;">Revisa el PDF adjunto</p>
+                                  <p style="margin: 0; font-size: 13px; color: #6b7280; line-height: 1.5;">Verifica que todos los datos de tu LLC, las transacciones reportadas y la información del propietario son correctos.</p>
+                                </div>
+                              </div>
+
+                              <div style="display: flex; align-items: flex-start; gap: 16px; padding: 14px; background-color: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
+                                <div style="min-width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb, #3b82f6); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 6px;">
+                                  <span style="color: #fff; font-weight: 800; font-size: 14px; line-height: 1;">2</span>
+                                </div>
+                                <div>
+                                  <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 700; color: #111827;">Confirma o comunícanos cualquier corrección</p>
+                                  <p style="margin: 0; font-size: 13px; color: #6b7280; line-height: 1.5;">Si todo es correcto, respondenos a este email con tu confirmación. Si ves algún dato incorrecto, indícanos qué debe cambiarse.</p>
+                                </div>
+                              </div>
+
+                              <div style="display: flex; align-items: flex-start; gap: 16px; padding: 14px; background-color: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
+                                <div style="min-width: 32px; height: 32px; background: linear-gradient(135deg, #2563eb, #3b82f6); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 6px;">
+                                  <span style="color: #fff; font-weight: 800; font-size: 14px; line-height: 1;">3</span>
+                                </div>
+                                <div>
+                                  <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 700; color: #111827;">Presentación ante el IRS</p>
+                                  <p style="margin: 0; font-size: 13px; color: #6b7280; line-height: 1.5;">Una vez recibida tu confirmación, procederemos a la presentación oficial. Te enviaremos el acuse de recibo del IRS en cuanto lo tengamos.</p>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+
+                          <!-- CTA BUTTON -->
+                          <div align="center" style="margin: 36px 0;">
+                            <a href="${dashboardUrl}" style="display: inline-block; background: linear-gradient(135deg, #1e40af, #3b82f6); color: #ffffff; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 15px; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); letter-spacing: 0.3px;">
+                              Ver mi expediente en el Dashboard →
+                            </a>
+                          </div>
+
+                          <!-- DISCLAIMER BORRADOR -->
+                          <div style="background-color: #fafafa; border: 1px dashed #d1d5db; border-radius: 12px; padding: 18px; margin-top: 8px;">
+                            <p style="margin: 0; font-size: 12px; color: #9ca3af; line-height: 1.7; text-align: center;">
+                              ⚠️ <strong style="color: #6b7280;">Este es un borrador para revisión.</strong> Los formularios adjuntos <strong>NO han sido presentados ante el IRS</strong> todavía. La presentación oficial se realizará exclusivamente tras tu aprobación expresa. Si tienes cualquier duda, responde a este email o escríbenos a <a href="mailto:josemanuel@openllcusa.com" style="color: #3b82f6; text-decoration: none;">josemanuel@openllcusa.com</a>.
+                            </p>
+                          </div>
+
+                        </td>
+                      </tr>
+
+                      <!-- FOOTER -->
+                      <tr>
+                        <td style="background-color: #f8fafc; padding: 28px 40px; border-top: 1px solid #e2e8f0;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td>
+                                <p style="margin: 0; font-size: 14px; color: #374151; font-weight: 700;">Open LLC USA</p>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #9ca3af;">Tu estructura en EE.UU., gestionada con precisión.</p>
+                              </td>
+                              <td align="right">
+                                <p style="margin: 0; font-size: 11px; color: #cbd5e1;">Deadline: April 15, ${taxYear}</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+          </html>
+        `,
+      })
+
+      if (error) {
+        console.error('❌ Error enviando borrador fiscal:', error)
+        return { success: false, error }
+      }
+
+      console.log('✅ Borrador fiscal enviado:', data?.id)
+      return { success: true, data }
+    } catch (error) {
+      console.error('💥 Excepción enviando borrador fiscal:', error)
+      return { success: false, error }
+    }
+  }
+
+  /**
    * Notificación genérica para el equipo admin
    */
   static async enviarNotificacionAdmin(params: { subject: string; html: string }) {

@@ -29,6 +29,7 @@ type Form5472Data = {
     llcCity: string
     llcState: string
     llcZip: string
+    llcAddressRoom?: string
     llcEin: string
 
     // 1b - Employer identification number (if different from 1a)
@@ -228,6 +229,7 @@ export default function Form5472OnboardingPage() {
         llcCity: '',
         llcState: '',
         llcZip: '',
+        llcAddressRoom: '',
         llcEin: '',
         llcEinAlternate: '',
         llcCountryOfIncorporation: 'United States',
@@ -326,10 +328,10 @@ export default function Form5472OnboardingPage() {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (!files) return
-        
+
         const newFiles = Array.from(files)
         setStatementFiles(prev => [...prev, ...newFiles])
-        
+
         // Mantener solo los nombres para la UI reactiva de formData
         const fileNames = newFiles.map(f => f.name)
         setFormData(prev => ({
@@ -449,6 +451,7 @@ export default function Form5472OnboardingPage() {
                     name: formData.llcName,
                     ein: formData.llcEin,
                     address: formData.llcAddress,
+                    addressRoom: formData.llcAddressRoom,
                     city: formData.llcCity,
                     state: formData.llcState,
                     zip: formData.llcZip,
@@ -555,7 +558,7 @@ export default function Form5472OnboardingPage() {
                     const fileFormData = new FormData()
                     fileFormData.append('file', file)
                     fileFormData.append('pedidoId', pedidoId)
-                    
+
                     try {
                         await fetch('/api/orders/tax-filing/upload-bank-statements', {
                             method: 'POST',
@@ -679,8 +682,12 @@ export default function Form5472OnboardingPage() {
                                 </div>
 
                                 <div className="sm:col-span-2">
+                                    <label htmlFor="llcAddressRoom" className="block text-sm font-medium text-slate-700">Room or Suite nº</label>
+                                    <input type="text" name="llcAddressRoom" id="llcAddressRoom" value={formData.llcAddressRoom} onChange={handleChange} placeholder="Suite 101" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border" />
+                                </div>
+                                <div className="sm:col-span-2">
                                     <label htmlFor="llcCity" className="block text-sm font-medium text-slate-700">Ciudad</label>
-                                    <input type="text" name="llcCity" value={formData.llcCity} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border" />
+                                    <input type="text" name="llcCity" id="llcCity" value={formData.llcCity} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3 border" />
                                 </div>
                                 <div className="sm:col-span-2">
                                     <label htmlFor="llcState" className="block text-sm font-medium text-slate-700">Estado</label>
@@ -963,14 +970,14 @@ export default function Form5472OnboardingPage() {
                                                 <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${formData.assistedFilling ? 'translate-x-5' : 'translate-x-0'}`} />
                                             </button>
                                         </div>
-                                        
+
                                         {formData.assistedFilling && (
                                             <div className="mt-4 p-5 bg-white border border-amber-200 rounded-xl space-y-4 animate-in fade-in slide-in-from-top-2">
                                                 <div className="flex items-center gap-2">
                                                     <CheckCircle className="text-amber-600" size={18} />
                                                     <p className="text-sm text-amber-800 font-bold">ASISTENCIA PERSONALIZADA ACTIVADA</p>
                                                 </div>
-                                                
+
                                                 <p className="text-xs text-amber-700 leading-relaxed font-medium">
                                                     Al elegir esta opción, puedes saltar este formulario de transacciones. Un experto de Open LLC USA revisará tu pedido y te contactará para solicitarte los datos o extractos necesarios para completar el informe <strong>Federal Supporting Statement</strong> por ti.
                                                 </p>
@@ -980,16 +987,16 @@ export default function Form5472OnboardingPage() {
                                                     <h4 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                                                         <Upload size={16} className="text-blue-600" /> Adjuntar extractos bancarios
                                                     </h4>
-                                                    
+
                                                     <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg p-6 text-center">
-                                                        <input 
-                                                            type="file" 
-                                                            id="bank-upload" 
-                                                            className="hidden" 
+                                                        <input
+                                                            type="file"
+                                                            id="bank-upload"
+                                                            className="hidden"
                                                             multiple
                                                             onChange={handleFileChange}
                                                         />
-                                                        <label 
+                                                        <label
                                                             htmlFor="bank-upload"
                                                             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-all text-xs font-bold uppercase tracking-wider"
                                                         >
@@ -1005,8 +1012,8 @@ export default function Form5472OnboardingPage() {
                                                             {formData.bankStatements.map((f, i) => (
                                                                 <div key={i} className="flex items-center justify-between bg-blue-50 px-3 py-2 rounded-lg border border-blue-100">
                                                                     <span className="text-xs font-medium text-blue-800 truncate">{f}</span>
-                                                                    <button 
-                                                                        type="button" 
+                                                                    <button
+                                                                        type="button"
                                                                         onClick={() => removeStatement(f)}
                                                                         className="text-red-400 hover:text-red-600 p-1"
                                                                     >
@@ -1023,7 +1030,7 @@ export default function Form5472OnboardingPage() {
                                                     <label className="block text-xs font-bold text-slate-800 mb-2">
                                                         Notas sobre aportaciones o reintegros:
                                                     </label>
-                                                    <textarea 
+                                                    <textarea
                                                         rows={3}
                                                         value={formData.assistedFillingNotes}
                                                         onChange={(e) => setFormData(p => ({ ...p, assistedFillingNotes: e.target.value }))}
@@ -1044,244 +1051,243 @@ export default function Form5472OnboardingPage() {
                                 <>
                                     {/* Aviso IRS */}
                                     <div className="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-xl shadow-sm mt-4 mb-8">
-                                <div className="flex gap-3">
-                                    <Info size={20} className="text-blue-600 mt-0.5 flex-shrink-0" />
-                                    <div className="text-sm text-blue-900 space-y-3 font-medium">
-                                        <p className="font-bold text-base mb-2">El IRS exige detalle por transacción — no basta con el total.</p>
-                                        <p>
-                                            Registra cada contribución (dinero o bienes que entraron a la LLC desde ti) y cada distribución (retiros que salieron de la LLC hacia ti). Estos datos se trasladarán directamente al <strong>Federal Supporting Statement</strong> adjunto al Form 5472.
-                                        </p>
-                                        
-                                        <div className="pt-3 border-t border-blue-200/60 mt-4">
-                                            <p className="font-bold mb-3">
-                                                Si no estás seguro o tienes dudas sobre cómo rellenar este formulario referente a las transacciones reportables, pulsa una de estas 2 opciones:
-                                            </p>
-                                            <div className="flex flex-wrap items-center gap-3">
-                                                <a 
-                                                    href="/servicios/form-5472-1120/guia-transacciones" 
-                                                    target="_blank"
-                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm font-semibold text-xs uppercase tracking-wider"
-                                                >
-                                                    Saber más <ExternalLink size={14} />
-                                                </a>
-                                                <a 
-                                                    href="/contacto" 
-                                                    target="_blank"
-                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-white text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm font-semibold text-xs uppercase tracking-wider"
-                                                >
-                                                    Contacto <ArrowRight size={14} />
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                        <div className="flex gap-3">
+                                            <Info size={20} className="text-blue-600 mt-0.5 flex-shrink-0" />
+                                            <div className="text-sm text-blue-900 space-y-3 font-medium">
+                                                <p className="font-bold text-base mb-2">El IRS exige detalle por transacción — no basta con el total.</p>
+                                                <p>
+                                                    Registra cada contribución (dinero o bienes que entraron a la LLC desde ti) y cada distribución (retiros que salieron de la LLC hacia ti). Estos datos se trasladarán directamente al <strong>Federal Supporting Statement</strong> adjunto al Form 5472.
+                                                </p>
 
-                            {/* Tabla de transacciones */}
-                            <div className="space-y-4">
-                                {formData.transactions.length === 0 && (
-                                    <p className="text-sm text-slate-500 italic text-center py-4 border border-dashed rounded-lg">
-                                        Aún no has añadido transacciones. Haz clic en “Añadir transacción” para comenzar.
-                                    </p>
-                                )}
-
-                                {formData.transactions.map((tx, idx) => (
-                                    <div key={tx.id} className="border border-slate-200 rounded-xl p-4 bg-slate-50 relative">
-                                        {/* Badge numeración + botón eliminar */}
-                                        <div className="flex items-center justify-between mb-3">
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                                                tx.type === 'contribution'
-                                                    ? 'bg-blue-100 text-blue-700'
-                                                    : 'bg-green-100 text-green-700'
-                                            }`}>
-                                                #{idx + 1} — {tx.type === 'contribution' ? 'Contribución ↑' : 'Distribución ↓'}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeTransaction(tx.id)}
-                                                className="text-red-400 hover:text-red-600 transition-colors"
-                                                title="Eliminar transacción"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-6">
-                                            {/* Fecha */}
-                                            <div className="sm:col-span-2">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">Fecha *</label>
-                                                <input
-                                                    type="date"
-                                                    value={tx.date}
-                                                    onChange={e => updateTransaction(tx.id, 'date', e.target.value)}
-                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                    required
-                                                />
-                                            </div>
-
-                                            {/* Tipo */}
-                                            <div className="sm:col-span-2">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">Tipo *</label>
-                                                <select
-                                                    value={tx.type}
-                                                    onChange={e => updateTransaction(tx.id, 'type', e.target.value)}
-                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                >
-                                                    <option value="contribution">↑ Contribución (entró a la LLC)</option>
-                                                    <option value="distribution">↓ Distribución (salió de la LLC)</option>
-                                                </select>
-                                            </div>
-
-                                            {/* Importe USD */}
-                                            <div className="sm:col-span-2">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">Importe USD *</label>
-                                                <div className="relative">
-                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 text-sm">$</span>
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        value={tx.amountUSD || ''}
-                                                        onChange={e => updateTransaction(tx.id, 'amountUSD', e.target.value)}
-                                                        className="w-full rounded-md border border-slate-300 pl-6 pr-2 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                        placeholder="0.00"
-                                                    />
+                                                <div className="pt-3 border-t border-blue-200/60 mt-4">
+                                                    <p className="font-bold mb-3">
+                                                        Si no estás seguro o tienes dudas sobre cómo rellenar este formulario referente a las transacciones reportables, pulsa una de estas 2 opciones:
+                                                    </p>
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        <a
+                                                            href="/servicios/form-5472-1120/guia-transacciones"
+                                                            target="_blank"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm font-semibold text-xs uppercase tracking-wider"
+                                                        >
+                                                            Saber más <ExternalLink size={14} />
+                                                        </a>
+                                                        <a
+                                                            href="/contacto"
+                                                            target="_blank"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm font-semibold text-xs uppercase tracking-wider"
+                                                        >
+                                                            Contacto <ArrowRight size={14} />
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            {/* Concepto */}
-                                            <div className="sm:col-span-3">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">Naturaleza / Concepto *</label>
-                                                <input
-                                                    type="text"
-                                                    value={tx.concept}
-                                                    onChange={e => updateTransaction(tx.id, 'concept', e.target.value)}
-                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="Ej: Initial capital contribution"
-                                                />
-                                            </div>
-
-                                            {/* Método de pago */}
-                                            <div className="sm:col-span-2">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">Método de pago</label>
-                                                <select
-                                                    value={tx.paymentMethod}
-                                                    onChange={e => updateTransaction(tx.id, 'paymentMethod', e.target.value)}
-                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                >
-                                                    <option value="Wire">Wire</option>
-                                                    <option value="ACH">ACH</option>
-                                                    <option value="Transfer">Transfer</option>
-                                                    <option value="Check">Check</option>
-                                                    <option value="N/A">N/A (no monetario)</option>
-                                                </select>
-                                            </div>
-
-                                            {/* ¿Monetario? */}
-                                            <div className="sm:col-span-1">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">¿En efectivo?</label>
-                                                <select
-                                                    value={tx.isMonetary ? 'yes' : 'no'}
-                                                    onChange={e => updateTransaction(tx.id, 'isMonetary', e.target.value === 'yes')}
-                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                >
-                                                    <option value="yes">✅ Sí</option>
-                                                    <option value="no">📳 No (bienes)</option>
-                                                </select>
-                                            </div>
-
-                                            {/* Referencia bancaria */}
-                                            <div className="sm:col-span-3">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">Referencia bancaria / TX ID</label>
-                                                <input
-                                                    type="text"
-                                                    value={tx.referenceId}
-                                                    onChange={e => updateTransaction(tx.id, 'referenceId', e.target.value)}
-                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="Ej: WIRE-2025-001"
-                                                />
-                                            </div>
-
-                                            {/* Descripción IRS */}
-                                            <div className="sm:col-span-6">
-                                                <label className="block text-xs font-medium text-slate-600 mb-1">
-                                                    Descripción para el IRS <span className="text-slate-400">(en inglés, aparece en el Statement oficial)</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={tx.description}
-                                                    onChange={e => updateTransaction(tx.id, 'description', e.target.value)}
-                                                    className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="Ej: Cash contribution from foreign owner to capitalize the LLC for business operations"
-                                                />
-                                            </div>
                                         </div>
                                     </div>
-                                ))}
 
-                                {/* Botón añadir */}
-                                <button
-                                    type="button"
-                                    onClick={addTransaction}
-                                    className="flex items-center gap-2 w-full justify-center border-2 border-dashed border-blue-300 rounded-xl py-3 text-blue-600 hover:border-blue-500 hover:bg-blue-50 transition-all text-sm font-medium"
-                                >
-                                    <Plus size={16} /> Añadir transacción
-                                </button>
-                            </div>
-
-                            {/* Subtotales en vivo */}
-                            {formData.transactions.length > 0 && (
-                                <div className="bg-slate-900 rounded-xl p-5 text-white">
-                                    <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Resumen de totales</p>
-                                    <div className="grid grid-cols-2 gap-3 text-sm">
-                                        <div>
-                                            <p className="text-slate-400 text-xs">Contribuciones monetarias</p>
-                                            <p className="font-bold text-blue-300 text-lg">${fmt(totalContribCash)}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-slate-400 text-xs">Distribuciones monetarias</p>
-                                            <p className="font-bold text-green-300 text-lg">${fmt(totalDistribCash)}</p>
-                                        </div>
-                                        {totalContribNM > 0 && (
-                                            <div>
-                                                <p className="text-slate-400 text-xs">Contribs. no monetarias (FMV)</p>
-                                                <p className="font-bold text-orange-300 text-lg">${fmt(totalContribNM)}</p>
-                                            </div>
+                                    {/* Tabla de transacciones */}
+                                    <div className="space-y-4">
+                                        {formData.transactions.length === 0 && (
+                                            <p className="text-sm text-slate-500 italic text-center py-4 border border-dashed rounded-lg">
+                                                Aún no has añadido transacciones. Haz clic en “Añadir transacción” para comenzar.
+                                            </p>
                                         )}
-                                        {totalDistribNM > 0 && (
-                                            <div>
-                                                <p className="text-slate-400 text-xs">Distribs. no monetarias (FMV)</p>
-                                                <p className="font-bold text-orange-300 text-lg">${fmt(totalDistribNM)}</p>
+
+                                        {formData.transactions.map((tx, idx) => (
+                                            <div key={tx.id} className="border border-slate-200 rounded-xl p-4 bg-slate-50 relative">
+                                                {/* Badge numeración + botón eliminar */}
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tx.type === 'contribution'
+                                                            ? 'bg-blue-100 text-blue-700'
+                                                            : 'bg-green-100 text-green-700'
+                                                        }`}>
+                                                        #{idx + 1} — {tx.type === 'contribution' ? 'Contribución ↑' : 'Distribución ↓'}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeTransaction(tx.id)}
+                                                        className="text-red-400 hover:text-red-600 transition-colors"
+                                                        title="Eliminar transacción"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-6">
+                                                    {/* Fecha */}
+                                                    <div className="sm:col-span-2">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Fecha *</label>
+                                                        <input
+                                                            type="date"
+                                                            value={tx.date}
+                                                            onChange={e => updateTransaction(tx.id, 'date', e.target.value)}
+                                                            className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    {/* Tipo */}
+                                                    <div className="sm:col-span-2">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Tipo *</label>
+                                                        <select
+                                                            value={tx.type}
+                                                            onChange={e => updateTransaction(tx.id, 'type', e.target.value)}
+                                                            className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                        >
+                                                            <option value="contribution">↑ Contribución (entró a la LLC)</option>
+                                                            <option value="distribution">↓ Distribución (salió de la LLC)</option>
+                                                        </select>
+                                                    </div>
+
+                                                    {/* Importe USD */}
+                                                    <div className="sm:col-span-2">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Importe USD *</label>
+                                                        <div className="relative">
+                                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 text-sm">$</span>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                step="0.01"
+                                                                value={tx.amountUSD || ''}
+                                                                onChange={e => updateTransaction(tx.id, 'amountUSD', e.target.value)}
+                                                                className="w-full rounded-md border border-slate-300 pl-6 pr-2 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                                placeholder="0.00"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Concepto */}
+                                                    <div className="sm:col-span-3">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Naturaleza / Concepto *</label>
+                                                        <input
+                                                            type="text"
+                                                            value={tx.concept}
+                                                            onChange={e => updateTransaction(tx.id, 'concept', e.target.value)}
+                                                            className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                            placeholder="Ej: Initial capital contribution"
+                                                        />
+                                                    </div>
+
+                                                    {/* Método de pago */}
+                                                    <div className="sm:col-span-2">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Método de pago</label>
+                                                        <select
+                                                            value={tx.paymentMethod}
+                                                            onChange={e => updateTransaction(tx.id, 'paymentMethod', e.target.value)}
+                                                            className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                        >
+                                                            <option value="Wire">Wire</option>
+                                                            <option value="ACH">ACH</option>
+                                                            <option value="Transfer">Transfer</option>
+                                                            <option value="Check">Check</option>
+                                                            <option value="N/A">N/A (no monetario)</option>
+                                                        </select>
+                                                    </div>
+
+                                                    {/* ¿Monetario? */}
+                                                    <div className="sm:col-span-1">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">¿En efectivo?</label>
+                                                        <select
+                                                            value={tx.isMonetary ? 'yes' : 'no'}
+                                                            onChange={e => updateTransaction(tx.id, 'isMonetary', e.target.value === 'yes')}
+                                                            className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                        >
+                                                            <option value="yes">✅ Sí</option>
+                                                            <option value="no">📳 No (bienes)</option>
+                                                        </select>
+                                                    </div>
+
+                                                    {/* Referencia bancaria */}
+                                                    <div className="sm:col-span-3">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">Referencia bancaria / TX ID</label>
+                                                        <input
+                                                            type="text"
+                                                            value={tx.referenceId}
+                                                            onChange={e => updateTransaction(tx.id, 'referenceId', e.target.value)}
+                                                            className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                            placeholder="Ej: WIRE-2025-001"
+                                                        />
+                                                    </div>
+
+                                                    {/* Descripción IRS */}
+                                                    <div className="sm:col-span-6">
+                                                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                                                            Descripción para el IRS <span className="text-slate-400">(en inglés, aparece en el Statement oficial)</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={tx.description}
+                                                            onChange={e => updateTransaction(tx.id, 'description', e.target.value)}
+                                                            className="w-full rounded-md border border-slate-300 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                            placeholder="Ej: Cash contribution from foreign owner to capitalize the LLC for business operations"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
-                                        )}
+                                        ))}
+
+                                        {/* Botón añadir */}
+                                        <button
+                                            type="button"
+                                            onClick={addTransaction}
+                                            className="flex items-center gap-2 w-full justify-center border-2 border-dashed border-blue-300 rounded-xl py-3 text-blue-600 hover:border-blue-500 hover:bg-blue-50 transition-all text-sm font-medium"
+                                        >
+                                            <Plus size={16} /> Añadir transacción
+                                        </button>
                                     </div>
-                                    <div className="border-t border-slate-700 mt-3 pt-3 flex justify-between">
-                                        <p className="text-slate-400 text-xs font-semibold">TOTAL BRUTO (campo 1f del 5472)</p>
-                                        <p className="font-bold text-white text-lg">${fmt(grandTotal)}</p>
+
+                                    {/* Subtotales en vivo */}
+                                    {formData.transactions.length > 0 && (
+                                        <div className="bg-slate-900 rounded-xl p-5 text-white">
+                                            <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Resumen de totales</p>
+                                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                                <div>
+                                                    <p className="text-slate-400 text-xs">Contribuciones monetarias</p>
+                                                    <p className="font-bold text-blue-300 text-lg">${fmt(totalContribCash)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-slate-400 text-xs">Distribuciones monetarias</p>
+                                                    <p className="font-bold text-green-300 text-lg">${fmt(totalDistribCash)}</p>
+                                                </div>
+                                                {totalContribNM > 0 && (
+                                                    <div>
+                                                        <p className="text-slate-400 text-xs">Contribs. no monetarias (FMV)</p>
+                                                        <p className="font-bold text-orange-300 text-lg">${fmt(totalContribNM)}</p>
+                                                    </div>
+                                                )}
+                                                {totalDistribNM > 0 && (
+                                                    <div>
+                                                        <p className="text-slate-400 text-xs">Distribs. no monetarias (FMV)</p>
+                                                        <p className="font-bold text-orange-300 text-lg">${fmt(totalDistribNM)}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="border-t border-slate-700 mt-3 pt-3 flex justify-between">
+                                                <p className="text-slate-400 text-xs font-semibold">TOTAL BRUTO (campo 1f del 5472)</p>
+                                                <p className="font-bold text-white text-lg">${fmt(grandTotal)}</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Costo de Formación */}
+                                    <div className="border border-slate-200 rounded-xl p-4">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Costos de Formación de la LLC ($)</label>
+                                        <p className="text-xs text-slate-500 mb-2">Gastos pagados para crear la LLC (registro de estado, agente registrado, servicios profesionales).</p>
+                                        <div className="relative max-w-xs">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                                            <input
+                                                type="number"
+                                                name="formationCost"
+                                                value={formData.formationCost}
+                                                onChange={handleChange}
+                                                min="0"
+                                                step="0.01"
+                                                className="w-full rounded-md border border-slate-300 pl-7 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                                                placeholder="0.00"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
+                                </>
                             )}
-
-                            {/* Costo de Formación */}
-                            <div className="border border-slate-200 rounded-xl p-4">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Costos de Formación de la LLC ($)</label>
-                                <p className="text-xs text-slate-500 mb-2">Gastos pagados para crear la LLC (registro de estado, agente registrado, servicios profesionales).</p>
-                                <div className="relative max-w-xs">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                    <input
-                                        type="number"
-                                        name="formationCost"
-                                        value={formData.formationCost}
-                                        onChange={handleChange}
-                                        min="0"
-                                        step="0.01"
-                                        className="w-full rounded-md border border-slate-300 pl-7 p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="0.00"
-                                    />
-                                </div>
-                            </div>
-                            </>
-                        )}
                         </div>
                     )}
 
@@ -1373,274 +1379,274 @@ export default function Form5472OnboardingPage() {
                                 <>
                                     {/* Part VII: Additional Questions */}
                                     <div className="bg-white border border-gray-200 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                                    <FileText className="text-blue-600" size={18} />
-                                    Preguntas Adicionales (Part VII)
-                                </h3>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    Para la mayoría de LLCs pasivas (sin actividad comercial en USA), todas las respuestas son "No".
-                                </p>
+                                        <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                                            <FileText className="text-blue-600" size={18} />
+                                            Preguntas Adicionales (Part VII)
+                                        </h3>
+                                        <p className="text-sm text-gray-600 mb-4">
+                                            Para la mayoría de LLCs pasivas (sin actividad comercial en USA), todas las respuestas son "No".
+                                        </p>
 
-                                <div className="space-y-4">
-                                    {/* Question 37 */}
-                                    <div className="flex items-start justify-between border-b pb-3">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Pagó intereses a partes relacionadas?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 37: Interest payments</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidInterestToRelatedParty"
-                                                    checked={formData.paidInterestToRelatedParty === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidInterestToRelatedParty: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidInterestToRelatedParty"
-                                                    checked={formData.paidInterestToRelatedParty === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidInterestToRelatedParty: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
+                                        <div className="space-y-4">
+                                            {/* Question 37 */}
+                                            <div className="flex items-start justify-between border-b pb-3">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Pagó intereses a partes relacionadas?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 37: Interest payments</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidInterestToRelatedParty"
+                                                            checked={formData.paidInterestToRelatedParty === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidInterestToRelatedParty: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidInterestToRelatedParty"
+                                                            checked={formData.paidInterestToRelatedParty === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidInterestToRelatedParty: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Question 39 */}
+                                            <div className="flex items-start justify-between border-b pb-3">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Pagó rentas/alquileres a partes relacionadas?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 39: Rent payments</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidRentsToRelatedParty"
+                                                            checked={formData.paidRentsToRelatedParty === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidRentsToRelatedParty: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidRentsToRelatedParty"
+                                                            checked={formData.paidRentsToRelatedParty === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidRentsToRelatedParty: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Question 40a */}
+                                            <div className="flex items-start justify-between border-b pb-3">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Pagó regalías (royalties) a partes relacionadas?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 40a: Royalty payments</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidRoyaltiesToRelatedParty"
+                                                            checked={formData.paidRoyaltiesToRelatedParty === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidRoyaltiesToRelatedParty: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidRoyaltiesToRelatedParty"
+                                                            checked={formData.paidRoyaltiesToRelatedParty === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidRoyaltiesToRelatedParty: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Question 41a */}
+                                            <div className="flex items-start justify-between border-b pb-3">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Tuvo acuerdos de reparto de costos (cost sharing)?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 41a: Cost sharing arrangements</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="hasCostSharingArrangements"
+                                                            checked={formData.hasCostSharingArrangements === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, hasCostSharingArrangements: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="hasCostSharingArrangements"
+                                                            checked={formData.hasCostSharingArrangements === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, hasCostSharingArrangements: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Question 42a */}
+                                            <div className="flex items-start justify-between border-b pb-3">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Pagó por servicios a partes relacionadas?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 42a: Payments for services</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidServicesToRelatedParty"
+                                                            checked={formData.paidServicesToRelatedParty === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidServicesToRelatedParty: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="paidServicesToRelatedParty"
+                                                            checked={formData.paidServicesToRelatedParty === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, paidServicesToRelatedParty: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Question 42b */}
+                                            <div className="flex items-start justify-between border-b pb-3">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Recibió pagos por servicios de partes relacionadas?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 42b: Receipts for services</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="receivedServicesFromRelatedParty"
+                                                            checked={formData.receivedServicesFromRelatedParty === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, receivedServicesFromRelatedParty: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="receivedServicesFromRelatedParty"
+                                                            checked={formData.receivedServicesFromRelatedParty === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, receivedServicesFromRelatedParty: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Question 43a */}
+                                            <div className="flex items-start justify-between border-b pb-3">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Tuvo otras transacciones con partes relacionadas?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 43a: Other transactions</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="hasOtherTransactions"
+                                                            checked={formData.hasOtherTransactions === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, hasOtherTransactions: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="hasOtherTransactions"
+                                                            checked={formData.hasOtherTransactions === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, hasOtherTransactions: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {/* Question 45 - Part VIII */}
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-slate-700">
+                                                        ¿Es la LLC un contribuyente de erosión de base (base erosion taxpayer)?
+                                                    </label>
+                                                    <p className="text-xs text-gray-500 mt-1">Question 45 (Part VIII): Base erosion taxpayer</p>
+                                                </div>
+                                                <div className="flex gap-3 ml-4">
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="isBaseErosionTaxpayer"
+                                                            checked={formData.isBaseErosionTaxpayer === true}
+                                                            onChange={() => setFormData(prev => ({ ...prev, isBaseErosionTaxpayer: true }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">Sí</span>
+                                                    </label>
+                                                    <label className="inline-flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            name="isBaseErosionTaxpayer"
+                                                            checked={formData.isBaseErosionTaxpayer === false}
+                                                            onChange={() => setFormData(prev => ({ ...prev, isBaseErosionTaxpayer: false }))}
+                                                            className="form-radio h-4 w-4 text-blue-600"
+                                                        />
+                                                        <span className="ml-2 text-sm">No</span>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    {/* Question 39 */}
-                                    <div className="flex items-start justify-between border-b pb-3">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Pagó rentas/alquileres a partes relacionadas?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 39: Rent payments</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidRentsToRelatedParty"
-                                                    checked={formData.paidRentsToRelatedParty === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidRentsToRelatedParty: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidRentsToRelatedParty"
-                                                    checked={formData.paidRentsToRelatedParty === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidRentsToRelatedParty: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Question 40a */}
-                                    <div className="flex items-start justify-between border-b pb-3">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Pagó regalías (royalties) a partes relacionadas?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 40a: Royalty payments</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidRoyaltiesToRelatedParty"
-                                                    checked={formData.paidRoyaltiesToRelatedParty === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidRoyaltiesToRelatedParty: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidRoyaltiesToRelatedParty"
-                                                    checked={formData.paidRoyaltiesToRelatedParty === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidRoyaltiesToRelatedParty: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Question 41a */}
-                                    <div className="flex items-start justify-between border-b pb-3">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Tuvo acuerdos de reparto de costos (cost sharing)?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 41a: Cost sharing arrangements</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="hasCostSharingArrangements"
-                                                    checked={formData.hasCostSharingArrangements === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, hasCostSharingArrangements: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="hasCostSharingArrangements"
-                                                    checked={formData.hasCostSharingArrangements === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, hasCostSharingArrangements: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Question 42a */}
-                                    <div className="flex items-start justify-between border-b pb-3">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Pagó por servicios a partes relacionadas?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 42a: Payments for services</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidServicesToRelatedParty"
-                                                    checked={formData.paidServicesToRelatedParty === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidServicesToRelatedParty: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="paidServicesToRelatedParty"
-                                                    checked={formData.paidServicesToRelatedParty === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, paidServicesToRelatedParty: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Question 42b */}
-                                    <div className="flex items-start justify-between border-b pb-3">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Recibió pagos por servicios de partes relacionadas?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 42b: Receipts for services</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="receivedServicesFromRelatedParty"
-                                                    checked={formData.receivedServicesFromRelatedParty === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, receivedServicesFromRelatedParty: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="receivedServicesFromRelatedParty"
-                                                    checked={formData.receivedServicesFromRelatedParty === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, receivedServicesFromRelatedParty: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Question 43a */}
-                                    <div className="flex items-start justify-between border-b pb-3">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Tuvo otras transacciones con partes relacionadas?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 43a: Other transactions</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="hasOtherTransactions"
-                                                    checked={formData.hasOtherTransactions === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, hasOtherTransactions: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="hasOtherTransactions"
-                                                    checked={formData.hasOtherTransactions === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, hasOtherTransactions: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Question 45 - Part VIII */}
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                ¿Es la LLC un contribuyente de erosión de base (base erosion taxpayer)?
-                                            </label>
-                                            <p className="text-xs text-gray-500 mt-1">Question 45 (Part VIII): Base erosion taxpayer</p>
-                                        </div>
-                                        <div className="flex gap-3 ml-4">
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="isBaseErosionTaxpayer"
-                                                    checked={formData.isBaseErosionTaxpayer === true}
-                                                    onChange={() => setFormData(prev => ({ ...prev, isBaseErosionTaxpayer: true }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">Sí</span>
-                                            </label>
-                                            <label className="inline-flex items-center">
-                                                <input
-                                                    type="radio"
-                                                    name="isBaseErosionTaxpayer"
-                                                    checked={formData.isBaseErosionTaxpayer === false}
-                                                    onChange={() => setFormData(prev => ({ ...prev, isBaseErosionTaxpayer: false }))}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="ml-2 text-sm">No</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    )}
+                                </>
+                            )}
 
                             {/* Sección de Firma */}
                             <div className="bg-white border border-gray-200 rounded-lg p-6">

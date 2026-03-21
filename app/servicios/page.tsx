@@ -21,7 +21,7 @@ const paquetes = [
     destacado: true, // Este es el más popular
   },
   {
-    slug: 'plan-compliance',
+    slug: 'compliance-basico',
     title: 'Plan Compliance Básico',
     price: '$49/mes',
     tagline: 'Mantén tu LLC al día con reportes anuales y agente.',
@@ -54,9 +54,26 @@ const serviciosSueltos = [
   },
 ];
 
+const SITE_URL = 'https://openllcusa.com';
+
 export const metadata = {
-  title: 'Todos los Servicios | OpenLLC',
-  description: 'Descubre nuestros paquetes completos y servicios individuales para formar y mantener tu empresa en Estados Unidos.',
+  title: 'Catálogo de Servicios y Paquetes para tu LLC | Open LLC USA',
+  description: 'Descubre nuestros paquetes todo en uno y servicios individuales a la carta para formar, mantener y escalar tu LLC desde España y Latinoamérica.',
+  alternates: {
+    canonical: `${SITE_URL}/precios`, // Dado que esto redirige a precios, el canonical lo refuerza
+  },
+  openGraph: {
+    title: 'Servicios para tu LLC en Estados Unidos | Open LLC USA',
+    description: 'Catálogo completo: Launch, Compliance Básico, Obtención de EIN, Impuestos y Consultoría Legal.',
+    url: `${SITE_URL}/servicios`,
+    siteName: 'Open LLC USA',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Servicios para tu LLC en Estados Unidos | Open LLC USA',
+    description: 'Desde la formación hasta el cumplimiento fiscal continuo.',
+  }
 };
 
 export default function ServiciosPage() {
@@ -67,21 +84,34 @@ export default function ServiciosPage() {
     '@type': 'ItemList',
     name: 'Servicios de Formación de LLCs',
     description: 'Catálogo completo de paquetes y servicios individuales',
-    itemListElement: todosLosServicios.map((servicio, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'Product',
-        name: servicio.title,
-        description: servicio.tagline,
-        url: `https://openllc.com/servicios/${servicio.slug}`,
-        offers: {
-          '@type': 'Offer',
-          price: servicio.price.replace(/[^0-9.]/g, ''),
-          priceCurrency: 'USD',
+    itemListElement: todosLosServicios.map((servicio, index) => {
+      // Diferenciamos la ruta limpia según si es un paquete o servicio suelto
+      const isPaquete = paquetes.some(p => p.slug === servicio.slug);
+      const urlFinal = isPaquete 
+        ? `${SITE_URL}/paquetes/${servicio.slug}/onboarding` 
+        : `${SITE_URL}/servicios/${servicio.slug}`;
+
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Service', // Más semántico para Google que 'Product'
+          name: servicio.title,
+          description: servicio.tagline,
+          url: urlFinal,
+          provider: {
+            '@type': 'Organization',
+            name: 'Open LLC USA',
+            url: SITE_URL
+          },
+          offers: {
+            '@type': 'Offer',
+            price: servicio.price.replace(/[^0-9.]/g, ''),
+            priceCurrency: 'USD',
+          },
         },
-      },
-    })),
+      }
+    }),
   };
 
   return (

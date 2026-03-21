@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       // URLs de redirección
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}?status=success`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paquetes/${paqueteSlug}/onboarding/completado?session_id={CHECKOUT_SESSION_ID}&pedido=${pedidoId}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paquetes/${paqueteSlug}/onboarding/checkout?pedido=${pedidoId}&canceled=true`,
       // Metadata para el webhook
       metadata: {

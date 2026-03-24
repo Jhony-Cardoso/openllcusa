@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   // Solución recomendada y más usada en Next.js 15+
   // Desactiva la caché persistente en disco solo en desarrollo
   // (en producción sigue activa porque sí es útil)

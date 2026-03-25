@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '../quiz.module.css';
 
-export default function ResultadoPage() {
+function ResultadoContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const score = parseInt(searchParams.get('score') || '0');
@@ -273,5 +273,13 @@ export default function ResultadoPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function ResultadoPage() {
+  return (
+    <Suspense fallback={<div style={{ textAlign: 'center', padding: '100px 20px', fontSize: '1.2rem' }}>Calculando tu análisis personalizado...</div>}>
+      <ResultadoContent />
+    </Suspense>
   );
 }

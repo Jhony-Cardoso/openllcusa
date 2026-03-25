@@ -1,6 +1,6 @@
 import React from 'react';
-import type { Country } from '../../components/CountrySelector/countries';
-import { allCountries } from '../../components/CountrySelector/countries';
+import type { Country } from '@/components/CountrySelector/countries';
+import { allCountries } from '@/components/CountrySelector/countries';
 
 type Props = {
    params: Promise<{ code: string }>;

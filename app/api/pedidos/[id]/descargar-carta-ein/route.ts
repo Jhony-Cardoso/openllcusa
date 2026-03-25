@@ -3,7 +3,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { PedidoModel } from '@/lib/models/pedido'
-import { supabase } from '@/lib/supabase/client'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function GET(
     request: Request,
@@ -40,7 +40,7 @@ export async function GET(
         }
 
         // Descargar el archivo desde Supabase Storage
-        const { data: fileData, error: downloadError } = await supabase
+        const { data: fileData, error: downloadError } = await supabaseAdmin
             .storage
             .from('documentos')
             .download(cartaEINPath)

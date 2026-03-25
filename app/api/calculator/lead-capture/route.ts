@@ -1,8 +1,9 @@
 // src/app/api/calculator/lead-capture/route.ts
 import { NextResponse } from 'next/server';
-import { sendToEmailMarketing } from '@/lib/email-marketing';
+// import { sendToEmailMarketing } from '@/lib/email-marketing';
 
 export async function POST(request: Request) {
+  /*
   const body = await request.json();
   const { email, nombre, facturacion_anual, scenario_selected } = body;
 
@@ -29,10 +30,10 @@ export async function POST(request: Request) {
 
   // Trigger email sequence
   await triggerEmailSequence(email, 'calculator-sequence-6-emails');
+  */
 
   return NextResponse.json({ 
-    success: true, 
-    pdfUrl,
-    message: 'Revisa tu email para el PDF'
-  });
+    success: false, 
+    message: 'Endpoint de calculadora en construcción'
+  }, { status: 501 });
 }

@@ -289,35 +289,38 @@ Receiving objects:  79% (531/671)
 Receiving objects:  80% (537/671)
 Receiving objects:  81% (544/671)
 Receiving objects:  82% (551/671)
-Receiving objects:  83% (557/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  84% (564/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  85% (571/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  86% (578/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  87% (584/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  88% (591/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  89% (598/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  90% (604/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  91% (611/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  92% (618/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  93% (625/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  94% (631/671), 8.61 MiB | 17.21 MiB/s
-remote: Total 671 (delta 97), reused 639 (delta 92), pack-reused 0 (from 0)
-Receiving objects:  95% (638/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  96% (645/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  97% (651/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  98% (658/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects:  99% (665/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects: 100% (671/671), 8.61 MiB | 17.21 MiB/s
-Receiving objects: 100% (671/671), 13.08 MiB | 17.93 MiB/s, done.
+Receiving objects:  83% (557/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  84% (564/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  85% (571/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  86% (578/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  87% (584/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  88% (591/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  89% (598/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  90% (604/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  91% (611/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  92% (618/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  93% (625/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  94% (631/671), 7.01 MiB | 14.04 MiB/s
+remote: Total 671 (delta 97), reused 635 (delta 92), pack-reused 0 (from 0)
+Receiving objects:  95% (638/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  96% (645/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  97% (651/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  98% (658/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects:  99% (665/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects: 100% (671/671), 7.01 MiB | 14.04 MiB/s
+Receiving objects: 100% (671/671), 13.08 MiB | 14.03 MiB/s, done.
 Resolving deltas:   0% (0/97)
 Resolving deltas:   1% (1/97)
 Resolving deltas:   2% (2/97)
 Resolving deltas:   3% (3/97)
 Resolving deltas:   4% (4/97)
+Resolving deltas:   5% (5/97)
+Resolving deltas:   6% (6/97)
 Resolving deltas:   7% (7/97)
 Resolving deltas:   8% (8/97)
 Resolving deltas:   9% (9/97)
 Resolving deltas:  10% (10/97)
+Resolving deltas:  11% (11/97)
 Resolving deltas:  12% (12/97)
 Resolving deltas:  13% (13/97)
 Resolving deltas:  14% (14/97)
@@ -349,11 +352,10 @@ Resolving deltas:  40% (39/97)
 Resolving deltas:  41% (40/97)
 Resolving deltas:  42% (41/97)
 Resolving deltas:  43% (42/97)
-Resolving deltas:  45% (44/97)
+Resolving deltas:  44% (43/97)
 Resolving deltas:  46% (45/97)
 Resolving deltas:  47% (46/97)
 Resolving deltas:  48% (47/97)
-Resolving deltas:  49% (48/97)
 Resolving deltas:  50% (49/97)
 Resolving deltas:  51% (50/97)
 Resolving deltas:  52% (51/97)
@@ -366,6 +368,7 @@ Resolving deltas:  58% (57/97)
 Resolving deltas:  59% (58/97)
 Resolving deltas:  60% (59/97)
 Resolving deltas:  61% (60/97)
+Resolving deltas:  62% (61/97)
 Resolving deltas:  63% (62/97)
 Resolving deltas:  64% (63/97)
 Resolving deltas:  65% (64/97)
@@ -375,17 +378,18 @@ Resolving deltas:  69% (67/97)
 Resolving deltas:  70% (68/97)
 Resolving deltas:  71% (69/97)
 Resolving deltas:  72% (70/97)
+Resolving deltas:  73% (71/97)
 Resolving deltas:  74% (72/97)
 Resolving deltas:  75% (73/97)
 Resolving deltas:  76% (74/97)
 Resolving deltas:  77% (75/97)
 Resolving deltas:  78% (76/97)
+Resolving deltas:  79% (77/97)
 Resolving deltas:  80% (78/97)
 Resolving deltas:  81% (79/97)
 Resolving deltas:  82% (80/97)
 Resolving deltas:  83% (81/97)
 Resolving deltas:  84% (82/97)
-Resolving deltas:  85% (83/97)
 Resolving deltas:  86% (84/97)
 Resolving deltas:  87% (85/97)
 Resolving deltas:  88% (86/97)
@@ -407,7 +411,7 @@ Building open-llc-usa-km3lzh
 #1 transferring dockerfile: 834B done
 #1 DONE 0.0s
 #2 [internal] load metadata for docker.io/library/node:20-alpine
-#2 DONE 0.4s
+#2 DONE 0.6s
 #3 [internal] load .dockerignore
 #3 transferring context: 141B done
 #3 DONE 0.0s
@@ -416,62 +420,60 @@ Building open-llc-usa-km3lzh
 #5 [builder 2/6] WORKDIR /app
 #5 CACHED
 #6 [internal] load build context
-#6 transferring context: 41.04MB 1.0s done
-#6 DONE 1.0s
+#6 transferring context: 41.04MB 0.7s done
+#6 DONE 0.7s
 #7 [builder 3/6] COPY package*.json ./
 #7 CACHED
 #8 [builder 4/6] RUN npm ci --legacy-peer-deps
 #8 CACHED
 #9 [builder 5/6] COPY . .
-#9 CACHED
+#9 DONE 0.4s
 #10 [builder 6/6] RUN npm run build
-#10 1.153
-#10 1.153 > openllc-nextjs@0.1.0 build
-#10 1.153 > next build
-#10 1.153
-#10 4.125 Attention: Next.js now collects completely anonymous telemetry regarding usage.
-#10 4.126 This information is used to shape Next.js' roadmap and prioritize features.
-#10 4.127 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-#10 4.127 https://nextjs.org/telemetry
-#10 4.127
-#10 4.395    ▲ Next.js 15.5.9
-#10 4.395    - Experiments (use with caution):
-#10 4.395      ⨯ webpackBuildWorker
-#10 4.395
-#10 5.006    Creating an optimized production build ...
-#10 86.98 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (181kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
-#10 111.9  ✓ Compiled successfully in 106s
-#10 111.9    Skipping validation of types
-#10 111.9    Skipping linting
-#10 113.0    Collecting page data ...
-#10 117.4 Error: Missing API key. Pass it to the constructor `new Resend("re_123")`
-#10 117.4     at new E (.next/server/chunks/8342.js:2:94293)
-#10 117.4     at 82011 (.next/server/chunks/2011.js:1:116)
-#10 117.4     at c (.next/server/webpack-runtime.js:1:143)
-#10 117.4     at 40510 (.next/server/app/api/admin/pedidos/[id]/generar-borrador-ss4/route.js:1:2407)
-#10 117.4     at c (.next/server/webpack-runtime.js:1:143)
-#10 117.4     at <unknown> (.next/server/app/api/admin/pedidos/[id]/generar-borrador-ss4/route.js:1:21212)
-#10 117.4     at c.X (.next/server/webpack-runtime.js:1:1285)
-#10 117.4     at <unknown> (.next/server/app/api/admin/pedidos/[id]/generar-borrador-ss4/route.js:1:21159)
-#10 117.4     at Object.<anonymous> (.next/server/app/api/admin/pedidos/[id]/generar-borrador-ss4/route.js:1:21244)
-#10 117.4
-#10 117.4 > Build error occurred
-#10 117.5 [Error: Failed to collect page data for /api/admin/pedidos/[id]/generar-borrador-ss4] {
-#10 117.5   type: 'Error'
-#10 117.5 }
+#10 1.045
+#10 1.045 > openllc-nextjs@0.1.0 build
+#10 1.045 > next build
+#10 1.045
+#10 3.927 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#10 3.928 This information is used to shape Next.js' roadmap and prioritize features.
+#10 3.928 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#10 3.928 https://nextjs.org/telemetry
+#10 3.928
+#10 4.211    ▲ Next.js 15.5.9
+#10 4.211    - Experiments (use with caution):
+#10 4.213      ⨯ webpackBuildWorker
+#10 4.213
+#10 4.615    Creating an optimized production build ...
+#10 82.32 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (181kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+#10 111.4  ✓ Compiled successfully in 106s
+#10 111.4    Skipping validation of types
+#10 111.4    Skipping linting
+#10 112.8    Collecting page data ...
+#10 116.1 Error: Missing env var: NEXT_PUBLIC_SUPABASE_URL
+#10 116.1     at d (.next/server/app/api/debug-db/route.js:1:7679)
+#10 116.1     at 87613 (.next/server/app/api/debug-db/route.js:1:7770)
+#10 116.1     at c (.next/server/webpack-runtime.js:1:143)
+#10 116.1     at 32094 (.next/server/app/api/debug-db/route.js:1:1658)
+#10 116.1     at c (.next/server/webpack-runtime.js:1:143)
+#10 116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8082)
+#10 116.1     at c.X (.next/server/webpack-runtime.js:1:1285)
+#10 116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8058)
+#10 116.1     at Object.<anonymous> (.next/server/app/api/debug-db/route.js:1:8114)
+#10 116.1
+#10 116.1 > Build error occurred
+#10 116.1 [Error: Failed to collect page data for /api/debug-db] { type: 'Error' }
 #10 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
 ------
 > [builder 6/6] RUN npm run build:
-117.4     at c (.next/server/webpack-runtime.js:1:143)
-117.4     at <unknown> (.next/server/app/api/admin/pedidos/[id]/generar-borrador-ss4/route.js:1:21212)
-117.4     at c.X (.next/server/webpack-runtime.js:1:1285)
-117.4     at <unknown> (.next/server/app/api/admin/pedidos/[id]/generar-borrador-ss4/route.js:1:21159)
-117.4     at Object.<anonymous> (.next/server/app/api/admin/pedidos/[id]/generar-borrador-ss4/route.js:1:21244)
-117.4
-117.4 > Build error occurred
-117.5 [Error: Failed to collect page data for /api/admin/pedidos/[id]/generar-borrador-ss4] {
-117.5   type: 'Error'
-117.5 }
+116.1     at c (.next/server/webpack-runtime.js:1:143)
+116.1     at 32094 (.next/server/app/api/debug-db/route.js:1:1658)
+116.1     at c (.next/server/webpack-runtime.js:1:143)
+116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8082)
+116.1     at c.X (.next/server/webpack-runtime.js:1:1285)
+116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8058)
+116.1     at Object.<anonymous> (.next/server/app/api/debug-db/route.js:1:8114)
+116.1
+116.1 > Build error occurred
+116.1 [Error: Failed to collect page data for /api/debug-db] { type: 'Error' }
 ------
 Dockerfile:14
 --------------------

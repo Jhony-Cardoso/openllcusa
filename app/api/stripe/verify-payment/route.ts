@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 import { PedidoModel } from '@/lib/models/pedido';
 
 // Inicializar Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy_build', {
     apiVersion: '2025-12-15.clover',
 });
 

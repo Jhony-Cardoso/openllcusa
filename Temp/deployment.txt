@@ -289,29 +289,28 @@ Receiving objects:  79% (531/671)
 Receiving objects:  80% (537/671)
 Receiving objects:  81% (544/671)
 Receiving objects:  82% (551/671)
-Receiving objects:  83% (557/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  84% (564/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  85% (571/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  86% (578/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  87% (584/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  88% (591/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  89% (598/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  90% (604/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  91% (611/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  92% (618/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  93% (625/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  94% (631/671), 7.01 MiB | 14.04 MiB/s
-remote: Total 671 (delta 97), reused 635 (delta 92), pack-reused 0 (from 0)
-Receiving objects:  95% (638/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  96% (645/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  97% (651/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  98% (658/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects:  99% (665/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects: 100% (671/671), 7.01 MiB | 14.04 MiB/s
-Receiving objects: 100% (671/671), 13.08 MiB | 14.03 MiB/s, done.
+Receiving objects:  83% (557/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  84% (564/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  85% (571/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  86% (578/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  87% (584/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  88% (591/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  89% (598/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  90% (604/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  91% (611/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  92% (618/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  93% (625/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  94% (631/671), 6.40 MiB | 12.79 MiB/s
+remote: Total 671 (delta 97), reused 632 (delta 92), pack-reused 0 (from 0)
+Receiving objects:  95% (638/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  96% (645/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  97% (651/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  98% (658/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects:  99% (665/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects: 100% (671/671), 6.40 MiB | 12.79 MiB/s
+Receiving objects: 100% (671/671), 13.08 MiB | 14.58 MiB/s, done.
 Resolving deltas:   0% (0/97)
 Resolving deltas:   1% (1/97)
-Resolving deltas:   2% (2/97)
 Resolving deltas:   3% (3/97)
 Resolving deltas:   4% (4/97)
 Resolving deltas:   5% (5/97)
@@ -353,9 +352,11 @@ Resolving deltas:  41% (40/97)
 Resolving deltas:  42% (41/97)
 Resolving deltas:  43% (42/97)
 Resolving deltas:  44% (43/97)
+Resolving deltas:  45% (44/97)
 Resolving deltas:  46% (45/97)
 Resolving deltas:  47% (46/97)
 Resolving deltas:  48% (47/97)
+Resolving deltas:  49% (48/97)
 Resolving deltas:  50% (49/97)
 Resolving deltas:  51% (50/97)
 Resolving deltas:  52% (51/97)
@@ -373,7 +374,6 @@ Resolving deltas:  63% (62/97)
 Resolving deltas:  64% (63/97)
 Resolving deltas:  65% (64/97)
 Resolving deltas:  67% (65/97)
-Resolving deltas:  68% (66/97)
 Resolving deltas:  69% (67/97)
 Resolving deltas:  70% (68/97)
 Resolving deltas:  71% (69/97)
@@ -385,11 +385,11 @@ Resolving deltas:  76% (74/97)
 Resolving deltas:  77% (75/97)
 Resolving deltas:  78% (76/97)
 Resolving deltas:  79% (77/97)
-Resolving deltas:  80% (78/97)
 Resolving deltas:  81% (79/97)
 Resolving deltas:  82% (80/97)
 Resolving deltas:  83% (81/97)
 Resolving deltas:  84% (82/97)
+Resolving deltas:  85% (83/97)
 Resolving deltas:  86% (84/97)
 Resolving deltas:  87% (85/97)
 Resolving deltas:  88% (86/97)
@@ -397,7 +397,6 @@ Resolving deltas:  89% (87/97)
 Resolving deltas:  90% (88/97)
 Resolving deltas:  91% (89/97)
 Resolving deltas:  92% (90/97)
-Resolving deltas:  93% (91/97)
 Resolving deltas:  94% (92/97)
 Resolving deltas:  95% (93/97)
 Resolving deltas:  96% (94/97)
@@ -411,7 +410,7 @@ Building open-llc-usa-km3lzh
 #1 transferring dockerfile: 834B done
 #1 DONE 0.0s
 #2 [internal] load metadata for docker.io/library/node:20-alpine
-#2 DONE 0.6s
+#2 DONE 0.4s
 #3 [internal] load .dockerignore
 #3 transferring context: 141B done
 #3 DONE 0.0s
@@ -420,60 +419,61 @@ Building open-llc-usa-km3lzh
 #5 [builder 2/6] WORKDIR /app
 #5 CACHED
 #6 [internal] load build context
-#6 transferring context: 41.04MB 0.7s done
-#6 DONE 0.7s
+#6 transferring context: 41.04MB 1.6s done
+#6 DONE 1.6s
 #7 [builder 3/6] COPY package*.json ./
 #7 CACHED
 #8 [builder 4/6] RUN npm ci --legacy-peer-deps
 #8 CACHED
 #9 [builder 5/6] COPY . .
-#9 DONE 0.4s
+#9 CACHED
 #10 [builder 6/6] RUN npm run build
-#10 1.045
-#10 1.045 > openllc-nextjs@0.1.0 build
-#10 1.045 > next build
-#10 1.045
-#10 3.927 Attention: Next.js now collects completely anonymous telemetry regarding usage.
-#10 3.928 This information is used to shape Next.js' roadmap and prioritize features.
-#10 3.928 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-#10 3.928 https://nextjs.org/telemetry
-#10 3.928
-#10 4.211    ▲ Next.js 15.5.9
-#10 4.211    - Experiments (use with caution):
-#10 4.213      ⨯ webpackBuildWorker
-#10 4.213
-#10 4.615    Creating an optimized production build ...
-#10 82.32 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (181kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
-#10 111.4  ✓ Compiled successfully in 106s
-#10 111.4    Skipping validation of types
-#10 111.4    Skipping linting
-#10 112.8    Collecting page data ...
-#10 116.1 Error: Missing env var: NEXT_PUBLIC_SUPABASE_URL
-#10 116.1     at d (.next/server/app/api/debug-db/route.js:1:7679)
-#10 116.1     at 87613 (.next/server/app/api/debug-db/route.js:1:7770)
-#10 116.1     at c (.next/server/webpack-runtime.js:1:143)
-#10 116.1     at 32094 (.next/server/app/api/debug-db/route.js:1:1658)
-#10 116.1     at c (.next/server/webpack-runtime.js:1:143)
-#10 116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8082)
-#10 116.1     at c.X (.next/server/webpack-runtime.js:1:1285)
-#10 116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8058)
-#10 116.1     at Object.<anonymous> (.next/server/app/api/debug-db/route.js:1:8114)
-#10 116.1
-#10 116.1 > Build error occurred
-#10 116.1 [Error: Failed to collect page data for /api/debug-db] { type: 'Error' }
+#10 1.111
+#10 1.111 > openllc-nextjs@0.1.0 build
+#10 1.111 > next build
+#10 1.111
+#10 3.882 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#10 3.884 This information is used to shape Next.js' roadmap and prioritize features.
+#10 3.885 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#10 3.885 https://nextjs.org/telemetry
+#10 3.885
+#10 4.168    ▲ Next.js 15.5.9
+#10 4.168    - Experiments (use with caution):
+#10 4.168      ⨯ webpackBuildWorker
+#10 4.168
+#10 4.668    Creating an optimized production build ...
+#10 77.88 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (181kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+#10 102.3  ✓ Compiled successfully in 97s
+#10 102.4    Skipping validation of types
+#10 102.4    Skipping linting
+#10 103.2    Collecting page data ...
+#10 106.4 Error: Neither apiKey nor config.authenticator provided
+#10 106.4     at c._setAuthenticator (.next/server/chunks/9095.js:1:126512)
+#10 106.4     at new c (.next/server/chunks/9095.js:1:121109)
+#10 106.4     at 96555 (.next/server/app/api/stripe/checkout/route.js:1:6744)
+#10 106.4     at c (.next/server/webpack-runtime.js:1:143)
+#10 106.4     at <unknown> (.next/server/app/api/stripe/checkout/route.js:1:13951)
+#10 106.4     at c.X (.next/server/webpack-runtime.js:1:1285)
+#10 106.4     at <unknown> (.next/server/app/api/stripe/checkout/route.js:1:13913)
+#10 106.4     at Object.<anonymous> (.next/server/app/api/stripe/checkout/route.js:1:13983)
+#10 106.5
+#10 106.5 > Build error occurred
+#10 106.5 [Error: Failed to collect page data for /api/stripe/checkout] {
+#10 106.5   type: 'Error'
+#10 106.5 }
 #10 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
 ------
 > [builder 6/6] RUN npm run build:
-116.1     at c (.next/server/webpack-runtime.js:1:143)
-116.1     at 32094 (.next/server/app/api/debug-db/route.js:1:1658)
-116.1     at c (.next/server/webpack-runtime.js:1:143)
-116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8082)
-116.1     at c.X (.next/server/webpack-runtime.js:1:1285)
-116.1     at <unknown> (.next/server/app/api/debug-db/route.js:1:8058)
-116.1     at Object.<anonymous> (.next/server/app/api/debug-db/route.js:1:8114)
-116.1
-116.1 > Build error occurred
-116.1 [Error: Failed to collect page data for /api/debug-db] { type: 'Error' }
+106.4     at c (.next/server/webpack-runtime.js:1:143)
+106.4     at <unknown> (.next/server/app/api/stripe/checkout/route.js:1:13951)
+106.4     at c.X (.next/server/webpack-runtime.js:1:1285)
+106.4     at <unknown> (.next/server/app/api/stripe/checkout/route.js:1:13913)
+106.4     at Object.<anonymous> (.next/server/app/api/stripe/checkout/route.js:1:13983)
+106.5
+106.5 > Build error occurred
+106.5 [Error: Failed to collect page data for /api/stripe/checkout] {
+106.5   type: 'Error'
+106.5 }
 ------
 Dockerfile:14
 --------------------

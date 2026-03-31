@@ -43,32 +43,14 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Redirecciones 301 SEO-friendly de /servicios/ a /paquetes/
+  // Redirecciones 301 SEO-friendly
   async redirects() {
     return [
-      // 1. Catálogo /servicios va a /precios
-      {
-        source: '/servicios',
-        destination: '/precios',
-        permanent: true,
-      },
-      // 2. Corrección expresa del slug 'plan-compliance'
       {
         source: '/servicios/plan-compliance',
         destination: '/paquetes/compliance-basico/onboarding',
         permanent: true,
-      },
-      {
-        source: '/servicios/plan-compliance/onboarding/:path*',
-        destination: '/paquetes/compliance-basico/onboarding/:path*',
-        permanent: true,
-      },
-      // 3. Redirigir explícitamente solo si el usuario va directamente a onboarding de slugs antiguos
-      {
-        source: '/servicios/:slug(llc-esencial|launch-banking|primer-ano-pro|plan-crecimiento|pack-optimizacion|compliance-basico)/onboarding/:path*',
-        destination: '/paquetes/:slug/onboarding/:path*',
-        permanent: true,
-      },
+      }
     ];
   },
 

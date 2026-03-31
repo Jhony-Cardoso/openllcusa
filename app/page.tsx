@@ -145,17 +145,17 @@ export default function HomePage() {
 
       <SectionCalculadora />
 
-      <section id="servicios" className="section services-section py-16 bg-white">
+      <section id="comenzar" className="section services-section py-16 bg-white">
         <div className="section-container max-w-6xl mx-auto px-4">
           <div className="section-header text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Servicios hechos para emprendedores internacionales</h2>
           </div>
           <div className="services-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: '🏢', title: "Registro de LLC en EE.UU.", desc: "Crea tu empresa en Wyoming, New Mexico, Delaware o Florida. Listo para operar globalmente.", link: "/servicios/crear-llc", text: "Ver detalles" },
-              { icon: '🔢', title: "Obtén tu EIN sin SSN", desc: "Necesario para abrir cuenta bancaria, contratar y pagar impuestos.", link: "/servicios/ein", text: "Solicitar EIN" },
+              { icon: '🏢', title: "Registro de LLC en EE.UU.", desc: "Crea tu empresa en Wyoming, New Mexico, Delaware o Florida. Listo para operar globalmente.", link: "/servicios/llc-esencial", text: "Ver detalles" },
+              { icon: '🔢', title: "Obtén tu EIN sin SSN", desc: "Necesario para abrir cuenta bancaria, contratar y pagar impuestos.", link: "/servicios/obtencion-ein", text: "Solicitar EIN" },
               { icon: '📋', title: "Agente registrado confiable", desc: "Cumple con los requisitos legales de tu estado. Incluido el primer año.", link: "/servicios/agente-registrado", text: "Más información" },
-              { icon: '🏦', title: "Cuenta bancaria empresarial", desc: "Te conectamos con bancos que aceptan LLCs de no residentes.", link: "/servicios/cuenta-bancaria", text: "Explorar opciones" }
+              { icon: '🏦', title: "Cuenta bancaria empresarial", desc: "Te conectamos con bancos que aceptan LLCs de no residentes.", link: "/servicios/launch-banking", text: "Explorar opciones" }
             ].map((service, i) => (
               <div key={i} className="service-card bg-gray-50 p-6 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="service-icon text-4xl mb-4">{service.icon}</div>

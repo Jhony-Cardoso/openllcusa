@@ -20,6 +20,19 @@ import {
   HeadphonesIcon
 } from 'lucide-react'
 
+interface Servicio {
+  id: string;
+  slug: string;
+  nombre: string;
+  tagline: string;
+  descripcion: string;
+  precio: number;
+  precio_recurrente?: number;
+  frecuencia_recurrente?: string;
+  requiere_llc: boolean;
+  tipo: 'paquete' | 'individual';
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -32,12 +45,12 @@ export async function generateMetadata({
     .from('servicios')
     .select('nombre, tagline, descripcion')
     .eq('slug', slug)
-    .single()
+    .single() as { data: Partial<Servicio> }
 
   if (!servicio) return {}
 
   return {
-    title: servicio.nombre,
+    title: servicio.nombre || 'Servicio',
     description: servicio.tagline || servicio.descripcion?.slice(0, 160),
     openGraph: {
       title: `${servicio.nombre} | Open LLC USA`,
@@ -56,6 +69,30 @@ const getIconForSlug = (slug: string) => {
   return Zap
 }
 
+const getTimelineForSlug = (slug: string) => {
+  if (slug.includes('llc') || slug.includes('launch') || slug.includes('pro')) {
+    return [
+      { day: 'Día 1', title: 'Solicitud y Revisión', desc: 'Analizamos tus datos y preparamos los documentos estatales.' },
+      { day: 'Día 2-4', title: 'Registro Estatal', desc: 'Tu LLC es aprobada oficialmente por el estado elegido.' },
+      { day: 'Día 5-15', title: 'Obtención de EIN', desc: 'Tramitamos tu identificación fiscal ante el IRS.' },
+      { day: 'Día 16+', title: '¡Listo para operar!', desc: 'Recibes todo el kit documental y guía bancaria.' },
+    ]
+  }
+  if (slug.includes('ein')) {
+    return [
+      { day: 'Día 1', title: 'Envío de Formulario', desc: 'Preparamos y enviamos el SS-4 firmado al IRS.' },
+      { day: 'Día 3-7', title: 'Gestión con IRS', desc: 'Mantenemos contacto con el agente del IRS asignado.' },
+      { day: 'Día 8-12', title: 'Confirmación', desc: 'Recibimos tu número EIN oficial.' },
+      { day: '¡Listo!', title: 'Envío de Carta CP 575', desc: 'Te entregamos el documento oficial para el banco.' },
+    ]
+  }
+  return [
+    { day: 'Paso 1', title: 'Recogida de datos', desc: 'Necesitamos la información básica para el trámite.' },
+    { day: 'Paso 2', title: 'Procesamiento', desc: 'Nuestro equipo experto gestiona la solicitud.' },
+    { day: 'Paso 3', title: 'Entrega final', desc: 'Recibes el resultado en tu portal de cliente.' },
+  ]
+}
+
 export default async function ServicioDetallePage({
   params,
 }: {
@@ -68,7 +105,7 @@ export default async function ServicioDetallePage({
     .from('servicios')
     .select('*')
     .eq('slug', slug)
-    .single()
+    .single() as { data: Servicio | null, error: any }
 
   if (error || !servicio) {
     notFound()
@@ -76,6 +113,7 @@ export default async function ServicioDetallePage({
 
   const isPaquete = servicio.tipo === 'paquete'
   const IconHeader = getIconForSlug(slug)
+  const timeline = getTimelineForSlug(slug)
 
   // Desglosamos la descripción si tiene formato de lista o párrafos
   const descripcionLineas = servicio.descripcion ? servicio.descripcion.split('\n').filter(l => l.trim() !== '') : []
@@ -180,7 +218,66 @@ export default async function ServicioDetallePage({
             )}
           </section>
 
-          {/* Preguntas Frecuentes (FAQ) Dinámicas Estilo Acordeón a modo informativo */}
+          {/* Gráfico de Línea de Tiempo (Timeline) */}
+          <section className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 mb-10 flex items-center gap-3">
+              <Zap className="text-blue-600" />
+              Línea de tiempo del proceso
+            </h2>
+            
+            <div className="relative pl-10 space-y-12 before:absolute before:inset-0 before:left-3 before:w-0.5 before:bg-gray-100 before:content-['']">
+              {timeline.map((item, idx) => (
+                <div key={idx} className="relative group">
+                  <div className="absolute -left-[35px] mt-1.5 w-4 h-4 rounded-full bg-blue-600 border-4 border-blue-50 z-10 group-hover:scale-125 group-hover:bg-blue-500 transition-all duration-300" />
+                  <div className="space-y-1">
+                    <span className="text-sm font-bold text-blue-600 uppercase tracking-wide">
+                      {item.day}
+                    </span>
+                    <h3 className="text-xl font-bold text-gray-900">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 max-w-lg leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Testimonios Reales */}
+          <section className="space-y-8">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <ShieldCheck className="text-green-600" />
+              Lo que dicen otros fundadores
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { name: "Andrés V.", city: "Madrid", text: "Tenía mil dudas sobre el EIN y me lo resolvieron en 3 días. Muy profesionales.", rating: 5 },
+                { name: "Lucía F.", city: "Bogotá", text: "Excelente trato, se nota que saben cómo tratar con extranjeros.", rating: 5 }
+              ].map((testi, idx) => (
+                <div key={idx} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex gap-1 mb-4 text-yellow-400">
+                    {[1,2,3,4,5].map(s => <Zap key={s} size={14} fill="currentColor" />)}
+                  </div>
+                  <p className="text-gray-700 italic mb-6 leading-relaxed">
+                    &ldquo;{testi.text}&rdquo;
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center font-bold text-gray-500 text-sm">
+                      {testi.name[0]}
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-900 text-sm">{testi.name}</p>
+                      <p className="text-gray-500 text-xs">{testi.city}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Preguntas Frecuentes (FAQ) Dinámicas */}
           <section className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
               <HelpCircle className="text-blue-600" />

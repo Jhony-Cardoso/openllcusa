@@ -63,12 +63,7 @@ const nextConfig: NextConfig = {
         destination: '/paquetes/compliance-basico/onboarding/:path*',
         permanent: true,
       },
-      // 3. Redirigir explícitamente solo los paquetes de LLC (para no romper 'obtencion-ein', etc)
-      {
-        source: '/servicios/:slug(llc-esencial|launch-banking|primer-ano-pro|plan-crecimiento|pack-optimizacion|compliance-basico)',
-        destination: '/paquetes/:slug/onboarding',
-        permanent: true,
-      },
+      // 3. Redirigir explícitamente solo si el usuario va directamente a onboarding de slugs antiguos
       {
         source: '/servicios/:slug(llc-esencial|launch-banking|primer-ano-pro|plan-crecimiento|pack-optimizacion|compliance-basico)/onboarding/:path*',
         destination: '/paquetes/:slug/onboarding/:path*',

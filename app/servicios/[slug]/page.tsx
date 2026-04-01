@@ -120,6 +120,10 @@ export default async function ServicioDetallePage({
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 pt-24">
+      {/* CANARY servicios - quitar tras confirmar */}
+      <div style={{ background: '#7c3aed', color: '#fff', padding: '14px', textAlign: 'center', fontWeight: 800, fontSize: '18px' }}>
+        🟣 NUEVO DISEÑO ACTIVO · {servicio.nombre}
+      </div>
       {/* Breadcrumbs */}
       <nav className="max-w-7xl mx-auto px-6 mb-8 text-sm text-gray-500">
         <ol className="flex items-center space-x-2">

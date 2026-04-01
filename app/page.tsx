@@ -96,11 +96,6 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageJsonLd) }}
       />
 
-      {/* CANARY - Diagnóstico de despliegue - Quitar una vez confirmado */}
-      <div style={{ background: '#16a34a', color: '#fff', textAlign: 'center', padding: '12px', fontWeight: 700, fontSize: '16px', letterSpacing: '0.02em' }}>
-        🚀 v2.1 · Abril 2026 · ¡Nuevo diseño activo!
-      </div>
-
       <section className="hero bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
         <div className="hero-container max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-5xl font-bold mb-6">

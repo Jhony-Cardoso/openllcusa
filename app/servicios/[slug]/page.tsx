@@ -51,10 +51,10 @@ export async function generateMetadata({
 
   return {
     title: servicio.nombre || 'Servicio',
-    description: servicio.tagline || servicio.descripcion?.slice(0, 160),
+    description: servicio.descripcion?.slice(0, 160),
     openGraph: {
       title: `${servicio.nombre} | Open LLC USA`,
-      description: servicio.tagline,
+      description: servicio.descripcion?.slice(0, 160),
     }
   }
 }
@@ -159,7 +159,7 @@ export default async function ServicioDetallePage({
               </h1>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl">
-                {servicio.tagline}
+                {servicio.descripcion?.slice(0, 200)}{servicio.descripcion && servicio.descripcion.length > 200 ? '…' : ''}
               </p>
 
               <div className="grid sm:grid-cols-2 gap-4">

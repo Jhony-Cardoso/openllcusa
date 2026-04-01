@@ -406,8 +406,9 @@ export default function Header() {
       {
         title: 'CUMPLIMIENTO Y SOPORTE',
         items: [
-          { href: '/servicios/registrado', label: 'Agente Registrado', icon: <HelpCircle size={18} /> },
+          { href: '/servicios/agente-registrado', label: 'Agente Registrado', icon: <HelpCircle size={18} /> },
           { href: '/servicios/form-5472-1120', label: 'Impuestos Federales', icon: <BookOpen size={18} /> },
+          { href: '/servicios/reporte-anual', label: 'Reporte Anual', icon: <HelpCircle size={18} /> },
           { href: '/servicios/consultoria-legal', label: 'Consultoría Legal', icon: <Send size={18} /> }
         ]
       }

@@ -418,8 +418,9 @@ export default function Header() {
 
   const herramientasItems = useMemo(
     () => [
+      { href: '/guias', label: 'Guías', icon: <BookOpen size={18} /> },
       { href: '/lead-form', label: 'Calculadora', icon: <Search size={18} /> },
-      { href: '/quiz', label: 'Quiz', icon: <BookOpen size={18} /> }
+      { href: '/quiz', label: 'Quiz', icon: <HelpCircle size={18} /> }
     ],
     []
   )

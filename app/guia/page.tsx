@@ -58,7 +58,7 @@ export default function GuiasIndexPage() {
           {guides.map((guide, i) => (
             <Link 
               key={i} 
-              href={`/guias/${guide.slug}`}
+              href={`/guia/${guide.slug}`}
               className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col md:flex-row gap-6 items-start md:items-center"
             >
               <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">

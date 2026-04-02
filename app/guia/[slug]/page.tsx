@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, CheckCircle2, AlertTriangle, Info } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, AlertTriangle, Info, User } from 'lucide-react'
 
 // Contenido de las 5 guías altamente optimizadas para SEO y con tono humanizado.
 const guiasContent: Record<string, { title: string, content: React.ReactNode, meta: string }> = {
@@ -230,7 +230,7 @@ export default async function GuiaSlugPage(props: { params: Promise<{ slug: stri
       {/* Hero minimalista estilo Notion/Medium */}
       <header className="bg-slate-50 border-b border-slate-200 py-16 md:py-24">
         <div className="max-w-3xl mx-auto px-4">
-          <Link href="/guias" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors mb-8">
+          <Link href="/guia" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors mb-8">
             <ArrowLeft className="mr-2" size={16} /> Volver a todas las guías
           </Link>
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">

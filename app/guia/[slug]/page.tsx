@@ -56,37 +56,88 @@ const guiasContent: Record<string, { title: string, content: React.ReactNode, me
 
         <p>La inmensa mayoría del comercio digital se divide entre tres estados que destacan por encima del resto gracias a su flexibilidad fiscal, amigabilidad normativa y protección patrimonial. Analicemos los tres reyes del mundo LLC.</p>
 
-        <div className="grid md:grid-cols-3 gap-6 my-10">
-          <div className="bg-white p-6 border rounded-xl shadow-sm">
-            <h3 className="text-xl font-bold border-b pb-2 mb-4 text-center">Wyoming 🤠</h3>
-            <ul className="text-sm space-y-3">
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Anonimato:</strong> Alto. Tus datos no son públicos en el registro estatal inicial.</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Tasas anuales:</strong> ~$60 USD (Annual Report).</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Protección:</strong> Escudo patrimonial excelente frente a demandas (Charging Order Protection).</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Ideal para:</strong> E-commerce, freelancers, consultores y tenencia de activos blandos (bienes raíces, IPs).</li>
-            </ul>
+        {/* Comparison cards — rendered OUTSIDE prose to avoid layout conflicts */}
+        </><div className="not-prose grid md:grid-cols-3 gap-5 my-10">
+
+          {/* Wyoming */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-amber-50 px-6 py-4 border-b border-slate-200 text-center">
+              <div className="text-3xl mb-1">🤠</div>
+              <h3 className="text-lg font-bold text-slate-900">Wyoming</h3>
+            </div>
+            <div className="divide-y divide-slate-100">
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Anonimato</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm text-slate-700">Alto — tus datos no son públicos.</span></div>
+              </div>
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Tasas anuales</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm text-slate-700">~$60 USD (Annual Report)</span></div>
+              </div>
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Protección</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm text-slate-700">Excelente (Charging Order Protection)</span></div>
+              </div>
+              <div className="px-5 py-3 bg-green-50">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Ideal para</p>
+                <p className="text-sm text-slate-700">E-commerce, freelancers, consultores, activos digitales.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white p-6 border rounded-xl shadow-sm">
-            <h3 className="text-xl font-bold border-b pb-2 mb-4 text-center">Delaware 🏛️</h3>
-            <ul className="text-sm space-y-3">
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Anonimato:</strong> Medio. Es privado, pero muy escrutado.</li>
-              <li className="flex items-start gap-2"><AlertTriangle className="text-amber-500 shrink-0" size={18} /> <strong>Tasas anuales:</strong> $300 USD fijos (Franchise Tax).</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Corte legal:</strong> Dispone de la famosa Chancery Court (tribunales especializados en negocios).</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Ideal para:</strong> Startups tecnológicas que buscarán levantar Venture Capital a mediano plazo o ir a rondas semilla.</li>
-            </ul>
+          {/* Delaware */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-blue-50 px-6 py-4 border-b border-slate-200 text-center">
+              <div className="text-3xl mb-1">🏛️</div>
+              <h3 className="text-lg font-bold text-slate-900">Delaware</h3>
+            </div>
+            <div className="divide-y divide-slate-100">
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Anonimato</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm text-slate-700">Medio — privado, pero escrutado.</span></div>
+              </div>
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Tasas anuales</p>
+                <div className="flex items-center gap-2"><AlertTriangle className="text-amber-500 shrink-0" size={15} /><span className="text-sm font-semibold text-amber-700">$300 USD (Franchise Tax)</span></div>
+              </div>
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Ventaja clave</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm text-slate-700">Chancery Court (tribunal especializado)</span></div>
+              </div>
+              <div className="px-5 py-3 bg-blue-50">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Ideal para</p>
+                <p className="text-sm text-slate-700">Startups que buscan Venture Capital a mediano plazo.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white p-6 border rounded-xl shadow-sm">
-            <h3 className="text-xl font-bold border-b pb-2 mb-4 text-center">New Mexico 🌵</h3>
-            <ul className="text-sm space-y-3">
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Anonimato:</strong> Total. Ni dueños ni directores constan en los registros estatales.</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Tasas anuales:</strong> $0 USD. No exige un reporte anual ni Franchise Tax.</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Mantenimiento:</strong> El estado más barato del país para mantener una empresa a flote.</li>
-              <li className="flex items-start gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={18} /> <strong>Ideal para:</strong> Operaciones pequeñas, negocios en fase incipiente que buscan minimizar gastos a nivel de cumplimiento estatal.</li>
-            </ul>
+          {/* New Mexico */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-emerald-50 px-6 py-4 border-b border-slate-200 text-center">
+              <div className="text-3xl mb-1">🌵</div>
+              <h3 className="text-lg font-bold text-slate-900">New Mexico</h3>
+            </div>
+            <div className="divide-y divide-slate-100">
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Anonimato</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm text-slate-700">Total — sin registros públicos de dueños.</span></div>
+              </div>
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Tasas anuales</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm font-semibold text-green-700">$0 USD — sin Annual Report</span></div>
+              </div>
+              <div className="px-5 py-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Mantenimiento</p>
+                <div className="flex items-center gap-2"><CheckCircle2 className="text-green-500 shrink-0" size={15} /><span className="text-sm text-slate-700">El estado más barato del país.</span></div>
+              </div>
+              <div className="px-5 py-3 bg-emerald-50">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Ideal para</p>
+                <p className="text-sm text-slate-700">Proyectos bootstrap, filiales y negocios en fase inicial.</p>
+              </div>
+            </div>
           </div>
-        </div>
+
+        </div><>
 
         <h2>Entonces, ¿cuál elijo?</h2>
         <p>Regla de oro: <strong>Olvida Delaware</strong> a menos que pienses recibir inversión de fondos o ángeles (y en esos casos, la mayoría te exigirá una estructura de C-Corporation, no de LLC). Delaware está diseñado para grandes firmas y su impuesto anual de $300 es una losa para negocios pequeños.</p>

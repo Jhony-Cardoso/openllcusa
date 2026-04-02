@@ -57,6 +57,7 @@
 
 .header-logo:hover {
   opacity: 0.9;
+  color: white;
 }
 
 .header-logo span {

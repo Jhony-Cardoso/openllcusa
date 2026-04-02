@@ -194,8 +194,11 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/paquetes/llc-esencial/onboarding" className="btn btn-primary">
+                    <a href="/paquetes/llc-esencial/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
                       Empezar con LLC Esencial
+                    </a>
+                    <a href="/servicios/llc-esencial" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
+                      Ver detalles del servicio →
                     </a>
                     <p className="pricing-card-footnote">
                       Ideal si quieres arrancar lean y luego ampliar con planes de mantenimiento.
@@ -247,8 +250,11 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/paquetes/launch-banking/onboarding" className="btn btn-primary">
+                    <a href="/paquetes/launch-banking/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
                       Lanzar mi LLC con acompañamiento
+                    </a>
+                    <a href="/servicios/launch-banking" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
+                      Ver detalles del servicio →
                     </a>
                     <p className="pricing-card-footnote">
                       Recomendado si tu objetivo es facturar en los próximos 30–60 días.
@@ -293,8 +299,11 @@ export default function PricingPage() {
                     </li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/paquetes/primer-ano-pro/onboarding" className="btn btn-primary">
+                    <a href="/paquetes/primer-ano-pro/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
                       Quiero olvidarme del primer año
+                    </a>
+                    <a href="/servicios/primer-ano-pro" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
+                      Ver detalles del servicio →
                     </a>
                     <p className="pricing-card-footnote">
                       Puedes pasar a un plan mensual de mantenimiento al terminar el primer año.
@@ -367,8 +376,11 @@ export default function PricingPage() {
                     <li>Sin permanencia: puedes pausar o cambiar de plan cuando lo necesites.</li>
                   </ul>
                   <div className="pricing-card-cta">
-                    <a href="/paquetes/compliance-basico/onboarding" className="btn btn-primary">
+                    <a href="/paquetes/compliance-basico/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
                       Activar Compliance Básico
+                    </a>
+                    <a href="/servicios/compliance-basico" className="btn btn-white" style={{ display: 'block', textAlign: 'center' }}>
+                      Ver detalles del servicio →
                     </a>
                   </div>
                 </div>

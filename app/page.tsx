@@ -157,13 +157,20 @@ export default function HomePage() {
               { icon: '📋', title: "Agente registrado confiable", desc: "Cumple con los requisitos legales de tu estado. Incluido el primer año.", link: "/servicios/agente-registrado", text: "Más información" },
               { icon: '🏦', title: "Cuenta bancaria empresarial", desc: "Te conectamos con bancos que aceptan LLCs de no residentes.", link: "/servicios/launch-banking", text: "Explorar opciones" }
             ].map((service, i) => (
-              <div key={i} className="service-card bg-gray-50 p-6 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="service-icon text-4xl mb-4">{service.icon}</div>
-                <h3 className="font-bold text-lg mb-2">{service.title}</h3>
-                <p className="text-gray-600 mb-4">{service.desc}</p>
-                <Link href={service.link} className="service-link text-blue-600 font-medium hover:underline">
-                  {service.text} →
-                </Link>
+              <div key={i} className="bg-white p-8 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 relative overflow-hidden group hover:shadow-[0_20px_40px_rgba(37,99,235,0.08)] hover:-translate-y-1 transition-all duration-300">
+                <div className="absolute -top-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] group-hover:scale-110 transition-all duration-500 pointer-events-none text-9xl">
+                  {service.icon}
+                </div>
+                <div className="relative z-10">
+                  <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-sm">
+                    {service.icon}
+                  </div>
+                  <h3 className="font-extrabold text-xl mb-3 text-gray-900 leading-tight">{service.title}</h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{service.desc}</p>
+                  <Link href={service.link} className="inline-flex items-center text-blue-600 font-bold hover:text-blue-800 transition-colors group-hover:translate-x-1">
+                    {service.text} <span className="ml-1">→</span>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>

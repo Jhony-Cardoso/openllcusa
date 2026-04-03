@@ -271,11 +271,20 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array>
     // Mensaje Final
     page.drawText('Gracias por confiar en Open LLC USA', {
         x: width / 2 - 80,
-        y: 50,
+        y: 60,
         size: 10,
         font: fontBold,
         color: blueColor,
     })
+
+    // Disclaimer Legal (No-ETBUS / Foreign-Source Income)
+    const disclaimer1 = "LEGAL NOTICE: Zara Designs LLC is a foreign-owned disregarded entity. All services invoiced herein are performed exclusively"
+    const disclaimer2 = "outside the United States. The company maintains no US trade or business (ETBUS) and no physical presence in the US."
+    const disclaimer3 = "Accordingly, this income is foreign-source and not subject to US federal income tax or withholding."
+
+    page.drawText(disclaimer1, { x: 50, y: 35, size: 6, font: fontRegular, color: grayLight })
+    page.drawText(disclaimer2, { x: 50, y: 28, size: 6, font: fontRegular, color: grayLight })
+    page.drawText(disclaimer3, { x: 50, y: 21, size: 6, font: fontRegular, color: grayLight })
 
     // ============================================================
     // SELLOS — solo se estampan en facturas PAGADAS

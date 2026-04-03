@@ -306,7 +306,7 @@ export default function DisclaimerModal() {
             </button>
             
             <a
-              href="/legal/terms-and-conditions"
+              href="/legal/terminos-calculadora"
               target="_blank"
               style={{
                 flex: 1,

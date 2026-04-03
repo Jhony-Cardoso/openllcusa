@@ -202,7 +202,7 @@ export default function PrivacyPolicyPage() {
             <a href="/calculadora-fiscal" className={styles.primaryButton}>
               🧮 Ir a la Calculadora
             </a>
-            <a href="/legal/terms-and-conditions" className={styles.secondaryButton}>
+            <a href="/legal/condiciones-generales" className={styles.secondaryButton}>
               📄 Ver Términos
             </a>
           </div>

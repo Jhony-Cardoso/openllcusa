@@ -385,7 +385,7 @@ export default function CalculadoraFiscal() {
             <span style={{ fontSize: '1.25rem', marginRight: '0.5rem' }}>⚠️</span>
             <strong>Información orientativa:</strong> Esta calculadora NO constituye asesoramiento fiscal, legal ni financiero personalizado.{' '}
             <a
-              href="/legal/terms-and-conditions"
+              href="/legal/terminos-calculadora"
               style={{
                 textDecoration: 'underline',
                 color: '#92400e',
@@ -620,7 +620,7 @@ export default function CalculadoraFiscal() {
             <p className={styles.legalUpdate}>
               <strong>Última actualización:</strong> 2 noviembre 2025 | <strong>Versión:</strong> 2.3.2
               <br />
-              <a href="/legal/terms-and-conditions" target="_blank" className={styles.legalLink}>
+              <a href="/legal/terminos-calculadora" target="_blank" className={styles.legalLink}>
                 Ver Términos y Condiciones completos →
               </a>
             </p>

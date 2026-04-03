@@ -14,7 +14,7 @@ export const metadata = {
 };
 
 async function getTermsContent() {
-  const filePath = path.join(process.cwd(), 'legal', 'terms-and-conditions.md');
+  const filePath = path.join(process.cwd(), 'legal', 'calculator-terms-of-use.md');
   const fileContent = fs.readFileSync(filePath, 'utf8');
   
   const processedContent = await remark()

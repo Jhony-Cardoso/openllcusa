@@ -145,7 +145,7 @@ export default function CookiesBanner() {
               <div className={styles.links}>
                 <a href="/legal/privacy-policy">Política de Privacidad</a>
                 <span>•</span>
-                <a href="/legal/terms-and-conditions">Términos y Condiciones</a>
+                <a href="/legal/condiciones-generales">Términos y Condiciones</a>
               </div>
             </>
           ) : (

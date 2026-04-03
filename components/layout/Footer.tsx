@@ -175,7 +175,7 @@ export default function Footer() {
             <div className="footer-column">
               <h4 className="footer-column-title">Legal</h4>
               <ul className="footer-links">
-                <li><Link href="/legal/terms-and-conditions">Términos y condiciones</Link></li>
+                <li><Link href="/legal/condiciones-generales">Términos y condiciones</Link></li>
                 <li><Link href="/legal/privacy-policy">Política de privacidad</Link></li>
                 <li><Link href="/legal/changelog">Historial de cambios</Link></li>
               </ul>

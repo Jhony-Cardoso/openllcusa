@@ -78,11 +78,14 @@ El usuario se compromete a:
 
 ### 3.1 Responsable del Tratamiento
 
-**Identidad**: [NOMBRE DE TU EMPRESA / AUTÓNOMO]  
-**NIF/CIF**: [TU NIF/CIF]  
-**Dirección**: [TU DIRECCIÓN]  
-**Email**: [TU EMAIL]  
-**DPO (Delegado de Protección de Datos)**: [EMAIL DPO]  
+**Marca comercial**: Open LLC USA  
+**Sociedad que opera la marca**: Zara Designs LLC  
+**EIN (Tax ID USA)**: 61-2095415  
+**Dirección**: Miami, FL 33101, USA  
+**Email**: info@openllcusa.com  
+**DPO (Delegado de Protección de Datos)**: legal@openllcusa.com  
+
+> *Open LLC USA es la marca comercial bajo la que opera Zara Designs LLC, sociedad de responsabilidad limitada constituida de acuerdo con las leyes del Estado de Wyoming (EE.UU.).*
 
 ### 3.2 Base Legal y Finalidad
 
@@ -558,16 +561,16 @@ La Herramienta puede contener enlaces a sitios web de terceros. El proveedor:
 - NO garantiza la disponibilidad o exactitud de los mismos
 - La inclusión de un enlace no implica endorsement o aprobación
 
-### 14.5 Información de Registro Mercantil
+### 14.5 Información de la Sociedad Titular
 
-[Si tu empresa está registrada, incluir:]
+**Marca comercial**: Open LLC USA  
+**Sociedad titular y operadora**: Zara Designs LLC  
+**Forma jurídica**: Limited Liability Company (LLC) — Wyoming, Estados Unidos  
+**EIN (Número de Identificación del Empleador, IRS)**: 61-2095415  
+**Domicilio social**: Miami, FL 33101, USA  
+**Email de contacto**: info@openllcusa.com  
 
-**Razón Social**: [NOMBRE COMPLETO EMPRESA]  
-**Forma jurídica**: [SL / SA / Autónomo]  
-**NIF**: [CIF]  
-**Domicilio social**: [DIRECCIÓN COMPLETA]  
-**Registro Mercantil**: [CIUDAD], Tomo [X], Folio [X], Hoja [X], Inscripción [X]  
-**Capital social**: [CANTIDAD] € (totalmente desembolsado)  
+> *Los servicios comercializados bajo la marca **Open LLC USA** son prestados por **Zara Designs LLC**, entidad legalmente constituida y en plena vigencia en el Estado de Wyoming (EE.UU.). La marca Open LLC USA identifica la actividad comercial orientada a emprendedores hispanohablantes, siendo Zara Designs LLC la persona jurídica responsable a todos los efectos legales, contractuales y fiscales.*
 
 ---
 
@@ -585,9 +588,9 @@ Al usar esta Herramienta, confirmas que:
 ---
 
 **Fecha de entrada en vigor**: 31 de octubre de 2025  
-**Versión**: 2.3.1  
+**Versión**: 2.3.2  
 
-Para consultas sobre estos Términos: [EMAIL LEGAL]
+Para consultas sobre estos Términos: legal@openllcusa.com
 
 ---
 

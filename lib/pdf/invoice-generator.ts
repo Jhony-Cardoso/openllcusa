@@ -106,12 +106,21 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array>
     const grayLight = rgb(0.5, 0.5, 0.5)
 
     // --- HEADER ---
+    // Marca principal — grande y dominante
     page.drawText('Open LLC USA', {
         x: 50,
-        y: height - 50,
-        size: 24,
+        y: height - 48,
+        size: 22,
         font: fontBold,
         color: blueColor,
+    })
+    // Entidad mercantil — pequeña, discreta, debajo de la marca
+    page.drawText('Zara Designs LLC', {
+        x: 50,
+        y: height - 64,
+        size: 7.5,
+        font: fontRegular,
+        color: grayLight,
     })
 
     // Título FACTURA
@@ -156,6 +165,8 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array>
     })
     currentY -= 15
     page.drawText('Open LLC USA', { x: leftMargin, y: currentY, size: 10, font: fontBold, color: grayDark })
+    currentY -= 11
+    page.drawText('(Zara Designs LLC)', { x: leftMargin, y: currentY, size: 7.5, font: fontRegular, color: grayLight })
     currentY -= 12
     page.drawText('123 Business Street', { x: leftMargin, y: currentY, size: 10, font: fontRegular, color: grayDark })
     currentY -= 12

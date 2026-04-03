@@ -1,7 +1,8 @@
 
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
+import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib'
 import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
+import * as fs from 'fs'
+import * as path from 'path'
 
 interface InvoiceData {
     numeroFactura: string
@@ -26,6 +27,69 @@ interface InvoiceData {
     fechaPago?: Date
 }
 
+/**
+ * Loads a PNG image from the public/stamps directory and embeds it in the PDF.
+ * Returns null if the file cannot be loaded (graceful degradation).
+ */
+async function loadStampImage(doc: PDFDocument, filename: string) {
+    try {
+        const stampPath = path.join(process.cwd(), 'public', 'stamps', filename)
+        const imageBytes = fs.readFileSync(stampPath)
+        return await doc.embedPng(imageBytes)
+    } catch {
+        console.warn(`[invoice-generator] Could not load stamp: ${filename}`)
+        return null
+    }
+}
+
+/**
+ * Draws a simple decorative rubric/flourish below a given point.
+ * Uses bezier-like line segments to simulate a calligraphic signature.
+ */
+function drawRubric(page: ReturnType<PDFDocument['addPage']>, originX: number, originY: number) {
+    const blue = rgb(0.102, 0.302, 0.620) // deep navy blue, like real ink
+
+    // Stroke 1: main sweeping flourish (left arc)
+    page.drawLine({
+        start: { x: originX - 18, y: originY },
+        end:   { x: originX + 8,  y: originY + 8 },
+        thickness: 1.4,
+        color: blue,
+        opacity: 0.75,
+    })
+    // Stroke 2: counter-stroke going right
+    page.drawLine({
+        start: { x: originX + 8,  y: originY + 8 },
+        end:   { x: originX + 32, y: originY - 3 },
+        thickness: 1.0,
+        color: blue,
+        opacity: 0.65,
+    })
+    // Stroke 3: tail loop
+    page.drawLine({
+        start: { x: originX + 32, y: originY - 3 },
+        end:   { x: originX + 20, y: originY - 10 },
+        thickness: 0.7,
+        color: blue,
+        opacity: 0.55,
+    })
+    page.drawLine({
+        start: { x: originX + 20, y: originY - 10 },
+        end:   { x: originX + 40, y: originY - 8 },
+        thickness: 0.5,
+        color: blue,
+        opacity: 0.45,
+    })
+    // Stroke 4: underline accent
+    page.drawLine({
+        start: { x: originX - 20, y: originY - 14 },
+        end:   { x: originX + 44, y: originY - 14 },
+        thickness: 0.6,
+        color: blue,
+        opacity: 0.35,
+    })
+}
+
 export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array> {
     // Crear documento
     const doc = await PDFDocument.create()
@@ -42,7 +106,6 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array>
     const grayLight = rgb(0.5, 0.5, 0.5)
 
     // --- HEADER ---
-    // Logo (Simulado con texto por ahora, idealmente cargar imagen)
     page.drawText('Open LLC USA', {
         x: 50,
         y: height - 50,
@@ -166,6 +229,9 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array>
         currentY -= 25
     }
 
+    // Guardamos la Y justo debajo de la última fila de items (para colocar sello PAID aquí)
+    const tableBottomY = currentY
+
     // --- TOTALES ---
     currentY -= 20
     const totalsX = 400
@@ -185,26 +251,6 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array>
     // --- FOOTER ---
     const footerY = 100
 
-    // Estado del Pago
-    if (data.estadoPago === 'pagada') {
-        page.drawRectangle({
-            x: 50,
-            y: footerY,
-            width: 100,
-            height: 25,
-            color: rgb(0.86, 0.97, 0.88), // Verde claro
-            borderColor: rgb(0.1, 0.6, 0.2),
-            borderWidth: 1,
-        })
-        page.drawText('PAGADA', {
-            x: 75,
-            y: footerY + 8,
-            size: 10,
-            font: fontBold,
-            color: rgb(0.1, 0.6, 0.2),
-        })
-    }
-
     // Detalles del Pago
     page.drawText(`Método de Pago: ${data.metodoPago}`, { x: 50, y: footerY - 20, size: 9, font: fontRegular, color: grayDark })
     if (data.fechaPago) {
@@ -219,6 +265,56 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Uint8Array>
         font: fontBold,
         color: blueColor,
     })
+
+    // ============================================================
+    // SELLOS — solo se estampan en facturas PAGADAS
+    // ============================================================
+    if (data.estadoPago === 'pagada') {
+
+        // --- SELLO 1: INVOICE PAID ---
+        // Posición: izquierda, justo debajo de la tabla de items
+        // Tamaño: 120 x 76 pts (~42mm x 27mm), rotado +15°
+        const selloPaidImg = await loadStampImage(doc, 'sello-paid.png')
+        if (selloPaidImg) {
+            const paidW = 120
+            const paidH = 76
+            // El pivot de rotación en pdf-lib es bottom-left del bounding box.
+            // Para centrar el sello visualmente en x=120, y=tableBottomY-45:
+            const paidX = 50
+            const paidY = tableBottomY - 60
+
+            page.drawImage(selloPaidImg, {
+                x: paidX,
+                y: paidY,
+                width: paidW,
+                height: paidH,
+                rotate: degrees(15),   // oblicuo hacia la derecha
+                opacity: 0.82,
+            })
+        }
+
+        // --- SELLO 2: ZARA DESIGNS (circular) + rúbrica ---
+        // Posición: parte inferior derecha
+        // Tamaño: 90 x 90 pts (~32mm), rotado -8°
+        const selloZaraImg = await loadStampImage(doc, 'sello-zara.png')
+        if (selloZaraImg) {
+            const zaraSize = 90
+            const zaraX = width - 160
+            const zaraY = 130   // zona inferior derecha
+
+            page.drawImage(selloZaraImg, {
+                x: zaraX,
+                y: zaraY,
+                width: zaraSize,
+                height: zaraSize,
+                rotate: degrees(-8),
+                opacity: 0.80,
+            })
+
+            // Rúbrica decorativa debajo del sello
+            drawRubric(page, zaraX + zaraSize / 2 - 12, zaraY - 14)
+        }
+    }
 
     const pdfBytes = await doc.save()
     return pdfBytes

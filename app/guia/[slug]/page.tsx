@@ -56,8 +56,8 @@ const guiasContent: Record<string, { title: string, content: React.ReactNode, me
 
         <p>La inmensa mayoría del comercio digital se divide entre tres estados que destacan por encima del resto gracias a su flexibilidad fiscal, amigabilidad normativa y protección patrimonial. Analicemos los tres reyes del mundo LLC.</p>
 
-        {/* Comparison cards — rendered OUTSIDE prose to avoid layout conflicts */}
-        </><div className="not-prose grid md:grid-cols-3 gap-5 my-10">
+        {/* Comparison cards — not-prose so Tailwind prose doesn't break the flex layout */}
+        <div className="not-prose grid md:grid-cols-3 gap-5 my-10">
 
           {/* Wyoming */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
@@ -137,7 +137,8 @@ const guiasContent: Record<string, { title: string, content: React.ReactNode, me
             </div>
           </div>
 
-        </div><>
+        </div>
+
 
         <h2>Entonces, ¿cuál elijo?</h2>
         <p>Regla de oro: <strong>Olvida Delaware</strong> a menos que pienses recibir inversión de fondos o ángeles (y en esos casos, la mayoría te exigirá una estructura de C-Corporation, no de LLC). Delaware está diseñado para grandes firmas y su impuesto anual de $300 es una losa para negocios pequeños.</p>

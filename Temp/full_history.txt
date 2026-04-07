@@ -1,0 +1,1056 @@
+COMMIT: 607245d | 2026-04-04 | Axel-Martinez | A├▒adir rutas dinamicas para los paises de la guia y limpiar next.config
+
+A	app/guias/[country]/page.tsx
+M	next.config.ts
+COMMIT: 55a523e | 2026-04-04 | Axel-Martinez | Eliminar guias de la app y actualizar tsconfig
+
+M	Temp/Logs.txt
+A	Temp/desktop.ini
+D	app/guias/[code]/page.tsx
+D	app/guias/ar/page.tsx
+D	app/guias/at/page.tsx
+D	app/guias/au/page.tsx
+D	app/guias/bd/page.tsx
+D	app/guias/be/page.tsx
+D	app/guias/bo/page.tsx
+D	app/guias/br/page.tsx
+D	app/guias/ch/page.tsx
+D	app/guias/cl/page.tsx
+D	app/guias/co/page.tsx
+D	app/guias/cr/page.tsx
+D	app/guias/cu/page.tsx
+D	app/guias/de/page.tsx
+D	app/guias/dk/page.tsx
+D	app/guias/do/page.tsx
+D	app/guias/ec/page.tsx
+D	app/guias/eg/page.tsx
+D	app/guias/es/page.tsx
+D	app/guias/fi/page.tsx
+D	app/guias/fr/page.tsx
+D	app/guias/gr/page.tsx
+D	app/guias/gt/page.tsx
+D	app/guias/hn/page.tsx
+D	app/guias/id/page.tsx
+D	app/guias/in/page.tsx
+D	app/guias/it/page.tsx
+D	app/guias/jp/page.tsx
+D	app/guias/ke/page.tsx
+D	app/guias/kr/page.tsx
+D	app/guias/mx/page.tsx
+D	app/guias/my/page.tsx
+D	app/guias/ng/page.tsx
+D	app/guias/ni/page.tsx
+D	app/guias/nl/page.tsx
+D	app/guias/no/page.tsx
+D	app/guias/nz/page.tsx
+D	app/guias/pa/page.tsx
+D	app/guias/pe/page.tsx
+D	app/guias/ph/page.tsx
+D	app/guias/pk/page.tsx
+D	app/guias/pl/page.tsx
+D	app/guias/pr/page.tsx
+D	app/guias/pt/page.tsx
+D	app/guias/py/page.tsx
+D	app/guias/ro/page.tsx
+D	app/guias/se/page.tsx
+D	app/guias/sg/page.tsx
+D	app/guias/sv/page.tsx
+D	app/guias/th/page.tsx
+D	app/guias/tr/page.tsx
+D	app/guias/uk/page.tsx
+D	app/guias/uy/page.tsx
+D	app/guias/ve/page.tsx
+D	app/guias/vn/page.tsx
+D	app/guias/za/page.tsx
+M	tsconfig.json
+COMMIT: 9c75941 | 2026-04-04 | Axel-Martinez | Fix CSS import path in condiciones-generales page
+
+M	app/legal/condiciones-generales/page.tsx
+COMMIT: 9fc2b24 | 2026-04-04 | Axel-Martinez | Split general T&C from calculator T&C to avoid name collisions
+
+M	app/calculadora-fiscal/page.tsx
+A	app/legal/condiciones-generales/page.tsx
+M	app/legal/privacy-policy/page.tsx
+R096	app/legal/terms-and-conditions/page.tsx	app/legal/terminos-calculadora/page.tsx
+M	components/calculator/modals/DisclaimerModal.tsx
+M	components/layout/Footer.tsx
+M	components/shared/CookiesBanner.tsx
+R100	legal/terms-and-conditions.md	legal/calculator-terms-of-use.md
+A	legal/general-terms.md
+COMMIT: 102dcab | 2026-04-04 | Axel-Martinez | Add No-ETBUS foreign-source legal disclaimer to invoice footer
+
+M	lib/pdf/invoice-generator.ts
+COMMIT: f02f807 | 2026-04-04 | Axel-Martinez | Add Zara Designs LLC as legal entity behind Open LLC USA in T&C and invoices
+
+M	legal/terms-and-conditions.md
+M	lib/pdf/invoice-generator.ts
+COMMIT: 58c9502 | 2026-04-04 | Axel-Martinez | Add INVOICE PAID + Zara Designs stamps to paid invoices PDF generator; fix JSX error in guide page
+
+M	app/guia/[slug]/page.tsx
+M	lib/pdf/invoice-generator.ts
+A	public/stamps/sello-paid.png
+A	public/stamps/sello-zara.png
+COMMIT: 2e85698 | 2026-04-03 | Axel-Martinez | Fix comparison cards layout in estado-elegir guide
+
+M	app/guia/[slug]/page.tsx
+COMMIT: 3127dac | 2026-04-03 | Axel-Martinez | Downgrade Clerk to 6.11.0 to fix Turbopack Server Action error
+
+M	package-lock.json
+M	package.json
+COMMIT: 98c7e5e | 2026-04-02 | Axel-Martinez | Fix Ambiguous Router by moving guias/[slug] to guia/[slug]
+
+M	Temp/Logs.txt
+R099	app/guias/[slug]/page.tsx	app/guia/[slug]/page.tsx
+R098	app/guias/page.tsx	app/guia/page.tsx
+M	components/layout/Header.tsx
+COMMIT: d19a653 | 2026-04-02 | Axel-Martinez | Add Gu├¡as section with 5 SEO optimized articles
+
+A	app/guias/[slug]/page.tsx
+A	app/guias/page.tsx
+M	components/layout/Header.tsx
+COMMIT: 5ea78aa | 2026-04-02 | Axel-Martinez | Fix header-logo hover text color blending with background
+
+M	app/header.css
+COMMIT: b5e0d48 | 2026-04-02 | Axel-Martinez | Modernize home services glassmorphism & add Details links in Pricing page
+
+M	app/page.tsx
+M	app/precios/page.tsx
+COMMIT: 80e502b | 2026-04-02 | Axel-Martinez | Actualizando Next.js
+
+A	Temp/Logs.txt
+A	Temp/list-slugs.mjs
+M	package-lock.json
+M	package.json
+COMMIT: 970f960 | 2026-04-02 | Axel-Martinez | Add compliance-basico logic and tailor impuestos-federales slug
+
+M	app/servicios/[slug]/page.tsx
+A	scripts/update-slugs.mjs
+COMMIT: 88aba68 | 2026-04-02 | Axel-Martinez | Add Reporte Anual and tailor Timelines & FAQs for all secondary services
+
+M	app/servicios/[slug]/page.tsx
+M	components/layout/Header.tsx
+A	scripts/add-reporte-anual.mjs
+COMMIT: 53faf41 | 2026-04-01 | Axel-Martinez | Premium service page with CSS in globals.css (bypass Tailwind cache issue); add Timeline, Testimonials, FAQ
+
+M	app/globals.css
+M	app/servicios/[slug]/page.tsx
+COMMIT: a23a7a9 | 2026-04-01 | Axel-Martinez | CANARY servicios: inline purple banner to test dynamic route deployment
+
+M	app/servicios/[slug]/page.tsx
+COMMIT: 5f47faa | 2026-04-01 | Axel-Martinez | Remove canary banner; fix tagline->descripcion in servicios detail page
+
+M	app/page.tsx
+M	app/servicios/[slug]/page.tsx
+COMMIT: 0595666 | 2026-04-01 | Axel-Martinez | CANARY: deployment diagnostic banner v2.1
+
+M	app/page.tsx
+COMMIT: 22bc32c | 2026-04-01 | Axel-Martinez | Simplify next.config.ts to debug general 404 error after static folder removal
+
+M	next.config.ts
+COMMIT: b1281d1 | 2026-04-01 | Axel-Martinez | Premium service page with Timeline and Testimonials; remove legacy static pages
+
+M	app/servicios/[slug]/page.tsx
+D	app/servicios/form-5472-1120/guia-transacciones/page.tsx
+D	app/servicios/form-5472-1120/onboarding/page.tsx
+COMMIT: 764503b | 2026-04-01 | Axel-Martinez | Correcciones en la Home y en Servicios
+
+M	app/servicios/[slug]/page.tsx
+D	app/servicios/form-5472-1120/page.tsx
+D	app/servicios/obtencion-ein/page.tsx
+A	tmp_check_servicios.mjs
+COMMIT: e12e73f | 2026-04-01 | Axel-Martinez | Allow users to see service detail pages before onboarding by removing absolute redir
+
+M	next.config.ts
+COMMIT: 8c0e503 | 2026-04-01 | Axel-Martinez | Correciones en la Home
+
+D	Temp/deployment.txt
+COMMIT: 57e3bd7 | 2026-03-31 | Axel-Martinez | Fix Home buttons jump to #comenzar and resolve 404 service links
+
+M	app/page.tsx
+COMMIT: 468c7e3 | 2026-03-26 | Axel-Martinez | Update NEXT_PUBLIC_BASE_URL to openllcusa.com
+
+M	Dockerfile
+COMMIT: b0b0210 | 2026-03-25 | Axel-Martinez | Inject NEXT_PUBLIC variables into Dockerfile to pass Clerk build requirements
+
+M	Dockerfile
+COMMIT: 4e8b901 | 2026-03-25 | Axel-Martinez | Bypass Stripe empty string error on API routes during docker build
+
+M	Temp/deployment.txt
+M	app/api/stripe/checkout-servicio/route.ts
+M	app/api/stripe/checkout/route.ts
+M	app/api/stripe/create-checkout-session/route.ts
+M	app/api/stripe/verify-payment/route.ts
+M	app/api/stripe/verify-session/route.ts
+COMMIT: d5510e3 | 2026-03-25 | Axel-Martinez | Bypass Supabase strict empty string error during docker build
+
+M	Temp/deployment.txt
+M	lib/supabase-admin.ts
+M	lib/supabase/client.ts
+M	lib/supabase/server.ts
+COMMIT: 1283c43 | 2026-03-25 | Axel-Martinez | Bypass Resend and Stripe strict empty string errors during build
+
+M	Temp/deployment.txt
+M	lib/services/email.service.ts
+M	lib/stripe.ts
+COMMIT: 56712e3 | 2026-03-25 | Axel-Martinez | Fix build errors Nextjs and ESLint
+
+A	Temp/deployment.txt
+D	app/api/auth/login/route.ts
+D	app/api/auth/register/route.ts
+D	app/api/blog/route.ts
+D	app/api/calculator/generate-pdf/route.ts
+M	app/api/calculator/lead-capture/route.ts
+D	app/api/calculator/send-email/route.ts
+D	app/api/contact/route.ts
+M	app/api/pedidos/[id]/descargar-carta-ein/route.ts
+M	app/guias/[code]/page.tsx
+D	app/login/page.tsx
+D	app/onboarding/page.tsx
+D	app/proceso/layout.tsx
+D	app/proceso/page.tsx
+M	app/quiz/resultado/page.tsx
+D	app/registro/page.tsx
+D	app/testimonios/layout.tsx
+D	app/testimonios/page.tsx
+D	app/types/auth.ts
+D	app/types/blog.ts
+D	app/types/calculator.ts
+D	app/types/order.ts
+M	next.config.ts
+COMMIT: e44e98f | 2026-03-25 | Axel-Martinez | fix: clean Dockerfile for Supabase (remove Prisma copy)
+
+M	Dockerfile
+COMMIT: 47d3f36 | 2026-03-25 | Axel-Martinez | feat: add optimized Dockerfile for production
+
+A	.dockerignore
+A	Dockerfile
+M	package.json
+COMMIT: ad2b52c | 2026-03-25 | Axel-Martinez | Actualizar next.config.ts con output standalone y  corregir script de build
+
+M	next.config.ts
+M	package.json
+COMMIT: 41a4630 | 2026-03-24 | josemanuelguerranunez5 | 23-03-2026
+
+D	Temp/Formularios_5472_1120_PED-1773987172345.pdf
+D	Temp/Separar filas.png
+A	scripts/generate-jwt.mjs
+A	secrets_nuevos.txt
+COMMIT: c34528c | 2026-03-21 | josemanuelguerranunez5 | 20-03-2026
+
+A	Temp/Formularios_5472_1120_PED-1773987172345.pdf
+A	Temp/Separar filas.png
+M	app/admin/pedidos/[id]/page.tsx
+A	app/api/admin/pedidos/[id]/descargar-extracto/route.ts
+A	app/api/admin/pedidos/[id]/enviar-borrador/route.ts
+M	app/api/admin/pedidos/[id]/generar-formularios-fiscales/route.ts
+M	app/api/orders/tax-filing/upload-bank-statements/route.ts
+M	app/api/stripe/checkout/route.ts
+M	app/api/stripe/create-checkout-session/route.ts
+M	app/paquetes/[paqueteSlug]/onboarding/layout.tsx
+D	app/servicios/[slug]/onboarding/checkout/page.tsx.back
+D	app/servicios/[slug]/onboarding/checkout/page.tsx.back2
+D	app/servicios/[slug]/onboarding/checkout/page.tsx.back3
+D	app/servicios/[slug]/onboarding/completado/page.tsx.back
+D	app/servicios/[slug]/onboarding/completado/page.tsx.back2
+D	app/servicios/[slug]/onboarding/completado/page.tsx.back3
+D	app/servicios/[slug]/onboarding/completado/page.tsx.back4
+D	app/servicios/[slug]/onboarding/datos-empresa/page.tsx.back
+D	app/servicios/[slug]/onboarding/estado/page.tsx.back
+D	app/servicios/[slug]/onboarding/estado/page.tsx.back2
+D	app/servicios/[slug]/onboarding/estado/page.tsx.back3
+D	app/servicios/[slug]/onboarding/layout.tsx.back2
+D	app/servicios/[slug]/onboarding/page.tsx.back
+D	app/servicios/[slug]/onboarding/page.tsx.back2
+D	app/servicios/[slug]/onboarding/revision/page.tsx.back
+D	app/servicios/[slug]/onboarding/revision/page.tsx.back2
+D	app/servicios/[slug]/onboarding/revision/page.tsx.back3
+D	app/servicios/[slug]/page.tsx.back
+D	app/servicios/[slug]/page.tsx.back2
+D	app/servicios/[slug]/page.tsx.back3
+D	app/servicios/[slug]/page.tsx.back4
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+D	app/servicios/form-5472-1120/onboarding/page.tsx.bak
+M	app/servicios/page.tsx
+M	components/admin/AdminTaxFilingManager.tsx
+M	lib/services/email.service.ts
+M	lib/services/tax-form.service.ts
+M	next.config.ts
+COMMIT: 7340170 | 2026-03-19 | josemanuelguerranunez5 | 18-03-2026
+
+A	app/api/admin/pedidos/[id]/actualizar-datos-fiscales/route.ts
+M	app/api/orders/tax-filing/create/route.ts
+A	app/api/orders/tax-filing/upload-bank-statements/route.ts
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+M	components/admin/AdminTaxFilingManager.tsx
+COMMIT: 0fae7aa | 2026-03-18 | josemanuelguerranunez5 | 17-03-2026
+
+M	app/admin/page.tsx
+M	app/admin/pedidos/page.tsx
+M	app/api/admin/pedidos/[id]/generar-formularios-fiscales/route.ts
+A	app/servicios/form-5472-1120/guia-transacciones/page.tsx
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+A	app/servicios/form-5472-1120/onboarding/page.tsx.bak
+M	components/ui/SignaturePad.tsx
+M	lib/services/tax-form.service.ts
+COMMIT: 24e398e | 2026-03-15 | josemanuelguerranunez5 | 14-03-2026
+
+M	app/api/pedidos/actualizar/route.ts
+M	app/paquetes/[paqueteSlug]/onboarding/estado/page.tsx
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+A	docs/Sobre la hoja anexa al form 5472, llamada Federal Supporting Statements.md
+M	lib/services/tax-form.service.ts
+COMMIT: 08399e9 | 2026-03-05 | josemanuelguerranunez5 | 04-03-2026
+
+M	app/api/admin/pedidos/[id]/generar-borrador-ss4/route.ts
+M	app/dashboard/page.tsx
+M	app/dashboard/pedidos/page.tsx
+M	components/dashboard/OnboardingWizard.tsx
+M	lib/utils/pdfGenerator.ts
+A	test-order.ts
+A	test-resend.ts
+COMMIT: 2d6bc62 | 2026-03-02 | josemanuelguerranunez5 | 01-03-2026
+
+M	app/api/admin/pedidos/[id]/generar-borrador-ss4/route.ts
+M	components/NotificacionesWidget.tsx
+M	lib/services/email.service.ts
+M	lib/services/notificacion.service.ts
+M	lib/utils/pdfGenerator.ts
+A	scripts/inspect-ss4-fields.mjs
+A	scripts/test-email.mjs
+A	supabase/migrations_self_hosted/009_crear_notificaciones_si_falta.sql
+COMMIT: 04cd7e1 | 2026-03-01 | josemanuelguerranunez5 | 28-02-2026
+
+M	app/admin/page.tsx
+M	app/admin/pedidos/[id]/page.tsx
+M	app/api/admin/pedidos/[id]/actualizar-estado/route.ts
+A	app/api/admin/pedidos/[id]/generar-borrador-ss4/route.ts
+M	app/api/admin/pedidos/[id]/subir-carta-ein/route.ts
+D	app/api/payment-intent/route.ts
+A	app/api/pedidos/[id]/approve-ss4/route.ts
+M	app/api/pedidos/[id]/approve-tax-form/route.ts
+M	app/api/pedidos/[id]/tax-form-pdf/route.ts
+M	app/api/stripe/checkout-servicio/route.ts
+M	app/api/stripe/webhook/route.ts
+D	app/checkout/page.tsx
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/servicios/[slug]/onboarding/checkout/page.tsx
+M	components/admin/AdminDocumentManager.tsx
+M	components/dashboard/OnboardingWizard.tsx
+A	components/dashboard/SS4FormViewer.tsx
+M	lib/services/email.service.ts
+M	lib/utils/pdfGenerator.ts
+M	package-lock.json
+M	package.json
+M	scripts/test-resend.js
+M	server_run.log
+COMMIT: 9951e0e | 2026-02-27 | josemanuelguerranunez5 | 26-02-2026
+
+A	app/api/debug/pedido-metadata/route.ts
+M	app/api/leads/[id]/route.ts
+M	app/api/pedidos/[id]/tax-form-pdf/route.ts
+M	app/api/stripe/verify-session/route.ts
+M	app/api/stripe/webhook/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/quiz/resultado/page.tsx
+M	components/dashboard/TaxFormViewer.tsx
+A	latest_event.json
+M	lib/services/email.service.ts
+M	package-lock.json
+M	package.json
+A	scripts/test-resend.js
+A	server_run.log
+COMMIT: 5a984c3 | 2026-02-26 | josemanuelguerranunez5 | 25-02-2026
+
+M	app/api/leads/[id]/route.ts
+M	app/api/orders/tax-filing/create/route.ts
+A	app/api/pedidos/[id]/approve-tax-form/route.ts
+A	app/api/pedidos/[id]/tax-form-pdf/route.ts
+M	app/api/pedidos/[id]/ver-documento/route.ts
+M	app/api/stripe/checkout-servicio/route.ts
+M	app/api/stripe/checkout-tax-filing/route.ts
+M	app/api/stripe/create-checkout-session/route.ts
+A	app/api/user/llc-data/route.ts
+M	app/dashboard/page.tsx
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/dashboard/pedidos/page.tsx
+M	app/layout.tsx
+M	app/quiz/page.tsx
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+A	components/dashboard/TaxFormViewer.tsx
+M	lib/models/lead.ts
+M	lib/services/tax-form.service.ts
+A	lib/services/telegram.service.ts
+COMMIT: d5eb530 | 2026-02-25 | josemanuelguerranunez5 | 24-02-2026
+
+M	app/admin/layout.tsx
+A	app/admin/leads/page.tsx
+M	app/admin/page.tsx
+A	app/api/leads/[id]/route.ts
+A	app/api/leads/route.ts
+M	app/api/test-email/route.ts
+M	app/calculadora-fiscal/page.tsx
+M	app/lead-form/page.tsx
+M	app/quiz/page.tsx
+M	app/quiz/resultado/page.tsx
+A	lib/models/lead.ts
+M	lib/services/email.service.ts
+M	lib/services/tax-form.service.ts
+A	lib/services/webhook.service.ts
+COMMIT: ea3cee0 | 2026-02-23 | josemanuelguerranunez5 | 22-02-2026
+
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+M	lib/models/factura.ts
+M	lib/services/tax-form.service.ts
+COMMIT: a760692 | 2026-02-22 | josemanuelguerranunez5 | 21-02-2026
+
+M	app/api/admin/pedidos/[id]/generar-formularios-fiscales/route.ts
+M	app/api/admin/pedidos/[id]/subir-acuse-recibo/route.ts
+M	app/api/admin/tax-forms/preview/route.ts
+M	app/api/pedidos/[id]/descargar-formularios/route.ts
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+M	components/admin/AdminTaxFilingManager.tsx
+A	docs/Form 5472 - Campo 1f.md
+M	lib/services/tax-form.service.ts
+A	scripts/labeled-5472.pdf
+A	scripts/map1120.json
+A	scripts/map1120.mjs
+COMMIT: 1cb114e | 2026-02-18 | josemanuelguerranunez5 | 17-02-2026
+
+A	.agent/ACTUALIZAR_PEDIDO_MANUALMENTE.sql
+A	.agent/GUIA_WEBHOOK_STRIPE.md
+A	.agent/PLAN_FORM_5472_COMPLETO.md
+M	app/api/admin/pedidos/[id]/generar-formularios-fiscales/route.ts
+A	app/api/pedidos/[id]/descargar-formularios/route.ts
+A	app/api/stripe/checkout-tax-filing/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/servicios/[slug]/onboarding/checkout/page.tsx
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+M	lib/services/tax-form.service.ts
+M	next.config.ts
+A	scripts/test-output-watermark.pdf
+A	scripts/test-watermark-150px.pdf
+A	scripts/test-watermark-v2.pdf
+COMMIT: 706aa85 | 2026-02-16 | josemanuelguerranunez5 | 15-02-2026
+
+A	.agent/SOLUCION_TAX_DATA_VACIO.md
+M	app/admin/pedidos/[id]/page.tsx
+A	app/api/admin/facturas/preview/route.ts
+A	app/api/admin/pedidos/[id]/generar-formularios-fiscales/route.ts
+A	app/api/admin/pedidos/[id]/subir-acuse-recibo/route.ts
+A	app/api/admin/tax-forms/preview/route.ts
+A	app/api/orders/tax-filing/create/route.ts
+M	app/api/stripe/webhook/route.ts
+M	app/dashboard/page.tsx
+M	app/dashboard/pedidos/[id]/page.tsx
+A	app/servicios/form-5472-1120/onboarding/page.tsx
+A	app/servicios/form-5472-1120/page.tsx
+A	components/admin/AdminTaxFilingManager.tsx
+A	docs/TAX_FILING_ARCHITECTURE.md
+M	lib/models/pedido.ts
+A	lib/services/tax-form.service.ts
+M	lib/stripe.ts
+M	middleware.ts
+A	public/debug/map_f1120.pdf
+A	public/debug/map_f5472.pdf
+A	public/templates/irs/f1120.pdf
+A	public/templates/irs/f5472.pdf
+A	scripts/check-columns.js
+A	scripts/fields_f1120.pdf.txt
+A	scripts/fields_f5472.pdf.txt
+A	scripts/generate-map-pdf.js
+A	scripts/inspect-pdf-fields.js
+A	scripts/list-pdf-fields.js
+A	supabase/migrations/20260214_add_tax_data_to_pedidos.sql
+M	supabase/migrations/20260214_create_facturas_table.sql
+A	supabase/migrations/20260216_check_and_add_tax_data.sql
+A	supabase/migrations/diagnostico_tax_data.sql
+A	supabase/migrations/poblar_tax_data_prueba.sql
+COMMIT: cea75a6 | 2026-02-14 | josemanuelguerranunez5 | 13-02-2026
+
+A	.agent/ANALITICAS_Y_ALERTAS.md
+A	.agent/CAMBIOS_DASHBOARD_CLIENTE.md
+A	.agent/CHECKLIST_PANEL_ADMIN.md
+A	.agent/PANEL_ADMINISTRACION.md
+A	.agent/RESUMEN_PANEL_ADMIN.md
+A	.agent/SISTEMA_FACTURACION.md
+A	app/admin/alertas/page.tsx
+A	app/admin/analiticas/page.tsx
+M	app/admin/page.tsx
+M	app/admin/pedidos/[id]/page.tsx
+A	app/api/admin/pedidos/[id]/actualizar-estado/route.ts
+A	app/api/admin/pedidos/[id]/descargar-ss4/route.ts
+A	app/api/admin/pedidos/[id]/subir-carta-ein/route.ts
+A	app/api/facturas/[id]/descargar/route.ts
+A	app/api/pedidos/[id]/descargar-carta-ein/route.ts
+M	app/api/stripe/webhook/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+A	components/admin/AdminDocumentManager.tsx
+M	components/dashboard/OnboardingWizard.tsx
+A	lib/models/factura.ts
+A	lib/pdf/invoice-generator.ts
+A	lib/services/invoice.service.ts
+M	lib/utils/pdfGenerator.ts
+M	package-lock.json
+M	package.json
+A	public/TEST_SS4_FINAL_V3.pdf
+A	public/TEST_SS4_FINAL_V4.pdf
+A	public/TEST_SS4_FINAL_V5.pdf
+A	public/TEST_SS4_FINAL_V6.pdf
+A	public/TEST_SS4_FINAL_V7.pdf
+A	scripts/probe-address.mjs
+A	scripts/probe-coords-v2.mjs
+A	scripts/probe-coords.mjs
+M	scripts/test-ss4-final.mjs
+A	supabase/migrations/20260214_create_facturas_table.sql
+COMMIT: bed45c4 | 2026-02-13 | josemanuelguerranunez5 | 12-02-2026
+
+A	app/api/pedidos/[id]/descargar-ss4/route.ts
+M	app/api/stripe/webhook/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	components/pricing/StateSelector.tsx
+M	lib/services/email.service.ts
+A	lib/utils/pdfGenerator.ts
+M	package-lock.json
+M	package.json
+A	public/DEBUG_MAP.pdf
+A	public/DIAGNOSTICO_SS4.pdf
+A	public/TEST_SS4_FILLED.pdf
+A	public/TEST_SS4_FINAL.pdf
+A	public/TEST_SS4_FINAL_V2.pdf
+A	public/TEST_SS4_v2.pdf
+A	public/TEST_SS4_v3.pdf
+A	public/form-ss4.pdf
+A	scripts/diagnostico-completo.mjs
+A	scripts/diagnostico-ss4.mjs
+A	scripts/download-ss4.mjs
+A	scripts/list-fields.mjs
+A	scripts/listar-ultimos-pedidos.mjs
+A	scripts/poc-ss4.mjs
+A	scripts/test-ss4-final.mjs
+A	scripts/test-ss4-local.mjs
+A	scripts/test-ss4-v2.mjs
+A	scripts/test-ss4-v3.mjs
+A	scripts/test-webhook-local.mjs
+COMMIT: b1ab717 | 2026-02-10 | josemanuelguerranunez5 | 09-02-2026
+
+A	app/api/paquetes/route.ts
+A	app/api/pedidos/actualizar/route.ts
+A	app/api/pedidos/borrador/route.ts
+A	app/api/pedidos/completo/route.ts
+A	app/api/pedidos/obtener/route.ts
+M	app/api/pedidos/route.ts
+M	app/api/servicios/route.ts
+M	app/api/stripe/checkout-servicio/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/completado/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/datos-empresa/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/estado/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/revision/page.tsx
+M	app/servicios/[slug]/onboarding/checkout/page.tsx
+M	app/servicios/[slug]/onboarding/datos-empresa/page.tsx
+M	app/servicios/[slug]/onboarding/estado/page.tsx
+M	app/servicios/[slug]/onboarding/layout.tsx
+M	app/servicios/[slug]/onboarding/page.tsx
+M	app/servicios/[slug]/onboarding/revision/page.tsx
+M	components/dashboard/OnboardingWizard.tsx
+A	components/ui/SignaturePad.tsx
+COMMIT: ac5a0b4 | 2026-02-08 | josemanuelguerranunez5 | 08-02-2026
+
+M	app/api/admin/pedidos/[id]/ver-identidad/route.ts
+A	app/api/estados/route.ts
+M	app/api/pedidos/[id]/upload-id/route.ts
+A	app/api/pedidos/[id]/ver-documento/route.ts
+M	app/api/pedidos/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/servicios/[slug]/onboarding/checkout/page.tsx
+M	app/servicios/[slug]/onboarding/datos-empresa/page.tsx
+M	app/servicios/[slug]/onboarding/estado/page.tsx
+M	app/servicios/[slug]/onboarding/revision/page.tsx
+M	components/dashboard/OnboardingWizard.tsx
+M	lib/models/estado-usa.ts
+M	lib/models/pedido.ts
+A	scripts/setup-storage.js
+A	scripts/setup-storage.ts
+COMMIT: 1c6cb57 | 2026-02-07 | josemanuelguerranunez5 | 07-02-2026
+
+A	app/admin/clientes/[id]/page.tsx
+A	app/admin/clientes/page.tsx
+A	app/admin/documentos/DocumentosClient.tsx
+A	app/admin/documentos/page.tsx
+A	app/admin/layout.tsx
+A	app/admin/page.tsx
+A	app/admin/pedidos/[id]/page.tsx
+A	app/admin/pedidos/page.tsx
+A	app/api/admin/pedidos/[id]/ver-identidad/route.ts
+A	app/api/pedidos/[id]/onboarding/route.ts
+A	app/api/pedidos/[id]/upload-id/route.ts
+M	app/api/stripe/checkout-servicio/route.ts
+M	app/api/stripe/checkout/route.ts
+M	app/api/stripe/webhook/route.ts
+M	app/dashboard/documentos/page.tsx
+M	app/dashboard/pedidos/[id]/page.tsx
+A	components/admin/DocumentUploadModal.tsx
+A	components/dashboard/OnboardingWizard.tsx
+M	lib/models/pedido.ts
+M	lib/services/email.service.ts
+A	lib/supabase/admin.ts
+COMMIT: 0a34cf6 | 2026-02-04 | josemanuelguerranunez5 | 04-02-2026
+
+A	app/api/stripe/create-portal/route.ts
+M	app/api/stripe/verify-session/route.ts
+M	app/api/webhooks/clerk/route.ts
+M	app/dashboard/documentos/page.tsx
+M	app/dashboard/facturacion/page.tsx
+M	app/dashboard/layout.tsx
+M	app/dashboard/notificaciones/page.tsx
+M	app/dashboard/page.tsx
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/dashboard/pedidos/page.tsx
+M	app/dashboard/perfil/page.tsx
+M	app/layout.tsx
+M	app/page.tsx
+A	app/robots.ts
+M	app/servicios/[slug]/page.tsx
+A	app/sitemap.ts
+A	app/test-analytics/page.tsx
+A	components/dashboard/BotonPortalStripe.tsx
+A	docs/SEO_ESTRATEGIA.md
+A	lib/models/documento.ts
+M	lib/services/email.service.ts
+COMMIT: 5c77371 | 2026-02-03 | josemanuelguerranunez5 | 03-02-2026
+
+A	app/api/debug-db/route.ts
+A	app/api/pedidos/route.ts
+M	app/api/stripe/checkout-servicio/route.ts
+M	app/api/stripe/webhook/route.ts
+A	app/api/test-automation/route.ts
+M	app/layout.tsx
+M	app/servicios/[slug]/onboarding/checkout/page.tsx
+M	app/servicios/[slug]/onboarding/completado/page.tsx
+M	app/servicios/[slug]/onboarding/page.tsx
+A	docs/AUTOMATIZACION_PROCESOS.md
+A	docs/GUIA_SETUP_ANALYTICS.md
+A	lib/analytics.ts
+M	lib/services/email.service.ts
+A	lib/services/task.service.ts
+M	package-lock.json
+M	package.json
+A	supabase/migrations_self_hosted/008_admin_tasks.sql
+COMMIT: 20f03e6 | 2026-02-02 | josemanuelguerranunez5 | 02-02-2026
+
+A	CONFIGURAR_CLERK_MOBILE.md
+A	GUIA_RAPIDA_MOBILE.md
+A	MOBILE_TESTING_SETUP.md
+A	PAYMENT_METHODS.md
+A	TROUBLESHOOTING_PAYMENT_METHODS.md
+A	WEBHOOKS_SETUP.md
+A	app/api/notificaciones/route.ts
+A	app/api/servicios/route.ts
+A	app/api/stripe/create-checkout-session/route.ts
+A	app/api/stripe/verify-payment/route.ts
+M	app/api/stripe/webhook/route.ts
+A	app/api/test-email/route.ts
+M	app/dashboard/documentos/page.tsx
+M	app/dashboard/facturacion/page.tsx
+M	app/dashboard/layout.tsx
+A	app/dashboard/notificaciones/page.tsx
+M	app/dashboard/page.tsx
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/dashboard/pedidos/page.tsx
+M	app/dashboard/perfil/page.tsx
+A	app/diagnostico/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/completado/page.tsx
+M	app/servicios/[slug]/onboarding/page.tsx
+A	components/NotificacionesWidget.tsx
+A	docs/CHECKLIST_RESEND.md
+A	docs/CONFIGURACION_EMAILS_NOTIFICACIONES.md
+A	docs/DIAGNOSTICO_SERVICIO_NO_ENCONTRADO.md
+A	docs/FIX_404_AUTH_SIGNIN.md
+A	docs/IMPLEMENTACION_EMAILS_NOTIFICACIONES.md
+A	docs/MOBILE_TESTING.md
+A	docs/RESUMEN_SOLUCION_MOBILE.md
+A	docs/SOLUCION_MIXED_CONTENT.md
+A	lib/services/email.service.ts
+A	lib/services/notificacion.service.ts
+M	middleware.ts
+A	ngrok.exe
+M	package-lock.json
+M	package.json
+A	public/diagnostico-pagos.html
+A	scripts/install-stripe-cli.ps1
+A	scripts/restart-dev.ps1
+A	scripts/setup-stripe-webhooks.ps1
+A	scripts/start-mobile-testing.ps1
+A	scripts/update-clerk-api.mjs
+A	scripts/update-clerk-ngrok.ps1
+A	setup-mobile-testing.ps1
+A	supabase/migrations_self_hosted/005_notificaciones.sql
+COMMIT: ca7d161 | 2026-01-26 | josemanuelguerranunez5 | 25 enero 2026
+
+A	INSTRUCCIONES_ESTADOS.md
+A	STRIPE_SETUP.md
+A	TROUBLESHOOTING.md
+M	app/paquetes/[paqueteSlug]/onboarding/datos-empresa/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/estado/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/layout.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/page.tsx
+M	app/paquetes/[paqueteSlug]/onboarding/revision/page.tsx
+M	app/precios/page.tsx
+R070	app/auth/sign-in/[[...sign-in]]/page.tsx	app/sign-in/[[...sign-in]]/page.tsx
+R069	app/auth/sign-up/[[...sign-up]]/page.tsx	app/sign-up/[[...sign-up]]/page.tsx
+A	lib/models/paquete.ts
+M	lib/models/pedido.ts
+M	lib/supabase/client.ts
+M	lib/supabase/database.types.ts
+M	package-lock.json
+M	package.json
+A	scripts/create-stripe-products.mjs
+A	scripts/generate-supabase-keys.mjs
+A	scripts/run-migration-006.mjs
+A	scripts/test-supabase-connection.mjs
+A	scripts/update-estados.mjs
+A	supabase/migrations_self_hosted/001_init_schema.sql
+A	supabase/migrations_self_hosted/002_seed_data.sql
+A	supabase/migrations_self_hosted/003_add_servicio_id_to_pedidos.sql
+A	supabase/migrations_self_hosted/004_fix_foreign_keys.sql
+A	supabase/migrations_self_hosted/005_cleanup_and_fix_fkeys.sql
+A	supabase/migrations_self_hosted/006_replace_texas_with_new_mexico.sql
+A	supabase/migrations_self_hosted/007_add_codigo_pais_to_pedidos.sql
+A	test-output-2.txt
+A	test-output.txt
+COMMIT: f161b81 | 2026-01-19 | josemanuelguerranunez5 | Descripci├│n breve
+
+M	app/globals.css
+M	app/header.css
+M	app/layout.tsx
+M	app/page.tsx
+M	components/layout/Header.tsx
+A	lib/jsonld-schema.ts
+M	package.json
+COMMIT: c27005b | 2026-01-17 | josemanuelguerranunez5 | Estado inicial del proyecto
+
+A	.npmrc
+A	_RESPALDO_SERVICIOS/agente-registrado.tsx
+A	_RESPALDO_SERVICIOS/consultoria-legal.tsx
+A	_RESPALDO_SERVICIOS/form-5472-1120.tsx
+A	_RESPALDO_SERVICIOS/obtencion-ein.tsx
+A	_RESPALDO_SERVICIOS/otros.tsx
+A	_RESPALDO_SERVICIOS/pageraiz.tsx
+A	app/api/auth/login/route.ts
+A	app/api/auth/register/route.ts
+A	app/api/blog/route.ts
+A	app/api/calculator/generate-pdf/route.ts
+A	app/api/calculator/lead-capture/route.ts
+A	app/api/calculator/log-error/route.ts
+A	app/api/calculator/send-email/route.ts
+A	app/api/contact/route.ts
+A	app/api/payment-intent/route.ts
+A	app/api/stripe/checkout-servicio/route.ts
+A	app/api/stripe/checkout-servicio/route.ts.back
+A	app/api/stripe/checkout-servicio/route.ts.back2
+A	app/api/stripe/checkout-subscription/route.ts
+A	app/api/stripe/checkout-subscription/route.ts.back
+A	app/api/stripe/checkout-subscription/route.ts.back2
+A	app/api/stripe/checkout/route.ts
+A	app/api/stripe/checkout/route.ts.back
+A	app/api/stripe/subscription/cancel/route.ts
+A	app/api/stripe/subscription/cancel/route.ts.back
+A	app/api/stripe/subscription/cancel/route.ts.back2
+A	app/api/stripe/verify-session/route.ts
+A	app/api/stripe/verify-session/route.ts.back
+A	app/api/stripe/webhook/route.ts
+A	app/api/stripe/webhook/route.ts.back
+A	app/api/stripe/webhook/route.ts.back2
+A	app/api/stripe/webhook/route.ts.back3
+A	app/api/webhooks/clerk/route.ts
+A	app/auth/sign-in/[[...sign-in]]/page.tsx
+A	app/auth/sign-up/[[...sign-up]]/page.tsx
+A	app/blog/[slug]/page.tsx
+A	app/blog/page.tsx
+A	app/calculadora-fiscal/layout.tsx
+A	app/calculadora-fiscal/page.module.css
+A	app/calculadora-fiscal/page.module.css.d.ts
+A	app/calculadora-fiscal/page.tsx
+A	app/carla/page.tsx
+A	app/carla/page.tsx.back
+A	app/checkout/page.tsx
+A	app/contacto/page.tsx
+A	app/dashboard/documentos/page.tsx
+A	app/dashboard/facturacion/page.tsx
+A	app/dashboard/layout.tsx
+A	app/dashboard/page.tsx
+A	app/dashboard/page.tsx.back
+A	app/dashboard/pedidos/[id]/page.tsx
+A	app/dashboard/pedidos/page.tsx
+A	app/dashboard/perfil/page.tsx
+A	app/dashboard/suscripciones/page.tsx
+A	app/dashboard/suscripciones/page.tsx.back
+A	app/dashboard/suscripciones/page.tsx.back2
+A	app/dashboard/suscripciones/ui/CancelarRenovacionButton.tsx
+A	app/dashboard/suscripciones/ui/CancelarRenovacionButton.tsx.back
+A	app/faq-calculadora/faq.module.css
+A	app/faq-calculadora/page.tsx
+A	app/faq/faq.module.css
+A	app/faq/page.tsx
+A	app/globals.backup.css
+M	app/globals.css
+A	app/guias/[code]/page.tsx
+A	app/guias/ar/page.tsx
+A	app/guias/at/page.tsx
+A	app/guias/au/page.tsx
+A	app/guias/bd/page.tsx
+A	app/guias/be/page.tsx
+A	app/guias/bo/page.tsx
+A	app/guias/br/page.tsx
+A	app/guias/ch/page.tsx
+A	app/guias/cl/page.tsx
+A	app/guias/co/page.tsx
+A	app/guias/cr/page.tsx
+A	app/guias/cu/page.tsx
+A	app/guias/de/page.tsx
+A	app/guias/dk/page.tsx
+A	app/guias/do/page.tsx
+A	app/guias/ec/page.tsx
+A	app/guias/eg/page.tsx
+A	app/guias/es/page.tsx
+A	app/guias/fi/page.tsx
+A	app/guias/fr/page.tsx
+A	app/guias/gr/page.tsx
+A	app/guias/gt/page.tsx
+A	app/guias/hn/page.tsx
+A	app/guias/id/page.tsx
+A	app/guias/in/page.tsx
+A	app/guias/it/page.tsx
+A	app/guias/jp/page.tsx
+A	app/guias/ke/page.tsx
+A	app/guias/kr/page.tsx
+A	app/guias/mx/page.tsx
+A	app/guias/my/page.tsx
+A	app/guias/ng/page.tsx
+A	app/guias/ni/page.tsx
+A	app/guias/nl/page.tsx
+A	app/guias/no/page.tsx
+A	app/guias/nz/page.tsx
+A	app/guias/pa/page.tsx
+A	app/guias/pe/page.tsx
+A	app/guias/ph/page.tsx
+A	app/guias/pk/page.tsx
+A	app/guias/pl/page.tsx
+A	app/guias/pr/page.tsx
+A	app/guias/pt/page.tsx
+A	app/guias/py/page.tsx
+A	app/guias/ro/page.tsx
+A	app/guias/se/page.tsx
+A	app/guias/sg/page.tsx
+A	app/guias/sv/page.tsx
+A	app/guias/th/page.tsx
+A	app/guias/tr/page.tsx
+A	app/guias/uk/page.tsx
+A	app/guias/uy/page.tsx
+A	app/guias/ve/page.tsx
+A	app/guias/vn/page.tsx
+A	app/guias/za/page.tsx
+A	app/header.css
+A	app/homepage.css
+M	app/layout.tsx
+A	app/lead-form/lead-form.module.css
+A	app/lead-form/page.tsx
+A	app/legal/changelog/page.tsx
+A	app/legal/privacy-policy/page.tsx
+A	app/legal/shared.module.css
+A	app/legal/terms-and-conditions/page.tsx
+A	app/login/page.tsx
+A	app/onboarding/page.tsx
+M	app/page.tsx
+A	app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx
+A	app/paquetes/[paqueteSlug]/onboarding/completado/page.tsx
+A	app/paquetes/[paqueteSlug]/onboarding/datos-empresa/page.tsx
+A	app/paquetes/[paqueteSlug]/onboarding/estado/page.tsx
+A	app/paquetes/[paqueteSlug]/onboarding/estado/page.tsx.back
+A	app/paquetes/[paqueteSlug]/onboarding/layout.tsx
+A	app/paquetes/[paqueteSlug]/onboarding/page.tsx
+A	app/paquetes/[paqueteSlug]/onboarding/revision/page.tsx
+A	app/precios/page.tsx
+A	app/proceso/layout.tsx
+A	app/proceso/page.tsx
+A	app/quiz/page.tsx
+A	app/quiz/quiz.module.css
+A	app/quiz/resultado/page.tsx
+A	app/recursos/page.tsx
+A	app/recursos/page.tsx.back
+A	app/registro/page.tsx
+A	app/servicios/[slug]/onboarding/checkout/page.tsx
+A	app/servicios/[slug]/onboarding/checkout/page.tsx.back
+A	app/servicios/[slug]/onboarding/checkout/page.tsx.back2
+A	app/servicios/[slug]/onboarding/checkout/page.tsx.back3
+A	app/servicios/[slug]/onboarding/completado/page.tsx
+A	app/servicios/[slug]/onboarding/completado/page.tsx.back
+A	app/servicios/[slug]/onboarding/completado/page.tsx.back2
+A	app/servicios/[slug]/onboarding/completado/page.tsx.back3
+A	app/servicios/[slug]/onboarding/completado/page.tsx.back4
+A	app/servicios/[slug]/onboarding/datos-empresa/page.tsx
+A	app/servicios/[slug]/onboarding/datos-empresa/page.tsx.back
+A	app/servicios/[slug]/onboarding/estado/page.tsx
+A	app/servicios/[slug]/onboarding/estado/page.tsx.back
+A	app/servicios/[slug]/onboarding/estado/page.tsx.back2
+A	app/servicios/[slug]/onboarding/estado/page.tsx.back3
+A	app/servicios/[slug]/onboarding/layout.tsx
+A	app/servicios/[slug]/onboarding/layout.tsx,back
+A	app/servicios/[slug]/onboarding/layout.tsx.back2
+A	app/servicios/[slug]/onboarding/page.tsx
+A	app/servicios/[slug]/onboarding/page.tsx.back
+A	app/servicios/[slug]/onboarding/page.tsx.back2
+A	app/servicios/[slug]/onboarding/revision/page.tsx
+A	app/servicios/[slug]/onboarding/revision/page.tsx.back
+A	app/servicios/[slug]/onboarding/revision/page.tsx.back2
+A	app/servicios/[slug]/onboarding/revision/page.tsx.back3
+A	app/servicios/[slug]/page.tsx
+A	app/servicios/[slug]/page.tsx.back
+A	app/servicios/[slug]/page.tsx.back2
+A	app/servicios/[slug]/page.tsx.back3
+A	app/servicios/[slug]/page.tsx.back4
+A	app/servicios/obtencion-ein/page.tsx
+A	app/servicios/page.tsx
+A	app/testimonios/layout.tsx
+A	app/testimonios/page.tsx
+A	app/types/auth.ts
+A	app/types/blog.ts
+A	app/types/calculator.ts
+A	app/types/order.ts
+A	components/CountrySelector/CountryModal.tsx
+A	components/CountrySelector/CountrySelector.tsx
+A	components/CountrySelector/countries.ts
+A	components/Flag.tsx
+A	components/FlagSafe.tsx
+A	components/FloatingButtons.tsx
+A	components/SectionCalculadora.tsx
+A	components/calculator/AdditionalCosts.tsx
+A	components/calculator/Calculator.tsx
+A	components/calculator/DisclaimerBanner.tsx
+A	components/calculator/ResultsDisplay.tsx
+A	components/calculator/ScenarioSelector.tsx
+A	components/calculator/VariationRanges.tsx
+A	components/calculator/modals/DisclaimerModal.tsx
+A	components/calculator/modals/WarningModal.module.css
+A	components/calculator/modals/WarningModalInternational.tsx
+A	components/calculator/modals/WarningModalLLC.tsx
+A	components/faq/FAQAccordion.tsx
+A	components/home/BenefitsGrid.tsx
+A	components/home/CTASection.tsx
+A	components/home/HeroSection.tsx
+A	components/home/ValueProposition.tsx
+A	components/layout/Footer.tsx
+A	components/layout/Header.tsx
+A	components/layout/Header.tsx.back
+A	components/layout/Navigation.module.css
+A	components/layout/Navigation.tsx
+A	components/lead-capture/LeadGateForm.tsx
+A	components/pricing/ComparisonTable.tsx
+A	components/pricing/PricingCards.tsx
+A	components/pricing/StateSelector.tsx
+A	components/process/ProcessSteps.tsx
+A	components/shared/CookiesBanner.module.css
+A	components/shared/CookiesBanner.tsx
+A	components/testimonials/TestimonialCard.tsx
+A	components/ui/Button.tsx
+A	components/ui/Card.tsx
+A	components/ui/Input.tsx
+A	components/ui/Modal.tsx
+A	docs/CHANGELOG-calculator.md
+A	docs/implementation-checklist.md
+A	docs/insurance-info.md
+A	docs/risk-mitigation-plan.md
+A	email-templates/calculator-sequence/email-1-delivery.html
+A	email-templates/calculator-sequence/email-2-educational.html
+A	email-templates/calculator-sequence/email-3-social-proof.html
+A	email-templates/calculator-sequence/email-4-urgency.html
+A	email-templates/calculator-sequence/email-5-premium.html
+A	email-templates/calculator-sequence/email-6-last-chance.html
+A	legal/disclaimer-calculator.md
+A	legal/privacy-policy.md
+A	legal/terms-and-conditions.md
+A	lib/auth.ts
+A	lib/blog/posts.ts
+A	lib/calculator/additional-costs.ts
+A	lib/calculator/calculations.ts
+A	lib/calculator/scenarios.ts
+A	lib/calculator/tax-rates.ts
+A	lib/calculator/version.ts
+A	lib/db.ts
+A	lib/email.ts
+A	lib/hooks/useOnboarding.ts
+A	lib/models/estado-usa.ts
+A	lib/models/pedido.ts
+A	lib/models/pedido.ts.back
+A	lib/models/pedido.ts.back2
+A	lib/models/pedido.ts.back3
+A	lib/models/pedido.ts.back4
+A	lib/models/pedido.ts.back5
+A	lib/models/pedido.ts.back6
+A	lib/models/pedido.ts.back7
+A	lib/models/pedido.ts.back8
+A	lib/models/pedido.ts.back9
+A	lib/models/servicio.ts
+A	lib/models/suscripcion.ts
+A	lib/onboarding-flow.ts
+A	lib/stripe.ts
+A	lib/supabase-admin.ts
+A	lib/supabase/client.ts
+A	lib/supabase/database.types.ts
+A	lib/supabase/database.types.ts.back
+A	lib/supabase/server.ts
+A	lib/supabase/server.ts.back
+A	middleware.ts
+A	monitoring/dashboard-config.json
+A	next-sitemap.config.js
+M	next.config.ts
+M	package-lock.json
+M	package.json
+A	postcss.config.js
+M	postcss.config.mjs
+A	public/images/calculadora-screenshot.jpg
+A	public/images/og-calculadora-fiscal.jpg
+A	public/images/og-image-home.jpg
+A	public/llms-full.txt
+A	public/llms.txt
+A	reorganizar.sh
+A	stripe-demo/.gitignore
+A	stripe-demo/README.md
+A	stripe-demo/app/favicon.ico
+A	stripe-demo/app/globals.css
+A	stripe-demo/app/layout.tsx
+A	stripe-demo/app/page.tsx
+A	stripe-demo/eslint.config.mjs
+A	stripe-demo/next.config.ts
+A	stripe-demo/package-lock.json
+A	stripe-demo/package.json
+A	stripe-demo/postcss.config.mjs
+A	stripe-demo/public/file.svg
+A	stripe-demo/public/globe.svg
+A	stripe-demo/public/next.svg
+A	stripe-demo/public/vercel.svg
+A	stripe-demo/public/window.svg
+A	stripe-demo/tsconfig.json
+A	tailwind.config.ts
+M	tsconfig.json
+COMMIT: 3048b38 | 2025-10-18 | josemanuelguerranunez5 | Initial commit from Create Next App
+
+A	.gitignore
+A	README.md
+A	app/favicon.ico
+A	app/globals.css
+A	app/layout.tsx
+A	app/page.tsx
+A	eslint.config.mjs
+A	next.config.ts
+A	package-lock.json
+A	package.json
+A	postcss.config.mjs
+A	public/file.svg
+A	public/globe.svg
+A	public/next.svg
+A	public/vercel.svg
+A	public/window.svg
+A	tsconfig.json

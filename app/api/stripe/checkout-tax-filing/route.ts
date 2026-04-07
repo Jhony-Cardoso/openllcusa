@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         const adminDb = createAdminClient()
         const { data: pedido, error: pedidoError } = await adminDb
             .from('pedidos')
-            .select('*, tax_data')
+            .select('*, tax_data, servicio:servicio_id(precio)')
             .eq('id', pedidoId)
             .eq('user_id', userId)
             .single()
@@ -39,6 +39,13 @@ export async function POST(req: Request) {
         }
 
         const taxData = pedido.tax_data || {}
+
+        // Determinar URL base dinámica (útil para pruebas locales vs prod)
+        const baseUrl = req.headers.get('origin') || process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'
+
+        // Calcular precio exacto (fallback a 39700 si no se encuentra en DB)
+        // @ts-ignore
+        const dbPrice = pedido?.servicio?.precio ? Number(pedido.servicio.precio) * 100 : 39700
 
         // Crear Sesión de Stripe Checkout
         const session = await stripe.checkout.sessions.create({
@@ -51,14 +58,14 @@ export async function POST(req: Request) {
                             name: 'Servicio Fiscal: Formulario 5472 + 1120',
                             description: `Preparación y presentación año fiscal ${taxData.taxYear || new Date().getFullYear() - 1}. Incluye Supporting Statements.`,
                         },
-                        unit_amount: 24900, // $249.00 USD
+                        unit_amount: dbPrice,
                     },
                     quantity: 1,
                 },
             ],
             mode: 'payment',
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}?verify_session={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/form-5472-1120/onboarding/checkout?pedidoId=${pedidoId}`,
+            success_url: `${baseUrl}/dashboard/pedidos/${pedidoId}?verify_session={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${baseUrl}/servicios/impuestos-llc-5472-1120/onboarding/checkout?pedidoId=${pedidoId}`,
             metadata: {
                 pedidoId: pedidoId,
                 userId: userId,

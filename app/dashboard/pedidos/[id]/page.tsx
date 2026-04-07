@@ -98,6 +98,7 @@ export default async function PedidoDetallePage({
   const hasRealTaxData = taxDataObj && Object.keys(taxDataObj).length > 0
 
   const esTaxFiling =
+    pedidoFull.servicio?.slug === 'impuestos-llc-5472-1120' ||
     pedidoFull.servicio?.slug === 'form-5472-1120' ||
     pedidoFull.metadata?.tipo_servicio === 'tax_filing_5472' ||
     hasRealTaxData
@@ -158,7 +159,7 @@ export default async function PedidoDetallePage({
 
   if (esTaxFiling) {
     // Para Tax Filing, usar el slug específico
-    slugParaCheckout = 'form-5472-1120'
+    slugParaCheckout = 'impuestos-llc-5472-1120'
   } else if (pedidoFull.paquete?.slug) {
     // Si tiene paquete, usar su slug
     slugParaCheckout = pedidoFull.paquete.slug

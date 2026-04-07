@@ -376,7 +376,7 @@ export default async function ServicioDetallePage({
               <p className="sd-price-note">Pago único · Sin costes ocultos · Deducible fiscalmente</p>
             )}
 
-            <Link href={`/paquetes/${slug}/onboarding`} className="sd-cta-button">
+            <Link href={isPaquete ? `/paquetes/${slug}/onboarding` : `/servicios/${slug}/onboarding`} className="sd-cta-button">
               Empezar proceso ahora
               <ArrowRight size={18} />
             </Link>

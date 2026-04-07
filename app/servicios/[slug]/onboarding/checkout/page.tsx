@@ -97,11 +97,13 @@ export default function CheckoutPage() {
 
   const precioBase = useMemo(() => {
     // Determinar si es Tax Filing basándose en el slug de la URL
-    const esTaxFiling = slug === 'form-5472-1120'
+    const esTaxFiling = slug === 'impuestos-llc-5472-1120' || slug === 'form-5472-1120'
 
-    // Si es Tax Filing, usar precio fijo de $249
+    // Si es Tax Filing, leer el precio real del servicio
     if (esTaxFiling) {
-      return 249
+      const rawTax = pedido?.servicio?.precio ?? pedido?.servicio?.price ?? 397
+      const nTax = typeof rawTax === 'number' ? rawTax : Number(String(rawTax).replace(/[^\d.,]/g, '').replace(',', '.'))
+      return Number.isFinite(nTax) && nTax > 0 ? nTax : 397
     }
 
     // Para otros servicios, buscar en paquete o servicio
@@ -146,7 +148,7 @@ export default function CheckoutPage() {
   // Obtener el ID actual (puede haber cambiado tras recuperación)
   const getCurrentPedidoId = () => {
     const urlParams = new URLSearchParams(window.location.search)
-    return urlParams.get('pedido') || pedidoIdFromUrl
+    return urlParams.get('pedidoId') || urlParams.get('pedido') || pedidoIdFromUrl
   }
 
   const handlePagar = async () => {
@@ -161,7 +163,7 @@ export default function CheckoutPage() {
 
     try {
       // Determinar el endpoint basado en el slug de la URL actual
-      const esTaxFiling = slug === 'form-5472-1120'
+      const esTaxFiling = slug === 'impuestos-llc-5472-1120' || slug === 'form-5472-1120'
 
       // Seleccionar endpoint según el tipo de servicio
       let endpoint = '/api/stripe/checkout' // Default para paquetes

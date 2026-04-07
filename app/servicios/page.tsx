@@ -39,7 +39,7 @@ const serviciosSueltos = [
     icon: Search,
   },
   {
-    slug: 'impuestos-federales',
+    slug: 'impuestos-llc-5472-1120',
     title: 'Declaración de Impuestos',
     price: '$297',
     tagline: 'Presentación anual del Formulario 1120 + 5472.',

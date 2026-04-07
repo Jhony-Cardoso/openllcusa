@@ -1,0 +1,269 @@
+commit d19a653fff234cfad97d47e266acd21b56b415c8
+Author: Axel-Martinez <open.llc.eeuu@gmail.com>
+Date:   Thu Apr 2 21:54:51 2026 +0200
+
+    Add Guías section with 5 SEO optimized articles
+
+A	app/guias/[slug]/page.tsx
+A	app/guias/page.tsx
+
+commit 970f96085e346ed0af15eed57a40b31c3059d232
+Author: Axel-Martinez <open.llc.eeuu@gmail.com>
+Date:   Thu Apr 2 14:02:50 2026 +0200
+
+    Add compliance-basico logic and tailor impuestos-federales slug
+
+A	scripts/update-slugs.mjs
+
+commit 88aba687e1967e4b459a0140af801442ad3aac5c
+Author: Axel-Martinez <open.llc.eeuu@gmail.com>
+Date:   Thu Apr 2 01:26:46 2026 +0200
+
+    Add Reporte Anual and tailor Timelines & FAQs for all secondary services
+
+M	app/servicios/[slug]/page.tsx
+
+commit 53faf4198a89bc946f9392010554908673fd00e4
+Author: Axel-Martinez <open.llc.eeuu@gmail.com>
+Date:   Wed Apr 1 12:44:51 2026 +0200
+
+    Premium service page with CSS in globals.css (bypass Tailwind cache issue); add Timeline, Testimonials, FAQ
+
+M	app/servicios/[slug]/page.tsx
+
+commit b1281d1481c3f152df0ed0e71daaffad48f4001f
+Author: Axel-Martinez <open.llc.eeuu@gmail.com>
+Date:   Wed Apr 1 00:41:30 2026 +0200
+
+    Premium service page with Timeline and Testimonials; remove legacy static pages
+
+D	app/servicios/form-5472-1120/guia-transacciones/page.tsx
+D	app/servicios/form-5472-1120/onboarding/page.tsx
+
+commit 764503bbdf31a9ba1775ca738aeb0002efff6151
+Author: Axel-Martinez <open.llc.eeuu@gmail.com>
+Date:   Wed Apr 1 00:32:18 2026 +0200
+
+    Correcciones en la Home y en Servicios
+
+D	app/servicios/form-5472-1120/page.tsx
+
+commit 41a463039449af65da0b7b9c1ec94369d7e88c3c
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Tue Mar 24 08:40:04 2026 +0100
+
+    23-03-2026
+
+D	Temp/Formularios_5472_1120_PED-1773987172345.pdf
+
+commit c34528c72f299f69a32a3aeb9802c5d2d8468101
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Sat Mar 21 13:01:45 2026 +0100
+
+    20-03-2026
+
+A	Temp/Formularios_5472_1120_PED-1773987172345.pdf
+A	app/api/admin/pedidos/[id]/enviar-borrador/route.ts
+D	app/servicios/form-5472-1120/onboarding/page.tsx.bak
+M	lib/services/email.service.ts
+
+commit 0fae7aafe1f5d3ad4233e9fade120afbf8f7d509
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Wed Mar 18 09:45:28 2026 +0100
+
+    17-03-2026
+
+M	app/admin/page.tsx
+M	app/admin/pedidos/page.tsx
+A	app/servicios/form-5472-1120/guia-transacciones/page.tsx
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+A	app/servicios/form-5472-1120/onboarding/page.tsx.bak
+
+commit 24e398e0a67b18faa8663e1a5d557c788c8122d0
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Sun Mar 15 10:33:49 2026 +0100
+
+    14-03-2026
+
+M	app/servicios/form-5472-1120/onboarding/page.tsx
+A	docs/Sobre la hoja anexa al form 5472, llamada Federal Supporting Statements.md
+M	lib/services/tax-form.service.ts
+
+commit 04cd7e13f21d8fd625b00c7654c85c2437895cdf
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Sun Mar 1 08:14:07 2026 +0100
+
+    28-02-2026
+
+M	app/admin/pedidos/[id]/page.tsx
+M	app/api/pedidos/[id]/approve-tax-form/route.ts
+M	app/api/pedidos/[id]/tax-form-pdf/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	server_run.log
+
+commit 9951e0ebb3e4dd84b5f8137da3fffe7defeed003
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Fri Feb 27 07:29:03 2026 +0100
+
+    26-02-2026
+
+M	app/api/stripe/verify-session/route.ts
+M	app/api/stripe/webhook/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+A	latest_event.json
+A	server_run.log
+
+commit 5a984c3fe9db73fa144caa1451ec94b9d7529ba1
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Thu Feb 26 07:03:36 2026 +0100
+
+    25-02-2026
+
+A	app/api/pedidos/[id]/approve-tax-form/route.ts
+A	app/api/pedidos/[id]/tax-form-pdf/route.ts
+M	app/api/pedidos/[id]/ver-documento/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/dashboard/pedidos/page.tsx
+A	components/dashboard/TaxFormViewer.tsx
+M	lib/services/tax-form.service.ts
+
+commit d5eb530e4f199612df86807641b7f8343f9363cb
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Wed Feb 25 08:28:12 2026 +0100
+
+    24-02-2026
+
+M	lib/services/email.service.ts
+
+commit ea3cee0bee3db7790934049456b1cdd3a85ed56a
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Mon Feb 23 08:30:11 2026 +0100
+
+    22-02-2026
+
+M	lib/services/tax-form.service.ts
+
+commit a760692e4486b2cfa4ba554abd8889ad3ccdf55e
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Sun Feb 22 06:29:44 2026 +0100
+
+    21-02-2026
+
+M	components/admin/AdminTaxFilingManager.tsx
+A	docs/Form 5472 - Campo 1f.md
+M	lib/services/tax-form.service.ts
+A	scripts/labeled-5472.pdf
+
+commit 1cb114ea1d8efa4e1beccbf55ae06e0c58aea925
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Wed Feb 18 15:44:51 2026 +0100
+
+    17-02-2026
+
+A	.agent/PLAN_FORM_5472_COMPLETO.md
+A	app/api/pedidos/[id]/descargar-formularios/route.ts
+A	app/api/stripe/checkout-tax-filing/route.ts
+M	app/dashboard/pedidos/[id]/page.tsx
+M	app/servicios/[slug]/onboarding/checkout/page.tsx
+M	lib/services/tax-form.service.ts
+A	scripts/test-output-watermark.pdf
+A	scripts/test-watermark-150px.pdf
+A	scripts/test-watermark-v2.pdf
+
+commit 706aa8511ee077b01e95b0036509c21fe1154c9e
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Mon Feb 16 05:59:38 2026 +0100
+
+    15-02-2026
+
+A	.agent/SOLUCION_TAX_DATA_VACIO.md
+M	app/admin/pedidos/[id]/page.tsx
+A	app/api/admin/pedidos/[id]/generar-formularios-fiscales/route.ts
+A	app/api/admin/tax-forms/preview/route.ts
+A	app/api/orders/tax-filing/create/route.ts
+M	app/api/stripe/webhook/route.ts
+M	app/dashboard/page.tsx
+M	app/dashboard/pedidos/[id]/page.tsx
+A	app/servicios/form-5472-1120/onboarding/page.tsx
+A	app/servicios/form-5472-1120/page.tsx
+A	components/admin/AdminTaxFilingManager.tsx
+A	docs/TAX_FILING_ARCHITECTURE.md
+M	lib/models/pedido.ts
+A	lib/services/tax-form.service.ts
+M	middleware.ts
+A	public/debug/map_f1120.pdf
+A	public/debug/map_f5472.pdf
+A	public/templates/irs/f1120.pdf
+A	public/templates/irs/f5472.pdf
+A	scripts/generate-map-pdf.js
+A	scripts/inspect-pdf-fields.js
+A	scripts/list-pdf-fields.js
+A	supabase/migrations/20260214_add_tax_data_to_pedidos.sql
+A	supabase/migrations/diagnostico_tax_data.sql
+A	supabase/migrations/poblar_tax_data_prueba.sql
+
+commit cea75a61d0d38a15ca452e7a814128e1aa3f9b91
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Sat Feb 14 03:59:01 2026 +0100
+
+    13-02-2026
+
+A	public/TEST_SS4_FINAL_V3.pdf
+A	public/TEST_SS4_FINAL_V4.pdf
+A	public/TEST_SS4_FINAL_V5.pdf
+A	public/TEST_SS4_FINAL_V6.pdf
+A	public/TEST_SS4_FINAL_V7.pdf
+
+commit bed45c4e6c1e1498fc0b61dd8938dc6523d8b2f6
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Fri Feb 13 02:39:07 2026 +0100
+
+    12-02-2026
+
+A	public/DEBUG_MAP.pdf
+A	public/DIAGNOSTICO_SS4.pdf
+A	public/TEST_SS4_FILLED.pdf
+A	public/TEST_SS4_FINAL.pdf
+A	public/TEST_SS4_FINAL_V2.pdf
+A	public/TEST_SS4_v2.pdf
+A	public/TEST_SS4_v3.pdf
+A	public/form-ss4.pdf
+
+commit 0a34cf6d3a623c45520d37b606c2e91dad2bc306
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Wed Feb 4 07:44:37 2026 +0100
+
+    04-02-2026
+
+M	app/dashboard/page.tsx
+
+commit 20f03e62b1f248ecd8576f082efd8cd8b1b27acd
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Mon Feb 2 09:26:16 2026 +0100
+
+    02-02-2026
+
+A	ngrok.exe
+
+commit ca7d161ea356619bd1419422376279008afb925c
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Mon Jan 26 15:47:29 2026 +0100
+
+    25 enero 2026
+
+A	supabase/migrations_self_hosted/002_seed_data.sql
+
+commit c27005b5b277b244a056deaa692bdbe3160863a6
+Author: josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com>
+Date:   Sat Jan 17 11:39:59 2026 +0100
+
+    Estado inicial del proyecto
+
+A	_RESPALDO_SERVICIOS/form-5472-1120.tsx
+A	_RESPALDO_SERVICIOS/pageraiz.tsx
+A	app/faq/page.tsx
+A	app/servicios/page.tsx
+A	components/faq/FAQAccordion.tsx
+A	components/layout/Header.tsx
+A	components/layout/Header.tsx.back
+A	legal/terms-and-conditions.md

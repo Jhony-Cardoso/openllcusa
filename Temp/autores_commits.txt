@@ -1,0 +1,62 @@
+COMMIT: 607245d | 2026-04-04 22:52 | Axel-Martinez <open.llc.eeuu@gmail.com> | A├▒adir rutas dinamicas para los paises de la guia y limpiar next.config
+COMMIT: 55a523e | 2026-04-04 22:10 | Axel-Martinez <open.llc.eeuu@gmail.com> | Eliminar guias de la app y actualizar tsconfig
+COMMIT: 9c75941 | 2026-04-04 01:21 | Axel-Martinez <open.llc.eeuu@gmail.com> | Fix CSS import path in condiciones-generales page
+COMMIT: 9fc2b24 | 2026-04-04 01:09 | Axel-Martinez <open.llc.eeuu@gmail.com> | Split general T&C from calculator T&C to avoid name collisions
+COMMIT: 102dcab | 2026-04-04 00:54 | Axel-Martinez <open.llc.eeuu@gmail.com> | Add No-ETBUS foreign-source legal disclaimer to invoice footer
+COMMIT: f02f807 | 2026-04-04 00:12 | Axel-Martinez <open.llc.eeuu@gmail.com> | Add Zara Designs LLC as legal entity behind Open LLC USA in T&C and invoices
+COMMIT: 58c9502 | 2026-04-04 00:04 | Axel-Martinez <open.llc.eeuu@gmail.com> | Add INVOICE PAID + Zara Designs stamps to paid invoices PDF generator; fix JSX error in guide page
+COMMIT: 2e85698 | 2026-04-03 01:00 | Axel-Martinez <open.llc.eeuu@gmail.com> | Fix comparison cards layout in estado-elegir guide
+COMMIT: 3127dac | 2026-04-03 00:44 | Axel-Martinez <open.llc.eeuu@gmail.com> | Downgrade Clerk to 6.11.0 to fix Turbopack Server Action error
+COMMIT: 98c7e5e | 2026-04-02 22:14 | Axel-Martinez <open.llc.eeuu@gmail.com> | Fix Ambiguous Router by moving guias/[slug] to guia/[slug]
+COMMIT: d19a653 | 2026-04-02 21:54 | Axel-Martinez <open.llc.eeuu@gmail.com> | Add Gu├¡as section with 5 SEO optimized articles
+COMMIT: 5ea78aa | 2026-04-02 21:41 | Axel-Martinez <open.llc.eeuu@gmail.com> | Fix header-logo hover text color blending with background
+COMMIT: b5e0d48 | 2026-04-02 21:35 | Axel-Martinez <open.llc.eeuu@gmail.com> | Modernize home services glassmorphism & add Details links in Pricing page
+COMMIT: 80e502b | 2026-04-02 15:26 | Axel-Martinez <open.llc.eeuu@gmail.com> | Actualizando Next.js
+COMMIT: 970f960 | 2026-04-02 14:02 | Axel-Martinez <open.llc.eeuu@gmail.com> | Add compliance-basico logic and tailor impuestos-federales slug
+COMMIT: 88aba68 | 2026-04-02 01:26 | Axel-Martinez <open.llc.eeuu@gmail.com> | Add Reporte Anual and tailor Timelines & FAQs for all secondary services
+COMMIT: 53faf41 | 2026-04-01 12:44 | Axel-Martinez <open.llc.eeuu@gmail.com> | Premium service page with CSS in globals.css (bypass Tailwind cache issue); add Timeline, Testimonials, FAQ
+COMMIT: a23a7a9 | 2026-04-01 12:29 | Axel-Martinez <open.llc.eeuu@gmail.com> | CANARY servicios: inline purple banner to test dynamic route deployment
+COMMIT: 5f47faa | 2026-04-01 12:13 | Axel-Martinez <open.llc.eeuu@gmail.com> | Remove canary banner; fix tagline->descripcion in servicios detail page
+COMMIT: 0595666 | 2026-04-01 12:00 | Axel-Martinez <open.llc.eeuu@gmail.com> | CANARY: deployment diagnostic banner v2.1
+COMMIT: 22bc32c | 2026-04-01 01:25 | Axel-Martinez <open.llc.eeuu@gmail.com> | Simplify next.config.ts to debug general 404 error after static folder removal
+COMMIT: b1281d1 | 2026-04-01 00:41 | Axel-Martinez <open.llc.eeuu@gmail.com> | Premium service page with Timeline and Testimonials; remove legacy static pages
+COMMIT: 764503b | 2026-04-01 00:32 | Axel-Martinez <open.llc.eeuu@gmail.com> | Correcciones en la Home y en Servicios
+COMMIT: e12e73f | 2026-04-01 00:20 | Axel-Martinez <open.llc.eeuu@gmail.com> | Allow users to see service detail pages before onboarding by removing absolute redir
+COMMIT: 8c0e503 | 2026-04-01 00:08 | Axel-Martinez <open.llc.eeuu@gmail.com> | Correciones en la Home
+COMMIT: 57e3bd7 | 2026-03-31 22:05 | Axel-Martinez <open.llc.eeuu@gmail.com> | Fix Home buttons jump to #comenzar and resolve 404 service links
+COMMIT: 468c7e3 | 2026-03-26 06:35 | Axel-Martinez <open.llc.eeuu@gmail.com> | Update NEXT_PUBLIC_BASE_URL to openllcusa.com
+COMMIT: b0b0210 | 2026-03-25 07:43 | Axel-Martinez <open.llc.eeuu@gmail.com> | Inject NEXT_PUBLIC variables into Dockerfile to pass Clerk build requirements
+COMMIT: 4e8b901 | 2026-03-25 07:30 | Axel-Martinez <open.llc.eeuu@gmail.com> | Bypass Stripe empty string error on API routes during docker build
+COMMIT: d5510e3 | 2026-03-25 02:57 | Axel-Martinez <open.llc.eeuu@gmail.com> | Bypass Supabase strict empty string error during docker build
+COMMIT: 1283c43 | 2026-03-25 02:45 | Axel-Martinez <open.llc.eeuu@gmail.com> | Bypass Resend and Stripe strict empty string errors during build
+COMMIT: 56712e3 | 2026-03-25 02:30 | Axel-Martinez <open.llc.eeuu@gmail.com> | Fix build errors Nextjs and ESLint
+COMMIT: e44e98f | 2026-03-25 01:09 | Axel-Martinez <open.llc.eeuu@gmail.com> | fix: clean Dockerfile for Supabase (remove Prisma copy)
+COMMIT: 47d3f36 | 2026-03-25 00:40 | Axel-Martinez <open.llc.eeuu@gmail.com> | feat: add optimized Dockerfile for production
+COMMIT: ad2b52c | 2026-03-25 00:16 | Axel-Martinez <open.llc.eeuu@gmail.com> | Actualizar next.config.ts con output standalone y  corregir script de build
+COMMIT: 41a4630 | 2026-03-24 08:40 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 23-03-2026
+COMMIT: c34528c | 2026-03-21 13:01 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 20-03-2026
+COMMIT: 7340170 | 2026-03-19 04:30 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 18-03-2026
+COMMIT: 0fae7aa | 2026-03-18 09:45 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 17-03-2026
+COMMIT: 24e398e | 2026-03-15 10:33 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 14-03-2026
+COMMIT: 08399e9 | 2026-03-05 02:05 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 04-03-2026
+COMMIT: 2d6bc62 | 2026-03-02 07:59 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 01-03-2026
+COMMIT: 04cd7e1 | 2026-03-01 08:14 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 28-02-2026
+COMMIT: 9951e0e | 2026-02-27 07:29 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 26-02-2026
+COMMIT: 5a984c3 | 2026-02-26 07:03 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 25-02-2026
+COMMIT: d5eb530 | 2026-02-25 08:28 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 24-02-2026
+COMMIT: ea3cee0 | 2026-02-23 08:30 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 22-02-2026
+COMMIT: a760692 | 2026-02-22 06:29 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 21-02-2026
+COMMIT: 1cb114e | 2026-02-18 15:44 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 17-02-2026
+COMMIT: 706aa85 | 2026-02-16 05:59 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 15-02-2026
+COMMIT: cea75a6 | 2026-02-14 03:59 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 13-02-2026
+COMMIT: bed45c4 | 2026-02-13 02:39 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 12-02-2026
+COMMIT: b1ab717 | 2026-02-10 02:02 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 09-02-2026
+COMMIT: ac5a0b4 | 2026-02-08 08:10 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 08-02-2026
+COMMIT: 1c6cb57 | 2026-02-07 08:35 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 07-02-2026
+COMMIT: 0a34cf6 | 2026-02-04 07:44 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 04-02-2026
+COMMIT: 5c77371 | 2026-02-03 06:23 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 03-02-2026
+COMMIT: 20f03e6 | 2026-02-02 09:26 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 02-02-2026
+COMMIT: ca7d161 | 2026-01-26 15:47 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | 25 enero 2026
+COMMIT: f161b81 | 2026-01-19 00:01 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | Descripci├│n breve
+COMMIT: c27005b | 2026-01-17 11:39 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | Estado inicial del proyecto
+COMMIT: 3048b38 | 2025-10-18 20:04 | josemanuelguerranunez5 <josemanuelguerranunez5@gmail.com> | Initial commit from Create Next App

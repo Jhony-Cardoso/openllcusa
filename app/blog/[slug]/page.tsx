@@ -10,7 +10,7 @@ import {
 } from '@/lib/blog/posts';
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 // Genera de forma estática todas las rutas /blog/[slug]
@@ -26,7 +26,8 @@ export function generateStaticParams() {
 export async function generateMetadata(
   { params }: PageProps,
 ): Promise<Metadata> {
-  const post = getPostBySlug(params.slug);
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
 
   if (!post) {
     return {};
@@ -45,8 +46,9 @@ export async function generateMetadata(
   };
 }
 
-export default function BlogPostPage({ params }: PageProps) {
-  const post = getPostBySlug(params.slug);
+export default async function BlogPostPage({ params }: PageProps) {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
 
   if (!post) {
     notFound();

@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node --max-old-space-size=6144 ./node_modules/next/dist/bin/next dev",
-    "dev:safe": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next dev",
-    "dev:notrace": "cross-env NEXT_TELEMETRY_DISABLED=1 node --max-old-space-size=6144 ./node_modules/next/dist/bin/next dev",
-    "build": "next build",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
+    "dev:safe": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
+    "dev:notrace": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "start": "next start",
     "lint": "next lint"
   },

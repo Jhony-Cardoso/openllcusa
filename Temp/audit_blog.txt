@@ -1,0 +1,33 @@
+
+M	app/calculadora-fiscal/page.tsx
+R096	app/legal/terms-and-conditions/page.tsx	app/legal/terminos-calculadora/page.tsx
+D	app/api/blog/route.ts
+D	app/api/contact/route.ts
+D	app/proceso/layout.tsx
+D	app/proceso/page.tsx
+D	app/testimonios/layout.tsx
+D	app/testimonios/page.tsx
+D	app/types/blog.ts
+M	app/calculadora-fiscal/page.tsx
+A	docs/AUTOMATIZACION_PROCESOS.md
+A	app/api/blog/route.ts
+A	app/api/contact/route.ts
+A	app/blog/[slug]/page.tsx
+A	app/blog/page.tsx
+A	app/calculadora-fiscal/layout.tsx
+A	app/calculadora-fiscal/page.module.css
+A	app/calculadora-fiscal/page.module.css.d.ts
+A	app/calculadora-fiscal/page.tsx
+A	app/contacto/page.tsx
+A	app/faq-calculadora/faq.module.css
+A	app/faq-calculadora/page.tsx
+A	app/proceso/layout.tsx
+A	app/proceso/page.tsx
+A	app/testimonios/layout.tsx
+A	app/testimonios/page.tsx
+A	app/types/blog.ts
+A	components/SectionCalculadora.tsx
+A	lib/blog/posts.ts
+A	public/images/calculadora-screenshot.jpg
+A	public/images/og-calculadora-fiscal.jpg
+

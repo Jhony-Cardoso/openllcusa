@@ -1,0 +1,134 @@
+/* ================================================
+   OPEN LLC USA — Homepage V4 Animations & Tokens
+   Importar en app/page.tsx o globals.css
+   ================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+/* Animations */
+@keyframes hp-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+@keyframes hp-pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+}
+@keyframes hp-pulse-cta {
+  0%, 100% { box-shadow: 0 6px 24px rgba(234, 88, 12, 0.38), 0 0 0 0 rgba(234, 88, 12, 0.4); }
+  60%       { box-shadow: 0 6px 24px rgba(234, 88, 12, 0.38), 0 0 0 14px rgba(234, 88, 12, 0); }
+}
+@keyframes hp-fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Utility classes */
+.hp-float    { animation: hp-float 5.5s ease-in-out infinite; }
+.hp-pdot     { animation: hp-pulse-green 2s infinite; }
+.hp-pcta     { animation: hp-pulse-cta 2.8s infinite; }
+
+/* Fade-up scroll animation */
+.hp-fu {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.hp-fu.hp-on {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Spinner (process step 2) */
+.hp-spin-arc {
+  animation: hp-spin 3s linear infinite;
+  transform-origin: 32px 32px;
+}
+
+/* Hover effects */
+.hp-scard {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.hp-scard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 36px rgba(30, 58, 138, 0.14) !important;
+  border-color: #bfdbfe !important;
+}
+.hp-tcard {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.hp-tcard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 32px rgba(30, 58, 138, 0.12) !important;
+}
+.hp-pcard {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.hp-pcard:hover {
+  transform: translateY(-5px);
+}
+
+/* Input focus */
+.hp-input:focus {
+  outline: none;
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+}
+.hp-input {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Process connector line */
+.hp-pconn {
+  position: absolute;
+  top: 60px;
+  left: 16.67%;
+  right: 16.67%;
+  height: 2px;
+  background: linear-gradient(90deg, #dbeafe, #10b981);
+  z-index: 0;
+}
+
+/* Mobile sticky CTA */
+.hp-mob {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: 12px 20px;
+  align-items: center;
+  gap: 12px;
+  z-index: 200;
+  box-shadow: 0 -4px 20px rgba(17, 24, 39, 0.1);
+}
+.hp-mob.hp-show {
+  display: flex;
+}
+
+/* Responsive overrides */
+@media (max-width: 900px) {
+  .hp-himg   { display: none !important; }
+  .hp-hgrid  { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 768px) {
+  .hp-pconn  { display: none; }
+  .hp-pcols  { grid-template-columns: 1fr !important; }
+  .hp-gi     { grid-template-columns: 1fr !important; }
+  .hp-gi-img { display: none !important; }
+}
+@media (max-width: 640px) {
+  .hp-sgrid  { grid-template-columns: repeat(2, 1fr) !important; }
+  .hp-pgrid  { grid-template-columns: 1fr !important; }
+  .hp-tgrid  { grid-template-columns: 1fr !important; }
+  .hp-fgrid  { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 480px) {
+  .hp-sgrid  { grid-template-columns: 1fr !important; }
+  .hp-mob    { display: none !important; } /* Use full-page CTA instead */
+}

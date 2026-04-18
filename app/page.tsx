@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import ReactCountryFlag from 'react-country-flag'
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 import './homepage-v4.css'
 
@@ -206,17 +207,26 @@ function HeroSection() {
 
             {/* Country pills */}
             <div className="flex flex-wrap gap-2">
-              {['🇲🇽 México', '🇨🇴 Colombia', '🇪🇸 España', '🇦🇷 Argentina', '🇨🇱 Chile', '🇵🇪 Perú'].map((c) => (
+              {[
+                { code: 'MX', name: 'México' },
+                { code: 'CO', name: 'Colombia' },
+                { code: 'ES', name: 'España' },
+                { code: 'AR', name: 'Argentina' },
+                { code: 'PE', name: 'Perú' },
+                { code: 'US', name: 'EE.UU.' },
+                { code: 'PY', name: 'Paraguay' },
+              ].map((c) => (
                 <span
-                  key={c}
-                  className="text-sm font-medium px-3 py-1 rounded-full"
+                  key={c.code}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full"
                   style={{
                     background: 'rgba(255,255,255,.08)',
                     border: '1px solid rgba(255,255,255,.13)',
                     color: 'rgba(255,255,255,.76)',
                   }}
                 >
-                  {c}
+                  <ReactCountryFlag countryCode={c.code} svg style={{ fontSize: '1.2em', borderRadius: '2px' }} />
+                  {c.name}
                 </span>
               ))}
             </div>
@@ -507,9 +517,10 @@ function ProcessSection() {
 // LATAM SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 const COUNTRIES: [string, string, string][] = [
-  ['🇲🇽', '/guias/mx', 'México'], ['🇨🇴', '/guias/co', 'Colombia'],
-  ['🇪🇸', '/guias/es', 'España'], ['🇦🇷', '/guias/ar', 'Argentina'],
-  ['🇨🇱', '/guias/cl', 'Chile'],  ['🇵🇪', '/guias/pe', 'Perú'],
+  ['MX', '/guias/mx', 'México'], ['CO', '/guias/co', 'Colombia'],
+  ['ES', '/guias/es', 'España'], ['AR', '/guias/ar', 'Argentina'],
+  ['PE', '/guias/pe', 'Perú'],   ['US', '/guias/us', 'EE.UU.'],
+  ['PY', '/guias/py', 'Paraguay'],
 ]
 
 function LatamSection() {
@@ -535,14 +546,15 @@ function LatamSection() {
             Ya hemos ayudado a fundadores de México, Colombia, Chile, España, Argentina, Perú y más a establecer su presencia legal en EE.UU.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            {COUNTRIES.map(([flag, href, name]) => (
+            {COUNTRIES.map(([code, href, name]) => (
               <Link
                 key={name}
                 href={href}
-                className="inline-block text-sm font-semibold px-5 py-2.5 rounded-full"
+                className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full"
                 style={{ background: T.wh, border: `1px solid ${T.br}`, color: T.b9, textDecoration: 'none', boxShadow: T.shCard }}
               >
-                {flag} {name}
+                <ReactCountryFlag countryCode={code} svg style={{ fontSize: '1.2em', borderRadius: '2px', boxShadow: '0 0 2px rgba(0,0,0,0.1)' }} />
+                {name}
               </Link>
             ))}
           </div>

@@ -236,7 +236,7 @@ function HeroSection() {
           <div className="hp-himg hp-fu flex justify-center">
             <div className="hp-float w-full" style={{ maxWidth: 500 }}>
               <Image
-                src="/images/hero.png"
+                src="/images/hero.webp"
                 alt="Emprendedor hispanohablante abriendo su LLC en EE.UU. desde su ordenador"
                 width={500}
                 height={460}
@@ -776,7 +776,7 @@ function GuaranteeSection() {
         >
           <div className="hp-gi-img flex justify-center">
             <Image
-              src="/images/garantia.png"
+              src="/images/garantia.webp"
               alt="Sello de garantía de devolución a 7 días"
               width={200}
               height={200}

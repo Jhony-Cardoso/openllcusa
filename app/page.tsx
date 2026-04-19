@@ -569,16 +569,19 @@ function LatamSection() {
 // ─────────────────────────────────────────────────────────────────────────────
 const TESTIMONIALS = [
   {
+    image: '/images/testimonio-carlos.webp',
     initial: 'C', name: 'Carlos M.', country: '🇨🇴 Colombia',
     grad: `linear-gradient(135deg, ${T.b9}, ${T.b7})`,
     quote: '"Gracias a Open LLC USA, ahora tengo mi LLC en Delaware y una cuenta en Mercury. Todo en 4 días."',
   },
   {
+    image: '/images/testimonio-ana.webp',
     initial: 'A', name: 'Ana R.', country: '🇲🇽 México',
     grad: `linear-gradient(135deg, ${T.gd}, ${T.gn})`,
     quote: '"El proceso fue sorprendentemente simple. El equipo respondió todas mis dudas en español y obtuve mi EIN sin complicaciones."',
   },
   {
+    image: '/images/testimonio-miguel.webp',
     initial: 'M', name: 'Miguel S.', country: '🇪🇸 España',
     grad: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
     quote: '"Perfecto para iniciar mi negocio digital. Soporte excepcional y precios justos."',
@@ -595,7 +598,7 @@ function TestimonialsSection() {
         </div>
 
         <div className="hp-tgrid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-          {TESTIMONIALS.map(({ initial, name, country, grad, quote }) => (
+          {TESTIMONIALS.map(({ image, initial, name, country, grad, quote }) => (
             <div
               key={name}
               className="hp-fu hp-tcard rounded-2xl"
@@ -611,12 +614,18 @@ function TestimonialsSection() {
               <p className="text-[15px] leading-relaxed mb-6 italic relative z-10" style={{ color: T.ts }}>{quote}</p>
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div
-                  className="flex items-center justify-center font-extrabold text-lg flex-shrink-0"
-                  style={{ width: 46, height: 46, borderRadius: '50%', background: grad, color: T.wh, fontFamily: "'Plus Jakarta Sans',sans-serif" }}
-                >
-                  {initial}
-                </div>
+                {image ? (
+                  <div className="flex-shrink-0" style={{ width: 46, height: 46, borderRadius: '50%', overflow: 'hidden', border: `2px solid ${T.b1}` }}>
+                    <Image src={image} alt={name} width={46} height={46} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ) : (
+                  <div
+                    className="flex items-center justify-center font-extrabold text-lg flex-shrink-0"
+                    style={{ width: 46, height: 46, borderRadius: '50%', background: grad, color: T.wh, fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+                  >
+                    {initial}
+                  </div>
+                )}
                 <div>
                   <div className="font-bold text-[15px]" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: T.tx }}>{name}</div>
                   <div className="text-[13px] mt-0.5" style={{ color: T.tm }}>{country}</div>

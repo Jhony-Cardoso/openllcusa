@@ -6,14 +6,15 @@ import Link from 'next/link'
 import ReactCountryFlag from 'react-country-flag'
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 import './homepage-v4.css'
+import { Analytics } from '../lib/analytics';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DESIGN TOKENS
 // ─────────────────────────────────────────────────────────────────────────────
 const T = {
   // Blues — for hero, footer, accents only
-  bd: '#0C2047',   b9: '#1E3A8A', b7: '#1D4ED8', b5: '#3B82F6',
-  b1: '#DBEAFE',   b0: '#EFF6FF',
+  bd: '#0C2047', b9: '#1E3A8A', b7: '#1D4ED8', b5: '#3B82F6',
+  b1: '#DBEAFE', b0: '#EFF6FF',
   // Green — success, checks
   gn: '#10B981', gd: '#059669', gl: '#D1FAE5',
   // CTA — orange
@@ -23,7 +24,7 @@ const T = {
   br: '#E5E7EB', wh: '#FFFFFF', sf: '#F8FAFC',
   // Shadows
   shCard: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)',
-  shCta:  '0 6px 24px rgba(234,88,12,.38)',
+  shCta: '0 6px 24px rgba(234,88,12,.38)',
   shBlue: '0 6px 24px rgba(30,58,138,.24)',
 } as const
 
@@ -39,8 +40,8 @@ function useFadeUp() {
           const siblings = Array.from(
             entry.target.parentElement?.querySelectorAll('.hp-fu') ?? []
           )
-          ;(entry.target as HTMLElement).style.transitionDelay =
-            `${siblings.indexOf(entry.target) * 85}ms`
+            ; (entry.target as HTMLElement).style.transitionDelay =
+              `${siblings.indexOf(entry.target) * 85}ms`
           entry.target.classList.add('hp-on')
           observer.unobserve(entry.target)
         })
@@ -167,6 +168,7 @@ function HeroSection() {
             <div className="mb-3">
               <Link
                 href="#comenzar"
+                onClick={() => Analytics.trackStartLLC('hero')}
                 className="hp-pcta inline-flex items-center gap-2.5 font-extrabold rounded-full"
                 style={{
                   background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
@@ -191,6 +193,7 @@ function HeroSection() {
             <div className="mb-10">
               <Link
                 href="#proceso"
+                onClick={() => Analytics.trackHowItWorks('hero')}
                 className="inline-flex items-center gap-2 font-semibold rounded-full"
                 style={{
                   background: 'rgba(255,255,255,.09)',
@@ -294,25 +297,25 @@ function TrustBar() {
 function IconLLC() {
   return (
     <svg viewBox="0 0 88 88" width="88" height="88" aria-hidden>
-      <rect x="8"  y="14" width="56" height="66" rx="9" fill="#EFF6FF"/>
-      <rect x="18" y="26" width="36" height="4.5" rx="2" fill="#1D4ED8"/>
-      <rect x="18" y="34" width="28" height="3" rx="1.5" fill="#3B82F665"/>
-      <rect x="18" y="41" width="30" height="3" rx="1.5" fill="#3B82F665"/>
-      <rect x="18" y="48" width="22" height="3" rx="1.5" fill="#3B82F665"/>
-      <circle cx="68" cy="68" r="18" fill="#10B981"/>
-      <path d="M60 68.5L65.5 74L77 62" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      <rect x="8" y="14" width="56" height="66" rx="9" fill="#EFF6FF" />
+      <rect x="18" y="26" width="36" height="4.5" rx="2" fill="#1D4ED8" />
+      <rect x="18" y="34" width="28" height="3" rx="1.5" fill="#3B82F665" />
+      <rect x="18" y="41" width="30" height="3" rx="1.5" fill="#3B82F665" />
+      <rect x="18" y="48" width="22" height="3" rx="1.5" fill="#3B82F665" />
+      <circle cx="68" cy="68" r="18" fill="#10B981" />
+      <path d="M60 68.5L65.5 74L77 62" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   )
 }
 function IconEIN() {
   return (
     <svg viewBox="0 0 88 88" width="88" height="88" aria-hidden>
-      <rect x="8"  y="8"  width="54" height="66" rx="9" fill="#FEF3C7"/>
-      <rect x="18" y="20" width="34" height="5"   rx="2" fill="#92400E"/>
-      <rect x="18" y="29" width="26" height="3" rx="1.5" fill="#F59E0B90"/>
-      <rect x="18" y="36" width="30" height="3" rx="1.5" fill="#F59E0B90"/>
-      <rect x="18" y="43" width="22" height="3" rx="1.5" fill="#F59E0B90"/>
-      <circle cx="66" cy="66" r="18" fill="#1E3A8A"/>
+      <rect x="8" y="8" width="54" height="66" rx="9" fill="#FEF3C7" />
+      <rect x="18" y="20" width="34" height="5" rx="2" fill="#92400E" />
+      <rect x="18" y="29" width="26" height="3" rx="1.5" fill="#F59E0B90" />
+      <rect x="18" y="36" width="30" height="3" rx="1.5" fill="#F59E0B90" />
+      <rect x="18" y="43" width="22" height="3" rx="1.5" fill="#F59E0B90" />
+      <circle cx="66" cy="66" r="18" fill="#1E3A8A" />
       <text x="66" y="73" textAnchor="middle" fontSize="13" fontWeight="800" fill="white" fontFamily="'Plus Jakarta Sans',sans-serif">EIN</text>
     </svg>
   )
@@ -320,27 +323,27 @@ function IconEIN() {
 function IconAgent() {
   return (
     <svg viewBox="0 0 88 88" width="88" height="88" aria-hidden>
-      <circle cx="44" cy="26" r="18" fill="#D1FAE5"/>
-      <circle cx="44" cy="26" r="12" fill="#10B981"/>
-      <path d="M38 26L43 31L51 23" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-      <path d="M18 80Q18 56 44 56Q70 56 70 80" fill="#EFF6FF"/>
-      <rect x="30" y="53" width="28" height="24" rx="6" fill="#1E3A8A"/>
-      <circle cx="68" cy="14" r="12" fill="#FEF3C7"/>
-      <path d="M68 7v14M61 14h14" stroke="#92400E" strokeWidth="2.2" strokeLinecap="round"/>
+      <circle cx="44" cy="26" r="18" fill="#D1FAE5" />
+      <circle cx="44" cy="26" r="12" fill="#10B981" />
+      <path d="M38 26L43 31L51 23" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M18 80Q18 56 44 56Q70 56 70 80" fill="#EFF6FF" />
+      <rect x="30" y="53" width="28" height="24" rx="6" fill="#1E3A8A" />
+      <circle cx="68" cy="14" r="12" fill="#FEF3C7" />
+      <path d="M68 7v14M61 14h14" stroke="#92400E" strokeWidth="2.2" strokeLinecap="round" />
     </svg>
   )
 }
 function IconBank() {
   return (
     <svg viewBox="0 0 88 88" width="88" height="88" aria-hidden>
-      <rect x="4"  y="34" width="72" height="46" rx="8" fill="#CCFBF1"/>
-      <polygon points="44,6 4,32 76,32" fill="#0D9488"/>
-      <rect x="8"  y="40" width="64" height="7" fill="#0F766E"/>
-      <rect x="12" y="52" width="14" height="22" rx="4" fill="#1E3A8A"/>
-      <rect x="37" y="52" width="14" height="22" rx="4" fill="#1E3A8A"/>
-      <rect x="62" y="52" width="14" height="22" rx="4" fill="#1E3A8A"/>
-      <circle cx="68" cy="66" r="16" fill="#EA580C"/>
-      <path d="M68 57v18M59 66h18" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+      <rect x="4" y="34" width="72" height="46" rx="8" fill="#CCFBF1" />
+      <polygon points="44,6 4,32 76,32" fill="#0D9488" />
+      <rect x="8" y="40" width="64" height="7" fill="#0F766E" />
+      <rect x="12" y="52" width="14" height="22" rx="4" fill="#1E3A8A" />
+      <rect x="37" y="52" width="14" height="22" rx="4" fill="#1E3A8A" />
+      <rect x="62" y="52" width="14" height="22" rx="4" fill="#1E3A8A" />
+      <circle cx="68" cy="66" r="16" fill="#EA580C" />
+      <path d="M68 57v18M59 66h18" stroke="white" strokeWidth="3" strokeLinecap="round" />
     </svg>
   )
 }
@@ -349,10 +352,10 @@ function IconBank() {
 // SERVICES SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 const SERVICES = [
-  { Icon: IconLLC,   title: 'Registro de LLC',           desc: 'Crea tu empresa en Wyoming, New Mexico, Delaware o Florida. Lista para operar globalmente.',          href: '/servicios/llc',                cta: 'Ver detalles' },
-  { Icon: IconEIN,   title: 'Obtén tu EIN sin SSN',      desc: 'Necesario para abrir cuenta bancaria, contratar y pagar impuestos. Lo tramitamos por ti.',            href: '/servicios/obtencion-ein',      cta: 'Solicitar EIN' },
-  { Icon: IconAgent, title: 'Agente Registrado',          desc: 'Cumple con los requisitos legales de tu estado. Incluido el primer año sin costo adicional.',         href: '/servicios/agente-registrado',  cta: 'Más información' },
-  { Icon: IconBank,  title: 'Cuenta Bancaria Empresarial',desc: 'Te conectamos con bancos que aceptan LLCs de no residentes. Mercury, Relay y más.',                   href: '/servicios/launch-banking',     cta: 'Explorar opciones' },
+  { Icon: IconLLC, title: 'Registro de LLC', desc: 'Crea tu empresa en Wyoming, New Mexico, Delaware o Florida. Lista para operar globalmente.', href: '/servicios/llc', cta: 'Ver detalles' },
+  { Icon: IconEIN, title: 'Obtén tu EIN sin SSN', desc: 'Necesario para abrir cuenta bancaria, contratar y pagar impuestos. Lo tramitamos por ti.', href: '/servicios/obtencion-ein', cta: 'Solicitar EIN' },
+  { Icon: IconAgent, title: 'Agente Registrado', desc: 'Cumple con los requisitos legales de tu estado. Incluido el primer año sin costo adicional.', href: '/servicios/agente-registrado', cta: 'Más información' },
+  { Icon: IconBank, title: 'Cuenta Bancaria Empresarial', desc: 'Te conectamos con bancos que aceptan LLCs de no residentes. Mercury, Relay y más.', href: '/servicios/launch-banking', cta: 'Explorar opciones' },
 ]
 
 function ServicesSection() {
@@ -399,35 +402,35 @@ function ServicesSection() {
 function ProcIconForm() {
   return (
     <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden>
-      <rect x="6"  y="4"  width="44" height="54" rx="7" fill="#EFF6FF"/>
-      <rect x="14" y="14" width="28" height="4"   rx="2" fill="#1D4ED8"/>
-      <rect x="14" y="22" width="22" height="3" rx="1.5" fill="#1D4ED855"/>
-      <rect x="14" y="29" width="24" height="3" rx="1.5" fill="#1D4ED855"/>
-      <rect x="14" y="40" width="28" height="10" rx="4" fill="#10B981"/>
-      <path d="M19 45L24 50L39 42" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
+      <rect x="6" y="4" width="44" height="54" rx="7" fill="#EFF6FF" />
+      <rect x="14" y="14" width="28" height="4" rx="2" fill="#1D4ED8" />
+      <rect x="14" y="22" width="22" height="3" rx="1.5" fill="#1D4ED855" />
+      <rect x="14" y="29" width="24" height="3" rx="1.5" fill="#1D4ED855" />
+      <rect x="14" y="40" width="28" height="10" rx="4" fill="#10B981" />
+      <path d="M19 45L24 50L39 42" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none" />
     </svg>
   )
 }
 function ProcIconWork() {
   return (
     <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden>
-      <circle cx="32" cy="32" r="26" fill="#EFF6FF"/>
+      <circle cx="32" cy="32" r="26" fill="#EFF6FF" />
       <path
         className="hp-spin-arc"
         d="M32 10A22 22 0 0 1 54 32"
         stroke="#1D4ED8" strokeWidth="4" fill="none" strokeLinecap="round"
       />
-      <circle cx="32" cy="32" r="10" fill="#DBEAFE"/>
-      <circle cx="32" cy="32" r="5"  fill="#1D4ED8"/>
+      <circle cx="32" cy="32" r="10" fill="#DBEAFE" />
+      <circle cx="32" cy="32" r="5" fill="#1D4ED8" />
     </svg>
   )
 }
 function ProcIconDone() {
   return (
     <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden>
-      <circle cx="32" cy="32" r="28" fill="#D1FAE5"/>
-      <circle cx="32" cy="32" r="20" fill="#10B981"/>
-      <path d="M22 32L29 39L43 25" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      <circle cx="32" cy="32" r="28" fill="#D1FAE5" />
+      <circle cx="32" cy="32" r="20" fill="#10B981" />
+      <path d="M22 32L29 39L43 25" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   )
 }
@@ -436,9 +439,9 @@ function ProcIconDone() {
 // PROCESS / TIMELINE SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 const STEPS = [
-  { Icon: ProcIconForm, n: 1, tag: '⏱ Solo 5 minutos',     title: 'Completa el formulario',       desc: '5 minutos. Solo necesitas tu pasaporte. Nada más.' },
-  { Icon: ProcIconWork, n: 2, tag: '⚡ Sin complicaciones', title: 'Nosotros hacemos el trabajo',   desc: 'Registro estatal + EIN + Agente registrado. Todo incluido, sin que muevas un dedo.' },
-  { Icon: ProcIconDone, n: 3, tag: '🌍 En 72 horas',        title: 'Recibe tus documentos',        desc: 'En 72 horas. Listo para operar en EE.UU. desde cualquier lugar del mundo.' },
+  { Icon: ProcIconForm, n: 1, tag: '⏱ Solo 5 minutos', title: 'Completa el formulario', desc: '5 minutos. Solo necesitas tu pasaporte. Nada más.' },
+  { Icon: ProcIconWork, n: 2, tag: '⚡ Sin complicaciones', title: 'Nosotros hacemos el trabajo', desc: 'Registro estatal + EIN + Agente registrado. Todo incluido, sin que muevas un dedo.' },
+  { Icon: ProcIconDone, n: 3, tag: '🌍 En 72 horas', title: 'Recibe tus documentos', desc: 'En 72 horas. Listo para operar en EE.UU. desde cualquier lugar del mundo.' },
 ]
 
 function ProcessSection() {
@@ -501,6 +504,7 @@ function ProcessSection() {
         <div className="hp-fu text-center mt-[60px]">
           <Link
             href="#comenzar"
+            onClick={() => Analytics.trackStartLLC('process')}
             className="inline-flex items-center gap-2 font-bold rounded-full"
             style={{ background: T.b9, color: T.wh, fontSize: 16, padding: '16px 40px', textDecoration: 'none', boxShadow: T.shBlue }}
           >
@@ -519,7 +523,7 @@ function ProcessSection() {
 const COUNTRIES: [string, string, string][] = [
   ['MX', '/guias/mx', 'México'], ['CO', '/guias/co', 'Colombia'],
   ['ES', '/guias/es', 'España'], ['AR', '/guias/ar', 'Argentina'],
-  ['PE', '/guias/pe', 'Perú'],   ['US', '/guias/us', 'EE.UU.'],
+  ['PE', '/guias/pe', 'Perú'], ['US', '/guias/us', 'EE.UU.'],
   ['PY', '/guias/py', 'Paraguay'],
 ]
 
@@ -543,7 +547,7 @@ function LatamSection() {
             No importa desde dónde estés
           </h2>
           <p className="text-[17px] mx-auto mb-10" style={{ color: T.ts, maxWidth: 560 }}>
-            Ya hemos ayudado a fundadores de México, Colombia, Chile, España, Argentina, Perú y más a establecer su presencia legal en EE.UU.
+            Ya hemos ayudado a fundadores de México, Colombia, España, Argentina, Perú, EE.UU., Paraguay y más a establecer su presencia legal en EE.UU.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             {COUNTRIES.map(([code, href, name]) => (
@@ -743,6 +747,7 @@ function PricingSection() {
 
               <Link
                 href="#comenzar"
+                onClick={() => Analytics.trackStartLLC('pricing')}
                 className="block text-center font-bold text-[15px] py-[15px] rounded-full"
                 style={{
                   textDecoration: 'none',
@@ -835,12 +840,43 @@ function QuickContactSection() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    // TODO: connect to your API route / Resend / Supabase
-    setTimeout(() => { setLoading(false); setSent(true) }, 900)
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Trackeamos el intento de envío
+    Analytics.trackAdvisoryFormSubmit({
+      country: form.country || 'no_seleccionado'
+    });
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          country: form.country,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSent(true);
+        Analytics.trackAdvisoryFormSuccess();
+      } else {
+        alert('Hubo un error al enviar el formulario. Inténtalo de nuevo.');
+        console.error('Error del servidor:', data);
+      }
+    } catch (error) {
+      console.error('Error de conexión:', error);
+      alert('Error de conexión. Por favor, inténtalo más tarde.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '12px 16px', fontSize: 15, color: T.tx,
@@ -999,6 +1035,7 @@ function CTAFinalSection() {
           {/* Primary CTA */}
           <Link
             href="#comenzar"
+            onClick={() => Analytics.trackStartLLC('footer')}
             className="hp-pcta inline-flex items-center gap-2.5 font-extrabold rounded-full mb-4"
             style={{
               background: `linear-gradient(135deg,${T.ct},${T.ch})`,

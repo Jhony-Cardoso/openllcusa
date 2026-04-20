@@ -1,58 +1,70 @@
-import { sendGAEvent } from '@next/third-parties/google'
+import { sendGAEvent } from '@next/third-parties/google';
 
 /**
- * Helper para enviar eventos a Google Analytics 4
- * Documentación de eventos recomendados: https://developers.google.com/analytics/devguides/collection/ga4/reference/events
+ * Helper centralizado para enviar eventos a Google Analytics 4
+ * Adaptado específicamente para Open LLC USA
  */
 
 export const Analytics = {
     /**
-     * Se dispara cuando el usuario inicia el pago
+     * Evento cuando el usuario hace clic en el CTA principal "Comenzar mi LLC ahora"
      */
-    trackBeginCheckout: (params: {
-        currency: string
-        value: number
-        items: Array<{
-            item_id: string
-            item_name: string
-            price: number
-            quantity: number
-            item_category?: string
-        }>
-    }) => {
-        sendGAEvent('event', 'begin_checkout', params)
-        console.log('📊 [Analytics] begin_checkout', params)
+    trackStartLLC: (location: 'hero' | 'pricing' | 'footer' | 'process') => {
+        sendGAEvent('event', 'start_llc_click', {
+            button_location: location,
+            page: 'homepage',
+        });
+        console.log('📊 [Analytics] start_llc_click →', location);
     },
 
     /**
-     * Se dispara cuando la compra se completa exitosamente
+     * Evento cuando el usuario hace clic en "Ver cómo funciona"
      */
-    trackPurchase: (params: {
-        transaction_id: string
-        currency: string
-        value: number
-        tax?: number
-        shipping?: number
-        items: Array<{
-            item_id: string
-            item_name: string
-            price: number
-            quantity: number
-            item_category?: string
-        }>
-    }) => {
-        sendGAEvent('event', 'purchase', params)
-        console.log('📊 [Analytics] purchase', params)
+    trackHowItWorks: (location: 'hero' | 'process_section') => {
+        sendGAEvent('event', 'how_it_works_click', {
+            button_location: location,
+            page: 'homepage',
+        });
+        console.log('📊 [Analytics] how_it_works_click →', location);
     },
 
     /**
-     * Se dispara cuando el usuario inicia sesión o se registra (si queremos trackear leads)
+     * Evento cuando el usuario envía el formulario de Asesoría Rápida
      */
-    trackLogin: (method: string = 'clerk') => {
-        sendGAEvent('event', 'login', { method })
+    trackAdvisoryFormSubmit: (formData?: { country?: string }) => {
+        sendGAEvent('event', 'advisory_form_submit', {
+            form_location: 'advisory_section',
+            ...formData,
+        });
+        console.log('📊 [Analytics] advisory_form_submit');
     },
 
-    trackSignUp: (method: string = 'clerk') => {
-        sendGAEvent('event', 'sign_up', { method })
-    }
-}
+    /**
+     * Evento cuando el formulario se envía exitosamente (muestra mensaje de éxito)
+     */
+    trackAdvisoryFormSuccess: () => {
+        sendGAEvent('event', 'advisory_form_success', {
+            form_location: 'advisory_section',
+        });
+        console.log('📊 [Analytics] advisory_form_success');
+    },
+
+    /**
+     * Evento genérico para otros clics importantes (opcional)
+     */
+    trackClick: (eventName: string, params: Record<string, any> = {}) => {
+        sendGAEvent('event', eventName, {
+            page: 'homepage',
+            ...params,
+        });
+        console.log(`📊 [Analytics] ${eventName}`, params);
+    },
+};
+
+// Exportamos también los nombres de eventos por si los necesitamos en otros lugares
+export const GA_EVENTS = {
+    START_LLC: 'start_llc_click',
+    HOW_IT_WORKS: 'how_it_works_click',
+    ADVISORY_SUBMIT: 'advisory_form_submit',
+    ADVISORY_SUCCESS: 'advisory_form_success',
+} as const;

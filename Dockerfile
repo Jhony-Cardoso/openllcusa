@@ -33,6 +33,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# Redirigir la caché de Next.js a /tmp para evitar problemas de permisos con volúmenes de Dokploy
+ENV NEXT_CACHE_DIR=/tmp/.next-cache
 
 # Copiar solo lo necesario del build standalone
 COPY --from=builder --chown=node:node /app/next.config.ts ./
@@ -40,8 +42,8 @@ COPY --from=builder --chown=node:node /app/public ./public
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 
-# Pre-create the cache folder and ensure node user has write access
-RUN mkdir -p /app/.next/cache && chown -R node:node /app/.next
+# Pre-create cache folders y asegurar permisos de escritura
+RUN mkdir -p /app/.next/cache /tmp/.next-cache && chmod -R 777 /app/.next/cache /tmp/.next-cache && chown -R node:node /app/.next /tmp/.next-cache
 
 EXPOSE 3000
 

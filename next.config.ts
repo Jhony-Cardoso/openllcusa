@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'standalone',
 
+  // Necesario para Next.js 16+ que usa Turbopack por defecto
+  turbopack: {},
+
   // ==================== SOLUCIÓN PARA EL ERROR EACCES EN .next/cache ====================
   // Esto es clave para entornos Docker como Dokploy
   experimental: {

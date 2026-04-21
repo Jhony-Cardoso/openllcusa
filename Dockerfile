@@ -33,6 +33,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=5000
 
 # Copiar solo lo necesario del build standalone
 COPY --from=builder /app/next.config.ts ./
@@ -40,7 +41,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-EXPOSE 3000
+EXPOSE 5000
 
 # Script de arranque: crea la carpeta de caché DESPUÉS de que Dokploy monte volúmenes
 # Esto garantiza permisos correctos sin importar qué volúmenes se monten

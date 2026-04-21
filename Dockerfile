@@ -45,7 +45,7 @@ RUN mkdir -p /app/.next/cache && chown -R node:node /app/.next
 
 EXPOSE 3000
 
-# Usuario no-root por seguridad
-USER node
+# Comentamos el usuario node para evitar problemas de permisos con los volúmenes de caché de Dokploy
+# USER node
 
 CMD ["node", "server.js"]

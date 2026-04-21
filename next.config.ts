@@ -19,10 +19,8 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Configuración de caché para producción (más segura en Docker)
-  generateBuildId: async () => {
-    return `build-${Date.now()}`;
-  },
+  // Forzar directorio de caché en /tmp para evitar problemas de permisos
+  distDir: '.next',
 
   // ==================== TU CONFIGURACIÓN ORIGINAL (sin cambios) ====================
   typescript: {

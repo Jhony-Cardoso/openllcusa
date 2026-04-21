@@ -33,21 +33,15 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-# Redirigir la caché de Next.js a /tmp para evitar problemas de permisos con volúmenes de Dokploy
-ENV NEXT_CACHE_DIR=/tmp/.next-cache
 
 # Copiar solo lo necesario del build standalone
-COPY --from=builder --chown=node:node /app/next.config.ts ./
-COPY --from=builder --chown=node:node /app/public ./public
-COPY --from=builder --chown=node:node /app/.next/standalone ./
-COPY --from=builder --chown=node:node /app/.next/static ./.next/static
-
-# Pre-create cache folders y asegurar permisos de escritura
-RUN mkdir -p /app/.next/cache /tmp/.next-cache && chmod -R 777 /app/.next/cache /tmp/.next-cache && chown -R node:node /app/.next /tmp/.next-cache
+COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
 
-# Comentamos el usuario node para evitar problemas de permisos con los volúmenes de caché de Dokploy
-# USER node
-
-CMD ["node", "server.js"]
+# Script de arranque: crea la carpeta de caché DESPUÉS de que Dokploy monte volúmenes
+# Esto garantiza permisos correctos sin importar qué volúmenes se monten
+CMD ["sh", "-c", "mkdir -p /app/.next/cache && node server.js"]

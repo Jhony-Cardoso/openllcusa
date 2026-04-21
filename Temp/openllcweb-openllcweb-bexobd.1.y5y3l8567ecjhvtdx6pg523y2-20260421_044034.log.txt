@@ -1,0 +1,99 @@
+2026-04-21T03:36:14.700Z }
+2026-04-21T03:36:14.701Z ⨯ unhandledRejection:  Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:14.701Z at ignore-listed frames {
+2026-04-21T03:36:14.701Z errno: -13,
+2026-04-21T03:36:14.701Z code: 'EACCES',
+2026-04-21T03:36:14.701Z syscall: 'mkdir',
+2026-04-21T03:36:14.701Z path: '/app/.next/cache'
+2026-04-21T03:36:14.701Z }
+2026-04-21T03:36:14.728Z ⨯ Failed to write image to cache -5WyYI_1NaLNYwrQ2SQOAjhQH5YxiPav-fPOPWO6wpI Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:14.728Z at ignore-listed frames {
+2026-04-21T03:36:14.728Z errno: -13,
+2026-04-21T03:36:14.728Z code: 'EACCES',
+2026-04-21T03:36:14.728Z syscall: 'mkdir',
+2026-04-21T03:36:14.728Z path: '/app/.next/cache'
+2026-04-21T03:36:14.728Z }
+2026-04-21T03:36:15.673Z Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:15.673Z at ignore-listed frames {
+2026-04-21T03:36:15.673Z errno: -13,
+2026-04-21T03:36:15.673Z code: 'EACCES',
+2026-04-21T03:36:15.673Z syscall: 'mkdir',
+2026-04-21T03:36:15.673Z path: '/app/.next/cache'
+2026-04-21T03:36:15.673Z }
+2026-04-21T03:36:15.673Z ⨯ unhandledRejection:  Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:15.673Z at ignore-listed frames {
+2026-04-21T03:36:15.673Z errno: -13,
+2026-04-21T03:36:15.673Z code: 'EACCES',
+2026-04-21T03:36:15.673Z syscall: 'mkdir',
+2026-04-21T03:36:15.673Z path: '/app/.next/cache'
+2026-04-21T03:36:15.673Z }
+2026-04-21T03:36:15.702Z ⨯ Failed to write image to cache rKxfjV9XoSSxQe9SoL1nyOfOkwt5WYEf3RaNlNwW5wo Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:15.702Z at ignore-listed frames {
+2026-04-21T03:36:15.702Z errno: -13,
+2026-04-21T03:36:15.702Z code: 'EACCES',
+2026-04-21T03:36:15.702Z syscall: 'mkdir',
+2026-04-21T03:36:15.702Z path: '/app/.next/cache'
+2026-04-21T03:36:15.702Z }
+2026-04-21T03:36:19.815Z Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:19.815Z at ignore-listed frames {
+2026-04-21T03:36:19.815Z errno: -13,
+2026-04-21T03:36:19.815Z code: 'EACCES',
+2026-04-21T03:36:19.815Z syscall: 'mkdir',
+2026-04-21T03:36:19.815Z path: '/app/.next/cache'
+2026-04-21T03:36:19.815Z }
+2026-04-21T03:36:19.816Z ⨯ unhandledRejection:  Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:19.816Z at ignore-listed frames {
+2026-04-21T03:36:19.816Z errno: -13,
+2026-04-21T03:36:19.816Z code: 'EACCES',
+2026-04-21T03:36:19.816Z syscall: 'mkdir',
+2026-04-21T03:36:19.816Z path: '/app/.next/cache'
+2026-04-21T03:36:19.816Z }
+2026-04-21T03:36:19.971Z ⨯ Failed to write image to cache IuyT3yedElPbDiOFXbznjnSVyTOXhV-dJUk8DzZ5UIw Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:19.971Z at ignore-listed frames {
+2026-04-21T03:36:19.971Z errno: -13,
+2026-04-21T03:36:19.971Z code: 'EACCES',
+2026-04-21T03:36:19.971Z syscall: 'mkdir',
+2026-04-21T03:36:19.971Z path: '/app/.next/cache'
+2026-04-21T03:36:19.971Z }
+2026-04-21T03:36:21.591Z Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:21.591Z at ignore-listed frames {
+2026-04-21T03:36:21.591Z errno: -13,
+2026-04-21T03:36:21.591Z code: 'EACCES',
+2026-04-21T03:36:21.591Z syscall: 'mkdir',
+2026-04-21T03:36:21.591Z path: '/app/.next/cache'
+2026-04-21T03:36:21.591Z }
+2026-04-21T03:36:21.591Z ⨯ unhandledRejection:  Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:21.591Z at ignore-listed frames {
+2026-04-21T03:36:21.591Z errno: -13,
+2026-04-21T03:36:21.591Z code: 'EACCES',
+2026-04-21T03:36:21.591Z syscall: 'mkdir',
+2026-04-21T03:36:21.591Z path: '/app/.next/cache'
+2026-04-21T03:36:21.591Z }
+2026-04-21T03:36:21.629Z ⨯ Failed to write image to cache 1FMGb5lkuciMYw8Q2egVzSFgHnvQ__S9A5YZiji_iL4 Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:21.629Z at ignore-listed frames {
+2026-04-21T03:36:21.629Z errno: -13,
+2026-04-21T03:36:21.629Z code: 'EACCES',
+2026-04-21T03:36:21.629Z syscall: 'mkdir',
+2026-04-21T03:36:21.629Z path: '/app/.next/cache'
+2026-04-21T03:36:21.629Z }
+2026-04-21T03:36:23.363Z Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:23.363Z at ignore-listed frames {
+2026-04-21T03:36:23.363Z errno: -13,
+2026-04-21T03:36:23.363Z code: 'EACCES',
+2026-04-21T03:36:23.363Z syscall: 'mkdir',
+2026-04-21T03:36:23.363Z path: '/app/.next/cache'
+2026-04-21T03:36:23.363Z }
+2026-04-21T03:36:23.363Z ⨯ unhandledRejection:  Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:23.363Z at ignore-listed frames {
+2026-04-21T03:36:23.363Z errno: -13,
+2026-04-21T03:36:23.363Z code: 'EACCES',
+2026-04-21T03:36:23.363Z syscall: 'mkdir',
+2026-04-21T03:36:23.363Z path: '/app/.next/cache'
+2026-04-21T03:36:23.363Z }
+2026-04-21T03:36:23.471Z ⨯ Failed to write image to cache -lWUYsmfAylD-6CdGAI9PU_ndqLkXlFiYA-n1vMz17Q Error: EACCES: permission denied, mkdir '/app/.next/cache'
+2026-04-21T03:36:23.471Z at ignore-listed frames {
+2026-04-21T03:36:23.471Z errno: -13,
+2026-04-21T03:36:23.471Z code: 'EACCES',
+2026-04-21T03:36:23.471Z syscall: 'mkdir',
+2026-04-21T03:36:23.471Z path: '/app/.next/cache'
+2026-04-21T03:36:23.471Z }

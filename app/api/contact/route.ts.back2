@@ -9,13 +9,15 @@ export async function POST(request: NextRequest) {
         const { name, email, country } = await request.json();
 
         if (!name || !email || !country) {
-            console.error('❌ Datos incompletos');
-            return NextResponse.json({ error: 'Faltan datos' }, { status: 400 });
+            console.error('❌ Datos incompletos:', { name, email, country });
+            return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
         }
 
+        console.log('📧 Intentando enviar email a:', email);
+
         const { data, error } = await resend.emails.send({
-            from: 'Open LLC USA <no-reply@updates.openllcusa.com>',   // ← Cambiado al subdominio verificado
-            to: 'jrmasol@gmail.com',                         // ← Tu email real
+            from: 'Open LLC USA <contacto@openllcusa.com>',
+            to: 'jrmasol@gmail.com',        // ← Cambia por tu email real
             replyTo: email,
             subject: `Nueva solicitud de asesoría - ${name}`,
             html: `
@@ -34,11 +36,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        console.log('✅ Email enviado correctamente con Resend');
+        console.log('✅ Email enviado correctamente:', data);
         return NextResponse.json({ success: true });
 
     } catch (error: any) {
-        console.error('❌ Error general:', error);
-        return NextResponse.json({ error: 'Error interno' }, { status: 500 });
+        console.error('❌ Error general en /api/contact:', error);
+        return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
     }
 }

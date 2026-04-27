@@ -287,6 +287,22 @@ function TrustBar() {
           </div>
         ))}
       </div>
+      
+      {/* Logos de partners / Confianza */}
+      <div className="flex flex-wrap justify-center items-center gap-8 mt-6 pt-6" style={{ borderTop: `1px solid ${T.br}`, opacity: 0.8 }}>
+        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+          <span className="font-extrabold text-xl tracking-tight" style={{ color: '#000' }}>mercury</span>
+        </div>
+        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+          <span className="font-extrabold text-xl tracking-tight" style={{ color: '#1B472B' }}>RELAY</span>
+        </div>
+        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+          <span className="font-extrabold text-xl tracking-tighter" style={{ color: '#635BFF' }}>stripe</span>
+        </div>
+        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+          <span className="font-bold text-sm border border-gray-400 px-2 py-0.5 rounded text-gray-600">IRS Authorized</span>
+        </div>
+      </div>
     </div>
   )
 }
@@ -678,7 +694,7 @@ function PricingSection() {
             className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2 rounded-full"
             style={{ background: T.gl, border: `1px solid rgba(16,185,129,.3)`, color: T.gd }}
           >
-            🛡️ Garantía de devolución de 7 días incluida en todos los planes · Sin costos ocultos
+            🛡️ Garantía de Tramitación 100% Sin Errores · Sin costos ocultos
           </span>
         </div>
 
@@ -740,7 +756,7 @@ function PricingSection() {
                 >
                   <span className="text-base">🛡️</span>
                   <span className="text-[13px] font-semibold" style={{ color: '#6EE7B7' }}>
-                    Garantía de devolución 7 días incluida
+                    Garantía de tramitación sin errores
                   </span>
                 </div>
               )}
@@ -777,7 +793,7 @@ function PricingSection() {
 // ─────────────────────────────────────────────────────────────────────────────
 const TRUST_BADGES = [
   '🔒 Pago 100% Seguro', '🏛️ IRS Authorized Agent',
-  '💬 Soporte en Español', '🛡️ Garantía 7 días', '⭐ +500 LLCs registradas',
+  '💬 Soporte en Español', '🛡️ Garantía 100% Sin Errores', '⭐ +500 LLCs registradas',
 ]
 
 function GuaranteeSection() {
@@ -791,7 +807,7 @@ function GuaranteeSection() {
           <div className="hp-gi-img flex justify-center">
             <Image
               src="/images/garantia.webp"
-              alt="Sello de garantía de devolución a 7 días"
+              alt="Sello de garantía de tramitación sin errores"
               width={200}
               height={200}
               style={{ width: 200, height: 200, objectFit: 'contain', filter: 'drop-shadow(0 16px 36px rgba(30,58,138,.2))' }}

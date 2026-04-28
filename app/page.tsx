@@ -288,19 +288,36 @@ function TrustBar() {
         ))}
       </div>
       
-      {/* Logos de partners / Confianza */}
-      <div className="flex flex-wrap justify-center items-center gap-8 mt-6 pt-6" style={{ borderTop: `1px solid ${T.br}`, opacity: 0.8 }}>
-        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-          <span className="font-extrabold text-xl tracking-tight" style={{ color: '#000' }}>mercury</span>
-        </div>
-        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-          <span className="font-extrabold text-xl tracking-tight" style={{ color: '#1B472B' }}>RELAY</span>
-        </div>
-        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-          <span className="font-extrabold text-xl tracking-tighter" style={{ color: '#635BFF' }}>stripe</span>
-        </div>
-        <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-          <span className="font-bold text-sm border border-gray-400 px-2 py-0.5 rounded text-gray-600">IRS Authorized</span>
+      {/* Logos de partners / Confianza en Carrusel Infinito */}
+      <div className="hp-marquee mt-8">
+        <div className="hp-marquee-content">
+          {/* Primer set de logos */}
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+            <Image src="/images/logo-mercury.webp" alt="Mercury Bank" width={140} height={40} style={{ objectFit: 'contain', height: 40, width: 'auto' }} />
+          </div>
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+            <Image src="/images/logo-relay.webp" alt="Relay Financial" width={120} height={40} style={{ objectFit: 'contain', height: 35, width: 'auto' }} />
+          </div>
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+            <Image src="/images/logo-stripe.webp" alt="Stripe Verified Partner" width={110} height={40} style={{ objectFit: 'contain', height: 35, width: 'auto' }} />
+          </div>
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+            <Image src="/images/logo-irs.webp" alt="IRS Authorized E-file Provider" width={180} height={40} style={{ objectFit: 'contain', height: 45, width: 'auto' }} />
+          </div>
+          
+          {/* Segundo set idéntico para que el loop infinito sea fluido */}
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" aria-hidden="true">
+            <Image src="/images/logo-mercury.webp" alt="Mercury Bank" width={140} height={40} style={{ objectFit: 'contain', height: 40, width: 'auto' }} />
+          </div>
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" aria-hidden="true">
+            <Image src="/images/logo-relay.webp" alt="Relay Financial" width={120} height={40} style={{ objectFit: 'contain', height: 35, width: 'auto' }} />
+          </div>
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" aria-hidden="true">
+            <Image src="/images/logo-stripe.webp" alt="Stripe Verified Partner" width={110} height={40} style={{ objectFit: 'contain', height: 35, width: 'auto' }} />
+          </div>
+          <div className="flex items-center gap-1.5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer" aria-hidden="true">
+            <Image src="/images/logo-irs.webp" alt="IRS Authorized E-file Provider" width={180} height={40} style={{ objectFit: 'contain', height: 45, width: 'auto' }} />
+          </div>
         </div>
       </div>
     </div>

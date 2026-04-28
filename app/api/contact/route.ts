@@ -42,14 +42,14 @@ export async function POST(request: NextRequest) {
             html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <h2 style="color: #1E3A8A;">¡Hola ${name}!</h2>
-          <p>He recibido tu solicitud de asesoría desde ${country}.</p>
-          <p>Entiendo que dar el salto y abrir una LLC en Estados Unidos puede generar muchas dudas (impuestos, bancos, cuentas...). Estoy aquí para ayudarte a que el proceso sea totalmente transparente y seguro.</p>
+          <p>Hemos recibido tu solicitud de asesoría desde ${country}.</p>
+          <p>Entendemos que dar el salto y abrir una LLC en Estados Unidos puede generar muchas dudas (impuestos, bancos, cuentas...). Estamos aquí para ayudarte a que el proceso sea totalmente transparente y seguro.</p>
           <p><strong>¿Qué dudas concretas tienes sobre la creación de tu empresa?</strong></p>
-          <p>Responde a este correo contándome tu caso y te asesoraré sin ningún compromiso.</p>
-          <p>Si prefieres que hablemos cara a cara, <a href="https://calendly.com/openllcusa">haz clic aquí para agendar una videollamada gratuita de 15 minutos conmigo.</a></p>
+          <p>Responde a este correo contándonos tu caso y te asesoraremos sin ningún compromiso.</p>
+          <p>Si prefieres que hablemos cara a cara, <a href="https://calendly.com/openllcusa">haz clic aquí para agendar una videollamada gratuita de 15 minutos con nosotros.</a></p>
           <br/>
           <p>Un saludo,</p>
-          <p><strong>JR</strong><br/>Open LLC USA</p>
+          <p><strong>Axel</strong><br/>El equipo de Open LLC USA</p>
         </div>
       `,
         });

@@ -132,3 +132,12 @@
   .hp-sgrid  { grid-template-columns: 1fr !important; }
   .hp-mob    { display: none !important; } /* Use full-page CTA instead */
 }
+
+/* Trust Logos Marquee */
+.hp-marquee { overflow: hidden; white-space: nowrap; width: 100%; position: relative; border-top: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB; padding: 24px 0; background: #F8FAFC; }
+.hp-marquee::before, .hp-marquee::after { content: ''; position: absolute; top: 0; width: 150px; height: 100%; z-index: 2; pointer-events: none; }
+.hp-marquee::before { left: 0; background: linear-gradient(to right, #F8FAFC 0%, transparent 100%); }
+.hp-marquee::after { right: 0; background: linear-gradient(to left, #F8FAFC 0%, transparent 100%); }
+.hp-marquee-content { display: inline-flex; gap: 80px; align-items: center; padding-left: 80px; animation: hpMarqueeScroll 25s linear infinite; }
+@keyframes hpMarqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+

@@ -837,10 +837,10 @@ function GuaranteeSection() {
               className="font-extrabold mt-3.5 mb-3.5 leading-tight"
               style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(24px,3vw,38px)', color: T.tx }}
             >
-              Garantía de devolución de 7 días
+              Garantía de Tramitación 100% Sin Errores
             </h2>
             <p className="text-[17px] leading-relaxed mb-7" style={{ color: T.ts, maxWidth: 500 }}>
-              Si no estás satisfecho en los primeros 7 días, te devolvemos el 100% de tu dinero. Sin preguntas, sin burocracia.
+              Si cometemos algún error en la tramitación de tu LLC que resulte en un rechazo por parte del estado, asumimos el costo de la corrección al 100%. Tu tranquilidad está garantizada.
             </p>
             <div className="flex flex-wrap gap-2.5">
               {TRUST_BADGES.map((b) => (

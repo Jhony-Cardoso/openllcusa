@@ -141,3 +141,6 @@
 .hp-marquee-content { display: inline-flex; gap: 80px; align-items: center; padding-left: 80px; animation: hpMarqueeScroll 25s linear infinite; }
 @keyframes hpMarqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
+
+@media (max-width: 768px) { .hp-marquee::before, .hp-marquee::after { width: 40px; } .hp-marquee-content { gap: 40px; padding-left: 40px; } }
+

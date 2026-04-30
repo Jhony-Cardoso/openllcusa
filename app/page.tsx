@@ -385,7 +385,7 @@ function IconBank() {
 // SERVICES SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 const SERVICES = [
-  { Icon: IconLLC, title: 'Registro de LLC', desc: 'Crea tu empresa en Wyoming, New Mexico, Delaware o Florida. Lista para operar globalmente.', href: '/servicios/llc', cta: 'Ver detalles' },
+  { Icon: IconLLC, title: 'Registro de LLC', desc: 'Crea tu empresa en Wyoming, New Mexico, Delaware o Florida. Lista para operar globalmente.', href: '/servicios/formacion-llc', cta: 'Ver detalles' },
   { Icon: IconEIN, title: 'Obtén tu EIN sin SSN', desc: 'Necesario para abrir cuenta bancaria, contratar y pagar impuestos. Lo tramitamos por ti.', href: '/servicios/obtencion-ein', cta: 'Solicitar EIN' },
   { Icon: IconAgent, title: 'Agente Registrado', desc: 'Cumple con los requisitos legales de tu estado. Incluido el primer año sin costo adicional.', href: '/servicios/agente-registrado', cta: 'Más información' },
   { Icon: IconBank, title: 'Cuenta Bancaria Empresarial', desc: 'Te conectamos con bancos que aceptan LLCs de no residentes. Mercury, Relay y más.', href: '/servicios/launch-banking', cta: 'Explorar opciones' },

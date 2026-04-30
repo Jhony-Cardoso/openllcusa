@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
@@ -36,8 +36,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createClient()
-  const { data: s } = await supabase
+  const { data: s } = await supabaseAdmin
     .from('servicios')
     .select('nombre, descripcion')
     .eq('slug', slug)
@@ -180,30 +179,13 @@ export default async function ServicioDetallePage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const supabase = await createClient()
-
-  const { data: servicio, error } = await supabase
+  const { data: servicio, error } = await supabaseAdmin
     .from('servicios')
     .select('*')
     .eq('slug', slug)
     .single() as { data: Servicio | null; error: unknown }
 
-  if (error) {
-    return (
-      <div style={{ padding: '50px', color: 'red', backgroundColor: '#fee' }}>
-        <h1>Error de Supabase</h1>
-        <pre>{JSON.stringify(error, null, 2)}</pre>
-      </div>
-    );
-  }
-  if (!servicio) {
-    return (
-      <div style={{ padding: '50px', color: 'red', backgroundColor: '#fee' }}>
-        <h1>Servicio no encontrado</h1>
-        <p>No se encontró ningún servicio en la tabla "servicios" para el slug: {slug}</p>
-      </div>
-    );
-  }
+  if (error || !servicio) notFound()
 
   const isPaquete = servicio.tipo === 'paquete'
   const IconHeader = getIconForSlug(slug)

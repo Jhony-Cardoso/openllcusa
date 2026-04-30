@@ -189,10 +189,20 @@ export default async function ServicioDetallePage({
     .single() as { data: Servicio | null; error: unknown }
 
   if (error) {
-    throw new Error(`Supabase Error en servicios: ${JSON.stringify(error)}`);
+    return (
+      <div style={{ padding: '50px', color: 'red', backgroundColor: '#fee' }}>
+        <h1>Error de Supabase</h1>
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+      </div>
+    );
   }
   if (!servicio) {
-    throw new Error(`Servicio nulo para el slug: ${slug}. Verifica que la tabla servicios tenga datos.`);
+    return (
+      <div style={{ padding: '50px', color: 'red', backgroundColor: '#fee' }}>
+        <h1>Servicio no encontrado</h1>
+        <p>No se encontró ningún servicio en la tabla "servicios" para el slug: {slug}</p>
+      </div>
+    );
   }
 
   const isPaquete = servicio.tipo === 'paquete'

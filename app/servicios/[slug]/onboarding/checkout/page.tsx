@@ -123,8 +123,14 @@ export default function CheckoutPage() {
     return Number.isFinite(n) ? n : 0
   }, [pedido])
 
-  const filingInicial = Number(pedido?.estado_usa?.filing_inicial ?? 0)
-  const total = isEIN ? precioBase : precioBase + filingInicial
+  const isReporteAnual = slug === 'reporte-anual'
+  
+  const stateFeeName = isReporteAnual ? 'Filing estatal anual' : 'Filing estatal inicial'
+  const stateFee = isReporteAnual 
+    ? Number(pedido?.estado_usa?.filing_anual ?? 0) 
+    : Number(pedido?.estado_usa?.filing_inicial ?? 0)
+
+  const total = isEIN ? precioBase : precioBase + stateFee
 
   // Trackear begin_checkout cuando se cargan los datos y el total es > 0
   useEffect(() => {
@@ -268,8 +274,8 @@ export default function CheckoutPage() {
 
         {!isEIN && (
           <div className="flex justify-between text-gray-700 mb-2">
-            <span>Filing inicial ({pedido?.estado_usa?.nombre || 'Estado'})</span>
-            <span>${filingInicial}</span>
+            <span>{stateFeeName} ({pedido?.estado_usa?.nombre || 'Estado'})</span>
+            <span>${stateFee}</span>
           </div>
         )}
 

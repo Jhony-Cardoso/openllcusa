@@ -66,6 +66,13 @@ const serviciosSueltos = [
     tagline: 'Servicio de agente registrado y dirección oficial anual.',
     icon: ShieldCheck,
   },
+  {
+    slug: 'reporte-anual',
+    title: 'Reporte Anual Estatal',
+    price: 'Desde $99',
+    tagline: 'Presentación de tu Reporte Anual. El costo estatal varía según el estado.',
+    icon: Package,
+  },
 ];
 
 const SITE_URL = 'https://openllcusa.com';

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Globe, Smartphone, Search, HelpCircle, BookOpen, Send, Package } from 'lucide-react';
+import { Globe, Smartphone, Search, HelpCircle, BookOpen, Send, Package, ShieldCheck } from 'lucide-react';
 
 // CATEGORÍAS DE SERVICIOS
 const paquetes = [

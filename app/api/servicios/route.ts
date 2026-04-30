@@ -35,7 +35,7 @@ export async function GET(request: Request) {
                     console.log('✅ Encontrado en servicios:', serviciosData[0])
                     return NextResponse.json({
                         ...serviciosData[0],
-                        _tipo: 'servicio'
+                        _tipo: serviciosData[0].tipo === 'paquete' ? 'paquete' : 'servicio'
                     })
                 }
             }

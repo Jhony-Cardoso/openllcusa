@@ -398,7 +398,7 @@ export default function Header() {
       {
         title: 'CONSTITUCIÓN DE EMPRESAS',
         items: [
-          { href: '/servicios/llc', label: 'Formación de LLCs', icon: <Globe size={18} /> },
+          { href: '/servicios/formacion-llc', label: 'Formación de LLCs', icon: <Globe size={18} /> },
           { href: '/servicios/inc', label: 'Corporaciones Inc', icon: <Smartphone size={18} /> },
           { href: '/servicios/obtencion-ein', label: 'Obtención de EIN (IRS)', icon: <Search size={18} /> }
         ]
@@ -407,7 +407,7 @@ export default function Header() {
         title: 'CUMPLIMIENTO Y SOPORTE',
         items: [
           { href: '/servicios/agente-registrado', label: 'Agente Registrado', icon: <HelpCircle size={18} /> },
-          { href: '/servicios/form-5472-1120', label: 'Impuestos Federales', icon: <BookOpen size={18} /> },
+          { href: '/servicios/form-5472', label: 'Impuestos Federales', icon: <BookOpen size={18} /> },
           { href: '/servicios/reporte-anual', label: 'Reporte Anual', icon: <HelpCircle size={18} /> },
           { href: '/servicios/consultoria-legal', label: 'Consultoría Legal', icon: <Send size={18} /> }
         ]

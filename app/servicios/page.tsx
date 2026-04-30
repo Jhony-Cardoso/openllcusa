@@ -21,16 +21,23 @@ const paquetes = [
     destacado: true, // Este es el más popular
   },
   {
-    slug: 'compliance-basico',
-    title: 'Plan Compliance Básico',
-    price: '$49/mes',
-    tagline: 'Mantén tu LLC al día con reportes anuales y agente.',
+    slug: 'primer-ano-pro',
+    title: 'Primer Año Pro',
+    price: '$1397',
+    tagline: 'Primer año casi todo resuelto. Gestin fiscal y soporte.',
     icon: Package,
     destacado: false,
   },
 ];
 
 const serviciosSueltos = [
+  {
+    slug: 'formacion-llc',
+    title: 'Formación de LLC',
+    price: '$497',
+    tagline: 'Constitución completa de tu LLC en el estado que elijas.',
+    icon: Globe,
+  },
   {
     slug: 'obtencion-ein',
     title: 'Obtención de EIN',
@@ -39,18 +46,25 @@ const serviciosSueltos = [
     icon: Search,
   },
   {
-    slug: 'impuestos-llc-5472-1120',
+    slug: 'form-5472',
     title: 'Declaración de Impuestos',
-    price: '$297',
+    price: '$397',
     tagline: 'Presentación anual del Formulario 1120 + 5472.',
     icon: BookOpen,
   },
   {
-    slug: 'consultoria-legal',
-    title: 'Consultoría Legal',
-    price: '$150/hora',
-    tagline: 'Sesiones personalizadas sobre estructura y compliance.',
+    slug: 'consultoria-fiscal',
+    title: 'Consultoría Fiscal',
+    price: '$197',
+    tagline: 'Sesiones personalizadas sobre estructura y fiscalidad.',
     icon: Send,
+  },
+  {
+    slug: 'agente-registrado',
+    title: 'Agente Registrado',
+    price: '$149/año',
+    tagline: 'Servicio de agente registrado y dirección oficial anual.',
+    icon: ShieldCheck,
   },
 ];
 

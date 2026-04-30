@@ -188,7 +188,12 @@ export default async function ServicioDetallePage({
     .eq('slug', slug)
     .single() as { data: Servicio | null; error: unknown }
 
-  if (error || !servicio) notFound()
+  if (error) {
+    throw new Error(`Supabase Error en servicios: ${JSON.stringify(error)}`);
+  }
+  if (!servicio) {
+    throw new Error(`Servicio nulo para el slug: ${slug}. Verifica que la tabla servicios tenga datos.`);
+  }
 
   const isPaquete = servicio.tipo === 'paquete'
   const IconHeader = getIconForSlug(slug)

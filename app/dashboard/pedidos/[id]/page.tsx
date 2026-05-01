@@ -103,13 +103,17 @@ export default async function PedidoDetallePage({
     pedidoFull.metadata?.tipo_servicio === 'tax_filing_5472' ||
     hasRealTaxData
 
+  const esReporteAnual = pedidoFull.servicio?.slug === 'reporte-anual'
+
   const nombreProducto = esTaxFiling
     ? 'Presentación Forms 5472 + 1120'
-    : (pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || 'Trámite LLC')
+    : esReporteAnual
+      ? 'Reporte Anual Estatal'
+      : (pedidoFull.paquete?.nombre || pedidoFull.servicio?.nombre || 'Trámite LLC')
 
   // SI EL PAGO ESTÁ HECHO PERO FALTA EL CHECKLIST LEGAL
-  // Excepción: Tax Filing no requiere wizard posterior, ya tenemos los datos
-  const showWizard = isPaid && !esTaxFiling && (pedidoFull.paso_actual || 0) < 7
+  // Excepción: Tax Filing y Reporte Anual no requieren wizard posterior
+  const showWizard = isPaid && !esTaxFiling && !esReporteAnual && (pedidoFull.paso_actual || 0) < 7
 
   if (showWizard) {
     return (

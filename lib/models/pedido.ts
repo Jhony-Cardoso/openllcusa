@@ -76,10 +76,10 @@ export class PedidoModel {
     return data || []
   }
 
-  // Para Revisión/Checkout: devuelve pedido + paquete + estado_usa
+  // Para Revisión/Checkout/Dashboard: devuelve pedido + paquete + servicio + estado_usa
   // Hacemos consultas separadas porque el join no funciona correctamente
   static async obtenerCompleto(pedidoId: string, isAdmin: boolean = false) {
-    const supabase = isAdmin ? createAdminClient() : createClient()
+    const supabase = createAdminClient()
 
     console.log('🔍 [MODELO] Buscando pedido completo:', pedidoId)
 

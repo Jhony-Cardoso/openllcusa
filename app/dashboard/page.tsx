@@ -29,11 +29,12 @@ export default async function DashboardPage() {
   const pedidosRaw = await PedidoModel.obtenerPorUsuario(userId)
 
   // Enriquecer pedidos con detalles del paquete/servicio (limitado a los 3 más recientes)
-  const pedidos = await Promise.all(
+  const pedidosRawEnriched = await Promise.all(
     pedidosRaw.slice(0, 3).map(async (p) => {
       return await PedidoModel.obtenerCompleto(p.id)
     })
   )
+  const pedidos = pedidosRawEnriched.filter(p => p !== null) as any[]
 
   const hasOrders = pedidos.length > 0
   const pendingOrders = pedidos.filter((p: any) => p?.estado_pedido !== 'pagado')
@@ -90,9 +91,13 @@ export default async function DashboardPage() {
                   const hasTaxData = taxData && Object.keys(taxData).length > 0;
                   const esTaxFiling = pedido.metadata?.tipo_servicio === 'tax_filing_5472' || hasTaxData;
 
+                  const esReporteAnual = pedido.servicio?.slug === 'reporte-anual'
+
                   const nombre = esTaxFiling
                     ? 'Preparación Formulario 5472 + 1120'
-                    : (pedido.paquete?.nombre || pedido.servicio?.nombre || 'Trámite LLC')
+                    : esReporteAnual
+                      ? 'Reporte Anual Estatal'
+                      : (pedido.paquete?.nombre || pedido.servicio?.nombre || 'Trámite LLC')
 
                   return (
                     <Link key={pedido.id} href={`/dashboard/pedidos/${pedido.id}`}>

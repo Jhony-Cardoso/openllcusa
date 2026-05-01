@@ -27,7 +27,9 @@ export default async function PedidosPage() {
         numero: completo.numero_pedido || `#${completo.id.slice(0, 5)}`,
         servicio: (completo.metadata as any)?.tipo_servicio === 'tax_filing_5472' || ((completo as any).tax_data && Object.keys((completo as any).tax_data).length > 0)
           ? 'Presentación Forms 5472 + 1120'
-          : (completo.paquete?.nombre || completo.servicio?.nombre || completo.paquete?.title || completo.servicio?.title || 'Servicio Open LLC'),
+          : completo.servicio?.slug === 'reporte-anual'
+            ? 'Reporte Anual Estatal'
+            : (completo.paquete?.nombre || completo.servicio?.nombre || completo.paquete?.title || completo.servicio?.title || 'Servicio Open LLC'),
         descripcion: completo.paquete?.tagline || completo.servicio?.tagline || (completo.paquete_id ? 'Paquete de formación' : 'Servicio individual'),
         fecha: new Date(completo.created_at).toLocaleDateString('es-ES'),
         monto: completo.total_pagado ? `$\${completo.total_pagado}` : '$0',

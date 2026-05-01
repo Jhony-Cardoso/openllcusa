@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { AlertCircle, Loader2 } from 'lucide-react'
-import { Analytics } from '@/lib/analytics'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -131,25 +130,6 @@ export default function CheckoutPage() {
     : Number(pedido?.estado_usa?.filing_inicial ?? 0)
 
   const total = isEIN ? precioBase : precioBase + stateFee
-
-  // Trackear begin_checkout cuando se cargan los datos y el total es > 0
-  useEffect(() => {
-    if (pedido && total > 0) {
-      Analytics.trackBeginCheckout({
-        currency: 'USD',
-        value: total,
-        items: [
-          {
-            item_id: pedido.servicio_id || pedido.paquete_id || 'servicio_unknown',
-            item_name: pedido?.paquete?.nombre || pedido?.paquete?.title || pedido?.servicio?.nombre || pedido?.servicio?.title || 'Servicio',
-            price: total,
-            quantity: 1,
-            item_category: isEIN ? 'Servicio' : 'Paquete LLC'
-          }
-        ]
-      })
-    }
-  }, [pedido, total, isEIN])
 
   // Obtener el ID actual (puede haber cambiado tras recuperación)
   const getCurrentPedidoId = () => {

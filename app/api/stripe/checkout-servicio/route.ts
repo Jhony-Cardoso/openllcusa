@@ -36,6 +36,9 @@ export async function POST(request: NextRequest) {
       0
     )
 
+    const isReporteAnual = slug === 'reporte-anual'
+    const filingAnual = isReporteAnual ? Number(pedido.estado_usa?.filing_anual ?? 0) : 0
+
     if (!precioServicio || precioServicio <= 0) {
       console.error('Precio inválido:', { paquete: pedido.paquete, servicio: pedido.servicio })
       return NextResponse.json({ error: 'Precio inválido para el servicio' }, { status: 400 })
@@ -55,24 +58,43 @@ export async function POST(request: NextRequest) {
       pedido.servicio?.descripcion ||
       undefined
 
+    // Construir line_items — para Reporte Anual incluye el filing estatal anual
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: nombreProducto,
+            description: descripcionProducto,
+          },
+          unit_amount: Math.round(precioServicio * 100),
+        },
+        quantity: 1,
+      },
+    ]
+
+    if (isReporteAnual && filingAnual > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `Filing anual estatal — ${pedido.estado_usa?.nombre || 'Estado'}`,
+            description: 'Tasa oficial de reporte anual del estado',
+          },
+          unit_amount: Math.round(filingAnual * 100),
+        },
+        quantity: 1,
+      })
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: nombreProducto,
-              description: descripcionProducto,
-            },
-            unit_amount: Math.round(precioServicio * 100),
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/pedidos/${pedido.id}?verify_session={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/${slug}/onboarding/checkout?pedido=${pedido.id}&canceled=true`,
+      line_items: lineItems,
+      success_url: `${baseUrl}/servicios/${slug}/onboarding/completado?pedido=${pedido.id}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/servicios/${slug}/onboarding/checkout?pedido=${pedido.id}&canceled=true`,
       metadata: {
         pedidoId: pedido.id,
         userId,

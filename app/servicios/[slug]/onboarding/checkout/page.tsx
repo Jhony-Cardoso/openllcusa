@@ -159,8 +159,8 @@ export default function CheckoutPage() {
         // Para Tax Filing, usar endpoint específico que usa el pedido existente
         endpoint = '/api/stripe/checkout-tax-filing'
         body = { pedidoId: currentId }
-      } else if (isEIN) {
-        // Para EIN, usar endpoint de servicios
+      } else if (isEIN || isReporteAnual) {
+        // Para EIN y Reporte Anual, usar endpoint de servicios
         endpoint = '/api/stripe/checkout-servicio'
         body = { pedidoId: currentId, slug }
       }

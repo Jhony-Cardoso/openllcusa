@@ -19,7 +19,7 @@ export class PedidoModel {
     paqueteId?: string,
     servicioId?: string
   ): Promise<PedidoRow | null> {
-    const supabase = createClient()
+    const supabase = createAdminClient()
 
     const { data, error } = await supabase
       .from('pedidos')
@@ -43,7 +43,7 @@ export class PedidoModel {
   }
 
   static async obtenerPorId(pedidoId: string): Promise<PedidoRow | null> {
-    const supabase = createClient()
+    const supabase = createAdminClient()
 
     const { data, error } = await supabase
       .from('pedidos')
@@ -60,7 +60,7 @@ export class PedidoModel {
   }
 
   static async obtenerPorUsuario(userId: string): Promise<PedidoRow[]> {
-    const supabase = createClient()
+    const supabase = createAdminClient()
 
     const { data, error } = await supabase
       .from('pedidos')
@@ -159,7 +159,7 @@ export class PedidoModel {
     paso: number,
     datos: Partial<PedidoUpdate> = {}
   ): Promise<boolean> {
-    const supabase = createClient()
+    const supabase = createAdminClient()
 
     const { error } = await supabase
       .from('pedidos')

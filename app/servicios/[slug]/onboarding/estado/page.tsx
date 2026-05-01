@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { PedidoModel } from '@/lib/models/pedido'
 import { AlertCircle, Loader2, Check, Star, ChevronDown } from 'lucide-react'
 
 export default function EstadoPage() {
@@ -80,12 +79,17 @@ export default function EstadoPage() {
           return
         }
 
-        const pedido = await PedidoModel.obtenerPorId(currentPedidoId)
-        if (!pedido) {
+        // Obtener pedido vía API segura (server-side con admin key)
+        const resPedido = await fetch(`/api/pedidos/completo?id=${currentPedidoId}`)
+        const dataPedido = await resPedido.json()
+
+        if (!resPedido.ok || !dataPedido.pedido) {
           setError('Pedido no encontrado. Vuelve al paso anterior.')
           setLoading(false)
           return
         }
+
+        const pedido = dataPedido.pedido
 
         if (pedido.user_id !== user.id) {
           setError('No tienes permisos para acceder a este pedido.')
@@ -152,7 +156,12 @@ export default function EstadoPage() {
       }
       setSaving(true)
       try {
-        await PedidoModel.guardarEstado(currentId, selectedEstado)
+        const res = await fetch('/api/pedidos/actualizar', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pedidoId: currentId, paso: 2, datos: { estado_usa_id: selectedEstado } })
+        })
+        if (!res.ok) throw new Error('Error al guardar el estado')
         router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${currentId}`)
       } catch (err) {
         setError('Error al guardar el estado.')
@@ -200,7 +209,12 @@ export default function EstadoPage() {
         telefono_empresa: '',
       }
 
-      await PedidoModel.actualizarPaso(currentId, 3, payload)
+      const res = await fetch('/api/pedidos/actualizar', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pedidoId: currentId, paso: 3, datos: payload })
+      })
+      if (!res.ok) throw new Error('Error al guardar')
 
       router.push(`/servicios/${slug}/onboarding/datos-empresa?pedido=${currentId}`)
     } catch (e) {

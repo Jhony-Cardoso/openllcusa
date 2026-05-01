@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import Stripe from 'stripe'
-import { PedidoModel } from '@/lib/models/pedido'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy_build', {
   apiVersion: '2024-12-18.acacia',
@@ -19,8 +19,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Faltan datos (pedidoId/slug)' }, { status: 400 })
     }
 
-    const pedido = await PedidoModel.obtenerCompleto(pedidoId)
-    if (!pedido) {
+    console.log('🛒 [checkout-servicio] pedidoId:', pedidoId, 'slug:', slug)
+
+    // 1. Obtener pedido base
+    const { data: pedido, error: pedidoError } = await supabaseAdmin
+      .from('pedidos')
+      .select('*')
+      .eq('id', pedidoId)
+      .single()
+
+    if (pedidoError || !pedido) {
+      console.error('❌ [checkout-servicio] Pedido no encontrado:', pedidoError)
       return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
     }
 
@@ -28,44 +37,51 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 
-    const precioServicio = Number(
-      pedido.paquete?.precio ??
-      pedido.paquete?.price ??
-      pedido.servicio?.precio ??
-      pedido.servicio?.price ??
-      0
-    )
+    // 2. Obtener servicio
+    let servicio: any = null
+    if (pedido.servicio_id) {
+      const { data } = await supabaseAdmin
+        .from('servicios')
+        .select('*')
+        .eq('id', pedido.servicio_id)
+        .single()
+      servicio = data
+    }
 
+    // 3. Obtener estado USA
+    let estadoUsa: any = null
+    if (pedido.estado_usa_id) {
+      const { data } = await supabaseAdmin
+        .from('estados_usa')
+        .select('*')
+        .eq('id', pedido.estado_usa_id)
+        .single()
+      estadoUsa = data
+    }
+
+    console.log('📦 [checkout-servicio] servicio:', servicio?.nombre, 'precio:', servicio?.precio)
+    console.log('📍 [checkout-servicio] estado:', estadoUsa?.nombre, 'filing_anual:', estadoUsa?.filing_anual)
+
+    const precioServicio = Number(servicio?.precio ?? 0)
     const isReporteAnual = slug === 'reporte-anual'
-    const filingAnual = isReporteAnual ? Number(pedido.estado_usa?.filing_anual ?? 0) : 0
+    const filingAnual = isReporteAnual ? Number(estadoUsa?.filing_anual ?? 0) : 0
 
     if (!precioServicio || precioServicio <= 0) {
-      console.error('Precio inválido:', { paquete: pedido.paquete, servicio: pedido.servicio })
+      console.error('❌ [checkout-servicio] Precio inválido:', precioServicio)
       return NextResponse.json({ error: 'Precio inválido para el servicio' }, { status: 400 })
     }
 
-    const nombreProducto =
-      pedido.paquete?.nombre ||
-      pedido.paquete?.title ||
-      pedido.servicio?.nombre ||
-      pedido.servicio?.title ||
-      'Servicio'
+    const nombreProducto = servicio?.nombre || servicio?.title || 'Servicio'
+    const descripcionProducto = servicio?.descripcion || undefined
 
-    const descripcionProducto =
-      pedido.paquete?.descripcion_corta ||
-      pedido.paquete?.descripcion ||
-      pedido.servicio?.descripcion_corta ||
-      pedido.servicio?.descripcion ||
-      undefined
-
-    // Construir line_items — para Reporte Anual incluye el filing estatal anual
+    // Construir line_items
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
       {
         price_data: {
           currency: 'usd',
           product_data: {
             name: nombreProducto,
-            description: descripcionProducto,
+            ...(descripcionProducto ? { description: descripcionProducto } : {}),
           },
           unit_amount: Math.round(precioServicio * 100),
         },
@@ -78,7 +94,7 @@ export async function POST(request: NextRequest) {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: `Filing anual estatal — ${pedido.estado_usa?.nombre || 'Estado'}`,
+            name: `Filing anual estatal — ${estadoUsa?.nombre || 'Estado'}`,
             description: 'Tasa oficial de reporte anual del estado',
           },
           unit_amount: Math.round(filingAnual * 100),
@@ -103,12 +119,16 @@ export async function POST(request: NextRequest) {
       customer_email: pedido.email_empresa || undefined,
     })
 
+    console.log('✅ [checkout-servicio] Sesión Stripe creada:', session.id)
     return NextResponse.json({ url: session.url })
+
   } catch (error: any) {
-    console.error('Error creando sesión de Stripe:', error)
+    console.error('💥 [checkout-servicio] Excepción:', error)
     return NextResponse.json(
       { error: error.message || 'Error interno del servidor' },
       { status: 500 }
     )
   }
 }
+
+

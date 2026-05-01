@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { PedidoModel } from '@/lib/models/pedido'
 import { AlertCircle, Loader2 } from 'lucide-react'
 
 export default function RevisionPage() {
@@ -61,12 +60,17 @@ export default function RevisionPage() {
           return
         }
 
-        const pedidoData = await PedidoModel.obtenerCompleto(currentId)
-        if (!pedidoData) {
+        // Obtener pedido vía API segura (server-side con admin key)
+        const resPedido = await fetch(`/api/pedidos/completo?id=${currentId}`)
+        const dataPedido = await resPedido.json()
+
+        if (!resPedido.ok || !dataPedido.pedido) {
           setError('No se encontró el pedido.')
           setLoading(false)
           return
         }
+
+        const pedidoData = dataPedido.pedido
 
         if (pedidoData.user_id !== user.id) {
           setError('No tienes permisos para ver este pedido.')
@@ -216,9 +220,13 @@ export default function RevisionPage() {
     )
   }
 
-  // NO EIN (LLC): mantener tu comportamiento actual
+  // NO EIN (LLC): mantener comportamiento actual
+  const isReporteAnual = slug === 'reporte-anual'
   const filingInicial = Number(pedido?.estado_usa?.filing_inicial ?? 0)
   const filingAnual = Number(pedido?.estado_usa?.filing_anual ?? 0)
+  const stateFee = isReporteAnual ? filingAnual : filingInicial
+  const stateFeeName = isReporteAnual ? 'Filing estatal anual' : 'Filing estatal inicial'
+  const total = precioServicio + stateFee
 
   return (
     <div className="max-w-2xl">
@@ -234,17 +242,31 @@ export default function RevisionPage() {
         Verifica que todos los datos sean correctos antes de proceder al pago.
       </p>
 
+      {/* Datos del cliente */}
+      {pedido.nombre_empresa && (
+        <div className="rounded-xl border border-gray-200 bg-white p-5 mb-4">
+          <div className="font-semibold text-gray-900 mb-2">Datos de tu empresa</div>
+          <div className="text-sm text-gray-700">
+            <div><span className="text-gray-500">Nombre:</span> {pedido.nombre_empresa}</div>
+            {pedido.email_empresa && <div><span className="text-gray-500">Email:</span> {pedido.email_empresa}</div>}
+            {pedido.estado_usa && <div><span className="text-gray-500">Estado:</span> {pedido.estado_usa.nombre}</div>}
+          </div>
+        </div>
+      )}
+
+      {/* Resumen de precio */}
       <div className="rounded-xl border border-gray-200 bg-white p-5 mb-6">
         <div className="flex justify-between text-gray-700 mb-2">
-          <span>Precio del servicio</span>
+          <span>Precio del servicio (nuestros honorarios)</span>
           <span>${precioServicio}</span>
         </div>
         <div className="flex justify-between text-gray-700 mb-2">
-          <span>Filing inicial</span>
-          <span>${filingInicial}</span>
+          <span>{stateFeeName} ({pedido?.estado_usa?.nombre || 'Estado'})</span>
+          <span>${stateFee}</span>
         </div>
-        <div className="text-sm text-gray-600 mt-2">
-          💡 El filing anual de ${filingAnual} se pagará directamente al estado en el futuro.
+        <div className="flex justify-between font-bold text-gray-900 border-t pt-3 mt-3">
+          <span>Total</span>
+          <span>${total}</span>
         </div>
       </div>
 

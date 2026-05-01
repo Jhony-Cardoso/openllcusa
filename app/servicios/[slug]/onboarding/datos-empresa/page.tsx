@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { PedidoModel } from '@/lib/models/pedido'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 type ResponsibleForm = {
@@ -40,6 +39,7 @@ export default function DatosEmpresaPage() {
 
   const slug = (params?.slug as string) || ''
   const isEIN = slug === 'obtencion-ein'
+  const isReporteAnual = slug === 'reporte-anual'
 
   const [pedidoId, setPedidoId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -70,10 +70,7 @@ export default function DatosEmpresaPage() {
 
         let currentId = searchParams.get('pedido')
 
-        // Si no hay ID en URL, buscar borrador vía API segura (sin problemas de RLS)
         if (!currentId) {
-          console.log('🔍 [DATOS-EMPRESA] No hay pedidoId en URL, buscando borrador...')
-
           const resServ = await fetch(`/api/servicios?slug=${slug}`)
           const infoServ = await resServ.json()
           const targetId = infoServ?.id
@@ -85,8 +82,6 @@ export default function DatosEmpresaPage() {
 
             if (dataBorrador?.pedido?.id) {
               currentId = dataBorrador.pedido.id
-              console.log('✅ [DATOS-EMPRESA] Borrador encontrado:', currentId)
-
               const newUrl = `${window.location.pathname}?pedido=${currentId}`
               window.history.replaceState({}, '', newUrl)
             }
@@ -101,12 +96,17 @@ export default function DatosEmpresaPage() {
 
         setPedidoId(currentId)
 
-        const pedido = await PedidoModel.obtenerPorId(currentId)
-        if (!pedido) {
+        // Cargar pedido vía API segura (sin exponer service role key al cliente)
+        const resPedido = await fetch(`/api/pedidos/completo?id=${currentId}`)
+        const dataPedido = await resPedido.json()
+
+        if (!resPedido.ok || !dataPedido.pedido) {
           setError('No se ha encontrado el pedido en la base de datos.')
           setLoading(false)
           return
         }
+
+        const pedido = dataPedido.pedido
 
         if (pedido.user_id !== user.id) {
           setError('No tienes permisos para acceder a este pedido.')
@@ -114,27 +114,21 @@ export default function DatosEmpresaPage() {
           return
         }
 
-        // Recuperar datos EIN guardados en descripcion_negocio (JSON)
+        // Pre-rellenar datos si existen
+        if (pedido.nombre_empresa) setForm(f => ({ ...f, nombre_empresa: pedido.nombre_empresa }))
+        if (pedido.email_empresa) setForm(f => ({ ...f, email_empresa: pedido.email_empresa }))
+
         if (isEIN && pedido.descripcion_negocio) {
           try {
             const obj = JSON.parse(pedido.descripcion_negocio)
             const prev = obj?.ein?.responsible_party || null
-            if (prev) {
-              setRp((p) => ({ ...p, ...prev }))
-            }
-          } catch {
-            // ignore
-          }
+            if (prev) setRp(p => ({ ...p, ...prev }))
+          } catch { /* ignore */ }
         }
 
-        // Si no hay rp_full_name, pre-rellenar con nombre del usuario si existe
         if (isEIN && !rp.rp_full_name) {
-          const fullName =
-            (user.fullName || '').trim() ||
-            `${user.firstName || ''} ${user.lastName || ''}`.trim()
-          if (fullName) {
-            setRp((p) => ({ ...p, rp_full_name: fullName }))
-          }
+          const fullName = (user.fullName || '').trim() || `${user.firstName || ''} ${user.lastName || ''}`.trim()
+          if (fullName) setRp(p => ({ ...p, rp_full_name: fullName }))
         }
       } catch (err) {
         console.error('Error cargando datos:', err)
@@ -148,9 +142,46 @@ export default function DatosEmpresaPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUserLoaded, user, searchParams, router, isEIN])
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: name === 'num_socios' ? Number(value) : value }))
+  }
+
+  // --- Guardar Reporte Anual / LLC genérico ---
+  const handleSaveLLC = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form.nombre_empresa.trim()) { setError('El nombre de la empresa es obligatorio.'); return }
+
+    setSaving(true)
+    try {
+      const res = await fetch('/api/pedidos/actualizar', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pedidoId,
+          paso: 4,
+          datos: {
+            nombre_empresa: form.nombre_empresa,
+            sector: form.sector,
+            descripcion_negocio: form.descripcion_negocio,
+            num_socios: form.num_socios,
+            email_empresa: form.email_empresa,
+            telefono_empresa: form.telefono_empresa,
+          }
+        })
+      })
+      if (!res.ok) throw new Error('Error al guardar')
+      router.push(`/servicios/${slug}/onboarding/revision?pedido=${pedidoId}`)
+    } catch (err) {
+      setError('Error al guardar los datos.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // --- Guardar EIN (Responsible Party) ---
   const validar = (): string | null => {
     if (!isEIN) return null
-
     if (!rp.rp_full_name.trim()) return 'Escribe el nombre completo del Responsible Party.'
     if (!rp.rp_passport_country.trim()) return 'Indica el país del pasaporte.'
     if (!rp.rp_passport_number.trim()) return 'Indica el número de pasaporte.'
@@ -164,43 +195,29 @@ export default function DatosEmpresaPage() {
   const handleSaveAndNext = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-
-    if (!pedidoId) {
-      setError('No se ha encontrado el pedido. Vuelve al paso anterior.')
-      return
-    }
+    if (!pedidoId) { setError('No se ha encontrado el pedido. Vuelve al paso anterior.'); return }
 
     const err = validar()
-    if (err) {
-      setError(err)
-      return
-    }
+    if (err) { setError(err); return }
 
     setSaving(true)
     try {
-      const pedido = await PedidoModel.obtenerPorId(pedidoId)
-      if (!pedido) {
-        setError('Pedido no encontrado.')
-        return
-      }
-
-      // Mezclar con lo que ya hubiera en descripcion_negocio
+      // Obtener pedido actual para mezclar descripcion_negocio
+      const resPedido = await fetch(`/api/pedidos/completo?id=${pedidoId}`)
+      const dataPedido = await resPedido.json()
       let obj: any = {}
-      if (pedido.descripcion_negocio) {
-        try {
-          obj = JSON.parse(pedido.descripcion_negocio)
-        } catch {
-          obj = {}
-        }
+      if (dataPedido?.pedido?.descripcion_negocio) {
+        try { obj = JSON.parse(dataPedido.pedido.descripcion_negocio) } catch { obj = {} }
       }
-
       obj.ein = obj.ein || {}
       obj.ein.responsible_party = { ...rp }
 
-      await PedidoModel.actualizarPaso(pedidoId, 4, {
-        descripcion_negocio: JSON.stringify(obj),
+      const res = await fetch('/api/pedidos/actualizar', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pedidoId, paso: 4, datos: { descripcion_negocio: JSON.stringify(obj) } })
       })
-
+      if (!res.ok) throw new Error('Error al guardar')
       router.push(`/servicios/${slug}/onboarding/revision?pedido=${pedidoId}`)
     } catch (err) {
       console.error('Error guardando:', err)
@@ -209,26 +226,6 @@ export default function DatosEmpresaPage() {
       setSaving(false)
     }
   }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: name === 'num_socios' ? Number(value) : value }));
-  };
-
-  const handleSaveLLC = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.nombre_empresa.trim()) { setError('El nombre de la empresa es obligatorio.'); return; }
-
-    setSaving(true);
-    try {
-      await PedidoModel.guardarDatosEmpresa(pedidoId!, form);
-      router.push(`/servicios/${slug}/onboarding/revision?pedido=${pedidoId}`);
-    } catch (err) {
-      setError('Error al guardar los datos.');
-    } finally {
-      setSaving(false);
-    }
-  };
 
   if (loading) {
     return (

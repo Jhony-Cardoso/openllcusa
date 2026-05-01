@@ -359,15 +359,19 @@ export default function EstadoPage() {
   }
 
   // UI original (LLC): Selección de estados
+  const isReporteAnual = slug === 'reporte-anual'
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-3">
-          ¿Dónde quieres constituir tu LLC?
+          {isReporteAnual
+            ? '¿En qué estado está registrada tu LLC?'
+            : '¿Dónde quieres constituir tu LLC?'}
         </h2>
         <p className="text-gray-600">
-          Selecciona el estado donde se registrará tu LLC. Te recomendamos Wyoming
-          por su bajo coste anual y máxima privacidad.
+          {isReporteAnual
+            ? 'Selecciona el estado donde está registrada tu LLC. El coste del reporte anual varía según el estado.'
+            : 'Selecciona el estado donde se registrará tu LLC. Te recomendamos Wyoming por su bajo coste anual y máxima privacidad.'}
         </p>
       </div>
 

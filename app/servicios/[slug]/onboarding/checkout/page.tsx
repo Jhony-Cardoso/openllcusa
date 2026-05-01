@@ -13,7 +13,7 @@ export default function CheckoutPage() {
   const { user, isLoaded } = useUser()
 
   const slug = (params?.slug as string) || ''
-  const pedidoIdFromUrl = searchParams.get('pedidoId') // Cambiado de 'pedido' a 'pedidoId'
+  const pedidoIdFromUrl = searchParams.get('pedidoId') || searchParams.get('pedido') // Acepta ambos formatos
   const isEIN = slug === 'obtencion-ein'
 
   const [pedido, setPedido] = useState<any>(null)
@@ -234,7 +234,7 @@ export default function CheckoutPage() {
     )
   }
 
-  const currentPedidoId = getCurrentPedidoId()
+  const currentPedidoId = pedidoIdFromUrl
 
   return (
     <div className="max-w-2xl">

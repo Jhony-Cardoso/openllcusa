@@ -56,12 +56,17 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/servicios/impuestos-federales',
-        destination: '/servicios/impuestos-llc-5472-1120',
+        destination: '/servicios/form-5472-1120',
         permanent: true,
       },
       {
         source: '/servicios/form-5472',
-        destination: '/servicios/impuestos-llc-5472-1120',
+        destination: '/servicios/form-5472-1120',
+        permanent: true,
+      },
+      {
+        source: '/servicios/impuestos-llc-5472-1120',
+        destination: '/servicios/form-5472-1120',
         permanent: true,
       },
     ];

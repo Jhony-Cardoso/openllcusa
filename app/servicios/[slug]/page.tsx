@@ -389,7 +389,7 @@ export default async function ServicioDetallePage({
               </div>
               <div className="sd-trust-row">
                 <ShieldCheck size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
-                <span>Garantía de satisfacción 7 días</span>
+                <span>Garantía de tramitación 100% sin errores</span>
               </div>
             </div>
           </div>
@@ -400,9 +400,9 @@ export default async function ServicioDetallePage({
               <ShieldCheck size={150} />
             </div>
             <p className="sd-guarantee-kicker">¿Por qué elegirnos?</p>
-            <p className="sd-guarantee-title">Garantía 7 días</p>
+            <p className="sd-guarantee-title">Garantía de Tramitación 100% Sin Errores</p>
             <p className="sd-guarantee-desc">
-              Si el servicio no cumple exactamente con lo prometido, te devolvemos el dinero. Sin burocracia, sin preguntas.
+              Si cometemos cualquier error en la gestión de tu trámite, lo corregimos sin coste adicional. Tu expediente, bien hecho a la primera.
             </p>
             <div className="sd-avatars">
               {['A', 'L', 'M', 'R'].map((l, i) => (

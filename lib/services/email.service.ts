@@ -7,8 +7,11 @@ export interface EmailConfirmacionPagoParams {
   nombreUsuario: string
   nombreServicio: string
   montoPagado: number
-  pedidoId: string
+  pedidoId: string           // UUID interno para links
+  numeroPedido?: string      // Nº legible (PED-xxxx)
   fechaPago: string
+  tipoServicio?: string      // 'reporte-anual' | 'obtencion-ein' | 'tax_filing_5472' | default
+  estadoUsa?: string         // Solo para Reporte Anual
 }
 
 export interface EmailBienvenidaParams {
@@ -37,7 +40,66 @@ export class EmailService {
    */
   static async enviarConfirmacionPago(params: EmailConfirmacionPagoParams) {
     try {
-      const { to, nombreUsuario, nombreServicio, montoPagado, pedidoId, fechaPago } = params
+      const { to, nombreUsuario, nombreServicio, montoPagado, pedidoId, fechaPago,
+              numeroPedido, tipoServicio, estadoUsa } = params
+
+      const esReporteAnual = tipoServicio === 'reporte-anual'
+      const esEIN = tipoServicio === 'obtencion-ein'
+      const pedidoDisplay = numeroPedido ? `#${numeroPedido}` : pedidoId.slice(0, 8) + '...'
+
+      // Pasos específicos por servicio
+      const pasosHtml = esReporteAnual ? `
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #0ea5e9; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Revisión de datos</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Nuestro equipo revisará los datos de tu LLC registrada en ${estadoUsa || 'el estado seleccionado'} para preparar la presentación.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 2: Presentación ante el estado de ${estadoUsa || 'EE.UU.'}</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Enviamos el reporte anual a la autoridad estatal correspondiente y abonamos la tasa de registro oficial.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 3: Confirmación oficial</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Recibirás el acuse de presentación y el certificado de cumplimiento en tu dashboard y por email.</p>
+        </div>` : esEIN ? `
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #0ea5e9; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Firma de Autorización (Requiere tu acción)</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Accede a tu panel para firmar el documento SS-4 que autoriza a nuestro equipo a solicitar tu EIN ante el IRS.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 2: Tramitación ante el IRS</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Enviamos la solicitud al IRS. El proceso suele tardar 5-7 días hábiles.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 3: Entrega de tu EIN</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Recibirás tu número EIN oficial con la carta de confirmación del IRS en tu dashboard.</p>
+        </div>` : `
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #0ea5e9; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Configuración Legal (Requiere tu acción)</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Entra en tu panel para completar los detalles de tu LLC y adjuntar tu pasaporte. Es esencial para enviar hoy mismo la solicitud.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 2: Procesamiento gubernamental</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Enviamos la solicitud al estado correspondiente o al IRS según el servicio contratado.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 3: Entrega de documentos</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Recibirás tus documentos digitales oficiales directamente en tu dashboard y por email.</p>
+        </div>`
+
+      const ctaLabel = esReporteAnual
+        ? 'Ver estado de mi trámite'
+        : esEIN
+          ? 'Firmar Autorización SS-4'
+          : 'Completar Configuración Legal'
 
       const { data, error } = await resend.emails.send({
         from: 'Open LLC USA <noreply@updates.openllcusa.com>',
@@ -77,12 +139,13 @@ export class EmailService {
                             <h3 style="margin: 0 0 16px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #64748b;">Detalles del Pedido</h3>
                             <table width="100%" cellpadding="0" cellspacing="0">
                               <tr>
-                                <td style="padding: 8px 0; font-weight: 600;">Producto</td>
+                                <td style="padding: 8px 0; font-weight: 600;">Servicio</td>
                                 <td align="right" style="padding: 8px 0; color: #475569;">${nombreServicio}</td>
                               </tr>
+                              ${esReporteAnual && estadoUsa ? `<tr><td style="padding: 8px 0; font-weight: 600;">Estado</td><td align="right" style="padding: 8px 0; color: #475569;">${estadoUsa}</td></tr>` : ''}
                               <tr>
-                                <td style="padding: 8px 0; font-weight: 600;">ID Pedido</td>
-                                <td align="right" style="padding: 8px 0; color: #475569; font-family: monospace;">${pedidoId}</td>
+                                <td style="padding: 8px 0; font-weight: 600;">Nº Pedido</td>
+                                <td align="right" style="padding: 8px 0; color: #475569; font-family: monospace;">${pedidoDisplay}</td>
                               </tr>
                               <tr>
                                 <td style="padding: 8px 0; font-weight: 600;">Total Pagado</td>
@@ -93,27 +156,11 @@ export class EmailService {
 
                           <!-- Timeline/Pasos -->
                           <h3 style="margin: 30px 0 20px 0; font-size: 18px; color: #1e293b;">🚀 ¿Qué pasa ahora?</h3>
-                          <div style="margin-bottom: 30px;">
-                            <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
-                              <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #0ea5e9; border-radius: 50%;"></div>
-                              <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Configuración Legal (Requiere tu acción)</p>
-                              <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Entra en tu panel para completar los detalles de tu LLC y adjuntar tu pasaporte. Es esencial para enviar hoy mismo la solicitud.</p>
-                            </div>
-                            <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
-                              <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
-                              <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 2: Procesamiento gubernamental</p>
-                              <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Enviamos la solicitud al estado correspondiente o al IRS según el servicio contratado.</p>
-                            </div>
-                            <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative;">
-                              <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
-                              <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 3: Entrega de documentos</p>
-                              <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Recibirás tus documentos digitales oficiales directamente en tu dashboard y por email.</p>
-                            </div>
-                          </div>
+                          <div style="margin-bottom: 30px;">${pasosHtml}</div>
 
                           <!-- Call to Action -->
                           <div align="center" style="margin: 40px 0;">
-                            <a href="${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}" style="background-color: #0ea5e9; color: #ffffff; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">Completar Configuración Legal</a>
+                            <a href="${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedidoId}" style="background-color: #0ea5e9; color: #ffffff; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">${ctaLabel}</a>
                           </div>
 
                           <p style="margin: 20px 0 0 0; font-size: 14px; color: #94a3b8; text-align: center;">

@@ -8,6 +8,8 @@ interface AdminDocumentManagerProps {
     numeroPedido: string
     pasoActual: number
     metadata: any
+    esReporteAnual?: boolean
+    estadoNombre?: string
 }
 
 export default function AdminDocumentManager({
@@ -15,6 +17,8 @@ export default function AdminDocumentManager({
     numeroPedido,
     pasoActual,
     metadata,
+    esReporteAnual = false,
+    estadoNombre = 'el estado',
 }: AdminDocumentManagerProps) {
     const [uploading, setUploading] = useState(false)
     const [updating, setUpdating] = useState(false)
@@ -150,8 +154,8 @@ export default function AdminDocumentManager({
                 </div>
             )}
 
-            {/* SECCIÓN: DESCARGAR SS-4 Y GENERAR BORRADOR */}
-            {hasSS4 && (
+            {/* SECCIÓN: SS-4 / EIN - Solo para pedidos que NO son Reporte Anual */}
+            {hasSS4 && !esReporteAnual && (
                 <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
                     <h4 className="text-sm font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <FileText size={16} />
@@ -201,11 +205,14 @@ export default function AdminDocumentManager({
                 </div>
             )}
 
-            {/* SECCIÓN: SUBIR CARTA EIN */}
+            {/* SECCIÓN: SUBIR DOCUMENTO FINAL */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
                 <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
                     <Upload size={16} />
-                    Subir Carta EIN del IRS
+                    {esReporteAnual
+                        ? `Subir Confirmación de Presentación (${estadoNombre})`
+                        : 'Subir Carta EIN del IRS'
+                    }
                 </h4>
 
                 {hasCartaEIN ? (
@@ -272,7 +279,10 @@ export default function AdminDocumentManager({
             {/* SECCIÓN: ACTUALIZAR ESTADO DE TRAMITACIÓN */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
                 <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-4">
-                    Estado de Tramitación ante el IRS
+                    {esReporteAnual
+                        ? `Estado de Presentación ante ${estadoNombre}`
+                        : 'Estado de Tramitación ante el IRS'
+                    }
                 </h4>
 
                 <div className="space-y-4">
@@ -283,11 +293,23 @@ export default function AdminDocumentManager({
                             onChange={(e) => setEstadoTramitacion(e.target.value)}
                             className="w-full px-4 py-3 border border-slate-200 rounded-xl font-bold text-slate-800 focus:border-blue-500 outline-none"
                         >
-                            <option value="pendiente">⏳ Pendiente de Envío</option>
-                            <option value="enviado_irs">📤 Enviado al IRS</option>
-                            <option value="en_revision">🔍 En Revisión por el IRS</option>
-                            <option value="aprobado">✅ Aprobado - EIN Asignado</option>
-                            <option value="rechazado">❌ Rechazado</option>
+                            {esReporteAnual ? (
+                                <>
+                                    <option value="pendiente">⏳ Pendiente de Envío</option>
+                                    <option value="enviado_estado">📤 Enviado al Estado</option>
+                                    <option value="en_revision">🔍 En Revisión por el Estado</option>
+                                    <option value="aprobado">✅ Presentación Confirmada</option>
+                                    <option value="rechazado">❌ Rechazado / Incidencia</option>
+                                </>
+                            ) : (
+                                <>
+                                    <option value="pendiente">⏳ Pendiente de Envío</option>
+                                    <option value="enviado_irs">📤 Enviado al IRS</option>
+                                    <option value="en_revision">🔍 En Revisión por el IRS</option>
+                                    <option value="aprobado">✅ Aprobado - EIN Asignado</option>
+                                    <option value="rechazado">❌ Rechazado</option>
+                                </>
+                            )}
                         </select>
                     </div>
 

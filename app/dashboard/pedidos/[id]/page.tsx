@@ -143,6 +143,11 @@ export default async function PedidoDetallePage({
     { id: 3, label: 'Documentos Preparados', date: pedidoFull.metadata?.documents?.form_5472_url ? (pedidoFull.metadata?.documents?.form_5472_approved ? 'Completado - Copia oficial lista' : 'Pendiente de tu revisión y aprobación') : 'En proceso de preparación por nuestro equipo', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
     { id: 4, label: 'Presentación al IRS', date: 'Pendiente - Nuestro equipo lo enviará próximamente', completado: false },
     { id: 5, label: 'Acuse de Recibo del IRS', date: 'Pendiente - Se enviará cuando esté disponible', completado: false },
+  ] : esReporteAnual ? [
+    { id: 1, label: 'Solicitud recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: true },
+    { id: 2, label: 'Pago verificado', date: isPaid ? 'Verificado' : 'Pendiente', completado: isPaid },
+    { id: 3, label: `Presentación ante ${(pedidoFull as any).estado_usa?.nombre || 'el estado'}`, date: pedidoFull.paso_actual >= 8 ? 'Completado' : 'Nuestro equipo lo gestionará a la mayor brevedad', completado: pedidoFull.paso_actual >= 8 },
+    { id: 4, label: 'Confirmación oficial del estado', date: pedidoFull.paso_actual >= 9 ? 'Completado' : 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
   ] : esEIN ? [
     { id: 1, label: 'Solicitud Recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
     { id: 2, label: 'Pago Confirmado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
@@ -227,7 +232,7 @@ export default async function PedidoDetallePage({
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Estado USA</p>
-                <p className="font-bold text-slate-700">{pedidoFull.estados_usa?.nombre || 'N/A'}</p>
+                <p className="font-bold text-slate-700">{(pedidoFull as any).estado_usa?.nombre || 'N/A'}</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tipo</p>

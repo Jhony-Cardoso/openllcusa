@@ -138,6 +138,7 @@ export async function POST(req: Request) {
                 try {
                   const nombreProducto = pedido.servicio?.nombre || pedido.paquete?.nombre || (session.metadata?.tipo_servicio === 'tax_filing_5472' ? 'Presentación Forms 5472 + 1120' : 'Servicio Open LLC');
                   const importe = session.amount_total ? session.amount_total / 100 : 0;
+                  const slugServicio = pedido.servicio?.slug || ''
 
                   const result = await EmailService.enviarConfirmacionPago({
                     to: userEmail,
@@ -145,7 +146,10 @@ export async function POST(req: Request) {
                     nombreServicio: nombreProducto,
                     montoPagado: importe,
                     pedidoId: pedidoId,
+                    numeroPedido: pedido.numero_pedido || undefined,
                     fechaPago: new Date().toISOString(),
+                    tipoServicio: slugServicio || session.metadata?.tipo_servicio,
+                    estadoUsa: (pedido as any).estado_usa?.nombre || undefined,
                   });
 
                   if (result.success) {

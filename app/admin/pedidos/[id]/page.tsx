@@ -49,11 +49,15 @@ export default async function AdminPedidoDetallePage({
         hasRealTaxData
 
     const esEIN = pedido.servicio?.slug === 'obtencion-ein' || pedido.paquete?.slug === 'ein-express'
+    const esReporteAnual = pedido.servicio?.slug === 'reporte-anual'
+
+    const estadoNombre = (pedido as any).estado_usa?.nombre || pedido.metadata?.estado_nombre || 'N/A'
+    const llcNombre = pedido.metadata?.empresa_nombre || pedido.nombre_empresa || 'N/A'
 
     // DEBUG: Ver qué datos tenemos
     console.log('🔍 [Admin Page] Pedido completo:', pedido)
     console.log('🔍 [Admin Page] tax_data:', (pedido as any).tax_data)
-    console.log('🔍 [Admin Page] esTaxFiling:', esTaxFiling)
+    console.log('🔍 [Admin Page] esTaxFiling:', esTaxFiling, 'esReporteAnual:', esReporteAnual)
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 text-slate-900">
@@ -77,14 +81,33 @@ export default async function AdminPedidoDetallePage({
                 </div>
             </div>
 
-            {/* GRID PRINCIPAL: MÁS ANCHO PARA TAX FILING */}
+            {/* GRID PRINCIPAL */}
             <div className={`grid grid-cols-1 ${esTaxFiling ? 'lg:grid-cols-12' : 'lg:grid-cols-3'} gap-8`}>
 
-                {/* COLUMNA IZQUIERDA: INFORMACIÓN LEGAL (DEL CHECKLIST) */}
+                {/* COLUMNA IZQUIERDA: INFORMACIÓN */}
                 <div className={`${esTaxFiling ? 'lg:col-span-5' : 'lg:col-span-2'} space-y-8`}>
 
-                    {/* SECCIÓN MIRA: PROPIETARIO - Solo para LLC/EIN */}
-                    {!esTaxFiling && (
+                    {/* SECCIÓN: REPORTE ANUAL - Datos específicos */}
+                    {esReporteAnual && (
+                        <section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+                            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                                <h2 className="font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight text-sm">
+                                    <Building2 className="text-green-600" size={18} />
+                                    Datos del Reporte Anual
+                                </h2>
+                                <span className="px-3 py-1 bg-green-50 text-green-700 text-[10px] font-black rounded-lg border border-green-100">REPORTE ANUAL</span>
+                            </div>
+                            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                                <InfoItem label="LLC / Nombre de la empresa" value={llcNombre} icon={Building2} />
+                                <InfoItem label="Estado de registro" value={estadoNombre} icon={MapPin} />
+                                <InfoItem label="Año fiscal del reporte" value={pedido.metadata?.anio_reporte || new Date().getFullYear().toString()} icon={Calendar} />
+                                <InfoItem label="Email de contacto" value={pedido.email_empresa || '—'} icon={Mail} />
+                            </div>
+                        </section>
+                    )}
+
+                    {/* SECCIÓN MEMBER: PROPIETARIO - Solo para LLC/EIN (NO para Reporte Anual) */}
+                    {!esTaxFiling && !esReporteAnual && (
                         <section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
                             <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                                 <h2 className="font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight text-sm">
@@ -110,8 +133,8 @@ export default async function AdminPedidoDetallePage({
                         </section>
                     )}
 
-                    {/* SECCIÓN: DATOS LLC - Solo para LLC/EIN */}
-                    {!esTaxFiling && (
+                    {/* SECCIÓN: DATOS LLC - Solo para LLC/EIN (NO Reporte Anual) */}
+                    {!esTaxFiling && !esReporteAnual && (
                         <section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden text-slate-900">
                             <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                                 <h2 className="font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight text-sm">
@@ -128,8 +151,8 @@ export default async function AdminPedidoDetallePage({
                         </section>
                     )}
 
-                    {/* SECCIÓN: DOCUMENTACIÓN ADJUNTA - Solo para LLC/EIN */}
-                    {!esTaxFiling && (
+                    {/* SECCIÓN: DOCUMENTACIÓN - Solo para LLC/EIN (NO Reporte Anual) */}
+                    {!esTaxFiling && !esReporteAnual && (
                         <section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden text-slate-900">
                             <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                                 <h2 className="font-black text-slate-800 flex items-center gap-2 uppercase tracking-tight text-sm">
@@ -189,6 +212,8 @@ export default async function AdminPedidoDetallePage({
                                 numeroPedido={pedido.numero_pedido}
                                 pasoActual={pedido.paso_actual}
                                 metadata={metadata}
+                                esReporteAnual={esReporteAnual}
+                                estadoNombre={estadoNombre}
                             />
                         )}
 

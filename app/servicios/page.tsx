@@ -46,7 +46,7 @@ const serviciosSueltos = [
     icon: Search,
   },
   {
-    slug: 'form-5472-1120',
+    slug: 'impuestos/declaracion-anual-llc',
     title: 'Declaración de Impuestos',
     price: '$397',
     tagline: 'Presentación anual del Formulario 1120 + 5472.',

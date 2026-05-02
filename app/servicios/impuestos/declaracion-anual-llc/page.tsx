@@ -212,7 +212,7 @@ export default async function ImpuestosFederalesPage() {
             <p className="sd-price-amount">{precioFormateado}</p>
             <p className="sd-price-note">Pago único · Sin costes ocultos · Deducible fiscalmente</p>
 
-            <Link href={`/servicios/${SLUG}/onboarding`} className="sd-cta-button">
+            <Link href={`/servicios/impuestos/declaracion-anual-llc/onboarding`} className="sd-cta-button">
               Empezar proceso ahora
               <ArrowRight size={18} />
             </Link>

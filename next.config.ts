@@ -56,17 +56,22 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/servicios/impuestos-federales',
-        destination: '/servicios/form-5472-1120',
+        destination: '/servicios/impuestos/declaracion-anual-llc',
         permanent: true,
       },
       {
         source: '/servicios/form-5472',
-        destination: '/servicios/form-5472-1120',
+        destination: '/servicios/impuestos/declaracion-anual-llc',
         permanent: true,
       },
       {
         source: '/servicios/impuestos-llc-5472-1120',
-        destination: '/servicios/form-5472-1120',
+        destination: '/servicios/impuestos/declaracion-anual-llc',
+        permanent: true,
+      },
+      {
+        source: '/servicios/form-5472-1120',
+        destination: '/servicios/impuestos/declaracion-anual-llc',
         permanent: true,
       },
     ];

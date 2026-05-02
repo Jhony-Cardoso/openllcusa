@@ -74,6 +74,24 @@ const nextConfig: NextConfig = {
         destination: '/servicios/impuestos/declaracion-anual-llc',
         permanent: true,
       },
+      {
+        source: '/servicios/obtencion-ein',
+        destination: '/servicios/impuestos/obtencion-ein',
+        permanent: true,
+      },
+    ];
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: '/servicios/impuestos/obtencion-ein',
+        destination: '/servicios/obtencion-ein',
+      },
+      {
+        source: '/servicios/impuestos/obtencion-ein/:path*',
+        destination: '/servicios/obtencion-ein/:path*',
+      }
     ];
   },
 };

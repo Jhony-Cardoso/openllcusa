@@ -105,12 +105,16 @@ export async function POST(request: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
+    const basePath = slug === 'obtencion-ein' 
+      ? `/servicios/impuestos/obtencion-ein` 
+      : `/servicios/${slug}`
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       line_items: lineItems,
-      success_url: `${baseUrl}/servicios/${slug}/onboarding/completado?pedido=${pedido.id}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/servicios/${slug}/onboarding/checkout?pedido=${pedido.id}&canceled=true`,
+      success_url: `${baseUrl}${basePath}/onboarding/completado?pedido=${pedido.id}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}${basePath}/onboarding/checkout?pedido=${pedido.id}&canceled=true`,
       metadata: {
         pedidoId: pedido.id,
         userId,

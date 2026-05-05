@@ -77,9 +77,11 @@ export default function LeadForm() {
           <div className={`${styles.step} ${step === 1 ? styles.active : ""}`}></div>
           <div className={`${styles.step} ${step === 2 ? styles.active : ""}`}></div>
         </div>
+        
         {step === 1 ? (
           <section>
             <h2 className={styles.titulo}>Empecemos con lo básico</h2>
+            
             <label className={styles.label}>Nombre completo</label>
             <input
               type="text"
@@ -91,6 +93,7 @@ export default function LeadForm() {
               autoFocus
               required
             />
+            
             <label className={styles.label}>Email</label>
             <input
               type="email"
@@ -101,6 +104,7 @@ export default function LeadForm() {
               placeholder="tu@email.com"
               required
             />
+            
             <label className={styles.label}>Teléfono <span className={styles.optional}>(opcional)</span></label>
             <input
               type="tel"
@@ -112,6 +116,7 @@ export default function LeadForm() {
               pattern="^\\+?[0-9\\s]*$"
               autoComplete="tel"
             />
+            
             <label className={styles.label}>¿Cuál describe mejor tu situación?</label>
             <select
               name="situacion"
@@ -125,10 +130,13 @@ export default function LeadForm() {
                 <option key={o} value={o}>{o}</option>
               ))}
             </select>
+
             {error && <div className={styles.error}>{error}</div>}
+            
             <button className={styles.btnPrimary} type="submit">
               Continuar al Quiz &rarr;
             </button>
+            
             <p className={styles.avisoSmall}>
               <span role="img" aria-label="candado">🔒</span>{" "}
               Tus datos están protegidos y nunca serán compartidos

@@ -34,16 +34,18 @@ export default function LeadForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const avanzarAlStep2 = () => {
+    if (!form.nombre.trim() || !form.email.trim() || !form.situacion) {
+      setError("Por favor, completa todos los campos requeridos");
+      return;
+    }
+    setError(null);
+    setStep(2);
+  };
+
   const seguirQuiz = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (step === 1) {
-      if (!form.nombre.trim() || !form.email.trim() || !form.situacion) {
-        setError("Por favor, completa todos los campos requeridos");
-        return;
-      }
-      setError(null);
-      setStep(2);
-    } else {
+    if (step === 2) {
       setLoading(true);
       setError(null);
       try {
@@ -133,7 +135,12 @@ export default function LeadForm() {
 
             {error && <div className={styles.error}>{error}</div>}
             
-            <button className={styles.btnPrimary} type="submit">
+            {/* BOTÓN CORREGIDO */}
+            <button 
+              type="button"
+              onClick={avanzarAlStep2}
+              className={styles.btnPrimary}
+            >
               Continuar al Quiz &rarr;
             </button>
             

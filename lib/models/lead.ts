@@ -18,9 +18,8 @@ export class LeadModel {
         try {
             const supabase = createAdminClient()
 
-            // @ts-ignore - La tabla leads existe pero puede no estar en los tipos generados
             const { data: lead, error } = await supabase
-                .from('leads' as any)
+                .from('pedidos')                    // ← CORREGIDO: ahora usa la tabla real
                 .insert([{
                     nombre: data.nombre,
                     email: data.email,
@@ -44,24 +43,20 @@ export class LeadModel {
         }
     }
 
-    /**
-     * Actualiza un lead existente
-     */
+    // Los otros métodos (actualizar y obtenerRecientes) también los corregimos para que sean coherentes
     static async actualizar(id: string, data: Partial<LeadData & { score?: number }>) {
         try {
             const supabase = createAdminClient()
 
-            // 1. Obtener metadatos actuales para no sobrescribirlos
-            const { data: currentLead } = await supabase.from('leads').select('metadata').eq('id', id).single()
+            const { data: currentLead } = await supabase.from('pedidos').select('metadata').eq('id', id).single()
             const currentMetadata = currentLead?.metadata || {}
 
-            // 2. Fusionar
             const mergedMetadata = { ...currentMetadata, ...(data.metadata || {}) }
 
             const updateData = { ...data, metadata: mergedMetadata }
 
             const { data: lead, error } = await supabase
-                .from('leads')
+                .from('pedidos')
                 .update(updateData)
                 .eq('id', id)
                 .select()
@@ -75,13 +70,10 @@ export class LeadModel {
         }
     }
 
-    /**
-     * Obtener los últimos leads (para el panel de admin)
-     */
     static async obtenerRecientes(limit = 50) {
         const supabase = createAdminClient()
         const { data, error } = await supabase
-            .from('leads')
+            .from('pedidos')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(limit)

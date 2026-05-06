@@ -5,29 +5,39 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
-  try {
-    const { name, email, country } = await request.json();
+    try {
+        const { name, email, country } = await request.json();
 
-    if (!name || !email || !country) {
-      return NextResponse.json({ error: 'Faltan datos' }, { status: 400 });
-    }
+        if (!name || !email || !country) {
+            return NextResponse.json({ error: 'Faltan datos' }, { status: 400 });
+        }
 
-    // Email interno para ti (notificación)
-    await resend.emails.send({
-      from: 'Open LLC USA <no-reply@updates.openllcusa.com>',
-      to: 'jrmasol@gmail.com',
-      replyTo: email,
-      subject: `Nueva solicitud de asesoría - ${name}`,
-      html: `<h2>Nueva solicitud</h2><p>Nombre: ${name}</p><p>Email: ${email}</p><p>País: ${country}</p>`,
-    });
+        const ahora = new Date().toLocaleString('es-ES', {
+            timeZone: 'Europa/Madrid',
+            dateStyle: 'full',
+            timeStyle: 'short',
+        });
 
-    // Email al cliente (versión coherente y honesta)
-    await resend.emails.send({
-      from: 'Open LLC USA <no-reply@updates.openllcusa.com>',
-      replyTo: 'jrmasol@gmail.com',
-      to: email,
-      subject: `✅ ${name}, hemos recibido tu solicitud de información sobre LLC en USA`,
-      html: `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto;">
+        // Email interno para ti (notificación)
+        await resend.emails.send({
+            from: 'Open LLC USA <no-reply@updates.openllcusa.com>',
+            to: 'jrmasol@gmail.com',
+            replyTo: email,
+            subject: `Nueva solicitud de asesoría rápida- ${name}`,
+            html: `<h2>Nueva solicitud de asesoría rápida</h2>
+      <p>Nombre: ${name}</p>
+      <p>Email: ${email}</p>
+      <p>País: ${country}</p>
+      <p><strong>Fecha y hora:</strong> ${ahora}</p>`,
+        });
+
+        // Email al cliente (versión coherente y honesta)
+        await resend.emails.send({
+            from: 'Open LLC USA <no-reply@updates.openllcusa.com>',
+            replyTo: 'jrmasol@gmail.com',
+            to: email,
+            subject: `✅ ${name}, hemos recibido tu solicitud de información sobre LLC en USA`,
+            html: `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto;">
   <h2 style="color: #1E3A8A;">¡Hola ${name}!</h2>
   
   <p>Gracias por tu interés en crear tu LLC en Estados Unidos desde ${country || 'España'}.</p>
@@ -64,11 +74,11 @@ export async function POST(request: NextRequest) {
     <a href="{{unsubscribe_url}}" style="color:#666;">Dar de baja</a>
   </p>
 </div>`,
-    });
+        });
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Error interno' }, { status: 500 });
-  }
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: 'Error interno' }, { status: 500 });
+    }
 }

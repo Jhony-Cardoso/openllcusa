@@ -55,17 +55,18 @@ export default function LeadForm() {
           body: JSON.stringify(form),
         });
 
-        if (!response.ok) throw new Error("Error al procesar la solicitud");
-
-        const data = await response.json();
-        if (data.leadId) {
-          localStorage.setItem("lead-id", data.leadId);
-          localStorage.setItem("lead-name", form.nombre);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.leadId) {
+            localStorage.setItem("lead-id", data.leadId);
+            localStorage.setItem("lead-name", form.nombre);
+          }
         }
-
+        // Avanzamos al quiz siempre, aunque la API falle
         router.push("/quiz");
       } catch (err) {
-        setError("Hubo un problema al guardar tus datos. Por favor, intenta de nuevo.");
+        // Aunque haya error de red, el usuario avanza igualmente
+        router.push("/quiz");
       } finally {
         setLoading(false);
       }
@@ -74,7 +75,7 @@ export default function LeadForm() {
 
   return (
     <div className={styles.bgGradient}>
-      <form className={styles.formulario} onSubmit={seguirQuiz} autoComplete="on">
+      <form className={styles.formulario} onSubmit={seguirQuiz} autoComplete="on" noValidate>
         <div className={styles.stepper}>
           <div className={`${styles.step} ${step === 1 ? styles.active : ""}`}></div>
           <div className={`${styles.step} ${step === 2 ? styles.active : ""}`}></div>

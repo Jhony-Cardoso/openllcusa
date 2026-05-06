@@ -48,6 +48,10 @@ export default function LeadForm() {
     if (step === 2) {
       setLoading(true);
       setError(null);
+
+      // Guardamos el nombre ANTES de la API para que el quiz gate siempre pase
+      localStorage.setItem('lead-name', form.nombre);
+
       try {
         const response = await fetch("/api/leads", {
           method: "POST",
@@ -59,17 +63,17 @@ export default function LeadForm() {
           const data = await response.json();
           if (data.leadId) {
             localStorage.setItem("lead-id", data.leadId);
-            localStorage.setItem("lead-name", form.nombre);
           }
         }
-        // Avanzamos al quiz siempre, aunque la API falle
-        router.push("/quiz");
       } catch (err) {
-        // Aunque haya error de red, el usuario avanza igualmente
-        router.push("/quiz");
+        // Error de red: ignoramos, el usuario ya tiene lead-name en localStorage
+        console.error('[lead-form] Error al guardar lead:', err);
       } finally {
         setLoading(false);
       }
+
+      // Siempre avanzamos al quiz
+      router.push("/quiz");
     }
   };
 

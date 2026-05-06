@@ -19,7 +19,7 @@ export class LeadModel {
             const supabase = createAdminClient()
 
             const { data: lead, error } = await supabase
-                .from('pedidos')                    // ← CORREGIDO: ahora usa la tabla real
+                .from('leads')                    // ← tabla correcta para leads/prospectos
                 .insert([{
                     nombre: data.nombre,
                     email: data.email,
@@ -48,7 +48,7 @@ export class LeadModel {
         try {
             const supabase = createAdminClient()
 
-            const { data: currentLead } = await supabase.from('pedidos').select('metadata').eq('id', id).single()
+            const { data: currentLead } = await supabase.from('leads').select('metadata').eq('id', id).single()
             const currentMetadata = currentLead?.metadata || {}
 
             const mergedMetadata = { ...currentMetadata, ...(data.metadata || {}) }
@@ -56,7 +56,7 @@ export class LeadModel {
             const updateData = { ...data, metadata: mergedMetadata }
 
             const { data: lead, error } = await supabase
-                .from('pedidos')
+                .from('leads')
                 .update(updateData)
                 .eq('id', id)
                 .select()
@@ -73,7 +73,7 @@ export class LeadModel {
     static async obtenerRecientes(limit = 50) {
         const supabase = createAdminClient()
         const { data, error } = await supabase
-            .from('pedidos')
+            .from('leads')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(limit)

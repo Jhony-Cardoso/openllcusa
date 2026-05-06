@@ -237,7 +237,8 @@ export default function QuizPage() {
   // ✅ GATE: Asegurar que el usuario pasó por el lead-form
   useEffect(() => {
     const leadId = localStorage.getItem('lead-id');
-    if (!leadId) {
+    const leadName = localStorage.getItem('lead-name');
+    if (!leadId && !leadName) {
       console.log('🔒 Acceso restringido al Quiz: Redirigiendo a captación...');
       router.push('/lead-form');
     }

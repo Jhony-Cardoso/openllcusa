@@ -12,6 +12,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Faltan datos' }, { status: 400 });
     }
 
+    // Hora en horario de Madrid (Europe/Madrid)
+    const ahora = new Date().toLocaleString('es-ES', {
+      timeZone: 'Europe/Madrid',        // ← Esta es la línea clave
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+
     // Email interno para ti (simple y claro)
     await resend.emails.send({
       from: 'Open LLC USA <no-reply@updates.openllcusa.com>',
@@ -23,7 +34,7 @@ export async function POST(request: NextRequest) {
         <p><strong>Nombre:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>País:</strong> ${country}</p>
-        <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
+        <p><strong>Fecha y hora (Madrid):</strong> ${ahora}</p>
       `,
     });
 

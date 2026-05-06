@@ -1,67 +1,71 @@
-import { NextResponse } from 'next/server'
-import { LeadModel } from '@/lib/models/lead'
-import { EmailService } from '@/lib/services/email.service'
-import { WebhookService } from '@/lib/services/webhook.service'
+// app/api/leads/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { LeadModel } from '@/lib/models/lead';
+import { EmailService } from '@/lib/services/email.service';
+import { WebhookService } from '@/lib/services/webhook.service';
 
-export async function POST(req: Request) {
-    try {
-        const body = await req.json()
-        const { nombre, email, telefono, situacion } = body
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { nombre, email, telefono, situacion } = body;
 
-        if (!nombre || !email) {
-            return NextResponse.json({ error: 'Nombre y email son obligatorios' }, { status: 400 })
-        }
-
-        // 1. Guardar en Base de Datos
-        const result: any = await LeadModel.registrar({
-            nombre,
-            email,
-            telefono,
-            situacion,
-            metadata: {
-                source: 'lead_form_v1',
-                userAgent: req.headers.get('user-agent')
-            }
-        })
-
-        if (!result.success || !result.lead) {
-            throw new Error('Error al guardar el lead en la base de datos')
-        }
-
-        // 2. Email de impacto inmediato al Lead
-        await EmailService.enviarEmailBienvenidaLead({
-            to: email,
-            nombre,
-            situacion
-        })
-
-        // 3. Notificar al equipo (Webhook y Email)
-        if (result.lead) {
-            // b) Webhook a Make.com
-            await WebhookService.notify('nuevo_lead_capturado', {
-                id: result.lead.id,
-                nombre,
-                email,
-                telefono,
-                situacion
-            });
-
-            // c) Email Interno Admin
-            if (process.env.ADMIN_EMAIL) {
-                await EmailService.notificarEquipo({
-                    tipo: 'nuevo_pedido',
-                    nombreServicio: 'NUEVO LEAD: ' + nombre,
-                    cliente: `${email} (${telefono || 'Sin telf'})`,
-                    monto: 0,
-                    pedidoId: result.lead.id
-                })
-            }
-        }
-
-        return NextResponse.json({ success: true, leadId: result.lead.id })
-
-    } catch (error: any) {
-        console.error('❌ [API Leads] Error:', error)
-        return NextResponse.json({ error: error.message }, { status: 500 })
+    if (!nombre?.trim() || !email?.trim()) {
+      return NextResponse.json({ error: 'Nombre y email son obligatorios' }, { status: 400 });
     }
+
+    console.log('✅ [API Leads] Datos recibidos:', { nombre, email, situacion });
+
+    // 1. Guardar en Supabase
+    const result = await LeadModel.registrar({
+      nombre,
+      email,
+      telefono: telefono || undefined,
+      situacion,
+      metadata: {
+        source: 'lead_form_v1',
+        userAgent: request.headers.get('user-agent') || 'unknown',
+      },
+    }) as { success: boolean; lead?: any; error?: any };   // ← Corrección definitiva de TypeScript
+
+    if (!result.success || !result.lead) {
+      console.error('❌ [API Leads] Error al guardar en Supabase:', result.error);
+      throw new Error('Error al guardar el lead en la base de datos');
+    }
+
+    const leadId = result.lead.id;
+
+    console.log('✅ [API Leads] Lead guardado correctamente con ID:', leadId);
+
+    // 2. Email de bienvenida al cliente
+    await EmailService.enviarEmailBienvenidaLead({
+      to: email,
+      nombre,
+      situacion,
+    });
+
+    // 3. Notificaciones opcionales
+    await WebhookService.notify('nuevo_lead_capturado', {
+      id: leadId,
+      nombre,
+      email,
+      telefono: telefono || 'Sin teléfono',
+      situacion,
+    });
+
+    if (process.env.ADMIN_EMAIL) {
+      await EmailService.notificarEquipo({
+        tipo: 'nuevo_pedido',
+        nombreServicio: 'NUEVO LEAD desde Calculadora',
+        cliente: `${email} (${telefono || 'Sin teléfono'})`,
+        monto: 0,
+        pedidoId: leadId,
+      });
+    }
+
+    return NextResponse.json({ success: true, leadId });
+
+  } catch (error: any) {
+    console.error('💥 [API Leads] Error completo:', error);
+    return NextResponse.json({ error: error.message || 'Error interno del servidor' }, { status: 500 });
+  }
 }

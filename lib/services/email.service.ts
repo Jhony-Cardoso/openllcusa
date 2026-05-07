@@ -295,33 +295,154 @@ export class EmailService {
   }
 
   /**
-   * Enviar email de impacto inmediato a un nuevo Lead
+   * Enviar email de bienvenida a un nuevo Lead (quiz/calculadora)
    */
   static async enviarEmailBienvenidaLead(params: EmailLeadParams) {
     try {
       const { to, nombre, situacion } = params
+
+      // Personalizar mensaje según situación fiscal
+      const mensajeSituacion: Record<string, { titulo: string; cuerpo: string; cta: string }> = {
+        'Busco ahorrar impuestos y cumplir 100%': {
+          titulo: 'Puedes optimizar tu carga fiscal de forma legal',
+          cuerpo: 'Tu perfil es ideal para estructurarte con una LLC en EE.UU. Muchos de nuestros clientes en tu misma situación han reducido su carga fiscal entre un 30% y un 50% de forma completamente legal y segura.',
+          cta: 'Ver cómo funciona'
+        },
+        'Solo facturo poco (freelance/eventual)': {
+          titulo: 'Ahora es el momento de sentar las bases',
+          cuerpo: 'Empezar bien desde el principio marca la diferencia. Una LLC te da imagen profesional, acceso a Stripe y PayPal USA, y una estructura lista para escalar cuando lo necesites.',
+          cta: 'Explorar mis opciones'
+        },
+        'Mi empresa ya tributa fuera de EE.UU.': {
+          titulo: 'Una LLC complementa perfectamente tu estructura actual',
+          cuerpo: 'Muchos empresarios con estructuras internacionales añaden una LLC como entidad operativa para clientes USA, procesadores de pago americanos o para separar mercados.',
+          cta: 'Ver casos de uso'
+        },
+        'Trabajo remoto para clientes globales': {
+          titulo: 'Una LLC te abre puertas que ahora están cerradas',
+          cuerpo: 'Con una LLC en EE.UU. puedes cobrar en dólares con Stripe USA, aparecer como empresa americana ante tus clientes internacionales y acceder a contratos que hoy se te escapan por ser autónomo.',
+          cta: 'Quiero saber más'
+        }
+      }
+
+      const msg = mensajeSituacion[situacion] || {
+        titulo: 'Tu hoja de ruta para EE.UU. está lista',
+        cuerpo: 'Hemos revisado tu perfil y tenemos información muy relevante para tu situación. Una LLC puede ser el catalizador que necesitas para dar el siguiente paso en tu negocio.',
+        cta: 'Ver mi diagnóstico'
+      }
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'
+
       const { data, error } = await resend.emails.send({
-        from: 'Axel de Open LLC USA <hola@updates.openllcusa.com>',
+        from: 'José Manuel · Open LLC USA <hola@updates.openllcusa.com>',
         to,
         replyTo: 'josemanuel@openllcusa.com',
-        subject: `🚀 Hola ${nombre}, aquí tienes tu hoja de ruta para EE.UU.`,
+        subject: `${nombre}, tu análisis está listo 🎯`,
         html: `
-          <div style="font-family: sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px;">
-            <p>Hola <strong>${nombre}</strong>,</p>
-            <p>He recibido tu solicitud. Me alegra mucho ver que estás buscando optimizar tu situación como <strong>${situacion}</strong>.</p>
-            
-            <p>He empezado a revisar tu perfil para ver cómo podemos ayudarte a eliminar la burocracia y los impuestos innecesarios mediante una estructura legal y segura en Estados Unidos.</p>
-            
-            <p>Si aún no has terminado de completar los datos de tu diagnóstico, te recomiendo hacerlo ahora desde este enlace:</p>
-            <p><a href="${process.env.NEXT_PUBLIC_BASE_URL}/quiz" style="color: #0ea5e9; font-weight: bold; text-decoration: underline;">Continuar con mi Diagnóstico Personalizado →</a></p>
+          <!DOCTYPE html>
+          <html lang="es">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Tu análisis está listo</title>
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 40px 16px;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="580" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07);">
 
-            <p>Una vez terminado, podré darte una hoja de ruta exacta para tu caso.</p>
+                      <!-- HEADER -->
+                      <tr>
+                        <td align="center" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%); padding: 36px 40px;">
+                          <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 600; color: #93c5fd; letter-spacing: 2px; text-transform: uppercase;">Open LLC USA</p>
+                          <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.2;">Tu análisis personalizado<br>está listo, ${nombre} 🎯</h1>
+                        </td>
+                      </tr>
 
-            <p style="margin-top: 30px;">Un saludo,<br><strong>Axel</strong><br>Fundador, Open LLC USA</p>
-          </div>
+                      <!-- BODY -->
+                      <tr>
+                        <td style="padding: 36px 40px;">
+
+                          <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #475569;">
+                            Gracias por completar el diagnóstico. Basándonos en tu situación como <strong style="color: #1e293b;">${situacion}</strong>, hemos preparado esta hoja de ruta para ti.
+                          </p>
+
+                          <!-- INSIGHT BOX -->
+                          <div style="background: linear-gradient(135deg, #eff6ff, #f0fdf4); border-left: 4px solid #2563eb; border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 0 0 28px 0;">
+                            <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 1px;">📊 Insight para tu caso</p>
+                            <p style="margin: 0 0 8px 0; font-size: 17px; font-weight: 700; color: #1e293b;">${msg.titulo}</p>
+                            <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.6;">${msg.cuerpo}</p>
+                          </div>
+
+                          <!-- BENEFICIOS -->
+                          <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 700; color: #1e293b;">Lo que una LLC puede hacer por ti:</p>
+                          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 28px;">
+                            ${[
+                              ['💰', 'Optimizar tu carga fiscal de forma legal y segura'],
+                              ['💳', 'Acceder a Stripe USA, PayPal Business y cuentas bancarias americanas'],
+                              ['🌍', 'Proyectar imagen de empresa internacional ante tus clientes'],
+                              ['🔒', 'Separar tu patrimonio personal del riesgo empresarial'],
+                            ].map(([icon, text]) => `
+                              <tr>
+                                <td style="padding: 8px 0; vertical-align: top; width: 32px; font-size: 18px;">${icon}</td>
+                                <td style="padding: 8px 0; font-size: 14px; color: #374151; line-height: 1.5;">${text}</td>
+                              </tr>
+                            `).join('')}
+                          </table>
+
+                          <!-- CTA PRINCIPAL -->
+                          <div style="text-align: center; margin: 32px 0;">
+                            <a href="${baseUrl}/quiz"
+                               style="display: inline-block; background: linear-gradient(135deg, #1e40af, #3b82f6); color: #ffffff; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 16px; box-shadow: 0 8px 20px rgba(59,130,246,0.35); letter-spacing: 0.3px;">
+                              ${msg.cta} →
+                            </a>
+                            <p style="margin: 12px 0 0 0; font-size: 12px; color: #94a3b8;">Sin compromiso · Solo toma 2 minutos</p>
+                          </div>
+
+                          <!-- TESTIMONIAL -->
+                          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; margin: 28px 0 0 0;">
+                            <p style="margin: 0 0 12px 0; font-size: 22px;">⭐⭐⭐⭐⭐</p>
+                            <p style="margin: 0 0 12px 0; font-size: 14px; color: #374151; line-height: 1.6; font-style: italic;">
+                              "En 6 meses cerré mis primeros 3 clientes en EE.UU. La LLC fue el detonante. Antes ni me contestaban los emails."
+                            </p>
+                            <p style="margin: 0; font-size: 13px; font-weight: 700; color: #1e293b;">Carlos M. <span style="font-weight: 400; color: #64748b;">— Consultor de Marketing Digital, Madrid</span></p>
+                          </div>
+
+                          <p style="margin: 28px 0 0 0; font-size: 14px; color: #64748b; line-height: 1.6;">
+                            ¿Tienes dudas? Responde directamente a este email — lo leo personalmente.
+                          </p>
+
+                          <p style="margin: 20px 0 0 0; font-size: 15px; color: #1e293b;">
+                            Un saludo,<br>
+                            <strong>José Manuel</strong><br>
+                            <span style="color: #64748b; font-size: 13px;">Fundador · Open LLC USA</span>
+                          </p>
+
+                        </td>
+                      </tr>
+
+                      <!-- FOOTER -->
+                      <tr>
+                        <td style="background-color: #f8fafc; padding: 24px 40px; border-top: 1px solid #e2e8f0; text-align: center;">
+                          <p style="margin: 0; font-size: 13px; color: #64748b; font-weight: 600;">Open LLC USA</p>
+                          <p style="margin: 4px 0 0 0; font-size: 11px; color: #94a3b8;">Tu estructura en EE.UU., gestionada con precisión.</p>
+                          <p style="margin: 8px 0 0 0; font-size: 11px; color: #cbd5e1;">
+                            Recibiste este email porque completaste nuestro diagnóstico en openllcusa.com
+                          </p>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+          </html>
         `
       })
       if (error) throw error
+      console.log('✅ Email bienvenida lead enviado:', data?.id)
       return { success: true }
     } catch (error) {
       console.error('❌ Error enviando email de lead:', error)
@@ -340,7 +461,11 @@ export class EmailService {
       let contentHtml = ''
 
       if (params.tipo === 'nuevo_pedido') {
-        subject = `🤑 Nueva Venta: ${params.nombreServicio} ($${params.monto})`
+        // Si el monto es 0, es un lead (captación), no una venta real
+        const esLead = params.monto === 0
+        subject = esLead
+          ? `🎯 Nuevo Lead Capturado: ${params.cliente?.split(' ')[0] || 'Usuario'} — ${params.nombreServicio}`
+          : `🤑 Nueva Venta: ${params.nombreServicio} ($${params.monto})`
         contentHtml = `
           <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 24px; margin: 20px 0;">
             <p style="margin: 0 0 16px 0; font-size: 18px; color: #166534; font-weight: 700;">¡Nueva venta confirmada!</p>

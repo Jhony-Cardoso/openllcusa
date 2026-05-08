@@ -351,13 +351,13 @@ export class EmailService {
               <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="center" style="padding: 40px 16px;">
-                    <table border="0" cellpadding="0" cellspacing="0" width="580" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07);">
+                    <table border="0" cellpadding="0" cellspacing="0" width="580" style="background-color: #ffffff; border-radius: 16px; overflow: hidden;">
 
                       <!-- HEADER -->
                       <tr>
-                        <td align="center" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%); padding: 36px 40px;">
-                          <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 600; color: #93c5fd; letter-spacing: 2px; text-transform: uppercase;">Open LLC USA</p>
-                          <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.2;">Tu análisis personalizado<br>está listo, ${nombre} 🎯</h1>
+                        <td align="center" style="background-color: #2563eb; padding: 36px 40px;">
+                          <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 600; color: #bfdbfe; letter-spacing: 2px; text-transform: uppercase;">Open LLC USA</p>
+                          <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.2;">Tu análisis personalizado<br>está listo, ${nombre}</h1>
                         </td>
                       </tr>
 
@@ -393,12 +393,13 @@ export class EmailService {
                           </table>
 
                           <!-- CTA PRINCIPAL -->
-                          <div style="text-align: center; margin: 32px 0;">
-                            <a href="${baseUrl}/quiz"
-                               style="display: inline-block; background: linear-gradient(135deg, #1e40af, #3b82f6); color: #ffffff; padding: 16px 40px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 16px; box-shadow: 0 8px 20px rgba(59,130,246,0.35); letter-spacing: 0.3px;">
-                              ${msg.cta} →
-                            </a>
-                            <p style="margin: 12px 0 0 0; font-size: 12px; color: #94a3b8;">Sin compromiso · Solo toma 2 minutos</p>
+                          <div style="margin: 32px 0;">
+                            <p style="margin: 0 0 8px 0; font-size: 15px; color: #374151;">
+                              <a href="${baseUrl}/quiz" style="color: #2563eb; font-weight: 700; text-decoration: underline;">
+                                → ${msg.cta}
+                              </a>
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #94a3b8;">Sin compromiso · Solo toma 2 minutos</p>
                           </div>
 
                           <!-- TESTIMONIAL -->

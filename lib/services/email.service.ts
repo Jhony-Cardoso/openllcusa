@@ -337,7 +337,8 @@ export class EmailService {
         from: 'José Manuel · Open LLC USA <hola@updates.openllcusa.com>',
         to,
         replyTo: 'josemanuel@openllcusa.com',
-        subject: `${nombre}, tu análisis está listo 🎯`,
+        subject: `${nombre}, tu análisis está listo`,
+        text: `Hola ${nombre},\n\nGracias por completar el diagnóstico. He revisado tu perfil y tengo buenas noticias.\n\n${msg.titulo}.\n\n${msg.cuerpo}\n\n→ Continuar con mi diagnóstico personalizado: ${baseUrl}/quiz\n\nResponde a este email si tienes dudas. Lo leo personalmente.\n\nUn saludo,\nJosé Manuel\nFundador · Open LLC USA`,
         html: `
           <!DOCTYPE html>
           <html lang="es">
@@ -466,7 +467,26 @@ export class EmailService {
         subject = esLead
           ? `🎯 Nuevo Lead Capturado: ${params.cliente?.split(' ')[0] || 'Usuario'} — ${params.nombreServicio}`
           : `🤑 Nueva Venta: ${params.nombreServicio} ($${params.monto})`
-        contentHtml = `
+        contentHtml = esLead ? `
+          <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 24px; margin: 20px 0;">
+            <p style="margin: 0 0 16px 0; font-size: 18px; color: #1e40af; font-weight: 700;">🎯 Nuevo Lead Capturado</p>
+            <table width="100%" cellpadding="8" cellspacing="0" style="color: #1e40af;">
+              <tr>
+                <td width="140"><strong>Origen:</strong></td>
+                <td>${params.nombreServicio}</td>
+              </tr>
+              <tr>
+                <td><strong>Email:</strong></td>
+                <td>${params.cliente}</td>
+              </tr>
+              <tr>
+                <td><strong>Lead ID:</strong></td>
+                <td><code style="background: #ffffff; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${params.pedidoId}</code></td>
+              </tr>
+            </table>
+          </div>
+          <p style="color: #64748b; font-size: 13px; margin: 12px 0;">Este lead ha completado el formulario de captación.</p>
+        ` : `
           <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 24px; margin: 20px 0;">
             <p style="margin: 0 0 16px 0; font-size: 18px; color: #166534; font-weight: 700;">¡Nueva venta confirmada!</p>
             <table width="100%" cellpadding="8" cellspacing="0" style="color: #166534;">

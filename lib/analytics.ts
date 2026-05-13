@@ -1,70 +1,36 @@
-import { sendGAEvent } from '@next/third-parties/google';
+// lib/analytics.ts
+'use client';
 
-/**
- * Helper centralizado para enviar eventos a Google Analytics 4
- * Adaptado específicamente para Open LLC USA
- */
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
 
-export const Analytics = {
-    /**
-     * Evento cuando el usuario hace clic en el CTA principal "Comenzar mi LLC ahora"
-     */
-    trackStartLLC: (location: 'hero' | 'pricing' | 'footer' | 'process') => {
-        sendGAEvent('event', 'start_llc_click', {
-            button_location: location,
-            page: 'homepage',
-        });
-        console.log('📊 [Analytics] start_llc_click →', location);
-    },
+// Declaración para que TypeScript reconozca gtag
+declare global {
+  interface Window {
+    gtag: (command: string, ...args: any[]) => void;
+  }
+}
 
-    /**
-     * Evento cuando el usuario hace clic en "Ver cómo funciona"
-     */
-    trackHowItWorks: (location: 'hero' | 'process_section') => {
-        sendGAEvent('event', 'how_it_works_click', {
-            button_location: location,
-            page: 'homepage',
-        });
-        console.log('📊 [Analytics] how_it_works_click →', location);
-    },
+export const trackEvent = (action: string, category?: string, label?: string, value?: number) => {
+  if (typeof window === 'undefined' || !window.gtag || !GA_ID) return;
 
-    /**
-     * Evento cuando el usuario envía el formulario de Asesoría Rápida
-     */
-    trackAdvisoryFormSubmit: (formData?: { country?: string }) => {
-        sendGAEvent('event', 'advisory_form_submit', {
-            form_location: 'advisory_section',
-            ...formData,
-        });
-        console.log('📊 [Analytics] advisory_form_submit');
-    },
-
-    /**
-     * Evento cuando el formulario se envía exitosamente (muestra mensaje de éxito)
-     */
-    trackAdvisoryFormSuccess: () => {
-        sendGAEvent('event', 'advisory_form_success', {
-            form_location: 'advisory_section',
-        });
-        console.log('📊 [Analytics] advisory_form_success');
-    },
-
-    /**
-     * Evento genérico para otros clics importantes (opcional)
-     */
-    trackClick: (eventName: string, params: Record<string, any> = {}) => {
-        sendGAEvent('event', eventName, {
-            page: 'homepage',
-            ...params,
-        });
-        console.log(`📊 [Analytics] ${eventName}`, params);
-    },
+  window.gtag('event', action, {
+    event_category: category || 'engagement',
+    event_label: label,
+    value: value,
+  });
 };
 
-// Exportamos también los nombres de eventos por si los necesitamos en otros lugares
-export const GA_EVENTS = {
-    START_LLC: 'start_llc_click',
-    HOW_IT_WORKS: 'how_it_works_click',
-    ADVISORY_SUBMIT: 'advisory_form_submit',
-    ADVISORY_SUCCESS: 'advisory_form_success',
-} as const;
+// Eventos clave para nuestro funnel
+export const analyticsEvents = {
+  // Lead-form
+  leadFormViewed: () => trackEvent('lead_form_viewed', 'lead', 'calculadora'),
+  leadFormStep2: () => trackEvent('lead_form_step2', 'lead', 'continuar_quiz'),
+  leadGenerated: () => trackEvent('lead_generated', 'conversion', 'lead_form', 1),
+
+  // Quiz
+  quizStarted: () => trackEvent('quiz_started', 'quiz', 'iniciado'),
+  quizCompleted: () => trackEvent('quiz_completed', 'quiz', 'finalizado'),
+
+  // CTA generales
+  ctaClick: (label: string) => trackEvent('cta_click', 'engagement', label),
+};

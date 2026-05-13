@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./lead-form.module.css";
+import { analyticsEvents } from "@/lib/analytics";
 
 type FormData = {
   nombre: string;
@@ -30,6 +31,11 @@ export default function LeadForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // ✅ Tracking GA4: cuando se carga la página del lead-form
+  useEffect(() => {
+    analyticsEvents.leadFormViewed();
+  }, []);
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -40,6 +46,10 @@ export default function LeadForm() {
       return;
     }
     setError(null);
+
+    // ✅ Tracking GA4: cuando avanza al paso 2
+    analyticsEvents.leadFormStep2();
+
     setStep(2);
   };
 
@@ -48,10 +58,6 @@ export default function LeadForm() {
     if (step === 2) {
       setLoading(true);
       setError(null);
-
-      // Guardamos el nombre ANTES de la API para que el quiz gate siempre pase
-      localStorage.setItem('lead-name', form.nombre);
-
       try {
         const response = await fetch("/api/leads", {
           method: "POST",
@@ -59,27 +65,29 @@ export default function LeadForm() {
           body: JSON.stringify(form),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.leadId) {
-            localStorage.setItem("lead-id", data.leadId);
-          }
+        if (!response.ok) throw new Error("Error al procesar la solicitud");
+
+        const data = await response.json();
+        if (data.leadId) {
+          localStorage.setItem("lead-id", data.leadId);
+          localStorage.setItem("lead-name", form.nombre);
+
+          // ✅ Tracking GA4: lead generado correctamente
+          analyticsEvents.leadGenerated();
         }
+
+        router.push("/quiz");
       } catch (err) {
-        // Error de red: ignoramos, el usuario ya tiene lead-name en localStorage
-        console.error('[lead-form] Error al guardar lead:', err);
+        setError("Hubo un problema al guardar tus datos. Por favor, intenta de nuevo.");
       } finally {
         setLoading(false);
       }
-
-      // Siempre avanzamos al quiz
-      router.push("/quiz");
     }
   };
 
   return (
     <div className={styles.bgGradient}>
-      <form className={styles.formulario} onSubmit={seguirQuiz} autoComplete="on" noValidate>
+      <form className={styles.formulario} onSubmit={seguirQuiz} autoComplete="on">
         <div className={styles.stepper}>
           <div className={`${styles.step} ${step === 1 ? styles.active : ""}`}></div>
           <div className={`${styles.step} ${step === 2 ? styles.active : ""}`}></div>
@@ -140,7 +148,6 @@ export default function LeadForm() {
 
             {error && <div className={styles.error}>{error}</div>}
             
-            {/* BOTÓN CORREGIDO */}
             <button 
               type="button"
               onClick={avanzarAlStep2}

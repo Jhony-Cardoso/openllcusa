@@ -144,7 +144,7 @@ function HeroSection() {
                 marginBottom: 22,
               }}
             >
-              Abre tu LLC en EE.UU. en{' '}
+              Tu LLC en Estados Unidos en{' '}
               <em
                 style={{
                   fontStyle: 'normal',
@@ -155,13 +155,28 @@ function HeroSection() {
                 }}
               >
                 72 horas
-              </em>{' '}
-              sin visa ni SSN
+              </em>
+              {'.'}
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '0.78em',
+                  fontWeight: 700,
+                  color: 'rgba(255,255,255,.88)',
+                  marginTop: 14,
+                  lineHeight: 1.3,
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Sin visa. Sin SSN. Sin moverte de casa.
+              </span>
             </h1>
 
             {/* Subheading */}
-            <p style={{ fontSize: 19, color: 'rgba(255,255,255,.74)', lineHeight: 1.68, marginBottom: 40, maxWidth: 470 }}>
-              Te lo explicamos fácil, sin complicaciones. 100% online desde cualquier país de habla hispana.
+            <p style={{ fontSize: 18, color: 'rgba(255,255,255,.72)', lineHeight: 1.72, marginBottom: 40, maxWidth: 500 }}>
+              Más de 500 emprendedores hispanos ya operan con su LLC en Wyoming, Delaware o Florida.
+              {' '}Nosotros nos encargamos del 100% del proceso{' '}—{' '}
+              <strong style={{ color: T.wh, fontWeight: 700 }}>tú solo firmas</strong>.
             </p>
 
             {/* Primary CTA */}
@@ -321,6 +336,116 @@ function TrustBar() {
         </div>
       </div>
     </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BENEFITS SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+const BENEFITS = [
+  {
+    icon: '💰',
+    iconBg: '#D1FAE5',
+    iconColor: T.gd,
+    title: 'Paga menos impuestos, de forma legal',
+    desc: 'Muchos clientes reducen su carga fiscal entre un 30% y un 50% estructurando sus ingresos a través de una LLC. Sin trampas. El sistema americano está diseñado para esto.',
+  },
+  {
+    icon: '💳',
+    iconBg: '#DBEAFE',
+    iconColor: T.b7,
+    title: 'Cobra en dólares con Stripe, Mercury y PayPal',
+    desc: 'Sin entidad en EE.UU., muchas plataformas te cierran la puerta. Con tu LLC activa, abres cuentas en Mercury o Wise Business y cobras en dólares sin comisiones abusivas.',
+  },
+  {
+    icon: '🌍',
+    iconBg: '#EDE9FE',
+    iconColor: '#7C3AED',
+    title: 'Proyecta imagen de empresa internacional',
+    desc: '"XYZ LLC" en lugar de "Juan García, autónomo". Para clientes en EE.UU., Canadá o UK, la diferencia es enorme. Una LLC te pone al nivel de quien ya gana los contratos que tú quieres.',
+  },
+  {
+    icon: '🔒',
+    iconBg: '#FEF3C7',
+    iconColor: '#92400E',
+    title: 'Tu patrimonio personal, protegido',
+    desc: 'La LLC separa legalmente tus bienes personales de las deudas de tu empresa. Si algo sale mal en el negocio, tu casa, tu coche y tus ahorros no están en juego.',
+  },
+  {
+    icon: '📋',
+    iconBg: '#DBEAFE',
+    iconColor: T.b9,
+    title: 'Cumplimiento fiscal 100% en regla',
+    desc: 'Con declaración anual incluida en los planes superiores, cumples con el IRS sin entender la normativa americana. Nos encargamos nosotros — sin que tengas que mover un dedo.',
+  },
+  {
+    icon: '⚡',
+    iconBg: '#D1FAE5',
+    iconColor: T.gd,
+    title: 'Operativo en 72 horas, no en meses',
+    desc: 'Los trámites tradicionales tardan semanas o meses. Con Open LLC USA, tu empresa está activa y lista para facturar en menos de tres días hábiles. Verificado por +500 clientes.',
+  },
+]
+
+function BenefitsSection() {
+  return (
+    <section style={{ padding: '112px 0', background: T.sf }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
+        {/* Header */}
+        <div className="hp-fu text-center mb-16">
+          <Eyebrow text="Por qué funciona" />
+          <SectionHeading>Lo que cambia el día que tienes tu LLC</SectionHeading>
+          <p className="text-lg mt-3 mx-auto" style={{ color: T.ts, maxWidth: 560 }}>
+            No es solo abrir una empresa. Es abrir una puerta que antes estaba cerrada.
+          </p>
+        </div>
+
+        {/* Benefits grid — 3 cols × 2 rows */}
+        <div
+          className="hp-tgrid"
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}
+        >
+          {BENEFITS.map(({ icon, iconBg, title, desc }) => (
+            <div
+              key={title}
+              className="hp-fu rounded-2xl"
+              style={{
+                background: T.wh,
+                border: `1.5px solid ${T.br}`,
+                padding: '32px 28px',
+                boxShadow: T.shCard,
+              }}
+            >
+              {/* Icon badge */}
+              <div
+                className="flex items-center justify-center mb-5 flex-shrink-0"
+                style={{
+                  width: 52, height: 52,
+                  borderRadius: 14,
+                  background: iconBg,
+                  fontSize: 24,
+                }}
+              >
+                {icon}
+              </div>
+              <h3
+                className="font-bold mb-2.5 leading-snug"
+                style={{
+                  fontFamily: "'Plus Jakarta Sans',sans-serif",
+                  fontSize: 16,
+                  color: T.tx,
+                }}
+              >
+                {title}
+              </h3>
+              <p className="text-sm leading-relaxed" style={{ color: T.ts }}>
+                {desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -1149,6 +1274,7 @@ export default function HomePage() {
     <main>
       <HeroSection />
       <TrustBar />
+      <BenefitsSection />
       <ServicesSection />
       <ProcessSection />
       <LatamSection />

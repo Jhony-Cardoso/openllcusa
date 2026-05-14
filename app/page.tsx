@@ -6,7 +6,7 @@ import Link from 'next/link'
 import ReactCountryFlag from 'react-country-flag'
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 import './homepage-v4.css'
-import { Analytics } from '../lib/analytics';
+import { analyticsEvents } from "../lib/analytics";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DESIGN TOKENS

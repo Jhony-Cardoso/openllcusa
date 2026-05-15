@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./lead-form.module.css";
-import { analyticsEvents } from "../../../../../lib/analytics";
+import { analyticsEvents } from "@/lib/analytics";
 
 type FormData = {
   nombre: string;

@@ -751,28 +751,28 @@ function TestimonialsSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  PRICING SECTION OPTIMIZADA
+// PRICING SECTION OPTIMIZADA (Precios ajustados)
 // ─────────────────────────────────────────────────────────────────────────────
 const PLANS = [
   {
     name: 'Starter',
-    price: '$249',
+    price: '$349',
     featured: false,
     features: [
-      '✅ Registro de LLC en Wyoming/Delaware/Florida',
+      '✅ Registro de LLC en Wyoming, Delaware o Florida',
       '✅ EIN (Tax ID) incluido',
-      '✅ Agente Registrado 1er año',
+      '✅ Agente Registrado primer año',
       '✅ Documentos digitales oficiales',
       '✅ Soporte en español',
     ],
   },
   {
     name: 'Professional',
-    price: '$399',
+    price: '$499',
     featured: true,
     features: [
       '✅ Todo del plan Starter',
-      '✅ Apertura de cuenta bancaria (Mercury/Relay)',
+      '✅ Apertura de cuenta bancaria (Mercury o Relay)',
       '✅ Operating Agreement personalizado',
       '✅ Consultoría fiscal inicial',
       '✅ Prioridad en soporte',
@@ -780,14 +780,14 @@ const PLANS = [
   },
   {
     name: 'Business',
-    price: '$699',
+    price: '$849',
     featured: false,
     features: [
       '✅ Todo del plan Professional',
-      '✅ Reportes anuales 2026-2027 incluidos',
-      '✅ Asistencia en impuestos federales',
-      '✅ Soporte VIP ilimitado',
+      '✅ Presentación de formularios 5472 y 1120 (2026-2027)',
+      '✅ Reportes anuales incluidos',
       '✅ Asesoría legal adicional',
+      '✅ Soporte VIP ilimitado',
     ],
   },
 ]
@@ -799,9 +799,9 @@ function PricingSection() {
         {/* Header */}
         <div className="hp-fu text-center mb-4">
           <Eyebrow text="Precios transparentes" />
-          <SectionHeading>Sin costos ocultos. Todo incluido.</SectionHeading>
+          <SectionHeading>Planes profesionales sin costos ocultos</SectionHeading>
           <p className="text-lg mt-3" style={{ color: T.ts }}>
-            Elige el plan que mejor se adapte a tu situación. Sin sorpresas.
+            Elige según tu etapa. Todos incluyen nuestro proceso 100% gestionado.
           </p>
         </div>
 
@@ -884,6 +884,7 @@ function PricingSection() {
     </section>
   )
 }
+             
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GUARANTEE SECTION

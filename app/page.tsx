@@ -1222,7 +1222,8 @@ export default function HomePage() {
     <main>
       <HeroSection />
       <TrustBar />
-            {/* ===================== SECCIÓN DE BENEFICIOS OPTIMIZADA ===================== */}
+          <TrustBar />
+      {/* ===================== SECCIÓN DE BENEFICIOS OPTIMIZADA + MEJOR CONTRASTE ===================== */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -1236,44 +1237,27 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-6">💰</div>
-              <h3 className="text-2xl font-semibold mb-3">Paga menos impuestos, de forma legal</h3>
-              <p className="text-gray-600">Reduce tu carga fiscal entre un 30% y un 50% de forma 100% legal.</p>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-6">💳</div>
-              <h3 className="text-2xl font-semibold mb-3">Cobra en dólares con facilidad</h3>
-              <p className="text-gray-600">Abre cuentas en Mercury, Stripe o Wise y recibe pagos internacionales sin barreras.</p>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-6">🌍</div>
-              <h3 className="text-2xl font-semibold mb-3">Proyecta imagen profesional</h3>
-              <p className="text-gray-600">"TuNombre LLC" en lugar de tu nombre personal. Ganas credibilidad inmediata.</p>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-6">🔒</div>
-              <h3 className="text-2xl font-semibold mb-3">Protege tu patrimonio personal</h3>
-              <p className="text-gray-600">La LLC separa tus bienes personales de las deudas de la empresa.</p>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-6">📋</div>
-              <h3 className="text-2xl font-semibold mb-3">Cumplimiento fiscal sin dolores de cabeza</h3>
-              <p className="text-gray-600">Nos encargamos de las declaraciones y el EIN. Tú solo firmas.</p>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-4xl mb-6">⚡</div>
-              <h3 className="text-2xl font-semibold mb-3">Operativa en 72 horas</h3>
-              <p className="text-gray-600">Olvídate de meses de espera. Tu LLC está lista para facturar en 3 días.</p>
-            </div>
+            {[
+              { icon: "💰", title: "Paga menos impuestos, de forma legal", desc: "Reduce tu carga fiscal entre un 30% y un 50% de forma 100% legal." },
+              { icon: "💳", title: "Cobra en dólares con facilidad", desc: "Abre cuentas en Mercury, Stripe o Wise y recibe pagos internacionales sin barreras." },
+              { icon: "🌍", title: "Proyecta imagen profesional", desc: '"TuNombre LLC" en lugar de tu nombre personal. Ganas credibilidad inmediata.' },
+              { icon: "🔒", title: "Protege tu patrimonio personal", desc: "La LLC separa tus bienes personales de las deudas de la empresa." },
+              { icon: "📋", title: "Cumplimiento fiscal sin dolores de cabeza", desc: "Nos encargamos de las declaraciones y el EIN. Tú solo firmas." },
+              { icon: "⚡", title: "Operativa en 72 horas", desc: "Olvídate de meses de espera. Tu LLC está lista para facturar en 3 días." },
+            ].map((benefit, index) => (
+              <div
+                key={index}
+                className="bg-white border border-gray-200 rounded-3xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group"
+              >
+                <div className="text-5xl mb-6 group-hover:scale-110 transition-transform">{benefit.icon}</div>
+                <h3 className="text-2xl font-semibold mb-4 text-gray-900">{benefit.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{benefit.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
+      {/* ===================== FIN SECCIÓN BENEFICIOS ===================== */}      
       <ServicesSection />
       <ProcessSection />
       <LatamSection />

@@ -86,7 +86,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HERO SECTION OPTIMIZADA
+// HERO SECTION OPTIMIZADA (con banderas)
 // ─────────────────────────────────────────────────────────────────────────────
 function HeroSection() {
   return (
@@ -200,6 +200,32 @@ function HeroSection() {
             >
               Ver cómo funciona en 3 pasos ↓
             </Link>
+
+            {/* Country pills - RESTAURADAS */}
+            <div className="flex flex-wrap gap-2 mt-8">
+              {[
+                { code: 'MX', name: 'México' },
+                { code: 'CO', name: 'Colombia' },
+                { code: 'ES', name: 'España' },
+                { code: 'AR', name: 'Argentina' },
+                { code: 'PE', name: 'Perú' },
+                { code: 'US', name: 'EE.UU.' },
+                { code: 'PY', name: 'Paraguay' },
+              ].map((c) => (
+                <span
+                  key={c.code}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full"
+                  style={{
+                    background: 'rgba(255,255,255,.08)',
+                    border: '1px solid rgba(255,255,255,.13)',
+                    color: 'rgba(255,255,255,.76)',
+                  }}
+                >
+                  <ReactCountryFlag countryCode={c.code} svg style={{ fontSize: '1.2em', borderRadius: '2px' }} />
+                  {c.name}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* Illustration */}
@@ -220,7 +246,7 @@ function HeroSection() {
     </section>
   )
 }
-
+          
 // ─────────────────────────────────────────────────────────────────────────────
 // TRUST BAR
 // ─────────────────────────────────────────────────────────────────────────────

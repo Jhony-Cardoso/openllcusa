@@ -750,22 +750,45 @@ function TestimonialsSection() {
   )
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
-// PRICING SECTION
+//  PRICING SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
 const PLANS = [
   {
-    name: 'Esencial', price: '$199', featured: false,
-    features: ['✅ Registro de LLC', '✅ EIN incluido', '✅ Agente Registrado (1er año)', '✅ Documentos digitales', '✅ Soporte en español'],
+    name: 'Starter',
+    price: '$249',
+    featured: false,
+    features: [
+      '✅ Registro de LLC en Wyoming/Delaware/Florida',
+      '✅ EIN (Tax ID) incluido',
+      '✅ Agente Registrado 1er año',
+      '✅ Documentos digitales oficiales',
+      '✅ Soporte en español',
+    ],
   },
   {
-    name: 'Pro', price: '$349', featured: true,
-    features: ['✅ Todo del plan Esencial', '✅ Apertura cuenta bancaria', '✅ Consultoría fiscal inicial', '✅ Operating Agreement', '✅ Prioridad de soporte'],
+    name: 'Professional',
+    price: '$399',
+    featured: true,
+    features: [
+      '✅ Todo del plan Starter',
+      '✅ Apertura de cuenta bancaria (Mercury/Relay)',
+      '✅ Operating Agreement personalizado',
+      '✅ Consultoría fiscal inicial',
+      '✅ Prioridad en soporte',
+    ],
   },
   {
-    name: 'Premium', price: '$599', featured: false,
-    features: ['✅ Todo del plan Pro', '✅ Impuestos Federales (5472)', '✅ Reporte Anual incluido', '✅ Consultoría legal 1 hora', '✅ Acceso prioritario VIP'],
+    name: 'Business',
+    price: '$699',
+    featured: false,
+    features: [
+      '✅ Todo del plan Professional',
+      '✅ Reportes anuales 2026-2027 incluidos',
+      '✅ Asistencia en impuestos federales',
+      '✅ Soporte VIP ilimitado',
+      '✅ Asesoría legal adicional',
+    ],
   },
 ]
 
@@ -777,16 +800,18 @@ function PricingSection() {
         <div className="hp-fu text-center mb-4">
           <Eyebrow text="Precios transparentes" />
           <SectionHeading>Sin costos ocultos. Todo incluido.</SectionHeading>
-          <p className="text-lg mt-3" style={{ color: T.ts }}>Elige el plan que mejor se adapte a tu negocio. Sin sorpresas.</p>
+          <p className="text-lg mt-3" style={{ color: T.ts }}>
+            Elige el plan que mejor se adapte a tu situación. Sin sorpresas.
+          </p>
         </div>
 
-        {/* Guarantee pill above grid */}
+        {/* Guarantee pill */}
         <div className="hp-fu text-center mb-14">
           <span
             className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2 rounded-full"
             style={{ background: T.gl, border: `1px solid rgba(16,185,129,.3)`, color: T.gd }}
           >
-            🛡️ Garantía de Tramitación 100% Sin Errores · Sin costos ocultos
+            🛡️ Garantía de Tramitación 100% Sin Errores
           </span>
         </div>
 
@@ -805,27 +830,20 @@ function PricingSection() {
                 position: 'relative',
               }}
             >
-              {/* Most popular badge */}
               {featured && (
                 <div
                   className="absolute text-xs font-bold px-[18px] py-1.5 rounded-full whitespace-nowrap"
                   style={{ top: -14, left: '50%', transform: 'translateX(-50%)', background: `linear-gradient(135deg,${T.ct},${T.ch})`, color: T.wh, boxShadow: T.shCta }}
                 >
-                  ⭐ Más Popular
+                  ⭐ MÁS POPULAR
                 </div>
               )}
 
-              <div
-                className="text-[13px] font-bold tracking-widest uppercase mb-2.5"
-                style={{ color: featured ? 'rgba(255,255,255,.5)' : T.tm }}
-              >
+              <div className="text-[13px] font-bold tracking-widest uppercase mb-2.5" style={{ color: featured ? 'rgba(255,255,255,.5)' : T.tm }}>
                 {name}
               </div>
 
-              <div
-                className="font-extrabold leading-none mb-1.5"
-                style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 56, color: featured ? T.wh : T.tx }}
-              >
+              <div className="font-extrabold leading-none mb-1.5" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 56, color: featured ? T.wh : T.tx }}>
                 {price}
                 <span style={{ fontSize: 15, fontWeight: 400, color: featured ? 'rgba(255,255,255,.4)' : T.tm }}>
                   {' '}/pago único
@@ -840,22 +858,9 @@ function PricingSection() {
                 ))}
               </ul>
 
-              {/* Guarantee badge inside Pro card */}
-              {featured && (
-                <div
-                  className="flex items-center gap-2 rounded-[10px] mb-4.5 px-3.5 py-2.5"
-                  style={{ background: 'rgba(16,185,129,.12)', border: '1px solid rgba(16,185,129,.25)' }}
-                >
-                  <span className="text-base">🛡️</span>
-                  <span className="text-[13px] font-semibold" style={{ color: '#6EE7B7' }}>
-                    Garantía de tramitación sin errores
-                  </span>
-                </div>
-              )}
-
               <Link
                 href="#comenzar"
-                onClick={() => Analytics.trackStartLLC('pricing')}
+                onClick={() => analyticsEvents.trackEvent('cta_click', 'pricing', name.toLowerCase())}
                 className="block text-center font-bold text-[15px] py-[15px] rounded-full"
                 style={{
                   textDecoration: 'none',
@@ -864,7 +869,7 @@ function PricingSection() {
                   boxShadow: featured ? T.shCta : T.shBlue,
                 }}
               >
-                {featured ? '👉 Comenzar ahora' : 'Elegir este plan'}
+                {featured ? '👉 Elegir Professional' : `Elegir ${name}`}
               </Link>
 
               {featured && (

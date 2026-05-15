@@ -365,7 +365,7 @@ function TrustBar() {
       <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
         <div className="text-4xl mb-6">💳</div>
         <h3 className="text-2xl font-semibold mb-3">Cobra en dólares con facilidad</h3>
-        <p className="text-gray-600">Abre cuentas en Mercury, Stripe o Wise y recibe pagos internacionales sin barreras.</p>
+        <p className="text-gray-600">Abre cuentas en Mercury, Relay o Stripe y recibe pagos internacionales sin barreras.</p>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
@@ -1222,9 +1222,9 @@ export default function HomePage() {
     <main>
       <HeroSection />
       <TrustBar />
-          <TrustBar />
-      {/* ===================== SECCIÓN DE BENEFICIOS OPTIMIZADA + MEJOR CONTRASTE ===================== */}
-      <section className="py-16 bg-white">
+
+      {/* ===================== SECCIÓN DE BENEFICIOS OPTIMIZADA + FONDO DIFERENCIADO ===================== */}
+      <section className="py-16 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <span className="text-sm font-semibold tracking-widest text-purple-600">POR QUÉ FUNCIONA</span>
@@ -1257,7 +1257,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      {/* ===================== FIN SECCIÓN BENEFICIOS ===================== */}      
+      {/* ===================== FIN SECCIÓN BENEFICIOS ===================== */}
       <ServicesSection />
       <ProcessSection />
       <LatamSection />

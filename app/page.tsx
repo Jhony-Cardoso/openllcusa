@@ -433,13 +433,58 @@ function IconBank() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SERVICES SECTION
+// SERVICES SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
 const SERVICES = [
-  { Icon: IconLLC, title: 'Registro de LLC', desc: 'Crea tu empresa en Wyoming, New Mexico, Delaware o Florida. Lista para operar globalmente.', href: '/servicios/formacion-llc', cta: 'Ver detalles' },
-  { Icon: IconEIN, title: 'Obtén tu EIN sin SSN', desc: 'Necesario para abrir cuenta bancaria, contratar y pagar impuestos. Lo tramitamos por ti.', href: '/servicios/obtencion-ein', cta: 'Solicitar EIN' },
-  { Icon: IconAgent, title: 'Agente Registrado', desc: 'Cumple con los requisitos legales de tu estado. Incluido el primer año sin costo adicional.', href: '/servicios/agente-registrado', cta: 'Más información' },
-  { Icon: IconBank, title: 'Cuenta Bancaria Empresarial', desc: 'Te conectamos con bancos que aceptan LLCs de no residentes. Mercury, Relay y más.', href: '/servicios/launch-banking', cta: 'Explorar opciones' },
+  {
+    title: 'Registro de LLC',
+    price: 'Desde $349',
+    desc: 'Crea tu empresa en Wyoming, Delaware o Florida en solo 72 horas. Incluye EIN y documentos oficiales.',
+    features: [
+      '✅ Dirección física real incluida',
+      '✅ EIN (Tax ID)',
+      '✅ Documentos digitales',
+      '✅ Soporte en español'
+    ],
+    cta: 'Ver planes de LLC →',
+    href: '/servicios/formacion-llc'
+  },
+  {
+    title: 'Obtén tu EIN sin SSN',
+    price: '',
+    desc: 'El número de identificación fiscal que necesitan bancos y plataformas. Lo tramitamos por ti aunque no tengas visa.',
+    features: [
+      '✅ Sin SSN ni visa requerida',
+      '✅ Entrega en 5-10 días hábiles',
+      '✅ Válido para abrir cuentas bancarias'
+    ],
+    cta: 'Solicitar mi EIN ahora →',
+    href: '/servicios/obtencion-ein'
+  },
+  {
+    title: 'Agente Registrado + Dirección Física',
+    price: '',
+    desc: 'Cumple con la ley estatal sin viajar. Te proporcionamos dirección física real en EE.UU. para recibir documentos oficiales.',
+    features: [
+      '✅ Dirección física real incluida',
+      '✅ 1er año gratis en la mayoría de planes',
+      '✅ Recepción de documentos del estado e IRS'
+    ],
+    cta: 'Contratar Agente Registrado →',
+    href: '/servicios/agente-registrado'
+  },
+  {
+    title: 'Cuenta Bancaria Empresarial',
+    price: '',
+    desc: 'Abre cuenta en Mercury, Relay o Wise Business y cobra en dólares desde cualquier país.',
+    features: [
+      '✅ Compatible con LLC de no residentes',
+      '✅ Usamos dirección del Agente Registrado',
+      '✅ Te guiamos paso a paso'
+    ],
+    cta: 'Explorar cuentas bancarias →',
+    href: '/servicios/launch-banking'
+  },
 ]
 
 function ServicesSection() {
@@ -451,7 +496,7 @@ function ServicesSection() {
           <Eyebrow text="Nuestros Servicios" />
           <SectionHeading>Todo lo que necesitas para operar legalmente en EE.UU.</SectionHeading>
           <p className="text-lg mt-3 mx-auto" style={{ color: T.ts, maxWidth: 520 }}>
-            Desde el registro hasta el cumplimiento fiscal. Te acompañamos en cada paso.
+            Desde el registro hasta la cuenta bancaria. Te acompañamos en cada paso con total transparencia.
           </p>
         </div>
 
@@ -460,17 +505,37 @@ function ServicesSection() {
           className="hp-sgrid"
           style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}
         >
-          {SERVICES.map(({ Icon, title, desc, href, cta }) => (
+          {SERVICES.map((service, index) => (
             <div
-              key={title}
-              className="hp-fu hp-scard rounded-2xl"
-              style={{ background: T.wh, border: `1.5px solid ${T.br}`, padding: '38px 28px', boxShadow: T.shCard }}
+              key={index}
+              className="hp-fu hp-scard rounded-3xl p-8 hover:shadow-xl transition-all"
+              style={{ 
+                background: T.wh, 
+                border: `1.5px solid ${T.br}` 
+              }}
             >
-              <div className="mb-6"><Icon /></div>
-              <h3 className="font-bold mb-2.5 text-lg" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: T.tx }}>{title}</h3>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: T.ts }}>{desc}</p>
-              <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold" style={{ color: T.b7, textDecoration: 'none' }}>
-                {cta} <ArrowRight size={13} strokeWidth={2.5} />
+              <div className="mb-6">
+                <div className="text-4xl mb-2">📋</div>
+                {service.price && (
+                  <div className="text-sm font-bold text-purple-600 mt-2">{service.price}</div>
+                )}
+              </div>
+              
+              <h3 className="font-bold text-xl mb-3" style={{ color: T.tx }}>{service.title}</h3>
+              <p className="text-sm leading-relaxed mb-6" style={{ color: T.ts }}>{service.desc}</p>
+
+              <ul className="text-sm mb-8 space-y-2" style={{ color: T.ts }}>
+                {service.features.map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+              </ul>
+
+              <Link 
+                href={service.href} 
+                className="inline-flex items-center gap-2 font-semibold text-sm hover:text-purple-600 transition-colors"
+                style={{ color: T.b7 }}
+              >
+                {service.cta}
               </Link>
             </div>
           ))}
@@ -480,6 +545,7 @@ function ServicesSection() {
   )
 }
 
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // PROCESS ICONS
 // ─────────────────────────────────────────────────────────────────────────────

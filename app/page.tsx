@@ -586,12 +586,27 @@ function ProcIconDone() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PROCESS / TIMELINE SECTION
+// PROCESS / TIMELINE SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
 const STEPS = [
-  { Icon: ProcIconForm, n: 1, tag: '⏱ Solo 5 minutos', title: 'Completa el formulario', desc: '5 minutos. Solo necesitas tu pasaporte. Nada más.' },
-  { Icon: ProcIconWork, n: 2, tag: '⚡ Sin complicaciones', title: 'Nosotros hacemos el trabajo', desc: 'Registro estatal + EIN + Agente registrado. Todo incluido, sin que muevas un dedo.' },
-  { Icon: ProcIconDone, n: 3, tag: '🌍 En 72 horas', title: 'Recibe tus documentos', desc: 'En 72 horas. Listo para operar en EE.UU. desde cualquier lugar del mundo.' },
+  { 
+    n: 1, 
+    tag: '⏱ Solo 5 minutos', 
+    title: 'Completa el formulario', 
+    desc: 'Solo necesitas tu pasaporte o DNI. Nada más. El resto lo hacemos nosotros.' 
+  },
+  { 
+    n: 2, 
+    tag: '⚡ Nosotros hacemos el trabajo', 
+    title: 'Procesamos todo por ti', 
+    desc: 'Registro estatal + EIN + Agente Registrado + Operating Agreement. Todo incluido.' 
+  },
+  { 
+    n: 3, 
+    tag: '🌍 En 72 horas', 
+    title: 'Recibe tus documentos', 
+    desc: 'Tu LLC estará activa y lista para operar. Documentos digitales en tu email.' 
+  },
 ]
 
 function ProcessSection() {
@@ -602,7 +617,9 @@ function ProcessSection() {
         <div className="hp-fu text-center mb-[72px]">
           <Eyebrow text="Cómo funciona" />
           <SectionHeading>Así de fácil. En serio.</SectionHeading>
-          <p className="text-lg mt-3" style={{ color: T.ts }}>Sin papeleos confusos. Sin viajes. Sin esperas eternas.</p>
+          <p className="text-lg mt-3" style={{ color: T.ts }}>
+            Sin papeleos confusos. Sin viajes. Sin esperas eternas.
+          </p>
         </div>
 
         {/* Timeline grid */}
@@ -612,7 +629,7 @@ function ProcessSection() {
             className="hp-pcols"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 36, position: 'relative', zIndex: 1 }}
           >
-            {STEPS.map(({ Icon, n, tag, title, desc }) => (
+            {STEPS.map(({ n, tag, title, desc }) => (
               <div key={n} className="hp-fu text-center px-3">
                 {/* Circle */}
                 <div
@@ -624,26 +641,24 @@ function ProcessSection() {
                     position: 'relative',
                   }}
                 >
-                  <Icon />
-                  {/* Number badge */}
-                  <div
-                    className="absolute flex items-center justify-center text-sm font-extrabold"
-                    style={{
-                      top: -8, right: -8, width: 32, height: 32, borderRadius: '50%',
-                      background: T.b9, color: T.wh,
-                      fontFamily: "'Plus Jakarta Sans',sans-serif",
-                    }}
+                  <div 
+                    className="flex items-center justify-center text-5xl"
+                    style={{ width: 80, height: 80, background: T.gl, borderRadius: '50%' }}
                   >
                     {n}
                   </div>
                 </div>
+
                 <span
                   className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-3.5"
                   style={{ background: T.b0, color: T.b7 }}
                 >
                   {tag}
                 </span>
-                <h3 className="font-bold text-xl mb-2.5" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: T.tx }}>{title}</h3>
+
+                <h3 className="font-bold text-xl mb-2.5" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: T.tx }}>
+                  {title}
+                </h3>
                 <p className="text-[15px] leading-relaxed" style={{ color: T.ts }}>{desc}</p>
               </div>
             ))}
@@ -654,13 +669,22 @@ function ProcessSection() {
         <div className="hp-fu text-center mt-[60px]">
           <Link
             href="#comenzar"
-            onClick={() => Analytics.trackStartLLC('process')}
+            onClick={() => analyticsEvents.trackEvent('cta_click', 'process', 'iniciar_llc')}
             className="inline-flex items-center gap-2 font-bold rounded-full"
-            style={{ background: T.b9, color: T.wh, fontSize: 16, padding: '16px 40px', textDecoration: 'none', boxShadow: T.shBlue }}
+            style={{ 
+              background: T.b9, 
+              color: T.wh, 
+              fontSize: 16, 
+              padding: '16px 40px', 
+              textDecoration: 'none', 
+              boxShadow: T.shBlue 
+            }}
           >
             Iniciar mi LLC ahora <ArrowRight size={16} />
           </Link>
-          <p className="text-sm mt-3.5" style={{ color: T.tm }}>🔒 Sin tarjeta de crédito · Sin compromiso</p>
+          <p className="text-sm mt-3.5" style={{ color: T.tm }}>
+            🔒 Sin tarjeta de crédito · Sin compromiso · Garantía 100%
+          </p>
         </div>
       </div>
     </section>

@@ -586,22 +586,25 @@ function ProcIconDone() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PROCESS / TIMELINE SECTION OPTIMIZADA
+// PROCESS / TIMELINE SECTION (con iconos originales)
 // ─────────────────────────────────────────────────────────────────────────────
 const STEPS = [
   { 
+    Icon: ProcIconForm, 
     n: 1, 
     tag: '⏱ Solo 5 minutos', 
     title: 'Completa el formulario', 
     desc: 'Solo necesitas tu pasaporte o DNI. Nada más. El resto lo hacemos nosotros.' 
   },
   { 
+    Icon: ProcIconWork, 
     n: 2, 
     tag: '⚡ Nosotros hacemos el trabajo', 
     title: 'Procesamos todo por ti', 
     desc: 'Registro estatal + EIN + Agente Registrado + Operating Agreement. Todo incluido.' 
   },
   { 
+    Icon: ProcIconDone, 
     n: 3, 
     tag: '🌍 En 72 horas', 
     title: 'Recibe tus documentos', 
@@ -622,16 +625,16 @@ function ProcessSection() {
           </p>
         </div>
 
-        {/* Timeline grid */}
+        {/* Timeline grid con iconos originales */}
         <div style={{ position: 'relative' }}>
           <div className="hp-pconn" />
           <div
             className="hp-pcols"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 36, position: 'relative', zIndex: 1 }}
           >
-            {STEPS.map(({ n, tag, title, desc }) => (
+            {STEPS.map(({ Icon, n, tag, title, desc }) => (
               <div key={n} className="hp-fu text-center px-3">
-                {/* Circle */}
+                {/* Circle con icono original */}
                 <div
                   className="flex items-center justify-center mx-auto mb-7"
                   style={{
@@ -641,9 +644,15 @@ function ProcessSection() {
                     position: 'relative',
                   }}
                 >
-                  <div 
-                    className="flex items-center justify-center text-5xl"
-                    style={{ width: 80, height: 80, background: T.gl, borderRadius: '50%' }}
+                  <Icon />
+                  {/* Number badge */}
+                  <div
+                    className="absolute flex items-center justify-center text-sm font-extrabold"
+                    style={{
+                      top: -8, right: -8, width: 32, height: 32, borderRadius: '50%',
+                      background: T.b9, color: T.wh,
+                      fontFamily: "'Plus Jakarta Sans',sans-serif",
+                    }}
                   >
                     {n}
                   </div>

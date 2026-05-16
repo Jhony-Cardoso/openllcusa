@@ -887,50 +887,81 @@ function PricingSection() {
              
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GUARANTEE SECTION
+// GUARANTEE SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
-const TRUST_BADGES = [
-  '🔒 Pago 100% Seguro', '🏛️ IRS Authorized Agent',
-  '💬 Soporte en Español', '🛡️ Garantía 100% Sin Errores', '⭐ +500 LLCs registradas',
-]
-
 function GuaranteeSection() {
   return (
     <section id="garantia" style={{ padding: '120px 0', background: T.wh, borderTop: `1px solid ${T.br}` }}>
       <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
-        <div
-          className="hp-fu hp-gi"
-          style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 64, alignItems: 'center', maxWidth: 920, margin: '0 auto' }}
+        <div 
+          className="hp-fu hp-gi" 
+          style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '280px 1fr', 
+            gap: 80, 
+            alignItems: 'center', 
+            maxWidth: 1000, 
+            margin: '0 auto' 
+          }}
         >
-          <div className="hp-gi-img flex justify-center">
-            <Image
-              src="/images/garantia.webp"
-              alt="Sello de garantía de tramitación sin errores"
-              width={200}
-              height={200}
-              style={{ width: 200, height: 200, objectFit: 'contain', filter: 'drop-shadow(0 16px 36px rgba(30,58,138,.2))' }}
-            />
+          {/* Sello grande */}
+          <div className="flex justify-center">
+            <div 
+              style={{ 
+                width: 260, 
+                height: 260, 
+                borderRadius: '50%', 
+                background: 'linear-gradient(145deg, #0C2047, #1E3A8A)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                boxShadow: '0 20px 60px rgba(12,32,71,0.25)',
+                position: 'relative'
+              }}
+            >
+              <Image
+                src="/images/garantia.webp"
+                alt="Sello de Garantía 100% Sin Errores"
+                width={180}
+                height={180}
+                style={{ filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.3))' }}
+              />
+              <div style={{ position: 'absolute', bottom: -8, right: -8, background: '#10B981', color: 'white', fontSize: '13px', fontWeight: 'bold', padding: '4px 14px', borderRadius: '9999px' }}>
+                100% Garantizado
+              </div>
+            </div>
           </div>
 
+          {/* Texto */}
           <div>
             <Eyebrow text="Sin riesgos" green />
             <h2
-              className="font-extrabold mt-3.5 mb-3.5 leading-tight"
-              style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(24px,3vw,38px)', color: T.tx }}
+              className="font-extrabold mt-3.5 mb-6 leading-tight"
+              style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(28px,3.2vw,42px)', color: T.tx }}
             >
               Garantía de Tramitación 100% Sin Errores
             </h2>
-            <p className="text-[17px] leading-relaxed mb-7" style={{ color: T.ts, maxWidth: 500 }}>
-              Si cometemos algún error en la tramitación de tu LLC que resulte en un rechazo por parte del estado, asumimos el costo de la corrección al 100%. Tu tranquilidad está garantizada.
+            
+            <p className="text-[17px] leading-relaxed mb-8" style={{ color: T.ts, maxWidth: 520 }}>
+              Si cometemos cualquier error en la tramitación de tu LLC que cause un rechazo por parte del estado, 
+              <strong>nos hacemos cargo del 100% del costo de corrección</strong>. 
+              Tu tranquilidad y tu dinero están protegidos.
             </p>
-            <div className="flex flex-wrap gap-2.5">
-              {TRUST_BADGES.map((b) => (
+
+            <div className="flex flex-wrap gap-3">
+              {[
+                '✅ Pago 100% Seguro',
+                '✅ IRS Authorized Agent',
+                '✅ Soporte en Español',
+                '✅ +500 LLCs registradas con éxito',
+                '✅ Devolución si no quedas satisfecho'
+              ].map((item, i) => (
                 <span
-                  key={b}
-                  className="text-sm font-semibold px-4 py-[7px] rounded-full"
-                  style={{ background: T.sf, border: `1.5px solid ${T.br}`, color: T.ts }}
+                  key={i}
+                  className="text-sm font-medium px-5 py-2.5 rounded-2xl"
+                  style={{ background: T.gl, color: T.gd }}
                 >
-                  {b}
+                  {item}
                 </span>
               ))}
             </div>
@@ -940,6 +971,7 @@ function GuaranteeSection() {
     </section>
   )
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // QUICK CONTACT FORM

@@ -1151,7 +1151,7 @@ function QuickContactSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CTA FINAL SECTION
+// CTA FINAL SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
 function CTAFinalSection() {
   return (
@@ -1165,50 +1165,44 @@ function CTAFinalSection() {
       }}
     >
       <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 48% 68% at 50% 108%,rgba(59,130,246,.22) 0%,transparent 70%)', pointerEvents: 'none' }} />
+      
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px' }} className="text-center relative z-10">
         <div className="hp-fu">
           <p className="text-[13px] font-bold tracking-widest uppercase mb-4" style={{ color: '#FCD34D' }}>Tu momento es ahora</p>
+          
           <h2
-            className="font-extrabold leading-[1.12] mb-4.5"
-            style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(30px,4.5vw,54px)', color: T.wh }}
+            className="font-extrabold leading-[1.12] mb-5"
+            style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(32px,4.5vw,54px)', color: T.wh }}
           >
-            No dejes que la burocracia frene tu negocio global
+            Tu LLC lista en 72 horas.<br />¿Estás listo para dar el paso?
           </h2>
-          <p className="text-lg mb-12" style={{ color: 'rgba(255,255,255,.68)' }}>
-            Miles de emprendedores ya lo hicieron. Ahora te toca a ti.
+
+          <p className="text-lg mb-10" style={{ color: 'rgba(255,255,255,.85)', maxWidth: 520, margin: '0 auto' }}>
+            Miles de emprendedores hispanos ya están operando y facturando desde EE.UU. sin complicaciones.<br />
+            <strong>Tú puedes ser el siguiente.</strong>
           </p>
 
           {/* Primary CTA */}
           <Link
             href="#comenzar"
-            onClick={() => Analytics.trackStartLLC('footer')}
-            className="hp-pcta inline-flex items-center gap-2.5 font-extrabold rounded-full mb-4"
+            onClick={() => analyticsEvents.trackEvent('cta_click', 'final_cta', 'crear_llc')}
+            className="hp-pcta inline-flex items-center gap-2.5 font-extrabold rounded-full mb-6"
             style={{
-              background: `linear-gradient(135deg,${T.ct},${T.ch})`,
-              color: T.wh, fontSize: 18, padding: '20px 52px',
+              background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
+              color: T.wh,
+              fontSize: 19,
+              padding: '22px 56px',
               textDecoration: 'none',
+              boxShadow: T.shCta,
               fontFamily: "'Plus Jakarta Sans',sans-serif",
             }}
           >
-            👉 Crear mi LLC en 3 minutos
+            👉 Crear mi LLC ahora
           </Link>
 
-          {/* Secondary CTA */}
-          <div className="mb-6">
-            <Link
-              href="/calculadora-fiscal"
-              className="inline-flex items-center gap-2 font-semibold rounded-full"
-              style={{
-                background: 'rgba(255,255,255,.09)', border: '1.5px solid rgba(255,255,255,.2)',
-                color: 'rgba(255,255,255,.88)', fontSize: 15, padding: '13px 30px', textDecoration: 'none',
-              }}
-            >
-              🧮 Calculadora Fiscal
-            </Link>
-          </div>
-
-          <p className="text-[13px]" style={{ color: 'rgba(255,255,255,.36)' }}>
-            🔒 Sin tarjeta de crédito · Garantía 7 días · +500 LLCs registradas
+          {/* Trust line */}
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,.7)' }}>
+            🔒 Sin tarjeta de crédito · Garantía 100% sin errores · Soporte en español
           </p>
         </div>
       </div>
@@ -1216,8 +1210,9 @@ function CTAFinalSection() {
   )
 }
 
+ 
 // ─────────────────────────────────────────────────────────────────────────────
-// MOBILE STICKY CTA
+// MOBILE STICKY CTA OPTIMIZADO
 // ─────────────────────────────────────────────────────────────────────────────
 function MobileStickyCTA() {
   const [show, setShow] = useState(false)
@@ -1231,25 +1226,30 @@ function MobileStickyCTA() {
     <div className={`hp-mob ${show ? 'hp-show' : ''}`}>
       <div className="flex-1">
         <div className="text-[13px] font-bold" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: T.tx }}>
-          Abre tu LLC en 72 horas
+          Abre tu LLC desde $349
         </div>
-        <div className="text-xs" style={{ color: T.tm }}>Desde $199 · Sin tarjeta para empezar</div>
+        <div className="text-xs" style={{ color: T.tm }}>72 horas · Sin visa · Soporte en español</div>
       </div>
       <Link
         href="#comenzar"
+        onClick={() => analyticsEvents.trackEvent('cta_click', 'sticky_cta', 'comenzar')}
         className="inline-flex items-center font-bold rounded-full whitespace-nowrap flex-shrink-0"
         style={{
           background: `linear-gradient(135deg,${T.ct},${T.ch})`,
-          color: T.wh, fontSize: 14, padding: '11px 22px',
-          textDecoration: 'none', boxShadow: T.shCta,
+          color: T.wh, 
+          fontSize: 14, 
+          padding: '11px 26px',
+          textDecoration: 'none', 
+          boxShadow: T.shCta,
           fontFamily: "'Plus Jakarta Sans',sans-serif",
         }}
       >
-        Comenzar →
+        Comenzar ahora →
       </Link>
     </div>
   )
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE (root export)

@@ -701,12 +701,15 @@ function ProcessSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LATAM SECTION
+// LATAM SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
 const COUNTRIES: [string, string, string][] = [
-  ['MX', '/guias/mx', 'México'], ['CO', '/guias/co', 'Colombia'],
-  ['ES', '/guias/es', 'España'], ['AR', '/guias/ar', 'Argentina'],
-  ['PE', '/guias/pe', 'Perú'], ['US', '/guias/us', 'EE.UU.'],
+  ['MX', '/guias/mx', 'México'], 
+  ['CO', '/guias/co', 'Colombia'],
+  ['ES', '/guias/es', 'España'], 
+  ['AR', '/guias/ar', 'Argentina'],
+  ['PE', '/guias/pe', 'Perú'], 
+  ['US', '/guias/us', 'EE.UU.'],
   ['PY', '/guias/py', 'Paraguay'],
 ]
 
@@ -715,7 +718,7 @@ function LatamSection() {
     <section
       style={{
         background: `linear-gradient(135deg, ${T.b0} 0%, #E0EDFF 100%)`,
-        padding: '88px 0',
+        padding: '100px 0',
         borderTop: `1px solid ${T.b1}`,
         borderBottom: `1px solid ${T.b1}`,
       }}
@@ -723,28 +726,47 @@ function LatamSection() {
       <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }} className="text-center">
         <div className="hp-fu">
           <Eyebrow text="Cobertura global" />
+          
           <h2
-            className="font-extrabold mt-3.5 mb-3.5"
-            style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(26px,3.5vw,42px)', color: T.b9 }}
+            className="font-extrabold mt-3.5 mb-4"
+            style={{ 
+              fontFamily: "'Plus Jakarta Sans',sans-serif", 
+              fontSize: 'clamp(28px,3.5vw,42px)', 
+              color: T.b9 
+            }}
           >
             No importa desde dónde estés
           </h2>
-          <p className="text-[17px] mx-auto mb-10" style={{ color: T.ts, maxWidth: 560 }}>
-            Ya hemos ayudado a fundadores de México, Colombia, España, Argentina, Perú, EE.UU., Paraguay y más a establecer su presencia legal en EE.UU.
+
+          <p className="text-[17px] mx-auto mb-10 max-w-[560px]" style={{ color: T.ts }}>
+            Ya hemos ayudado a emprendedores de España y toda Latam a registrar su LLC en EE.UU. 
+            y empezar a facturar internacionalmente con éxito.
           </p>
-          <div className="flex flex-wrap gap-3 justify-center">
+
+          <div className="flex flex-wrap gap-4 justify-center">
             {COUNTRIES.map(([code, href, name]) => (
               <Link
-                key={name}
+                key={code}
                 href={href}
-                className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full"
-                style={{ background: T.wh, border: `1px solid ${T.br}`, color: T.b9, textDecoration: 'none', boxShadow: T.shCard }}
+                className="group inline-flex flex-col items-center gap-2 text-sm font-medium px-6 py-4 rounded-2xl hover:bg-white transition-all hover:shadow-md"
+                style={{ 
+                  background: 'rgba(255,255,255,0.6)', 
+                  border: `1px solid ${T.br}` 
+                }}
               >
-                <ReactCountryFlag countryCode={code} svg style={{ fontSize: '1.2em', borderRadius: '2px', boxShadow: '0 0 2px rgba(0,0,0,0.1)' }} />
-                {name}
+                <ReactCountryFlag 
+                  countryCode={code} 
+                  svg 
+                  style={{ fontSize: '2.4em', borderRadius: '6px' }} 
+                />
+                <span className="group-hover:text-purple-600 transition-colors">{name}</span>
               </Link>
             ))}
           </div>
+
+          <p className="text-xs mt-10" style={{ color: T.tm }}>
+            ¿Tu país no está en la lista? Escríbenos, atendemos casi todos los países hispanohablantes.
+          </p>
         </div>
       </div>
     </section>

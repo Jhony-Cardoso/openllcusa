@@ -1095,12 +1095,14 @@ function GuaranteeSection() {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUICK CONTACT FORM
+// QUICK CONTACT FORM OPTIMIZADO  (con COUNTRIES_LIST incluida)
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Lista de países para el formulario
 const COUNTRIES_LIST = [
   'España', 'México', 'Colombia', 'Argentina', 'Chile', 'Perú',
   'Venezuela', 'Ecuador', 'Guatemala', 'Bolivia', 'Otro país',
-]
+];
 
 function QuickContactSection() {
   const [form, setForm] = useState({ name: '', email: '', country: '' })
@@ -1110,10 +1112,7 @@ function QuickContactSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Trackeamos el intento de envío
-    Analytics.trackAdvisoryFormSubmit({
-      country: form.country || 'no_seleccionado'
-    });
+    analyticsEvents.trackEvent('cta_click', 'asesoria_rapida', 'enviar');
 
     setLoading(true);
 
@@ -1128,17 +1127,13 @@ function QuickContactSection() {
         }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
         setSent(true);
-        Analytics.trackAdvisoryFormSuccess();
+        analyticsEvents.trackEvent('form_submit_success', 'asesoria_rapida');
       } else {
-        alert('Hubo un error al enviar el formulario. Inténtalo de nuevo.');
-        console.error('Error del servidor:', data);
+        alert('Hubo un error al enviar. Inténtalo de nuevo.');
       }
     } catch (error) {
-      console.error('Error de conexión:', error);
       alert('Error de conexión. Por favor, inténtalo más tarde.');
     } finally {
       setLoading(false);
@@ -1146,10 +1141,10 @@ function QuickContactSection() {
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '12px 16px', fontSize: 15, color: T.tx,
+    width: '100%', padding: '14px 16px', fontSize: 16, color: T.tx,
     background: T.sf, border: `1.5px solid ${T.br}`, borderRadius: 12,
     fontFamily: "'Inter',sans-serif",
-  }
+  };
 
   return (
     <section
@@ -1167,34 +1162,30 @@ function QuickContactSection() {
           <Eyebrow text="Asesoría rápida" />
           <h2
             className="font-extrabold mt-3.5 mb-3"
-            style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(24px,3vw,36px)', color: T.b9 }}
+            style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(26px,3vw,38px)', color: T.b9 }}
           >
-            ¿Tienes dudas? Recibe asesoría personalizada en ‹12h
+            ¿Tienes dudas? Recibe asesoría personalizada en menos de 12 horas
           </h2>
-          <p className="text-base mx-auto" style={{ color: T.ts, maxWidth: 500 }}>
-            Sin compromiso. Un especialista te responderá en español y resolverá todas tus preguntas.
+          <p className="text-base mx-auto" style={{ color: T.ts, maxWidth: 520 }}>
+            Sin compromiso. Un especialista en español te responderá de forma clara y adaptada a tu situación.
           </p>
         </div>
 
         {/* Success state */}
         {sent ? (
           <div
-            className="hp-fu hp-on text-center rounded-2xl mx-auto"
+            className="hp-fu text-center rounded-2xl mx-auto"
             style={{ background: T.wh, border: `1.5px solid rgba(16,185,129,.35)`, padding: '48px 36px', boxShadow: T.shCard, maxWidth: 560 }}
           >
-            <div
-              className="flex items-center justify-center text-3xl mx-auto mb-5"
-              style={{ width: 64, height: 64, borderRadius: '50%', background: T.gl }}
-            >
-              ✅
-            </div>
-            <h3 className="font-bold text-xl mb-2.5" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: T.tx }}>¡Mensaje recibido!</h3>
-            <p className="text-[15px]" style={{ color: T.ts }}>
-              Un especialista te contactará en menos de 12 horas. Revisa tu bandeja de entrada (y spam, por si acaso).
+            <div className="text-4xl mb-5">✅</div>
+            <h3 className="font-bold text-xl mb-2.5" style={{ color: T.tx }}>¡Solicitud recibida!</h3>
+            <p className="text-[15.5px]" style={{ color: T.ts }}>
+              Un especialista revisará tu caso y te responderá en menos de 12 horas.<br /><br />
+              <strong>Si quieres que preparemos mejor tu respuesta</strong>, responde a este mismo email contándonos tu duda principal.
             </p>
           </div>
         ) : (
-          /* Form */
+          /* Formulario simple */
           <form
             onSubmit={handleSubmit}
             className="hp-fu rounded-2xl mx-auto"
@@ -1202,9 +1193,8 @@ function QuickContactSection() {
           >
             <div className="hp-fgrid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: T.ts }}>Nombre *</label>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: T.ts }}>Nombre completo *</label>
                 <input
-                  className="hp-input"
                   required
                   type="text"
                   placeholder="Tu nombre"
@@ -1216,7 +1206,6 @@ function QuickContactSection() {
               <div>
                 <label className="block text-[13px] font-semibold mb-1.5" style={{ color: T.ts }}>Email *</label>
                 <input
-                  className="hp-input"
                   required
                   type="email"
                   placeholder="tu@email.com"
@@ -1230,7 +1219,6 @@ function QuickContactSection() {
             <div className="mb-6">
               <label className="block text-[13px] font-semibold mb-1.5" style={{ color: T.ts }}>País de residencia *</label>
               <select
-                className="hp-input"
                 required
                 value={form.country}
                 onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
@@ -1251,7 +1239,6 @@ function QuickContactSection() {
                 padding: '16px 32px',
                 fontFamily: "'Plus Jakarta Sans',sans-serif",
                 boxShadow: loading ? 'none' : T.shCta,
-                transition: 'background .2s, transform .18s',
               }}
             >
               {loading ? (
@@ -1261,8 +1248,8 @@ function QuickContactSection() {
               ) : '✉️ Recibir asesoría gratuita'}
             </button>
 
-            <p className="text-[12px] text-center mt-3" style={{ color: T.tm }}>
-              🔒 Sin spam. Sin compromiso. Respuesta garantizada en menos de 12 horas.
+            <p className="text-[12.5px] text-center mt-4" style={{ color: T.tm }}>
+              🔒 Tus datos están protegidos • Respuesta garantizada en menos de 12 horas • Sin spam
             </p>
           </form>
         )}
@@ -1270,6 +1257,7 @@ function QuickContactSection() {
     </section>
   )
 }
+       
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CTA FINAL SECTION OPTIMIZADA

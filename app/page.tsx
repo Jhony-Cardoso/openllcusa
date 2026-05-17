@@ -871,142 +871,108 @@ function TestimonialsSection() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PRICING SECTION OPTIMIZADA (Precios ajustados)
-// ─────────────────────────────────────────────────────────────────────────────
-const PLANS = [
-  {
-    name: 'Starter',
-    price: '$349',
-    featured: false,
-    features: [
-      '✅ Registro de LLC en Wyoming, Delaware o Florida',
-      '✅ EIN (Tax ID) incluido',
-      '✅ Agente Registrado primer año',
-      '✅ Documentos digitales oficiales',
-      '✅ Soporte en español',
-    ],
-  },
-  {
-    name: 'Professional',
-    price: '$499',
-    featured: true,
-    features: [
-      '✅ Todo del plan Starter',
-      '✅ Apertura de cuenta bancaria (Mercury o Relay)',
-      '✅ Operating Agreement personalizado',
-      '✅ Consultoría fiscal inicial',
-      '✅ Prioridad en soporte',
-    ],
-  },
-  {
-    name: 'Business',
-    price: '$849',
-    featured: false,
-    features: [
-      '✅ Todo del plan Professional',
-      '✅ Presentación de formularios 5472 y 1120 (2026-2027)',
-      '✅ Reportes anuales incluidos',
-      '✅ Asesoría legal adicional',
-      '✅ Soporte VIP ilimitado',
-    ],
-  },
-]
+{/* ===================== SECCIÓN PRECIOS OPTIMIZADA ===================== */}
+<section className="py-20 bg-white" id="precios">
+  <div className="max-w-6xl mx-auto px-6">
+    <div className="text-center mb-12">
+      <span className="text-sm font-semibold tracking-widest text-purple-600">PRECIOS TRANSPARENTES</span>
+      <h2 className="text-4xl font-bold text-gray-900 mt-3">Planes profesionales sin costos ocultos</h2>
+      <p className="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">
+        Elige el plan que mejor se adapte a tu situación. <span className="font-semibold">Todos incluyen nuestro proceso 100% gestionado.</span>
+      </p>
+    </div>
 
-function PricingSection() {
-  return (
-    <section id="precios" style={{ padding: '120px 0', background: T.sf }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
-        {/* Header */}
-        <div className="hp-fu text-center mb-4">
-          <Eyebrow text="Precios transparentes" />
-          <SectionHeading>Planes profesionales sin costos ocultos</SectionHeading>
-          <p className="text-lg mt-3" style={{ color: T.ts }}>
-            Elige según tu etapa. Todos incluyen nuestro proceso 100% gestionado.
-          </p>
+    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      {/* STARTER */}
+      <div className="bg-white border border-gray-200 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col">
+        <div className="text-center mb-8">
+          <span className="text-sm font-semibold text-gray-500">STARTER</span>
+          <div className="mt-4">
+            <span className="text-5xl font-bold text-gray-900">$349</span>
+            <span className="text-gray-500">/pago único</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">Ideal para freelancers y primeros pasos</p>
         </div>
-
-        {/* Guarantee pill */}
-        <div className="hp-fu text-center mb-14">
-          <span
-            className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2 rounded-full"
-            style={{ background: T.gl, border: `1px solid rgba(16,185,129,.3)`, color: T.gd }}
-          >
-            🛡️ Garantía de Tramitación 100% Sin Errores
-          </span>
-        </div>
-
-        {/* Pricing grid */}
-        <div className="hp-pgrid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24, alignItems: 'start' }}>
-          {PLANS.map(({ name, price, featured, features }) => (
-            <div
-              key={name}
-              className="hp-fu hp-pcard rounded-[22px]"
-              style={{
-                background: featured ? T.b9 : T.wh,
-                border: featured ? `2px solid ${T.b7}` : `1.5px solid ${T.br}`,
-                padding: '38px 32px',
-                boxShadow: featured ? T.shBlue : T.shCard,
-                transform: featured ? 'scale(1.035)' : 'none',
-                position: 'relative',
-              }}
-            >
-              {featured && (
-                <div
-                  className="absolute text-xs font-bold px-[18px] py-1.5 rounded-full whitespace-nowrap"
-                  style={{ top: -14, left: '50%', transform: 'translateX(-50%)', background: `linear-gradient(135deg,${T.ct},${T.ch})`, color: T.wh, boxShadow: T.shCta }}
-                >
-                  ⭐ MÁS POPULAR
-                </div>
-              )}
-
-              <div className="text-[13px] font-bold tracking-widest uppercase mb-2.5" style={{ color: featured ? 'rgba(255,255,255,.5)' : T.tm }}>
-                {name}
-              </div>
-
-              <div className="font-extrabold leading-none mb-1.5" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 56, color: featured ? T.wh : T.tx }}>
-                {price}
-                <span style={{ fontSize: 15, fontWeight: 400, color: featured ? 'rgba(255,255,255,.4)' : T.tm }}>
-                  {' '}/pago único
-                </span>
-              </div>
-
-              <div style={{ width: 36, height: 2.5, background: featured ? 'rgba(255,255,255,.18)' : T.br, borderRadius: 2, margin: '18px 0 22px' }} />
-
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11 }}>
-                {features.map((f) => (
-                  <li key={f} className="text-sm" style={{ color: featured ? 'rgba(255,255,255,.84)' : T.ts }}>{f}</li>
-                ))}
-              </ul>
-
-              <Link
-                href="#comenzar"
-                onClick={() => analyticsEvents.trackEvent('cta_click', 'pricing', name.toLowerCase())}
-                className="block text-center font-bold text-[15px] py-[15px] rounded-full"
-                style={{
-                  textDecoration: 'none',
-                  background: featured ? `linear-gradient(135deg,${T.ct},${T.ch})` : T.b9,
-                  color: T.wh,
-                  boxShadow: featured ? T.shCta : T.shBlue,
-                }}
-              >
-                {featured ? '👉 Elegir Professional' : `Elegir ${name}`}
-              </Link>
-
-              {featured && (
-                <p className="text-center text-[12px] mt-2.5" style={{ color: 'rgba(255,255,255,.36)' }}>
-                  🔒 Sin tarjeta para empezar
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+        
+        <ul className="space-y-4 mb-10 flex-1">
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Registro de LLC</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> EIN + Documentos básicos</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Agente Registrado 1 año</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia en español</li>
+        </ul>
+        
+        <a href="#asesoria" 
+           onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'starter')}
+           className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
+          Elegir Starter
+        </a>
       </div>
-    </section>
-  )
-}
-             
 
+      {/* PROFESSIONAL - MÁS POPULAR */}
+      <div className="bg-gradient-to-b from-purple-50 to-white border-2 border-purple-600 rounded-3xl p-8 relative flex flex-col scale-[1.03] shadow-2xl">
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-6 py-1.5 rounded-full">
+          MÁS POPULAR
+        </div>
+        
+        <div className="text-center mb-8">
+          <span className="text-sm font-semibold text-purple-600">PROFESSIONAL</span>
+          <div className="mt-4">
+            <span className="text-5xl font-bold text-gray-900">$499</span>
+            <span className="text-gray-500">/pago único</span>
+          </div>
+          <p className="text-sm text-purple-600 mt-2 font-semibold">El más elegido por emprendedores serios</p>
+        </div>
+        
+        <ul className="space-y-4 mb-10 flex-1">
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Starter</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Cuenta bancaria en EE.UU. (Mercury o Relay)</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Operating Agreement personalizado</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia prioritaria en español</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte 30 días post-entrega</li>
+        </ul>
+        
+        <a href="#asesoria" 
+           onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'professional')}
+           className="block text-center py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition">
+          Elegir Professional
+        </a>
+      </div>
+
+      {/* BUSINESS */}
+      <div className="bg-white border border-gray-200 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col">
+        <div className="text-center mb-8">
+          <span className="text-sm font-semibold text-gray-500">BUSINESS</span>
+          <div className="mt-4">
+            <span className="text-5xl font-bold text-gray-900">$849</span>
+            <span className="text-gray-500">/pago único</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">Servicio completo y premium</p>
+        </div>
+        
+        <ul className="space-y-4 mb-10 flex-1">
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Professional</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Presentación 5472 + 1120</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Dirección física real en EE.UU.</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte VIP 90 días</li>
+          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Revisión anual incluida</li>
+        </ul>
+        
+        <a href="#asesoria" 
+           onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'business')}
+           className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
+          Elegir Business
+        </a>
+      </div>
+    </div>
+
+    <p className="text-center text-sm text-gray-500 mt-10">
+      ✅ Precio final. Sin sorpresas. Garantía de devolución 100%.
+    </p>
+  </div>
+</section>
+
+    
+ 
 // ─────────────────────────────────────────────────────────────────────────────
 // GUARANTEE SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1101,7 +1067,7 @@ function GuaranteeSection() {
 // Lista de países para el formulario
 const COUNTRIES_LIST = [
   'España', 'México', 'Colombia', 'Argentina', 'Chile', 'Perú',
-  'Venezuela', 'Ecuador', 'Guatemala', 'Bolivia', 'Otro país',
+  'Paraguay', 'Estados Unidos', 'Venezuela', 'Ecuador', 'Otro país',
 ];
 
 function QuickContactSection() {
@@ -1410,8 +1376,7 @@ export default function HomePage() {
       <ServicesSection />
       <ProcessSection />
       <LatamSection />
-      <TestimonialsSection />
-      <PricingSection />
+      <TestimonialsSection />      
       <GuaranteeSection />
       <QuickContactSection />
       <CTAFinalSection />

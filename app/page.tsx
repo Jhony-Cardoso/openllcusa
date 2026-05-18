@@ -1327,8 +1327,7 @@ function MobileStickyCTA() {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE (root export)
-// NOTE: Nav and Footer are already in app/layout.tsx — not duplicated here.
+// PAGE (root export) - VERSIÓN CORREGIDA Y LIMPIA
 // ─────────────────────────────────────────────────────────────────────────────
 export default function HomePage() {
   useFadeUp()
@@ -1338,7 +1337,7 @@ export default function HomePage() {
       <HeroSection />
       <TrustBar />
 
-      {/* ===================== SECCIÓN DE BENEFICIOS OPTIMIZADA + FONDO DIFERENCIADO ===================== */}
+      {/* SECCIÓN BENEFICIOS (solo una, la optimizada) */}
       <section className="py-16 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -1372,11 +1371,97 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      {/* ===================== FIN SECCIÓN BENEFICIOS ===================== */}
+
       <ServicesSection />
       <ProcessSection />
       <LatamSection />
-      <TestimonialsSection />      
+      <TestimonialsSection />
+
+      {/* ===================== SECCIÓN PRECIOS OPTIMIZADA (ahora sí visible) ===================== */}
+      <section className="py-20 bg-white" id="precios">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="text-sm font-semibold tracking-widest text-purple-600">PRECIOS TRANSPARENTES</span>
+            <h2 className="text-4xl font-bold text-gray-900 mt-3">Planes profesionales sin costos ocultos</h2>
+            <p className="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">
+              Elige el plan que mejor se adapte a tu situación. <span className="font-semibold">Todos incluyen nuestro proceso 100% gestionado.</span>
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* STARTER */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col">
+              <div className="text-center mb-8">
+                <span className="text-sm font-semibold text-gray-500">STARTER</span>
+                <div className="mt-4">
+                  <span className="text-5xl font-bold text-gray-900">$349</span>
+                  <span className="text-gray-500">/pago único</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">Ideal para freelancers y primeros pasos</p>
+              </div>
+              <ul className="space-y-4 mb-10 flex-1">
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Registro de LLC</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> EIN + Documentos básicos</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Agente Registrado 1 año</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia en español</li>
+              </ul>
+              <a href="#asesoria" onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'starter')} className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
+                Elegir Starter
+              </a>
+            </div>
+
+            {/* PROFESSIONAL - MÁS POPULAR */}
+            <div className="bg-gradient-to-b from-purple-50 to-white border-2 border-purple-600 rounded-3xl p-8 relative flex flex-col scale-[1.03] shadow-2xl">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-6 py-1.5 rounded-full">MÁS POPULAR</div>
+              <div className="text-center mb-8">
+                <span className="text-sm font-semibold text-purple-600">PROFESSIONAL</span>
+                <div className="mt-4">
+                  <span className="text-5xl font-bold text-gray-900">$499</span>
+                  <span className="text-gray-500">/pago único</span>
+                </div>
+                <p className="text-sm text-purple-600 mt-2 font-semibold">El más elegido por emprendedores serios</p>
+              </div>
+              <ul className="space-y-4 mb-10 flex-1">
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Starter</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Cuenta bancaria en EE.UU. (Mercury o Relay)</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Operating Agreement personalizado</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia prioritaria en español</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte 30 días post-entrega</li>
+              </ul>
+              <a href="#asesoria" onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'professional')} className="block text-center py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition">
+                Elegir Professional
+              </a>
+            </div>
+
+            {/* BUSINESS */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col">
+              <div className="text-center mb-8">
+                <span className="text-sm font-semibold text-gray-500">BUSINESS</span>
+                <div className="mt-4">
+                  <span className="text-5xl font-bold text-gray-900">$849</span>
+                  <span className="text-gray-500">/pago único</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">Servicio completo y premium</p>
+              </div>
+              <ul className="space-y-4 mb-10 flex-1">
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Professional</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Presentación 5472 + 1120</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Dirección física real en EE.UU.</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte VIP 90 días</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Revisión anual incluida</li>
+              </ul>
+              <a href="#asesoria" onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'business')} className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
+                Elegir Business
+              </a>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-gray-500 mt-10">
+            ✅ Precio final. Sin sorpresas. Garantía de devolución 100%.
+          </p>
+        </div>
+      </section>
+
       <GuaranteeSection />
       <QuickContactSection />
       <CTAFinalSection />

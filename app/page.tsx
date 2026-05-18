@@ -1376,9 +1376,9 @@ export default function HomePage() {
       <ProcessSection />
       <LatamSection />
       <TestimonialsSection />
-
-      {/* ===================== SECCIÓN PRECIOS OPTIMIZADA (ahora sí visible) ===================== */}
-      <section className="py-20 bg-white" id="precios">
+      
+            {/* ===================== SECCIÓN PRECIOS OPTIMIZADA (CON CONTRASTE Y MEJORAS) ===================== */}
+      <section className="py-20 bg-slate-50" id="precios">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <span className="text-sm font-semibold tracking-widest text-purple-600">PRECIOS TRANSPARENTES</span>
@@ -1395,7 +1395,7 @@ export default function HomePage() {
                 <span className="text-sm font-semibold text-gray-500">STARTER</span>
                 <div className="mt-4">
                   <span className="text-5xl font-bold text-gray-900">$349</span>
-                  <span className="text-gray-500">/pago único</span>
+                  <span className="text-gray-500"> + tasa estatal</span>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">Ideal para freelancers y primeros pasos</p>
               </div>
@@ -1417,7 +1417,7 @@ export default function HomePage() {
                 <span className="text-sm font-semibold text-purple-600">PROFESSIONAL</span>
                 <div className="mt-4">
                   <span className="text-5xl font-bold text-gray-900">$499</span>
-                  <span className="text-gray-500">/pago único</span>
+                  <span className="text-gray-500"> + tasa estatal</span>
                 </div>
                 <p className="text-sm text-purple-600 mt-2 font-semibold">El más elegido por emprendedores serios</p>
               </div>
@@ -1439,7 +1439,7 @@ export default function HomePage() {
                 <span className="text-sm font-semibold text-gray-500">BUSINESS</span>
                 <div className="mt-4">
                   <span className="text-5xl font-bold text-gray-900">$849</span>
-                  <span className="text-gray-500">/pago único</span>
+                  <span className="text-gray-500"> + tasa estatal</span>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">Servicio completo y premium</p>
               </div>
@@ -1448,6 +1448,7 @@ export default function HomePage() {
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Presentación 5472 + 1120</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Dirección física real en EE.UU.</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte VIP 90 días</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Reportes Anuales</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Revisión anual incluida</li>
               </ul>
               <a href="#asesoria" onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'business')} className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
@@ -1457,11 +1458,11 @@ export default function HomePage() {
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-10">
-            ✅ Precio final. Sin sorpresas. Garantía de devolución 100%.
+            ✅ Precio final + tasa estatal según el estado elegido • Sin sorpresas • Garantía de devolución 100%
           </p>
         </div>
-      </section>
-
+      </section>        
+      
       <GuaranteeSection />
       <QuickContactSection />
       <CTAFinalSection />

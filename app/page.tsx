@@ -1375,9 +1375,9 @@ export default function HomePage() {
       <ServicesSection />
       <ProcessSection />
       <LatamSection />
-      <TestimonialsSection />
-      
-            {/* ===================== SECCIÓN PRECIOS OPTIMIZADA (CON CONTRASTE Y MEJORAS) ===================== */}
+      <TestimonialsSection />      
+        
+            {/* ===================== SECCIÓN PRECIOS OPTIMIZADA (FINAL) ===================== */}
       <section className="py-20 bg-slate-50" id="precios">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -1405,9 +1405,13 @@ export default function HomePage() {
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Agente Registrado 1 año</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia en español</li>
               </ul>
-              <a href="#asesoria" onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'starter')} className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
+              <Link 
+                href="/paquetes/starter/onboarding"
+                onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'starter')}
+                className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition"
+              >
                 Elegir Starter
-              </a>
+              </Link>
             </div>
 
             {/* PROFESSIONAL - MÁS POPULAR */}
@@ -1423,14 +1427,18 @@ export default function HomePage() {
               </div>
               <ul className="space-y-4 mb-10 flex-1">
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Starter</li>
-                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Cuenta bancaria en EE.UU. (Mercury o Relay)</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Cuenta bancaria en EE.UU.</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Operating Agreement personalizado</li>
-                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia prioritaria en español</li>
-                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte 30 días post-entrega</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia prioritaria</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte 30 días</li>
               </ul>
-              <a href="#asesoria" onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'professional')} className="block text-center py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition">
+              <Link 
+                href="/paquetes/professional/onboarding"
+                onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'professional')}
+                className="block text-center py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition"
+              >
                 Elegir Professional
-              </a>
+              </Link>
             </div>
 
             {/* BUSINESS */}
@@ -1446,14 +1454,18 @@ export default function HomePage() {
               <ul className="space-y-4 mb-10 flex-1">
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Professional</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Presentación 5472 + 1120</li>
-                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Dirección física real en EE.UU.</li>
+                <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Dirección física real</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte VIP 90 días</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Reportes Anuales</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Revisión anual incluida</li>
               </ul>
-              <a href="#asesoria" onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'business')} className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
+              <Link 
+                href="/paquetes/business/onboarding"
+                onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'business')}
+                className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition"
+              >
                 Elegir Business
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -1461,7 +1473,8 @@ export default function HomePage() {
             ✅ Precio final + tasa estatal según el estado elegido • Sin sorpresas • Garantía de devolución 100%
           </p>
         </div>
-      </section>        
+      </section>
+              
       
       <GuaranteeSection />
       <QuickContactSection />

@@ -86,7 +86,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HERO SECTION OPTIMIZADA (con banderas)
+// HERO SECTION OPTIMIZADA - VERSIÓN FINAL (mayor conversión)
 // ─────────────────────────────────────────────────────────────────────────────
 function HeroSection() {
   return (
@@ -125,84 +125,62 @@ function HeroSection() {
                   color: T.gn,
                 }}
               >
-                <span
-                  className="hp-pdot"
-                  style={{ width: 7, height: 7, background: T.gn, borderRadius: '50%', flexShrink: 0 }}
-                />
+                <span style={{ width: 7, height: 7, background: T.gn, borderRadius: '50%', flexShrink: 0 }} />
                 +500 emprendedores hispanos ya tienen su LLC
               </span>
             </div>
 
-            {/* H1 Mejorado */}
+            {/* H1 más potente */}
             <h1
               style={{
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 'clamp(36px, 5vw, 64px)',
+                fontSize: 'clamp(36px, 5.2vw, 68px)',
                 fontWeight: 800,
-                lineHeight: 1.09,
+                lineHeight: 1.08,
                 color: T.wh,
-                marginBottom: 22,
+                marginBottom: 24,
               }}
             >
               Tu LLC en Estados Unidos{' '}
-              <em style={{ fontStyle: 'normal', color: '#FCD34D', textDecoration: 'underline', textDecorationColor: 'rgba(252,211,77,.4)' }}>
+              <em style={{ fontStyle: 'normal', color: '#FCD34D', textDecoration: 'underline', textDecorationColor: 'rgba(252,211,77,.45)' }}>
                 en solo 72 horas
               </em>
-              <span style={{ display: 'block', fontSize: '0.78em', fontWeight: 700, color: 'rgba(255,255,255,.9)', marginTop: 14 }}>
-                Sin visa · Sin SSN · Sin salir de casa
-              </span>
             </h1>
 
             {/* Subtítulo mejorado */}
-            <p style={{ fontSize: 18, color: 'rgba(255,255,255,.8)', lineHeight: 1.7, marginBottom: 40, maxWidth: 520 }}>
-              Más de 500 emprendedores de España y Latam ya facturan como empresas americanas.<br />
-              <strong>Nosotros hacemos el 100% del trabajo.</strong> Tú solo firmas y empiezas a cobrar en dólares.
+            <p style={{ fontSize: 19, color: 'rgba(255,255,255,.85)', lineHeight: 1.65, marginBottom: 40, maxWidth: 540 }}>
+              Sin visa. Sin SSN. Sin salir de casa.<br />
+              <strong>Más de 500 emprendedores de España y Latam</strong> ya facturan como empresas americanas. 
+              Nosotros hacemos el 100% del trabajo.
             </p>
 
             {/* Primary CTA */}
-            <div className="mb-4">
+            <div className="mb-6">
               <Link
-                href="#comenzar"
-                onClick={() => analyticsEvents.trackEvent('cta_click', 'hero', 'comenzar_llc')}
-                className="hp-pcta inline-flex items-center gap-2.5 font-extrabold rounded-full"
+                href="#precios"
+                onClick={() => analyticsEvents.trackEvent('cta_click', 'hero', 'ver_precios')}
+                className="hp-pcta inline-flex items-center gap-3 font-extrabold rounded-full"
                 style={{
                   background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
                   color: T.wh,
-                  fontSize: 19,
-                  padding: '22px 52px',
+                  fontSize: 20,
+                  padding: '24px 56px',
                   textDecoration: 'none',
                   boxShadow: T.shCta,
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                 }}
               >
-                👉 Crear mi LLC ahora
+                Ver planes y precios
+                <ArrowRight size={24} />
               </Link>
             </div>
 
-            {/* Trust badges */}
-            <p className="flex items-center gap-1.5 mb-8 text-sm" style={{ color: 'rgba(255,255,255,.75)' }}>
+            {/* Trust line */}
+            <p className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,.8)' }}>
               🔒 Sin tarjeta · Sin compromiso · Garantía 100% sin errores
             </p>
 
-            {/* Secondary CTA */}
-            <Link
-              href="#proceso"
-              onClick={() => analyticsEvents.trackEvent('cta_click', 'hero', 'ver_proceso')}
-              className="inline-flex items-center gap-2 font-semibold rounded-full"
-              style={{
-                background: 'rgba(255,255,255,.1)',
-                border: '1.5px solid rgba(255,255,255,.25)',
-                color: 'rgba(255,255,255,.9)',
-                fontSize: 15,
-                padding: '14px 32px',
-                textDecoration: 'none',
-              }}
-            >
-              Ver cómo funciona en 3 pasos ↓
-            </Link>
-
-            {/* Country pills - RESTAURADAS */}
-            <div className="flex flex-wrap gap-2 mt-8">
+            {/* Country pills */}
+            <div className="flex flex-wrap gap-2 mt-10">
               {[
                 { code: 'MX', name: 'México' },
                 { code: 'CO', name: 'Colombia' },
@@ -218,10 +196,10 @@ function HeroSection() {
                   style={{
                     background: 'rgba(255,255,255,.08)',
                     border: '1px solid rgba(255,255,255,.13)',
-                    color: 'rgba(255,255,255,.76)',
+                    color: 'rgba(255,255,255,.8)',
                   }}
                 >
-                  <ReactCountryFlag countryCode={c.code} svg style={{ fontSize: '1.2em', borderRadius: '2px' }} />
+                  <ReactCountryFlag countryCode={c.code} svg style={{ fontSize: '1.25em' }} />
                   {c.name}
                 </span>
               ))}
@@ -230,12 +208,12 @@ function HeroSection() {
 
           {/* Illustration */}
           <div className="hp-himg hp-fu flex justify-center">
-            <div className="hp-float w-full" style={{ maxWidth: 500 }}>
+            <div className="hp-float w-full" style={{ maxWidth: 520 }}>
               <Image
                 src="/images/hero.webp"
                 alt="Emprendedor hispanohablante abriendo su LLC en EE.UU. desde casa"
-                width={500}
-                height={460}
+                width={520}
+                height={480}
                 priority
                 style={{ width: '100%', height: 'auto', filter: 'drop-shadow(0 32px 72px rgba(12,32,71,.55))' }}
               />

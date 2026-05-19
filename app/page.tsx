@@ -509,7 +509,7 @@ function ServicesSection() {
               </ul>
 
               <Link
-                href={`/paquetes/${service.slug}/onboarding`}
+                href={`/servicios/${service.slug}/onboarding`}
                 onClick={() => analyticsEvents?.trackEvent('cta_click', 'servicios', service.slug)}
                 className={`block text-center py-4 rounded-2xl font-semibold transition-all ${service.highlight 
                   ? 'bg-purple-600 text-white hover:bg-purple-700' 

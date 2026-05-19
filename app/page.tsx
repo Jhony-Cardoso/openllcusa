@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import ReactCountryFlag from 'react-country-flag'
-import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
+import { ArrowRight, Check, CheckCircle2, Loader2 } from 'lucide-react'
 import './homepage-v4.css'
 import { analyticsEvents } from "../lib/analytics";
 
@@ -411,7 +411,7 @@ function IconBank() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SERVICES SECTION OPTIMIZADA
+// SERVICES SECTION OPTIMIZADA - VERSIÓN COMPETITIVA
 // ─────────────────────────────────────────────────────────────────────────────
 const SERVICES = [
   {
@@ -465,63 +465,70 @@ const SERVICES = [
   },
 ]
 
+
 function ServicesSection() {
   return (
     <section id="servicios" style={{ padding: '120px 0', background: T.wh }}>
       <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
-        {/* Header */}
         <div className="hp-fu text-center mb-16">
           <Eyebrow text="Nuestros Servicios" />
           <SectionHeading>Todo lo que necesitas para operar legalmente en EE.UU.</SectionHeading>
-          <p className="text-lg mt-3 mx-auto" style={{ color: T.ts, maxWidth: 520 }}>
-            Desde el registro hasta la cuenta bancaria. Te acompañamos en cada paso con total transparencia.
+          <p className="text-lg mt-4 max-w-xl mx-auto" style={{ color: T.ts }}>
+            No solo registramos tu LLC. Te damos todo el ecosistema para que factures como una empresa americana desde el primer día.
           </p>
         </div>
 
-        {/* Grid */}
-        <div
-          className="hp-sgrid"
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}
-        >
+        <div className="grid md:grid-cols-3 gap-8">
           {SERVICES.map((service, index) => (
             <div
               key={index}
-              className="hp-fu hp-scard rounded-3xl p-8 hover:shadow-xl transition-all"
-              style={{ 
-                background: T.wh, 
-                border: `1.5px solid ${T.br}` 
-              }}
+              className={`hp-fu hp-scard rounded-3xl p-8 transition-all duration-300 flex flex-col ${service.highlight ? 'border-2 border-purple-600 shadow-2xl scale-[1.02]' : 'border border-gray-200 hover:shadow-xl'}`}
+              style={{ background: T.wh }}
             >
-              <div className="mb-6">
-                <div className="text-4xl mb-2">📋</div>
-                {service.price && (
-                  <div className="text-sm font-bold text-purple-600 mt-2">{service.price}</div>
-                )}
-              </div>
-              
-              <h3 className="font-bold text-xl mb-3" style={{ color: T.tx }}>{service.title}</h3>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: T.ts }}>{service.desc}</p>
+              {service.highlight && (
+                <div className="inline-block px-4 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full mb-4 w-fit">
+                  MÁS POPULAR
+                </div>
+              )}
 
-              <ul className="text-sm mb-8 space-y-2" style={{ color: T.ts }}>
+              <div className="mb-6">
+                <div className="text-5xl mb-3">📋</div>
+                <h3 className="font-bold text-2xl" style={{ color: T.tx }}>{service.title}</h3>
+                <p className="text-3xl font-bold mt-2" style={{ color: T.b7 }}>{service.price}</p>
+              </div>
+
+              <p className="text-gray-600 mb-8 flex-1 leading-relaxed">{service.desc}</p>
+
+              <ul className="space-y-3 mb-10 flex-1">
                 {service.features.map((f, i) => (
-                  <li key={i}>{f}</li>
+                  <li key={i} className="flex items-start gap-3 text-[15px]">
+                    <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>{f}</span>
+                  </li>
                 ))}
               </ul>
 
-              <Link 
-                href={service.href} 
-                className="inline-flex items-center gap-2 font-semibold text-sm hover:text-purple-600 transition-colors"
-                style={{ color: T.b7 }}
+              <Link
+                href={`/paquetes/${service.slug}/onboarding`}
+                onClick={() => analyticsEvents?.trackEvent('cta_click', 'servicios', service.slug)}
+                className={`block text-center py-4 rounded-2xl font-semibold transition-all ${service.highlight 
+                  ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                  : 'border border-gray-300 hover:bg-gray-50'}`}
               >
-                {service.cta}
+                {service.cta} →
               </Link>
             </div>
           ))}
         </div>
+
+        <p className="text-center text-sm text-gray-500 mt-12">
+          ✅ Todos los planes incluyen garantía 100% sin errores y soporte en español
+        </p>
       </div>
     </section>
   )
 }
+       
 
  
 // ─────────────────────────────────────────────────────────────────────────────

@@ -5,8 +5,8 @@ import { Globe, Smartphone, Search, HelpCircle, BookOpen, Send, Package, ShieldC
 // CATEGORÍAS DE SERVICIOS
 const paquetes = [
   {
-    slug: 'llc-esencial',
-    title: 'LLC Esencial',
+    slug: 'starter',
+    title: 'Starter',
     price: '$597',
     tagline: 'Todo lo necesario para lanzar tu empresa en EE.UU.',      
     icon: Globe,

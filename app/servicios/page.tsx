@@ -73,6 +73,13 @@ const serviciosSueltos = [
     tagline: 'Presentación de tu Reporte Anual. El costo estatal varía según el estado.',
     icon: Package,
   },
+  {
+    slug: 'launch-banking',
+    title: 'Cuenta Bancaria Empresarial',
+    price: '$199',
+    tagline: 'Abre cuenta en Mercury, Relay o Wise Business y cobra en dólares desde cualquier país.',
+    icon: Smartphone,
+  },
 ];
 
 const SITE_URL = 'https://openllcusa.com';

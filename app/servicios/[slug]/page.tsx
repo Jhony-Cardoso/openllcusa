@@ -52,7 +52,7 @@ export async function generateMetadata({
 
 function getIconForSlug(slug: string) {
   if (slug.includes('llc') || slug.includes('launch') || slug.includes('primer')) return Globe
-  if (slug.includes('banking')) return Smartphone
+  if (slug.includes('banking') || slug.includes('launch-banking')) return Smartphone
   if (slug.includes('ein')) return Search
   if (slug.includes('fiscal') || slug.includes('impuestos') || slug.includes('form')) return BookOpen
   if (slug.includes('consultoria')) return HeadphonesIcon
@@ -117,6 +117,14 @@ function getTimelineForSlug(slug: string) {
       { day: '¡Listo!', title: 'Entrega de Good Standing', desc: 'Recibes el comprobante oficial de que tu LLC está en verde probatorio.' },
     ]
   }
+  if (slug.includes('launch-banking')) {
+    return [
+      { day: 'Paso 1', title: 'Recopilación de datos', desc: 'Nos envías la información de tu empresa y el tipo de cuenta que necesitas.' },
+      { day: 'Paso 2', title: 'Preparación de documentos', desc: 'Preparamos toda la documentación usando la dirección del Agente Registrado.' },
+      { day: 'Paso 3', title: 'Apertura de la cuenta', desc: 'Enviamos la solicitud a Mercury, Relay o Wise Business.' },
+      { day: 'Paso 4', title: '¡Cuenta activa!', desc: 'Recibes acceso a tu nueva cuenta bancaria en dólares.' },
+    ]
+  }
   return [
     { day: 'Paso 1', title: 'Solicitud', desc: 'Nos proporcionas la información necesaria para el trámite.' },
     { day: 'Paso 2', title: 'Procesamiento', desc: 'Nuestro equipo experto gestiona la solicitud con el organismo correspondiente.' },
@@ -164,6 +172,13 @@ function getFAQsForSlug(slug: string) {
       { q: '¿Es obligatorio el compliance básico?', a: 'Sí, no mantener el Agente Registrado activo o no presentar el Reporte Anual lleva al cierre administrativo (disolución) de la LLC.' },
       { q: '¿Incluye declaraciones federales del IRS?', a: 'No, este servicio cubre los requisitos mínimos a nivel ESTATAL. Para las obligaciones federales puedes contratar "Impuestos Federales".' },
       { q: '¿Cuánto tiempo cubre este paquete?', a: 'Cubre la renovación exigida y el servicio de agente registrado por 1 año calendario completo.' },
+    ]
+  }
+  if (slug.includes('launch-banking')) {
+    return [
+      { q: '¿Puedo abrir cuenta sin LLC?', a: 'Sí. Podemos abrir la cuenta con tu pasaporte y dirección del Agente Registrado, aunque aún no tengas la LLC formada.' },
+      { q: '¿Qué bancos usáis?', a: 'Principalmente Mercury y Relay (los más usados por no residentes). También Wise Business si prefieres.' },
+      { q: '¿Cuánto tarda la apertura?', a: 'Entre 5 y 12 días hábiles desde que enviamos la solicitud.' },
     ]
   }
   return [

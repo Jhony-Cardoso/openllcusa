@@ -457,7 +457,7 @@ const SERVICES = [
     desc: 'Abre cuenta en Mercury, Relay o Wise Business y cobra en dólares desde cualquier país.',
     features: [
       '✅ Compatible con LLC de no residentes',
-      '✅ Usamos dirección del Agente'
+      '✅ Usamos dirección del Agente Registrado'
     ],
     cta: 'Explorar cuentas bancarias →',
     href: '/servicios/launch-banking'

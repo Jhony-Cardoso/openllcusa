@@ -24,7 +24,7 @@ const paquetes = [
     slug: 'business',
     title: 'Business',
     price: '$1397',
-    tagline: 'Primer año casi todo resuelto. Gestin fiscal y soporte.',
+    tagline: 'Primer año casi todo resuelto. Gestión fiscal y soporte.',
     icon: Package,
     destacado: false,
   },

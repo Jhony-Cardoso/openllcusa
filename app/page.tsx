@@ -411,7 +411,7 @@ function IconBank() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SERVICES SECTION OPTIMIZADA - VERSIÓN COMPETITIVA
+// SERVICES DATA + SECTION (VERSIÓN COHERENTE Y FUNCIONAL)
 // ─────────────────────────────────────────────────────────────────────────────
 const SERVICES = [
   {
@@ -425,7 +425,7 @@ const SERVICES = [
       '✅ Soporte en español'
     ],
     cta: 'Ver planes de LLC →',
-    href: '/servicios/formacion-llc'
+    href: '#precios'
   },
   {
     title: 'Obtén tu EIN sin SSN',
@@ -437,19 +437,19 @@ const SERVICES = [
       '✅ Válido para abrir cuentas bancarias'
     ],
     cta: 'Solicitar mi EIN ahora →',
-    href: '/servicios/obtencion-ein'
+    href: '/paquetes/obtencion-ein/onboarding'   // Cambia si el slug real es distinto
   },
   {
     title: 'Agente Registrado + Dirección Física',
     price: '',
-    desc: 'Cumple con la ley estatal sin viajar. Te proporcionamos dirección física real en EE.UU. para recibir documentos oficiales.',
+    desc: 'Cumple con la ley estatal sin viajar. Te proporcionamos dirección física real en EE.UU.',
     features: [
       '✅ Dirección física real incluida',
       '✅ 1er año gratis en la mayoría de planes',
       '✅ Recepción de documentos del estado e IRS'
     ],
     cta: 'Contratar Agente Registrado →',
-    href: '/servicios/agente-registrado'
+    href: '/paquetes/agente-registrado/onboarding'
   },
   {
     title: 'Cuenta Bancaria Empresarial',
@@ -457,14 +457,12 @@ const SERVICES = [
     desc: 'Abre cuenta en Mercury, Relay o Wise Business y cobra en dólares desde cualquier país.',
     features: [
       '✅ Compatible con LLC de no residentes',
-      '✅ Usamos dirección del Agente Registrado',
-      '✅ Te guiamos paso a paso'
+      '✅ Usamos dirección del Agente'
     ],
     cta: 'Explorar cuentas bancarias →',
-    href: '/servicios/launch-banking'
+    href: '/paquetes/launch-banking/onboarding'
   },
 ]
-
 
 function ServicesSection() {
   return (
@@ -482,19 +480,13 @@ function ServicesSection() {
           {SERVICES.map((service, index) => (
             <div
               key={index}
-              className={`hp-fu hp-scard rounded-3xl p-8 transition-all duration-300 flex flex-col ${service.highlight ? 'border-2 border-purple-600 shadow-2xl scale-[1.02]' : 'border border-gray-200 hover:shadow-xl'}`}
+              className="hp-fu hp-scard rounded-3xl p-8 border border-gray-200 hover:shadow-xl transition-all flex flex-col"
               style={{ background: T.wh }}
             >
-              {service.highlight && (
-                <div className="inline-block px-4 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full mb-4 w-fit">
-                  MÁS POPULAR
-                </div>
-              )}
-
               <div className="mb-6">
                 <div className="text-5xl mb-3">📋</div>
                 <h3 className="font-bold text-2xl" style={{ color: T.tx }}>{service.title}</h3>
-                <p className="text-3xl font-bold mt-2" style={{ color: T.b7 }}>{service.price}</p>
+                {service.price && <p className="text-3xl font-bold mt-2" style={{ color: T.b7 }}>{service.price}</p>}
               </div>
 
               <p className="text-gray-600 mb-8 flex-1 leading-relaxed">{service.desc}</p>
@@ -509,21 +501,15 @@ function ServicesSection() {
               </ul>
 
               <Link
-                href={`/servicios/${service.slug}/onboarding`}
-                onClick={() => analyticsEvents?.trackEvent('cta_click', 'servicios', service.slug)}
-                className={`block text-center py-4 rounded-2xl font-semibold transition-all ${service.highlight 
-                  ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                  : 'border border-gray-300 hover:bg-gray-50'}`}
+                href={service.href}
+                onClick={() => analyticsEvents?.trackEvent('cta_click', 'servicios', service.title)}
+                className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition"
               >
-                {service.cta} →
+                {service.cta}
               </Link>
             </div>
           ))}
         </div>
-
-        <p className="text-center text-sm text-gray-500 mt-12">
-          ✅ Todos los planes incluyen garantía 100% sin errores y soporte en español
-        </p>
       </div>
     </section>
   )

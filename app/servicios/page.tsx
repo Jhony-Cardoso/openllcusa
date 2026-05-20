@@ -13,16 +13,16 @@ const paquetes = [
     destacado: false,
   },
   {
-    slug: 'launch-banking',
-    title: 'Launch + Banking',
+    slug: 'professional',
+    title: 'Professional',
     price: '$897',
     tagline: 'Formación completa + apoyo para abrir cuenta bancaria.',
     icon: Smartphone,
     destacado: true, // Este es el más popular
   },
   {
-    slug: 'primer-ano-pro',
-    title: 'Primer Año Pro',
+    slug: 'business',
+    title: 'Business',
     price: '$1397',
     tagline: 'Primer año casi todo resuelto. Gestin fiscal y soporte.',
     icon: Package,

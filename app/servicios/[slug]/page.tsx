@@ -61,7 +61,7 @@ function getIconForSlug(slug: string) {
 }
 
 function getTimelineForSlug(slug: string) {
-  if (slug.includes('starter') || slug.includes('launch') || slug.includes('primer')) {
+  if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
       { day: 'Día 1', title: 'Solicitud y Revisión', desc: 'Analizamos tus datos y preparamos los documentos estatales.' },
       { day: 'Día 2–4', title: 'Registro Estatal', desc: 'Tu LLC es aprobada oficialmente por el estado elegido.' },

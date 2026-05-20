@@ -437,7 +437,7 @@ const SERVICES = [
       '✅ Válido para abrir cuentas bancarias'
     ],
     cta: 'Solicitar mi EIN ahora →',
-    href: '/paquetes/obtencion-ein/onboarding'   // Cambia si el slug real es distinto
+    href: '/servicios/impuestos/obtencion-ein'   // Cambia si el slug real es distinto
   },
   {
     title: 'Agente Registrado + Dirección Física',
@@ -449,7 +449,7 @@ const SERVICES = [
       '✅ Recepción de documentos del estado e IRS'
     ],
     cta: 'Contratar Agente Registrado →',
-    href: '/paquetes/agente-registrado/onboarding'
+    href: '/servicios/agente-registrado'
   },
   {
     title: 'Cuenta Bancaria Empresarial',
@@ -460,7 +460,7 @@ const SERVICES = [
       '✅ Usamos dirección del Agente'
     ],
     cta: 'Explorar cuentas bancarias →',
-    href: '/paquetes/launch-banking/onboarding'
+    href: '/servicios/launch-banking'
   },
 ]
 

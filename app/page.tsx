@@ -750,7 +750,7 @@ const TESTIMONIOS = [
   {
     image: '/images/testimonio-carlos.webp',
     name: 'Carlos M.',
-    country: 'Colombia',
+    country: 'co Colombia',
     quote: 'En solo 4 días tuve mi LLC en Delaware y ya estoy cobrando clientes de EE.UU. en dólares. Reduje mis impuestos un 42% el primer año. El proceso fue mucho más sencillo de lo que esperaba.',
     result: 'Ahorró más de $18.000 USD en impuestos el primer año',
     stars: 5
@@ -758,7 +758,7 @@ const TESTIMONIOS = [
   {
     image: '/images/testimonio-ana.webp',
     name: 'Ana R.',
-    country: 'México',
+    country: 'mx México',
     quote: 'Pensé que sería complicado por ser de México. Me gestionaron todo: LLC, EIN y cuenta en Mercury. En menos de 10 días ya tenía mi cuenta bancaria en EE.UU. funcionando.',
     result: 'Abrió cuenta en Mercury en solo 9 días',
     stars: 5
@@ -766,7 +766,7 @@ const TESTIMONIOS = [
   {
     image: '/images/testimonio-miguel.webp',
     name: 'Miguel S.',
-    country: 'España',
+    country: 'es España',
     quote: 'Pasé de facturar como autónomo a tener una estructura profesional. En menos de un mes ya tenía mis primeros clientes americanos pagándome en dólares. Totalmente recomendable.',
     result: 'Consiguió sus primeros 3 clientes USA en menos de 30 días',
     stars: 5
@@ -774,23 +774,23 @@ const TESTIMONIOS = [
   {
     image: '/images/testimonio-laura.webp',
     name: 'Laura P.',
-    country: 'España',
+    country: 'es España',
     quote: 'Como consultora, necesitaba transmitir profesionalidad. La LLC me permitió trabajar con clientes de Estados Unidos sin complicaciones y con una imagen mucho más sólida.',
     result: 'Aumentó su facturación un 65% en 6 meses',
     stars: 5
   },
   {
-    image: '/images/testimonio-roberto.webp',
+    image: 'null',
     name: 'Roberto K.',
-    country: 'Argentina',
+    country: 'ar Argentina',
     quote: 'Tengo un e-commerce y necesitaba recibir pagos de Amazon y clientes americanos. Con la LLC y la cuenta en Mercury todo se simplificó muchísimo. Muy buen servicio.',
     result: 'Empezó a recibir pagos de Amazon USA en 3 semanas',
     stars: 5
   },
   {
-    image: '/images/testimonio-daniela.webp',
+    image: 'null',
     name: 'Daniela M.',
-    country: 'Colombia',
+    country: 'co Colombia',
     quote: 'Como desarrolladora de software, la LLC me dio credibilidad inmediata con clientes americanos. Además, pude optimizar bastante mi situación fiscal. El acompañamiento fue excelente.',
     result: 'Consiguió 4 clientes americanos en los primeros 2 meses',
     stars: 5

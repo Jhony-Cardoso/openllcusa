@@ -6,194 +6,87 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <>
-      <style jsx global>{`
-        .footer-main {
-          background: #11284cff;
-          color: #cbd5e1;
-          padding: 4rem 0 2rem;
-          margin-top: 4rem;
-        }
-
-        .footer-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 0 1.5rem;
-        }
-
-        .footer-grid {
-          display: grid;
-          grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr;
-          gap: 3rem;
-          margin-bottom: 3rem;
-        }
-
-        .footer-column {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .footer-title {
-          font-size: 1.5rem;
-          font-weight: bold;
-          color: white;
-          margin: 0 0 0.5rem 0;
-          white-space: nowrap;
-        }
-
-        .footer-description {
-          font-size: 0.95rem;
-          line-height: 1.6;
-          color: #94a3b8;
-          margin: 0;
-        }
-
-        .footer-column-title {
-          font-size: 1.125rem;
-          font-weight: 600;
-          color: white;
-          margin: 0 0 1rem 0;
-          white-space: nowrap;
-        }
-
-        .footer-links {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .footer-links a {
-          color: #94a3b8;
-          text-decoration: none;
-          font-size: 0.95rem;
-          transition: color 0.2s;
-          display: inline-block;
-          white-space: nowrap;
-        }
-
-        .footer-links a:hover {
-          color: #6366f1;
-        }
-
-        .footer-bottom {
-          padding-top: 2rem;
-          border-top: 1px solid #334155;
-          text-align: center;
-        }
-
-        .footer-copyright {
-          font-size: 0.9rem;
-          color: #94a3b8;
-          margin: 0 0 0.5rem 0;
-        }
-
-        .footer-disclaimer {
-          font-size: 0.85rem;
-          color: #64748b;
-          margin: 0;
-          font-style: italic;
-        }
-
-        @media (max-width: 1024px) {
-          .footer-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-          }
-
-          .footer-title,
-          .footer-column-title,
-          .footer-links a {
-            white-space: normal;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .footer-main {
-            padding: 3rem 0 1.5rem;
-          }
-
-          .footer-container {
-            padding: 0 1rem;
-          }
-
-          .footer-grid {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-          }
-
-          .footer-title {
-            font-size: 1.25rem;
-          }
-
-          .footer-title,
-          .footer-column-title,
-          .footer-links a {
-            white-space: normal;
-          }
-        }
-      `}</style>
-
-      <footer className="footer-main">
-        <div className="footer-container">
-          <div className="footer-grid">
-            {/* Columna 1: Sobre nosotros (más ancha) */}
-            <div className="footer-column">
-              <h3 className="footer-title">Open LLC USA</h3>
-              <p className="footer-description">
-                Ayudamos a emprendedores españoles a crear y gestionar su LLC en Estados Unidos
-                de forma sencilla y profesional.
-              </p>
-            </div>
-
-            {/* Columna 2: Recursos */}
-            <div className="footer-column">
-              <h4 className="footer-column-title">Recursos</h4>
-              <ul className="footer-links">
-                <li><Link href="/calculadora-fiscal">Calculadora Fiscal</Link></li>
-                <li><Link href="/quiz">Quiz ¿Es una LLC para ti?</Link></li>
-                <li><Link href="/faq">Preguntas Frecuentes</Link></li>
-                <li><Link href="/blog">Blog</Link></li>
-              </ul>
-            </div>
-
-            {/* Columna 3: Servicios */}
-            <div className="footer-column">
-              <h4 className="footer-column-title">Servicios</h4>
-              <ul className="footer-links">
-                <li><Link href="/servicios/crear-llc">Crear LLC</Link></li>
-                <li><Link href="/servicios/asesoria-fiscal">Asesoría Fiscal</Link></li>
-                <li><Link href="/servicios/mantenimiento">Mantenimiento LLC</Link></li>
-                <li><Link href="/contacto">Contacto</Link></li>
-              </ul>
-            </div>
-
-            {/* Columna 4: Legal (más ancha para textos largos) */}
-            <div className="footer-column">
-              <h4 className="footer-column-title">Legal</h4>
-              <ul className="footer-links">
-                <li><Link href="/legal/condiciones-generales">Términos y condiciones</Link></li>
-                <li><Link href="/legal/privacy-policy">Política de privacidad</Link></li>
-                <li><Link href="/legal/changelog">Historial de cambios</Link></li>
-              </ul>
-            </div>
+    <footer className="bg-[#0f172a] text-slate-300 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-y-12 gap-x-8">
+          
+          {/* Columna 1: Marca */}
+          <div className="lg:col-span-2">
+            <h3 className="text-2xl font-bold text-white mb-4">Open LLC USA</h3>
+            <p className="text-slate-400 max-w-md leading-relaxed">
+              Ayudamos a emprendedores de España y Latinoamérica a crear y gestionar su LLC en Estados Unidos de forma profesional, rápida y 100% remota.
+            </p>
           </div>
 
-          {/* Copyright */}
-          <div className="footer-bottom">
-            <p className="footer-copyright">
+          {/* Columna 2: Explorar */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">Explorar</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link href="/calculadora-fiscal" className="hover:text-white transition-colors">Calculadora Fiscal</Link></li>
+              <li><Link href="/quiz" className="hover:text-white transition-colors">Quiz: ¿Es una LLC para ti?</Link></li>
+              <li><Link href="/servicios" className="hover:text-white transition-colors">Todos los Servicios</Link></li>
+              <li><Link href="/precios" className="hover:text-white transition-colors">Planes y Precios</Link></li>
+            </ul>
+          </div>
+
+          {/* Columna 3: Servicios */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">Servicios</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link href="/paquetes/starter/onboarding" className="hover:text-white transition-colors">Crear LLC (Starter)</Link></li>
+              <li><Link href="/paquetes/professional/onboarding" className="hover:text-white transition-colors">Professional</Link></li>
+              <li><Link href="/paquetes/business/onboarding" className="hover:text-white transition-colors">Business</Link></li>
+              <li><Link href="/servicios/obtencion-ein" className="hover:text-white transition-colors">Obtener EIN</Link></li>
+              <li><Link href="/servicios/agente-registrado" className="hover:text-white transition-colors">Agente Registrado</Link></li>
+            </ul>
+          </div>
+
+          {/* Columna 4: Soporte y Legal */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">Soporte y Legal</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link href="/faq" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
+              <li><Link href="/contacto" className="hover:text-white transition-colors">Contacto</Link></li>
+              <li><Link href="/legal/privacy-policy" className="hover:text-white transition-colors">Política de Privacidad</Link></li>
+              <li><Link href="/legal/condiciones-generales" className="hover:text-white transition-colors">Términos y Condiciones</Link></li>
+            </ul>
+          </div>
+
+          {/* Columna 5: Contacto */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">Contacto</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <a href="mailto:hola@openllcusa.com" className="hover:text-white transition-colors">
+                  hola@openllcusa.com
+                </a>
+              </li>
+              <li>
+                <a href="https://wa.me/XXXXXXXXXXX" target="_blank" className="hover:text-white transition-colors">
+                  WhatsApp
+                </a>
+              </li>
+              <li className="pt-2 text-xs text-slate-500">
+                Soporte en español<br />Respuesta en menos de 12h
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Disclaimer y Copyright */}
+        <div className="mt-16 pt-8 border-t border-slate-700 text-sm text-slate-500">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-y-4">
+            <p>
               © {currentYear} Open LLC USA. Todos los derechos reservados.
             </p>
-            <p className="footer-disclaimer">
-              Open LLC USA no es un bufete de abogados. Trabajamos con abogados registrados en EE.UU. cuando es necesario.
-              Todos los servicios son prestados conforme a las leyes federales y estatales vigentes.
+            
+            <p className="max-w-2xl text-xs leading-relaxed">
+              Open LLC USA no es un bufete de abogados. Actuamos como intermediarios y colaboradores con profesionales y abogados registrados en EE.UU. 
+              Todos los servicios se prestan de conformidad con la legislación federal y estatal vigente.
             </p>
           </div>
         </div>
-      </footer>
-    </>
+      </div>
+    </footer>
   )
 }

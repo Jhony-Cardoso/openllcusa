@@ -779,8 +779,7 @@ const TESTIMONIOS = [
     result: 'Aumentó su facturación un 65% en 6 meses',
     stars: 5
   },
-  {
-    image: 'null',
+  {    
     name: 'Roberto K.',
     country: 'ar Argentina',
     quote: 'Tengo un e-commerce y necesitaba recibir pagos de Amazon y clientes americanos. Con la LLC y la cuenta en Mercury todo se simplificó muchísimo. Muy buen servicio.',
@@ -788,7 +787,6 @@ const TESTIMONIOS = [
     stars: 5
   },
   {
-    image: 'null',
     name: 'Daniela M.',
     country: 'co Colombia',
     quote: 'Como desarrolladora de software, la LLC me dio credibilidad inmediata con clientes americanos. Además, pude optimizar bastante mi situación fiscal. El acompañamiento fue excelente.',
@@ -798,7 +796,7 @@ const TESTIMONIOS = [
 ]
 
 function TestimonialsSection() {
-  return (
+return (
     <section id="testimonios" style={{ padding: '120px 0', background: T.wh }}>
       <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
         <div className="hp-fu text-center mb-16">
@@ -840,12 +838,26 @@ function TestimonialsSection() {
 
               {/* Author */}
               <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-                <div 
-                  className="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-white font-bold text-lg"
-                  style={{ background: T.b9 }}
-                >
-                  {t.name[0]}
-                </div>
+                {t.image && typeof t.image === 'string' ? (
+                  // Foto real
+                  <div className="w-12 h-12 rounded-2xl overflow-hidden border border-gray-200 flex-shrink-0">
+                    <Image 
+                      src={t.image} 
+                      alt={t.name}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  // Inicial
+                  <div 
+                    className="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-white font-bold text-lg"
+                    style={{ background: T.b9 }}
+                  >
+                    {t.name[0]}
+                  </div>
+                )}
                 <div>
                   <div className="font-bold" style={{ color: T.tx }}>{t.name}</div>
                   <div className="text-sm" style={{ color: T.tm }}>{t.country}</div>
@@ -858,8 +870,8 @@ function TestimonialsSection() {
     </section>
   )
 }
-    
 
+ 
 {/* ===================== SECCIÓN PRECIOS OPTIMIZADA ===================== */}
 <section className="py-20 bg-white" id="precios">
   <div className="max-w-6xl mx-auto px-6">

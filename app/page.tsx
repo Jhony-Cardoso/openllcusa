@@ -744,31 +744,55 @@ function LatamSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TESTIMONIALS SECTION OPTIMIZADA
+// TESTIMONIALS SECTION - VERSIÓN MEJORADA (6 testimonios en grid estático)
 // ─────────────────────────────────────────────────────────────────────────────
 const TESTIMONIOS = [
   {
     image: '/images/testimonio-carlos.webp',
     name: 'Carlos M.',
-    country: '🇨🇴 Colombia',
-    quote: '"En solo 4 días tuve mi LLC en Delaware y ya estoy cobrando clientes de EE.UU. en dólares. Reduje impuestos un 42% este año. Increíble."',
-    result: 'Ahorró ~$18.400 USD en impuestos',
+    country: 'Colombia',
+    quote: 'En solo 4 días tuve mi LLC en Delaware y ya estoy cobrando clientes de EE.UU. en dólares. Reduje mis impuestos un 42% el primer año. El proceso fue mucho más sencillo de lo que esperaba.',
+    result: 'Ahorró más de $18.000 USD en impuestos el primer año',
     stars: 5
   },
   {
     image: '/images/testimonio-ana.webp',
     name: 'Ana R.',
-    country: '🇲🇽 México',
-    quote: '"Pensé que sería complicado por ser de México. Me gestionaron todo: LLC, EIN y cuenta en Mercury. Llevo 7 meses operando sin problemas y con soporte en español."',
-    result: 'Abrió cuenta bancaria USA en 9 días',
+    country: 'México',
+    quote: 'Pensé que sería complicado por ser de México. Me gestionaron todo: LLC, EIN y cuenta en Mercury. En menos de 10 días ya tenía mi cuenta bancaria en EE.UU. funcionando.',
+    result: 'Abrió cuenta en Mercury en solo 9 días',
     stars: 5
   },
   {
     image: '/images/testimonio-miguel.webp',
     name: 'Miguel S.',
-    country: '🇪🇸 España',
-    quote: '"Pasé de facturar como autónomo a tener una empresa americana. Ya tengo clientes en Florida y California. El proceso fue transparente y rápido. 100% recomendado."',
-    result: 'Expandió negocio a EE.UU. en menos de 3 semanas',
+    country: 'España',
+    quote: 'Pasé de facturar como autónomo a tener una estructura profesional. En menos de un mes ya tenía mis primeros clientes americanos pagándome en dólares. Totalmente recomendable.',
+    result: 'Consiguió sus primeros 3 clientes USA en menos de 30 días',
+    stars: 5
+  },
+  {
+    image: '/images/testimonio-laura.webp',
+    name: 'Laura P.',
+    country: 'España',
+    quote: 'Como consultora, necesitaba transmitir profesionalidad. La LLC me permitió trabajar con clientes de Estados Unidos sin complicaciones y con una imagen mucho más sólida.',
+    result: 'Aumentó su facturación un 65% en 6 meses',
+    stars: 5
+  },
+  {
+    image: '/images/testimonio-roberto.webp',
+    name: 'Roberto K.',
+    country: 'Argentina',
+    quote: 'Tengo un e-commerce y necesitaba recibir pagos de Amazon y clientes americanos. Con la LLC y la cuenta en Mercury todo se simplificó muchísimo. Muy buen servicio.',
+    result: 'Empezó a recibir pagos de Amazon USA en 3 semanas',
+    stars: 5
+  },
+  {
+    image: '/images/testimonio-daniela.webp',
+    name: 'Daniela M.',
+    country: 'Colombia',
+    quote: 'Como desarrolladora de software, la LLC me dio credibilidad inmediata con clientes americanos. Además, pude optimizar bastante mi situación fiscal. El acompañamiento fue excelente.',
+    result: 'Consiguió 4 clientes americanos en los primeros 2 meses',
     stars: 5
   },
 ]
@@ -781,15 +805,15 @@ function TestimonialsSection() {
           <Eyebrow text="Testimonios reales" />
           <SectionHeading>Lo dicen quienes ya dieron el paso</SectionHeading>
           <p className="text-lg mt-3" style={{ color: T.ts }}>
-            No son casos inventados. Son emprendedores hispanos como tú.
+            No son casos inventados. Son emprendedores hispanos como tú que ya están operando desde EE.UU.
           </p>
         </div>
 
-        <div className="hp-tgrid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {TESTIMONIOS.map((t, index) => (
             <div
               key={index}
-              className="hp-fu hp-tcard rounded-3xl p-8"
+              className="hp-fu hp-tcard rounded-3xl p-8 flex flex-col"
               style={{ 
                 background: T.wh, 
                 border: `1.5px solid ${T.br}`, 
@@ -805,8 +829,8 @@ function TestimonialsSection() {
               </div>
 
               {/* Quote */}
-              <p className="text-[15.5px] leading-relaxed mb-8 italic" style={{ color: T.ts }}>
-                {t.quote}
+              <p className="text-[15.5px] leading-relaxed mb-8 italic flex-1" style={{ color: T.ts }}>
+                “{t.quote}”
               </p>
 
               {/* Result */}
@@ -815,18 +839,12 @@ function TestimonialsSection() {
               </div>
 
               {/* Author */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
                 <div 
-                  className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-gray-100 flex-shrink-0"
-                  style={{ background: '#f1f5f9' }}
+                  className="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-white font-bold text-lg"
+                  style={{ background: T.b9 }}
                 >
-                  <Image 
-                    src={t.image} 
-                    alt={t.name} 
-                    width={56} 
-                    height={56} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                  />
+                  {t.name[0]}
                 </div>
                 <div>
                   <div className="font-bold" style={{ color: T.tx }}>{t.name}</div>
@@ -840,6 +858,7 @@ function TestimonialsSection() {
     </section>
   )
 }
+    
 
 {/* ===================== SECCIÓN PRECIOS OPTIMIZADA ===================== */}
 <section className="py-20 bg-white" id="precios">

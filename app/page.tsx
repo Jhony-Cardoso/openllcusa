@@ -7,6 +7,7 @@ import ReactCountryFlag from 'react-country-flag'
 import { ArrowRight, Check, CheckCircle2, Loader2 } from 'lucide-react'
 import './homepage-v4.css'
 import { analyticsEvents } from "../lib/analytics";
+import { Metadata } from 'next'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DESIGN TOKENS
@@ -1360,6 +1361,30 @@ export default function HomePage() {
 
   return (
     <main>
+    <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Open LLC USA",
+      "url": "https://openllcusa.com",
+      "description": "Ayudamos a emprendedores hispanohablantes a crear y gestionar su LLC en Estados Unidos de forma remota y profesional.",
+      "logo": "https://openllcusa.com/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+34-XXX-XXX-XXX",
+        "contactType": "customer service",
+        "areaServed": "ES",
+        "availableLanguage": "Spanish"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/company/openllcusa",
+        "https://www.instagram.com/openllcusa"
+      ]
+    })
+  }}
+/>
       <HeroSection />
       <TrustBar />
 

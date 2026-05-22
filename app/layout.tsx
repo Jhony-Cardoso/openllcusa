@@ -12,9 +12,19 @@ import Script from 'next/script';
 export const metadata: Metadata = {
   title: {
     template: '%s | Open LLC USA',
-    default: 'Open LLC USA - Crea tu LLC desde España',
+    default: 'Crea tu LLC en Estados Unidos en 72 horas | Open LLC USA',
   },
-  description: 'Calculadora fiscal y servicios para crear y gestionar tu LLC USA desde España',
+  description: 'Forma tu LLC en EE.UU. desde España o Latam sin visa ni SSN. Planes desde $349 + tasa estatal. +500 emprendedores hispanos ya lo han hecho. Proceso 100% remoto y garantizado.',
+  keywords: [
+    'LLC USA', 
+    'crear LLC Estados Unidos', 
+    'formar empresa USA', 
+    'LLC sin visa', 
+    'EIN sin SSN', 
+    'empresa en Delaware', 
+    'empresa en Wyoming',
+    'abrir LLC desde España'
+  ],
   robots: {
     index: true,
     follow: true,
@@ -23,9 +33,12 @@ export const metadata: Metadata = {
     siteName: 'Open LLC USA',
     locale: 'es_ES',
     type: 'website',
+    title: 'Crea tu LLC en Estados Unidos en 72 horas | Open LLC USA',
+    description: 'La forma más fácil y segura de tener tu empresa americana desde España o Latinoamérica.',
+    images: [{ url: '/images/hero.webp' }],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'),
-};
+}
 
 export default function RootLayout({
   children,

@@ -169,7 +169,7 @@ function HeroSection() {
                   boxShadow: T.shCta,
                 }}
               >
-                Ver planes y precios
+                Ver planes desde $349
                 <ArrowRight size={24} />
               </Link>
             </div>
@@ -780,6 +780,7 @@ const TESTIMONIOS = [
     stars: 5
   },
   {    
+    image: '/images/testimonio-roberto.webp',
     name: 'Roberto K.',
     country: 'ar Argentina',
     quote: 'Tengo un e-commerce y necesitaba recibir pagos de Amazon y clientes americanos. Con la LLC y la cuenta en Mercury todo se simplificó muchísimo. Muy buen servicio.',
@@ -787,6 +788,7 @@ const TESTIMONIOS = [
     stars: 5
   },
   {
+    image: '/images/testimonio-daniela.webp',
     name: 'Daniela M.',
     country: 'co Colombia',
     quote: 'Como desarrolladora de software, la LLC me dio credibilidad inmediata con clientes americanos. Además, pude optimizar bastante mi situación fiscal. El acompañamiento fue excelente.',
@@ -1260,7 +1262,7 @@ function CTAFinalSection() {
 
           {/* Primary CTA */}
           <Link
-            href="#comenzar"
+            href="#precios"
             onClick={() => analyticsEvents.trackEvent('cta_click', 'final_cta', 'crear_llc')}
             className="hp-pcta inline-flex items-center gap-2.5 font-extrabold rounded-full mb-6"
             style={{

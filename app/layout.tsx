@@ -33,6 +33,7 @@ export const metadata: Metadata = {
     siteName: 'Open LLC USA',
     locale: 'es_ES',
     type: 'website',
+    url: 'https://openllcusa.com',
     title: 'Crea tu LLC en Estados Unidos en 72 horas | Open LLC USA',
     description: 'La forma más fácil y segura de tener tu empresa americana desde España o Latinoamérica.',
     images: [{ url: '/images/hero.webp' }],

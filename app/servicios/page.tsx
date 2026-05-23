@@ -1,278 +1,170 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { Globe, Smartphone, Search, HelpCircle, BookOpen, Send, Package, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
+import { analyticsEvents } from '@/lib/analytics';
 
-// CATEGORÍAS DE SERVICIOS
-const paquetes = [
+const SERVICES = [
   {
-    slug: 'starter',
-    title: 'Starter',
-    price: '$597',
-    tagline: 'Todo lo necesario para lanzar tu empresa en EE.UU.',      
-    icon: Globe,
-    destacado: false,
-  },
-  {
-    slug: 'professional',
-    title: 'Professional',
-    price: '$897',
-    tagline: 'Formación completa + apoyo para abrir cuenta bancaria.',
-    icon: Smartphone,
-    destacado: true, // Este es el más popular
-  },
-  {
-    slug: 'business',
-    title: 'Business',
-    price: '$1397',
-    tagline: 'Primer año casi todo resuelto. Gestión fiscal y soporte.',
-    icon: Package,
-    destacado: false,
-  },
-];
-
-const serviciosSueltos = [
-  {
-    slug: 'formacion-llc',
-    title: 'Formación de LLC',
-    price: '$497',
-    tagline: 'Constitución completa de tu LLC en el estado que elijas.',
-    icon: Globe,
+    title: "Registro de LLC",
+    slug: "registro-llc",
+    price: "Desde $349",
+    description: "Constitución completa de tu LLC en EE.UU. en 72 horas. Incluye documentos oficiales, EIN y todo lo necesario.",
+    features: [
+      "Registro estatal oficial",
+      "Obtención de EIN",
+      "Acuerdo operativo",
+      "Soporte en español",
+      "Garantía de aprobación"
+    ],
+    cta: "Ver planes de LLC",
+    href: "/#precios",
+    highlight: true
   },
   {
-    slug: 'obtencion-ein',
-    title: 'Obtención de EIN',
-    price: '$197',
-    tagline: 'Número fiscal federal para tu empresa (IRS).',
-    icon: Search,
+    title: "Obtención del EIN",
+    slug: "obtencion-ein",
+    price: "$149",
+    description: "Obtén tu EIN (Tax ID) del IRS de forma rápida y segura, incluso sin SSN.",
+    features: [
+      "Trámite ante el IRS",
+      "Válido para bancos y contratos",
+      "Entrega en 24-48 horas",
+      "Asesoría fiscal básica"
+    ],
+    cta: "Solicitar EIN",
+    href: "/servicios/obtencion-ein"
   },
   {
-    slug: 'impuestos/declaracion-anual-llc',
-    title: 'Declaración de Impuestos',
-    price: '$397',
-    tagline: 'Presentación anual del Formulario 1120 + 5472.',
-    icon: BookOpen,
+    title: "Agente Registrado + Dirección Física",
+    slug: "agente-registrado",
+    price: "$99/año",
+    description: "Cumple con todos los requisitos legales de EE.UU. sin necesidad de viajar.",
+    features: [
+      "Agente registrado profesional",
+      "Dirección física en EE.UU.",
+      "Recepción y escaneo de documentos",
+      "Notificaciones inmediatas"
+    ],
+    cta: "Contratar Agente",
+    href: "/servicios/agente-registrado"
   },
   {
-    slug: 'consultoria-fiscal',
-    title: 'Consultoría Fiscal',
-    price: '$197',
-    tagline: 'Sesiones personalizadas sobre estructura y fiscalidad.',
-    icon: Send,
-  },
-  {
-    slug: 'agente-registrado',
-    title: 'Agente Registrado',
-    price: '$149/año',
-    tagline: 'Servicio de agente registrado y dirección oficial anual.',
-    icon: ShieldCheck,
-  },
-  {
-    slug: 'reporte-anual',
-    title: 'Reporte Anual Estatal',
-    price: 'Desde $99',
-    tagline: 'Presentación de tu Reporte Anual. El costo estatal varía según el estado.',
-    icon: Package,
-  },
-  {
-    slug: 'launch-banking',
-    title: 'Cuenta Bancaria Empresarial',
-    price: '$199',
-    tagline: 'Abre cuenta en Mercury, Relay o Wise Business y cobra en dólares desde cualquier país.',
-    icon: Smartphone,
-  },
-];
-
-const SITE_URL = 'https://openllcusa.com';
-
-export const metadata = {
-  title: 'Catálogo de Servicios y Paquetes para tu LLC | Open LLC USA',
-  description: 'Descubre nuestros paquetes todo en uno y servicios individuales a la carta para formar, mantener y escalar tu LLC desde España y Latinoamérica.',
-  alternates: {
-    canonical: `${SITE_URL}/precios`, // Dado que esto redirige a precios, el canonical lo refuerza
-  },
-  openGraph: {
-    title: 'Servicios para tu LLC en Estados Unidos | Open LLC USA',
-    description: 'Catálogo completo: Launch, Compliance Básico, Obtención de EIN, Impuestos y Consultoría Legal.',
-    url: `${SITE_URL}/servicios`,
-    siteName: 'Open LLC USA',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Servicios para tu LLC en Estados Unidos | Open LLC USA',
-    description: 'Desde la formación hasta el cumplimiento fiscal continuo.',
+    title: "Cuenta Bancaria Empresarial",
+    slug: "launch-banking",
+    price: "$299",
+    description: "Abre tu cuenta bancaria en dólares en EE.UU. (Mercury, Wise, Relay, etc.).",
+    features: [
+      "Asistencia completa en apertura",
+      "Sin necesidad de viajar",
+      "Múltiples bancos disponibles",
+      "Soporte para LLC nuevas"
+    ],
+    cta: "Abrir Cuenta Bancaria",
+    href: "/servicios/launch-banking"
   }
-};
+];
 
 export default function ServiciosPage() {
-  // Schema ItemList combinado (ambas categorías)
-  const todosLosServicios = [...paquetes, ...serviciosSueltos];
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: 'Servicios de Formación de LLCs',
-    description: 'Catálogo completo de paquetes y servicios individuales',
-    itemListElement: todosLosServicios.map((servicio, index) => {
-      // Diferenciamos la ruta limpia según si es un paquete o servicio suelto
-      const isPaquete = paquetes.some(p => p.slug === servicio.slug);
-      const urlFinal = isPaquete 
-        ? `${SITE_URL}/paquetes/${servicio.slug}/onboarding` 
-        : `${SITE_URL}/servicios/${servicio.slug}`;
-
-      return {
-        '@type': 'ListItem',
-        position: index + 1,
-        item: {
-          '@type': 'Service', // Más semántico para Google que 'Product'
-          name: servicio.title,
-          description: servicio.tagline,
-          url: urlFinal,
-          provider: {
-            '@type': 'Organization',
-            name: 'Open LLC USA',
-            url: SITE_URL
-          },
-          offers: {
-            '@type': 'Offer',
-            price: servicio.price.replace(/[^0-9.]/g, ''),
-            priceCurrency: 'USD',
-          },
-        },
-      }
-    }),
-  };
-
   return (
-    <main className="max-w-7xl mx-auto px-6 py-16">
-      {/* Schema JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
-      {/* Encabezado Principal */}
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-extrabold text-gray-900 mb-4">
-          Nuestros Servicios
-        </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Desde la formación hasta el cumplimiento fiscal continuo. Elige el paquete perfecto para tu negocio internacional.
-        </p>
-      </div>
-
-      {/* ========== SECCIÓN 1: PAQUETES COMPLETOS ========== */}
-      <section className="mb-20">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="h-1 w-12 bg-blue-600 rounded"></div>
-          <h2 className="text-3xl font-bold text-gray-900">Paquetes Completos</h2>
-        </div>
-        <p className="text-gray-600 mb-8 text-lg">
-          Soluciones todo incluido diseñadas para cada etapa de tu empresa.
-        </p>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {paquetes.map((paquete) => {
-            const Icon = paquete.icon;
-            return (
-              <Link
-                key={paquete.slug}
-                href={`/servicios/${paquete.slug}`}
-                className={`group relative bg-white border-2 rounded-xl p-6 shadow-sm hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 ${
-                  paquete.destacado ? 'border-yellow-400' : 'border-gray-200 hover:border-blue-500'
-                }`}
-              >
-                {/* Badge "Más Popular" */}
-                {paquete.destacado && (
-                  <div className="absolute -top-3 -right-3 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                    ⭐ Más Popular
-                  </div>
-                )}
-
-                <div className="flex items-center justify-center w-14 h-14 bg-blue-50 rounded-lg mb-4 group-hover:bg-blue-100 transition-colors">
-                  <Icon className="text-blue-600" size={28} />
-                </div>
-
-                <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                  {paquete.title}
-                </h3>
-                <p className="text-3xl font-extrabold text-blue-600 mb-3">
-                  {paquete.price}
-                </p>
-
-                <p className="text-gray-600 mb-4 leading-relaxed">
-                  {paquete.tagline}
-                </p>
-
-                <div className="flex items-center text-blue-600 font-semibold group-hover:gap-2 transition-all">
-                  Ver detalles
-                  <svg className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
-            );
-          })}
+    <main className="min-h-screen bg-gray-50">
+      {/* HERO */}
+      <section className="bg-gradient-to-br from-[#1e3a8a] to-[#3b82f6] text-white py-20">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            Servicios para tu LLC en EE.UU.
+          </h1>
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-10">
+            Todo lo que necesitas para constituir, operar y hacer crecer tu empresa americana de forma 100% legal y remota.
+          </p>
+          <Link
+            href="#paquetes"
+            onClick={() => analyticsEvents.trackEvent('cta_click', 'servicios_hero', 'ver_paquetes')}
+            className="inline-flex items-center gap-3 bg-white text-[#1e3a8a] font-bold text-lg px-10 py-4 rounded-full hover:bg-gray-100 transition-all"
+          >
+            Ver planes recomendados
+            <ArrowRight size={24} />
+          </Link>
         </div>
       </section>
 
-      {/* ========== SECCIÓN 2: SERVICIOS INDIVIDUALES ========== */}
-      <section>
-        <div className="flex items-center gap-3 mb-8">
-          <div className="h-1 w-12 bg-green-600 rounded"></div>
-          <h2 className="text-3xl font-bold text-gray-900">Servicios Individuales</h2>
-        </div>
-        <p className="text-gray-600 mb-8 text-lg">
-          Servicios puntuales para necesidades específicas. Combínalos a tu medida.
-        </p>
+      {/* PAQUETES RECOMENDADOS */}
+      <section id="paquetes" className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="text-purple-600 font-semibold">PAQUETES COMPLETOS</span>
+            <h2 className="text-4xl font-bold text-gray-900 mt-3">Elige el plan perfecto para ti</h2>
+          </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {serviciosSueltos.map((servicio) => {
-            const Icon = servicio.icon;
-            return (
-              <Link
-                key={servicio.slug}
-                href={`/servicios/${servicio.slug}`}
-                className="group bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-2xl hover:border-green-500 transition-all duration-300 transform hover:-translate-y-1"
-              >
-                <div className="flex items-center justify-center w-14 h-14 bg-green-50 rounded-lg mb-4 group-hover:bg-green-100 transition-colors">
-                  <Icon className="text-green-600" size={28} />
-                </div>
-
-                <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
-                  {servicio.title}
-                </h3>
-                <p className="text-3xl font-extrabold text-green-600 mb-3">
-                  {servicio.price}
-                </p>
-
-                <p className="text-gray-600 mb-4 leading-relaxed">
-                  {servicio.tagline}
-                </p>
-
-                <div className="flex items-center text-green-600 font-semibold group-hover:gap-2 transition-all">
-                  Ver detalles
-                  <svg className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
-            );
-          })}
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Aquí irían los 3 paquetes - Starter, Professional, Business */}
+            {/* Por ahora dejo placeholder para que tú decidas si reutilizamos los de la homepage */}
+          </div>
         </div>
       </section>
 
-      {/* CTA Final */}
-      <div className="text-center mt-20 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-2xl p-12">
-        <h2 className="text-3xl font-bold mb-4" style={{ color: '#dbeafe' }}>
-          ¿No estás seguro cuál elegir?
-        </h2>
-        <p className="text-xl mb-6 opacity-90">
-          Agenda una consulta gratuita y te ayudamos a diseñar tu estructura ideal.
-        </p>
-        <Link href="/contacto" className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
-          Contactar ahora
-        </Link>
-      </div>
+      {/* SERVICIOS INDIVIDUALES */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="text-purple-600 font-semibold">SERVICIOS ADICIONALES</span>
+            <h2 className="text-4xl font-bold text-gray-900 mt-3">Servicios Individuales</h2>
+            <p className="text-xl text-gray-600 mt-4">Soluciones específicas para necesidades concretas</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {SERVICES.map((service, index) => (
+              <div
+                key={index}
+                className={`bg-white rounded-3xl p-8 border ${service.highlight ? 'border-purple-500 shadow-xl' : 'border-gray-200'} hover:shadow-2xl transition-all group`}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900">{service.title}</h3>
+                  <span className="text-2xl font-bold text-purple-600">{service.price}</span>
+                </div>
+
+                <p className="text-gray-600 mb-8 leading-relaxed">{service.description}</p>
+
+                <ul className="space-y-3 mb-10">
+                  {service.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <Check className="text-green-500 mt-1 flex-shrink-0" size={20} />
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={service.href}
+                  onClick={() => analyticsEvents.trackEvent('cta_click', 'servicio', service.slug)}
+                  className="group flex items-center justify-center gap-2 w-full bg-[#1e3a8a] hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl transition-all"
+                >
+                  {service.cta}
+                  <ArrowRight className="group-hover:translate-x-1 transition" />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA FINAL */}
+      <section className="py-20 bg-gradient-to-br from-[#1e3a8a] to-[#3b82f6] text-white text-center">
+        <div className="max-w-2xl mx-auto px-6">
+          <h2 className="text-4xl font-bold mb-6">¿Listo para dar el siguiente paso?</h2>
+          <p className="text-xl mb-10">Nuestro equipo te ayudará a elegir la mejor opción para tu situación.</p>
+          
+          <Link
+            href="/#asesoria"
+            onClick={() => analyticsEvents.trackEvent('cta_click', 'servicios_final', 'asesoria')}
+            className="inline-flex items-center gap-3 bg-white text-[#1e3a8a] font-bold text-lg px-12 py-5 rounded-full hover:bg-gray-100 transition-all"
+          >
+            Solicitar asesoría personalizada
+            <ArrowRight size={26} />
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

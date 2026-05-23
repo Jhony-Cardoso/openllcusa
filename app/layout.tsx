@@ -29,14 +29,21 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  openGraph: {
+    openGraph: {
     siteName: 'Open LLC USA',
     locale: 'es_ES',
     type: 'website',
-    url: 'https://openllcusa.com',
+    url: 'https://openllcusa.com',           // Obligatorio para Facebook
     title: 'Crea tu LLC en Estados Unidos en 72 horas | Open LLC USA',
     description: 'La forma más fácil y segura de tener tu empresa americana desde España o Latinoamérica.',
-    images: [{ url: '/images/hero.webp' }],
+    images: [
+      {
+        url: 'https://openllcusa.com/images/hero.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Crea tu LLC en Estados Unidos'
+      }
+    ],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'),
 }

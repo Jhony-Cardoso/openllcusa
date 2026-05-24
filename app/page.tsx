@@ -1333,8 +1333,8 @@ function MobileStickyCTA() {
           </div>
 
           <Link
-            href="#comenzar"
-            onClick={() => analyticsEvents?.trackEvent('cta_click', 'sticky_cta', 'comenzar')}
+            href="#precios"
+            onClick={() => analyticsEvents?.trackEvent('cta_click', 'sticky_cta', 'precios')}
             className="inline-flex items-center font-bold rounded-full whitespace-nowrap flex-shrink-0 text-sm px-5 py-2.5"
             style={{
               background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,

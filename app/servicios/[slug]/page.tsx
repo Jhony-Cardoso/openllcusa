@@ -347,7 +347,7 @@ export default async function ServicioDetallePage({
                   image: '/images/testimonio-lucia.webp'
                 },
               ].map((t, i) => (
-      <div key={i} className="sd-testi-card">
+      <div key={i} className="sd-testi-card flex flex-col">
         <div className="sd-testi-stars">★★★★★</div>
         
        <p className="sd-testi-text flex-grow">"{t.text}"</p>

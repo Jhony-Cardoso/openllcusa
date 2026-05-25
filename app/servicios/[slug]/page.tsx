@@ -334,23 +334,43 @@ export default async function ServicioDetallePage({
             </h2>
             <div className="sd-testi-grid">
               {[
-                { name: 'Andrés V.', city: 'Madrid, España', text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.' },
-                { name: 'Lucía F.',  city: 'Bogotá, Colombia', text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!' },
+                {
+                  name: 'Andrés V.', 
+                  city: 'Madrid, España', 
+                  text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.',
+                  image: '/images/testimonio-andres.webp'
+                 },
+                { 
+                  name: 'Lucía F.',  
+                  city: 'Bogotá, Colombia', 
+                  text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!',
+                  image: '/images/testimonio-lucia.webp'
+                },
               ].map((t, i) => (
-                <div key={i} className="sd-testi-card">
-                  <div className="sd-testi-stars">★★★★★</div>
-                  <p className="sd-testi-text">"{t.text}"</p>
-                  <div className="sd-testi-author">
-                    <div className="sd-testi-avatar">{t.name[0]}</div>
-                    <div>
-                      <p className="sd-testi-name">{t.name}</p>
-                      <p className="sd-testi-city">{t.city}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+      <div key={i} className="sd-testi-card">
+        <div className="sd-testi-stars">★★★★★</div>
+        
+        {t.image ? (
+          <img 
+            src={t.image} 
+            alt={t.name}
+            className="sd-testi-photo"
+            width={80}
+            height={80}
+          />
+        ) : (
+          <div className="sd-testi-avatar">{t.name[0]}</div>
+        )}
+        
+        <p className="sd-testi-text">"{t.text}"</p>
+        <div className="sd-testi-author">
+          <p className="sd-testi-name">{t.name}</p>
+          <p className="sd-testi-city">{t.city}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
           {/* FAQ */}
           <section>

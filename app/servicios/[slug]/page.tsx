@@ -350,22 +350,28 @@ export default async function ServicioDetallePage({
       <div key={i} className="sd-testi-card">
         <div className="sd-testi-stars">★★★★★</div>
         
-        {t.image ? (
-          <img 
-            src={t.image} 
-            alt={t.name}
-            className="sd-testi-photo object-cover"
-            width={65}
-            height={65}          
-          />
-        ) : (
-          <div className="sd-testi-avatar">{t.name[0]}</div>
-        )}
+       <p className="sd-testi-text">"{t.text}"</p>
         
-        <p className="sd-testi-text">"{t.text}"</p>
-        <div className="sd-testi-author">
-          <p className="sd-testi-name">{t.name}</p>
-          <p className="sd-testi-city">{t.city}</p>
+        {/* Foto + Datos - Nueva disposición */}
+        <div className="flex items-center gap-4 mt-6">
+          {t.image ? (
+            <img 
+              src={t.image} 
+              alt={t.name}
+              className="w-16 h-16 object-cover rounded-2xl flex-shrink-0"
+              width={64}
+              height={64}
+            />
+          ) : (
+            <div className="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center text-2xl font-bold text-gray-500 flex-shrink-0">
+              {t.name[0]}
+            </div>
+          )}
+          
+          <div>
+            <p className="sd-testi-name font-semibold text-lg">{t.name}</p>
+            <p className="sd-testi-city text-gray-600">{t.city}</p>
+          </div>
         </div>
       </div>
     ))}

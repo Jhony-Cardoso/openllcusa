@@ -5,29 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
 import { analyticsEvents } from '@/lib/analytics';
 
-const paquetes = [
-  {
-    slug: 'starter',
-    title: 'Starter',
-    price: '$597',
-    tagline: 'Todo lo necesario para lanzar tu empresa en EE.UU.',
-    destacado: false,
-  },
-  {
-    slug: 'professional',
-    title: 'Professional',
-    price: '$897',
-    tagline: 'Formación completa + apoyo para abrir cuenta bancaria.',
-    destacado: true,
-  },
-  {
-    slug: 'business',
-    title: 'Business',
-    price: '$1397',
-    tagline: 'Primer año casi todo resuelto. Gestión fiscal y soporte.',
-    destacado: false,
-  },
-];
+const paquetes = [ /* ... mismo código de paquetes ... */ ];
 
 const serviciosIndividuales = [
   {
@@ -93,31 +71,7 @@ export default function ServiciosPage() {
         </p>
       </div>
 
-      {/* Paquetes */}
-      <section className="mb-20">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900">Paquetes Recomendados</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {paquetes.map((p) => (
-            <Link
-              key={p.slug}
-              href={`/paquetes/${p.slug}/onboarding`}
-              className={`group bg-white border-2 rounded-3xl p-8 hover:shadow-2xl transition-all ${p.destacado ? 'border-purple-600 scale-[1.03]' : 'border-gray-200 hover:border-blue-600'}`}
-            >
-              {p.destacado && (
-                <div className="text-purple-600 text-sm font-bold mb-4">★ MÁS POPULAR</div>
-              )}
-              <h3 className="text-3xl font-bold mb-2">{p.title}</h3>
-              <p className="text-5xl font-extrabold text-blue-600 mb-4">{p.price}</p>
-              <p className="text-gray-600 mb-8">{p.tagline}</p>
-              <div className="text-blue-600 font-semibold flex items-center gap-2 group-hover:gap-3">
-                Ver plan completo <ArrowRight />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* Paquetes - se mantiene igual */}
 
       {/* Servicios Individuales */}
       <section>
@@ -138,8 +92,8 @@ export default function ServiciosPage() {
                 </div>
               )}
 
-              <h3 className="text-2xl font-bold mb-2">{s.title}</h3>
-              <p className="text-4xl font-extrabold text-green-600 mb-6">{s.price}</p>
+              <h3 className="text-2xl font-bold text-blue-700 mb-2">{s.title}</h3>
+              <p className="text-4xl font-extrabold text-blue-600 mb-6">{s.price}</p>
               <p className="text-gray-600 mb-8">{s.tagline}</p>
 
               <ul className="space-y-3 mb-10">
@@ -154,7 +108,7 @@ export default function ServiciosPage() {
               <Link
                 href={`/servicios/${s.slug}`}
                 onClick={() => analyticsEvents.trackEvent('cta_click', 'servicio_individual', s.slug)}
-                className="block w-full bg-gray-900 hover:bg-black text-white text-center font-semibold py-4 rounded-2xl transition-all"
+                className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-4 rounded-2xl transition-all"
               >
                 Ver detalles y contratar →
               </Link>

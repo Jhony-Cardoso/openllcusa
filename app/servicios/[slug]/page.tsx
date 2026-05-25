@@ -354,9 +354,9 @@ export default async function ServicioDetallePage({
           <img 
             src={t.image} 
             alt={t.name}
-            className="sd-testi-photo"
-            width={70}
-            height={70}          
+            className="sd-testi-photo object-cover"
+            width={65}
+            height={65}          
           />
         ) : (
           <div className="sd-testi-avatar">{t.name[0]}</div>

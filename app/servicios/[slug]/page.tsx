@@ -350,17 +350,17 @@ export default async function ServicioDetallePage({
       <div key={i} className="sd-testi-card">
         <div className="sd-testi-stars">★★★★★</div>
         
-       <p className="sd-testi-text">"{t.text}"</p>
+       <p className="sd-testi-text flex-grow">"{t.text}"</p>
         
         {/* Foto + Datos - Nueva disposición */}
-        <div className="flex items-center gap-4 mt-6">
+        <div className="flex items-end gap-4 mt-auto pt-6">
           {t.image ? (
             <img 
               src={t.image} 
               alt={t.name}
               className="w-16 h-16 object-cover rounded-2xl flex-shrink-0"
-              width={64}
-              height={64}
+              width={60}
+              height={60}
             />
           ) : (
             <div className="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center text-2xl font-bold text-gray-500 flex-shrink-0">

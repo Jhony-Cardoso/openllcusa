@@ -353,7 +353,7 @@ export default async function ServicioDetallePage({
        <p className="sd-testi-text flex-grow">"{t.text}"</p>
         
         {/* Foto + Datos - Nueva disposición */}
-        <div className="flex items-end gap-4 mt-auto pt-6">
+        <div className="flex items-center gap-4 mt-auto pt-6">
           {t.image ? (
             <img 
               src={t.image} 
@@ -368,8 +368,8 @@ export default async function ServicioDetallePage({
             </div>
           )}
           
-          <div>
-            <p className="sd-testi-name font-semibold text-lg">{t.name}</p>
+          <div className="flex flex-col justify-center">
+            <p className="sd-testi-name font-semibold text-lg mb-1">{t.name}</p>
             <p className="sd-testi-city text-gray-600">{t.city}</p>
           </div>
         </div>

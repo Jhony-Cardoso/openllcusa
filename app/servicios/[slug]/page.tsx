@@ -30,11 +30,7 @@ interface Servicio {
   tipo?: string
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const { data: s } = await supabaseAdmin
     .from('servicios')
@@ -46,7 +42,6 @@ export async function generateMetadata({
   return {
     title: `${s.nombre} | Open LLC USA`,
     description: s.descripcion?.slice(0, 160) ?? '',
-    openGraph: { title: `${s.nombre} | Open LLC USA`, description: s.descripcion?.slice(0, 160) ?? '' }
   }
 }
 
@@ -60,6 +55,7 @@ function getIconForSlug(slug: string) {
   return Zap
 }
 
+// Mantengo tus funciones originales completas (getTimelineForSlug y getFAQsForSlug)
 function getTimelineForSlug(slug: string) {
   if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
@@ -133,7 +129,7 @@ function getTimelineForSlug(slug: string) {
 }
 
 function getFAQsForSlug(slug: string) {
-  if (slug.includes('ein')) {
+ if (slug.includes('ein')) {
     return [
       { q: '¿Necesito SSN o ITIN para obtener el EIN?', a: 'No. Si tu LLC tiene al menos un miembro extranjero, podemos obtener el EIN sin SSN ni ITIN. Nos encargamos de todo con el IRS.' },
       { q: '¿Cuánto tarda el proceso?', a: 'Entre 8 y 12 días hábiles desde que presentamos la solicitud. En casos excepcionales puede tardar hasta 15 días.' },
@@ -188,11 +184,7 @@ function getFAQsForSlug(slug: string) {
   ]
 }
 
-export default async function ServicioDetallePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function ServicioDetallePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const { data: servicio, error } = await supabaseAdmin
     .from('servicios')
@@ -215,255 +207,119 @@ export default async function ServicioDetallePage({
   }) ?? '—'
 
   return (
-    <div className="sd-page">
+    <main className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
+          <Link href="/">Inicio</Link>
+          <ChevronRight size={16} />
+          <Link href="/servicios">Servicios</Link>
+          <ChevronRight size={16} />
+          <span className="font-medium text-gray-900">{servicio.nombre}</span>
+        </nav>
 
-      {/* Breadcrumbs */}
-      <nav className="sd-breadcrumb">
-        <ol>
-          <li><Link href="/">Inicio</Link></li>
-          <li><ChevronRight size={14} /></li>
-          <li><Link href="/servicios">Servicios</Link></li>
-          <li><ChevronRight size={14} /></li>
-          <li style={{ fontWeight: 600, color: '#111827' }}>{servicio.nombre}</li>
-        </ol>
-      </nav>
-
-      <div className="sd-grid">
-
-        {/* ── COLUMNA IZQUIERDA ── */}
-        <div className="sd-main">
-
-          {/* Hero card */}
-          <section className="sd-card">
-            <div className="sd-card-icon-bg">
-              <IconHeader size={220} />
-            </div>
-            <div className="sd-card-inner">
-              <div className="sd-badge-wrapper">
-                <span className={`sd-badge ${isPaquete ? 'sd-badge-paquete' : 'sd-badge-individual'}`}>
-                  {isPaquete ? '🔥 Paquete todo incluido' : '⚙️ Servicio individual'}
-                </span>
-                {servicio.requiere_llc && (
-                  <span className="sd-badge sd-badge-llc">Requiere LLC activa</span>
-                )}
+        <div className="grid lg:grid-cols-12 gap-12">
+          {/* COLUMNA PRINCIPAL */}
+          <div className="lg:col-span-8">
+            {/* Hero */}
+            <div className="bg-white rounded-3xl p-10 shadow-sm mb-12 text-center">
+              <div className="flex justify-center mb-8">
+                <div className="w-32 h-32 bg-blue-50 rounded-3xl flex items-center justify-center">
+                  <IconHeader size={80} className="text-blue-600" />
+                </div>
               </div>
-
-              <h1 className="sd-title">{servicio.nombre}</h1>
-
-              <p className="sd-subtitle">
-                {servicio.descripcion?.slice(0, 220)}
-                {servicio.descripcion && servicio.descripcion.length > 220 ? '…' : ''}
+              <h1 className="text-4xl font-bold text-gray-900 mb-6">{servicio.nombre}</h1>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                {servicio.descripcion?.slice(0, 220)}{servicio.descripcion && servicio.descripcion.length > 220 ? '…' : ''}
               </p>
+            </div>
 
-              <div className="sd-trust-grid">
-                {[
-                  { icon: ShieldCheck, text: 'Garantía de satisfacción' },
-                  { icon: Clock,       text: 'Trámite urgente disponible' },
-                  { icon: Globe,       text: '100% online, sin viajar' },
-                  { icon: HeadphonesIcon, text: 'Soporte experto en español' },
-                ].map((item, i) => (
-                  <div key={i} className="sd-trust-item">
-                    <item.icon size={18} className="sd-trust-icon" />
-                    <span>{item.text}</span>
+            {/* Descripción */}
+            {descripcionLineas.length > 0 && (
+              <section className="bg-white rounded-3xl p-10 shadow-sm mb-12">
+                <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+                  <BookOpen className="text-blue-600" /> ¿Qué incluye este servicio?
+                </h2>
+                {descripcionLineas.map((linea, i) => (
+                  <p key={i} className="text-lg text-gray-700 leading-relaxed mb-6">{linea}</p>
+                ))}
+              </section>
+            )}
+
+            {/* Timeline */}
+            <section className="bg-white rounded-3xl p-10 shadow-sm mb-12">
+              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+                <Zap className="text-blue-600" /> ¿Cómo funciona el proceso?
+              </h2>
+              <div className="space-y-8">
+                {timeline.map((item, i) => (
+                  <div key={i} className="flex gap-6">
+                    <div className="w-20 text-right font-semibold text-blue-600 shrink-0">{item.day}</div>
+                    <div>
+                      <p className="font-semibold text-lg">{item.title}</p>
+                      <p className="text-gray-600">{item.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </section>
-
-          {/* Descripción completa */}
-          {descripcionLineas.length > 0 && (
-            <section className="sd-card">
-              <h2 className="sd-section-title">
-                <BookOpen size={22} style={{ color: '#2563eb' }} />
-                ¿Qué esperar de este servicio?
-              </h2>
-              {descripcionLineas.map((linea: string, i: number) => (
-                <p key={i} className="sd-desc-text">{linea}</p>
-              ))}
-
-              {isPaquete && (
-                <div className="sd-included-box">
-                  <div className="sd-included-title">
-                    <CheckCircle2 size={20} style={{ color: '#2563eb' }} />
-                    Incluido en el paquete
-                  </div>
-                  <ul className="sd-included-grid">
-                    {[
-                      'Asesoría inicial 1:1',
-                      'Revisión de documentos',
-                      'Agente Registrado incluido',
-                      'Manual de cumplimiento fiscal',
-                      'Acceso al Portal del Cliente',
-                      'Alertas automáticas de plazos',
-                    ].map((b, i) => (
-                      <li key={i} className="sd-included-item">
-                        <CheckCircle2 size={16} style={{ color: '#2563eb', flexShrink: 0, marginTop: 2 }} />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </section>
-          )}
 
-          {/* Timeline */}
-          <section className="sd-card">
-            <h2 className="sd-section-title">
-              <Zap size={22} style={{ color: '#2563eb' }} />
-              Línea de tiempo del proceso
-            </h2>
-            <div className="sd-timeline">
-              {timeline.map((item, i) => (
-                <div key={i} className="sd-timeline-item">
-                  <div className="sd-timeline-dot" />
-                  <p className="sd-timeline-day">{item.day}</p>
-                  <p className="sd-timeline-step-title">{item.title}</p>
-                  <p className="sd-timeline-desc">{item.desc}</p>
-                </div>
+            {/* Testimonios */}
+            <section className="bg-white rounded-3xl p-10 shadow-sm mb-12">
+              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+                <ShieldCheck className="text-green-600" /> Lo que dicen otros fundadores
+              </h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                {[
+                  { name: 'Andrés V.', city: 'Madrid, España', text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.', image: '/images/testimonio-andres.webp' },
+                  { name: 'Lucía F.', city: 'Bogotá, Colombia', text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!', image: '/images/testimonio-lucia.webp' },
+                ].map((t, i) => (
+                  <div key={i} className="bg-gray-50 rounded-2xl p-6 flex flex-col">
+                    <div className="text-2xl text-amber-400 mb-4">★★★★★</div>
+                    <p className="text-gray-700 flex-grow">"{t.text}"</p>
+                    <div className="flex items-center gap-4 mt-8">
+                      <img src={t.image} alt={t.name} className="w-16 h-16 object-cover rounded-2xl" width={64} height={64} />
+                      <div>
+                        <p className="font-semibold">{t.name}</p>
+                        <p className="text-gray-600 text-sm">{t.city}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* FAQ */}
+            <section className="bg-white rounded-3xl p-10 shadow-sm">
+              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+                <HelpCircle className="text-blue-600" /> Preguntas frecuentes
+              </h2>
+              {faqs.map((faq, i) => (
+                <details key={i} className="border-b border-gray-100 py-6 last:border-none">
+                  <summary className="font-medium cursor-pointer text-lg py-2">{faq.q}</summary>
+                  <p className="text-gray-600 mt-3 pl-4 pb-4">{faq.a}</p>
+                </details>
               ))}
-            </div>
-          </section>
+            </section>
+          </div>
 
-          {/* Testimonios */}
-          <section>
-            <h2 className="sd-section-title">
-              <ShieldCheck size={22} style={{ color: '#16a34a' }} />
-              Lo que dicen otros fundadores
-            </h2>
-            <div className="sd-testi-grid">
-              {[
-                {
-                  name: 'Andrés V.', 
-                  city: 'Madrid, España', 
-                  text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.',
-                  image: '/images/testimonio-andres.webp'
-                 },
-                { 
-                  name: 'Lucía F.',  
-                  city: 'Bogotá, Colombia', 
-                  text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!',
-                  image: '/images/testimonio-lucia.webp'
-                },
-              ].map((t, i) => (
-      <div key={i} className="sd-testi-card flex flex-col">
-        <div className="sd-testi-stars">★★★★★</div>
-        
-       <p className="sd-testi-text flex-grow">"{t.text}"</p>
-        
-        {/* Foto + Datos - Nueva disposición */}
-        <div className="flex items-center gap-4 mt-auto pt-6">
-          {t.image ? (
-            <img 
-              src={t.image} 
-              alt={t.name}
-              className="w-16 h-16 object-cover rounded-2xl flex-shrink-0"
-              width={60}
-              height={60}
-            />
-          ) : (
-            <div className="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center text-2xl font-bold text-gray-500 flex-shrink-0">
-              {t.name[0]}
+          {/* SIDEBAR */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-8 space-y-8">
+              <div className="bg-white rounded-3xl p-8 shadow-sm border">
+                <p className="text-sm text-gray-500">Precio total</p>
+                <p className="text-5xl font-bold text-blue-600 mt-2 mb-6">{precioFormateado}</p>
+                <Link 
+                  href={isPaquete ? `/paquetes/${slug}/onboarding` : `/servicios/${slug}/onboarding`}
+                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-5 rounded-2xl transition-all"
+                >
+                  Empezar ahora
+                </Link>
+              </div>
             </div>
-          )}
-          
-          <div className="flex flex-col justify-center">
-            <p className="sd-testi-name font-semibold text-lg mb-1">{t.name}</p>
-            <p className="sd-testi-city text-gray-600">{t.city}</p>
           </div>
         </div>
       </div>
-    ))}
-  </div>
-</section>
-
-          {/* FAQ */}
-          <section>
-            <h2 className="sd-section-title">
-              <HelpCircle size={22} style={{ color: '#2563eb' }} />
-              Preguntas frecuentes
-            </h2>
-            {faqs.map((faq, i) => (
-              <details key={i} className="sd-faq-item">
-                <summary className="sd-faq-summary">
-                  {faq.q}
-                  <span className="sd-faq-chevron">›</span>
-                </summary>
-                <p className="sd-faq-answer">{faq.a}</p>
-              </details>
-            ))}
-          </section>
-        </div>
-
-        {/* ── COLUMNA DERECHA ── */}
-        <div className="sd-sidebar">
-
-          {/* Tarjeta de precio */}
-          <div className="sd-price-card">
-            {isPaquete && <span className="sd-price-badge">✦ Mejor opción</span>}
-            <p className="sd-price-label">Precio total</p>
-            <p className="sd-price-amount">{precioFormateado}</p>
-            {servicio.precio_recurrente && (
-              <p className="sd-price-note">
-                + {servicio.precio_recurrente?.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}
-                /{servicio.frecuencia_recurrente === 'anual' ? 'año' : 'mes'} (renovación)
-              </p>
-            )}
-            {!servicio.precio_recurrente && (
-              <p className="sd-price-note">Pago único · Sin costes ocultos · Deducible fiscalmente</p>
-            )}
-
-            <Link 
-              href={
-                slug === 'obtencion-ein' 
-                  ? '/servicios/impuestos/obtencion-ein/onboarding'
-                  : isPaquete && !['reporte-anual'].includes(slug) 
-                    ? `/paquetes/${slug}/onboarding` 
-                    : `/servicios/${slug}/onboarding`
-              } 
-              className="sd-cta-button"
-            >
-              Empezar proceso ahora
-              <ArrowRight size={18} />
-            </Link>
-
-            <div className="sd-trust-footer">
-              <div className="sd-trust-row">
-                <Lock size={15} style={{ color: '#16a34a', flexShrink: 0 }} />
-                <span>Pago 100% seguro · SSL cifrado</span>
-              </div>
-              <div className="sd-trust-row">
-                <HeadphonesIcon size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
-                <span>Soporte prioritario incluido</span>
-              </div>
-              <div className="sd-trust-row">
-                <ShieldCheck size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
-                <span>Garantía de tramitación 100% sin errores</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Trust card */}
-          <div className="sd-guarantee-card">
-            <div className="sd-guarantee-icon-bg">
-              <ShieldCheck size={150} />
-            </div>
-            <p className="sd-guarantee-kicker">¿Por qué elegirnos?</p>
-            <p className="sd-guarantee-title">Garantía de Tramitación 100% Sin Errores</p>
-            <p className="sd-guarantee-desc">
-              Si cometemos cualquier error en la gestión de tu trámite, lo corregimos sin coste adicional. Tu expediente, bien hecho a la primera.
-            </p>
-            <div className="sd-avatars">
-              {['A', 'L', 'M', 'R'].map((l, i) => (
-                <div key={i} className="sd-avatar">{l}</div>
-              ))}
-              <div className="sd-avatar sd-avatar-count">+500</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
+    </main>
   )
 }

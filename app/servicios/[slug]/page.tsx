@@ -55,8 +55,7 @@ function getIconForSlug(slug: string) {
   return Zap
 }
 
-// === Tus funciones originales completas ===
-function getTimelineForSlug(slug: string) {
+function getTimelineForSlug(slug: string) { 
  if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
       { day: 'Día 1', title: 'Solicitud y Revisión', desc: 'Analizamos tus datos y preparamos los documentos estatales.' },
@@ -126,7 +125,7 @@ function getTimelineForSlug(slug: string) {
     { day: 'Paso 2', title: 'Procesamiento', desc: 'Nuestro equipo experto gestiona la solicitud con el organismo correspondiente.' },
     { day: 'Paso 3', title: 'Entrega', desc: 'Recibes el resultado final en tu portal de cliente.' },
   ]
-}
+} 
 
 function getFAQsForSlug(slug: string) { 
  if (slug.includes('ein')) {
@@ -182,7 +181,8 @@ function getFAQsForSlug(slug: string) {
     { q: '¿Es legal si no soy residente americano?', a: 'Totalmente legal. La ley de EE.UU. permite a cualquier extranjero ser dueño y gestionar una LLC sin necesidad de visa ni residencia.' },
     { q: '¿Qué pasa después del primer año?', a: 'Tendrás obligaciones anuales: renovar el agente registrado, presentar el Annual Report (en algunos estados) y gestionar tus impuestos federales.' },
   ]
-} 
+}
+ 
 
 export default async function ServicioDetallePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -209,7 +209,7 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Breadcrumbs Mejorado */}
+        {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm text-gray-500 mb-10">
           <Link href="/" className="hover:text-blue-600">Inicio</Link>
           <ChevronRight size={16} />
@@ -221,24 +221,24 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
         <div className="grid lg:grid-cols-12 gap-12">
           {/* COLUMNA PRINCIPAL */}
           <div className="lg:col-span-8 space-y-12">
-            {/* Hero Mejorado */}
-            <div className="bg-white rounded-3xl p-12 shadow-sm text-center">
+            {/* Hero card mejorado */}
+            <section className="bg-white rounded-3xl p-12 shadow-sm text-center">
               <div className="flex justify-center mb-8">
                 <div className="w-36 h-36 bg-blue-50 rounded-3xl flex items-center justify-center">
                   <IconHeader size={90} className="text-blue-600" />
                 </div>
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-6">{servicio.nombre}</h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 {servicio.descripcion?.slice(0, 250)}{servicio.descripcion && servicio.descripcion.length > 250 ? '…' : ''}
               </p>
-            </div>
+            </section>
 
-            {/* Descripción */}
+            {/* Descripción completa */}
             {descripcionLineas.length > 0 && (
               <section className="bg-white rounded-3xl p-10 shadow-sm">
                 <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                  <BookOpen className="text-blue-600" /> ¿Qué incluye este servicio?
+                  <BookOpen className="text-blue-600" /> ¿Qué esperar de este servicio?
                 </h2>
                 {descripcionLineas.map((linea, i) => (
                   <p key={i} className="text-lg text-gray-700 leading-relaxed mb-6">{linea}</p>
@@ -246,7 +246,7 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
               </section>
             )}
 
-            {/* Timeline - Mantenido y mejorado */}
+            {/* Timeline */}
             <section className="bg-white rounded-3xl p-10 shadow-sm">
               <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                 <Zap className="text-blue-600" /> Línea de tiempo del proceso
@@ -264,15 +264,15 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
               </div>
             </section>
 
-            {/* Testimonios - Ya mejorados */}
+            {/* Testimonios (versión alineada que ya tenías) */}
             <section className="bg-white rounded-3xl p-10 shadow-sm">
               <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                 <ShieldCheck className="text-green-600" /> Lo que dicen otros fundadores
               </h2>
-              {/* Aquí mantengo tu última versión de testimonios */}
+              {/* Aquí se mantiene tu última versión de testimonios con fotos */}
             </section>
 
-            {/* FAQ Mejorado */}
+            {/* FAQ */}
             <section className="bg-white rounded-3xl p-10 shadow-sm">
               <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                 <HelpCircle className="text-blue-600" /> Preguntas frecuentes
@@ -286,31 +286,26 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
             </section>
           </div>
 
-          {/* SIDEBAR - Mantenido y mejorado */}
+          {/* SIDEBAR */}
           <div className="lg:col-span-4">
             <div className="sticky top-8 space-y-8">
-              {/* Precio Card Mejorado */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+              {/* Tarjeta de precio mejorada */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border">
                 <p className="text-sm text-gray-500">Precio total</p>
                 <p className="text-5xl font-bold text-blue-600 mt-2 mb-6">{precioFormateado}</p>
-                
                 <Link 
                   href={isPaquete ? `/paquetes/${slug}/onboarding` : `/servicios/${slug}/onboarding`}
-                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-5 rounded-2xl transition-all text-lg"
+                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-5 rounded-2xl transition-all"
                 >
                   Empezar proceso ahora
                 </Link>
+              </div>
 
-                <div className="mt-8 text-sm text-gray-600 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Lock size={18} className="text-green-500" />
-                    <span>Pago 100% seguro</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck size={18} className="text-green-500" />
-                    <span>Garantía sin errores</span>
-                  </div>
-                </div>
+              {/* Trust card */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm text-center">
+                <ShieldCheck size={80} className="mx-auto text-green-500 mb-6" />
+                <p className="font-bold text-2xl mb-3">Garantía de Tramitación 100% Sin Errores</p>
+                <p className="text-gray-600">Si cometemos cualquier error, lo corregimos sin coste adicional.</p>
               </div>
             </div>
           </div>

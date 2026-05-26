@@ -30,7 +30,11 @@ interface Servicio {
   tipo?: string
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
   const { slug } = await params
   const { data: s } = await supabaseAdmin
     .from('servicios')
@@ -42,6 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${s.nombre} | Open LLC USA`,
     description: s.descripcion?.slice(0, 160) ?? '',
+    openGraph: { title: `${s.nombre} | Open LLC USA`, description: s.descripcion?.slice(0, 160) ?? '' }
   }
 }
 
@@ -55,8 +60,8 @@ function getIconForSlug(slug: string) {
   return Zap
 }
 
-function getTimelineForSlug(slug: string) { 
- if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
+function getTimelineForSlug(slug: string) {
+  if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
       { day: 'Día 1', title: 'Solicitud y Revisión', desc: 'Analizamos tus datos y preparamos los documentos estatales.' },
       { day: 'Día 2–4', title: 'Registro Estatal', desc: 'Tu LLC es aprobada oficialmente por el estado elegido.' },
@@ -101,7 +106,7 @@ function getTimelineForSlug(slug: string) {
       { day: 'Paso 1', title: 'Reserva de sesión', desc: 'Programamos la videollamada en el horario que mejor te convenga.' },
       { day: 'Paso 2', title: 'Cuestionario Previo', desc: 'Nos envías el contexto y preguntas para aprovechar el tiempo al máximo.' },
       { day: 'En vivo', title: 'Videollamada de 1h', desc: 'Sesión personalizada para resolver tus dudas fiscales o societarias.' },
-      { day: 'Paso 4', title: 'Plan de de acción', desc: 'Recibes notas y conclusiones clave al finalizar la asesoría.' },
+      { day: 'Paso 4', title: 'Plan de acción', desc: 'Recibes notas y conclusiones clave al finalizar la asesoría.' },
     ]
   }
   if (slug.includes('compliance')) {
@@ -125,10 +130,10 @@ function getTimelineForSlug(slug: string) {
     { day: 'Paso 2', title: 'Procesamiento', desc: 'Nuestro equipo experto gestiona la solicitud con el organismo correspondiente.' },
     { day: 'Paso 3', title: 'Entrega', desc: 'Recibes el resultado final en tu portal de cliente.' },
   ]
-} 
+}
 
-function getFAQsForSlug(slug: string) { 
- if (slug.includes('ein')) {
+function getFAQsForSlug(slug: string) {
+  if (slug.includes('ein')) {
     return [
       { q: '¿Necesito SSN o ITIN para obtener el EIN?', a: 'No. Si tu LLC tiene al menos un miembro extranjero, podemos obtener el EIN sin SSN ni ITIN. Nos encargamos de todo con el IRS.' },
       { q: '¿Cuánto tarda el proceso?', a: 'Entre 8 y 12 días hábiles desde que presentamos la solicitud. En casos excepcionales puede tardar hasta 15 días.' },
@@ -182,9 +187,12 @@ function getFAQsForSlug(slug: string) {
     { q: '¿Qué pasa después del primer año?', a: 'Tendrás obligaciones anuales: renovar el agente registrado, presentar el Annual Report (en algunos estados) y gestionar tus impuestos federales.' },
   ]
 }
- 
 
-export default async function ServicioDetallePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ServicioDetallePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
   const { data: servicio, error } = await supabaseAdmin
     .from('servicios')
@@ -207,110 +215,258 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
   }) ?? '—'
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-10">
-          <Link href="/" className="hover:text-blue-600">Inicio</Link>
-          <ChevronRight size={16} />
-          <Link href="/servicios" className="hover:text-blue-600">Servicios</Link>
-          <ChevronRight size={16} />
-          <span className="font-medium text-gray-900">{servicio.nombre}</span>
-        </nav>
+    <div className="sd-page bg-gray-50 min-h-screen">
+      {/* Breadcrumbs */}
+      <nav className="max-w-7xl mx-auto px-6 pt-8 pb-4">
+        <ol className="flex items-center gap-2 text-sm text-gray-500">
+          <li><Link href="/" className="hover:text-[#2563eb] transition-colors">Inicio</Link></li>
+          <li><ChevronRight size={14} /></li>
+          <li><Link href="/servicios" className="hover:text-[#2563eb] transition-colors">Servicios</Link></li>
+          <li><ChevronRight size={14} /></li>
+          <li className="font-semibold text-[#111827]">{servicio.nombre}</li>
+        </ol>
+      </nav>
 
-        <div className="grid lg:grid-cols-12 gap-12">
+      <div className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* COLUMNA PRINCIPAL */}
-          <div className="lg:col-span-8 space-y-12">
-            {/* Hero card mejorado */}
-            <section className="bg-white rounded-3xl p-12 shadow-sm text-center">
-              <div className="flex justify-center mb-8">
-                <div className="w-36 h-36 bg-blue-50 rounded-3xl flex items-center justify-center">
-                  <IconHeader size={90} className="text-blue-600" />
+          <div className="lg:col-span-8 space-y-14">
+            {/* HERO mejorado */}
+            <section className="sd-card bg-white rounded-3xl shadow-xl overflow-hidden">
+              <div className="sd-card-icon-bg flex items-center justify-center bg-gradient-to-br from-[#2563eb]/5 to-white py-16">
+                <IconHeader size={240} className="text-[#2563eb] drop-shadow-lg" />
+              </div>
+              <div className="px-8 pb-8 pt-6">
+                <div className="sd-badge-wrapper flex flex-wrap gap-3">
+                  <span className={`sd-badge ${isPaquete ? 'sd-badge-paquete' : 'sd-badge-individual'} text-sm font-medium px-5 py-2`}>
+                    {isPaquete ? '🔥 Paquete todo incluido' : '⚙️ Servicio individual'}
+                  </span>
+                  {servicio.requiere_llc && (
+                    <span className="sd-badge sd-badge-llc text-sm font-medium px-5 py-2">Requiere LLC activa</span>
+                  )}
+                </div>
+
+                <h1 className="sd-title text-4xl lg:text-5xl font-semibold text-gray-900 leading-tight mt-6">
+                  {servicio.nombre}
+                </h1>
+
+                <p className="sd-subtitle text-xl text-gray-600 mt-4 leading-relaxed">
+                  {servicio.descripcion?.slice(0, 240)}
+                  {servicio.descripcion && servicio.descripcion.length > 240 ? '…' : ''}
+                </p>
+
+                <div className="sd-trust-grid grid grid-cols-2 md:grid-cols-4 gap-6 mt-10">
+                  {[
+                    { icon: ShieldCheck, text: 'Garantía de satisfacción' },
+                    { icon: Clock, text: 'Trámite urgente disponible' },
+                    { icon: Globe, text: '100% online, sin viajar' },
+                    { icon: HeadphonesIcon, text: 'Soporte experto en español' },
+                  ].map((item, i) => (
+                    <div key={i} className="sd-trust-item flex items-center gap-3 bg-gray-50 rounded-2xl p-4 hover:shadow-md transition-all">
+                      <item.icon size={22} className="text-[#2563eb]" />
+                      <span className="font-medium text-gray-700">{item.text}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-6">{servicio.nombre}</h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {servicio.descripcion?.slice(0, 250)}{servicio.descripcion && servicio.descripcion.length > 250 ? '…' : ''}
-              </p>
             </section>
 
-            {/* Descripción completa */}
+            {/* Descripción + Incluido */}
             {descripcionLineas.length > 0 && (
-              <section className="bg-white rounded-3xl p-10 shadow-sm">
-                <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                  <BookOpen className="text-blue-600" /> ¿Qué esperar de este servicio?
+              <section className="sd-card bg-white rounded-3xl shadow-xl p-8 lg:p-10 space-y-6">
+                <h2 className="sd-section-title flex items-center gap-3 text-2xl font-semibold text-gray-900">
+                  <BookOpen size={28} className="text-[#2563eb]" />
+                  ¿Qué esperar de este servicio?
                 </h2>
-                {descripcionLineas.map((linea, i) => (
-                  <p key={i} className="text-lg text-gray-700 leading-relaxed mb-6">{linea}</p>
+                {descripcionLineas.map((linea: string, i: number) => (
+                  <p key={i} className="sd-desc-text text-lg leading-relaxed text-gray-700">{linea}</p>
                 ))}
+
+                {isPaquete && (
+                  <div className="sd-included-box bg-emerald-50 border border-emerald-100 rounded-3xl p-8 mt-8">
+                    <div className="sd-included-title flex items-center gap-3 text-xl font-semibold text-emerald-800">
+                      <CheckCircle2 size={26} />
+                      Incluido en el paquete
+                    </div>
+                    <ul className="sd-included-grid grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                      {[
+                        'Asesoría inicial 1:1',
+                        'Revisión de documentos',
+                        'Agente Registrado incluido',
+                        'Manual de cumplimiento fiscal',
+                        'Acceso al Portal del Cliente',
+                        'Alertas automáticas de plazos',
+                      ].map((b, i) => (
+                        <li key={i} className="sd-included-item flex gap-3 items-start">
+                          <CheckCircle2 size={20} className="text-[#2563eb] mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-700">{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </section>
             )}
 
-            {/* Timeline */}
-            <section className="bg-white rounded-3xl p-10 shadow-sm">
-              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                <Zap className="text-blue-600" /> Línea de tiempo del proceso
+            {/* Timeline mejorado */}
+            <section className="sd-card bg-white rounded-3xl shadow-xl p-8 lg:p-10">
+              <h2 className="sd-section-title flex items-center gap-3 text-2xl font-semibold text-gray-900 mb-8">
+                <Zap size={28} className="text-[#2563eb]" />
+                Línea de tiempo del proceso
               </h2>
-              <div className="space-y-8">
+              <div className="sd-timeline space-y-10">
                 {timeline.map((item, i) => (
-                  <div key={i} className="flex gap-6">
-                    <div className="w-24 text-right font-semibold text-blue-600 shrink-0">{item.day}</div>
-                    <div>
-                      <p className="font-semibold text-lg">{item.title}</p>
-                      <p className="text-gray-600 mt-1">{item.desc}</p>
+                  <div key={i} className="sd-timeline-item flex gap-6">
+                    <div className="flex flex-col items-center">
+                      <div className="sd-timeline-dot w-4 h-4 bg-[#2563eb] rounded-full flex-shrink-0 mt-1"></div>
+                      {i < timeline.length - 1 && <div className="w-px h-12 bg-gray-200 mt-2"></div>}
+                    </div>
+                    <div className="flex-1">
+                      <p className="sd-timeline-day text-[#2563eb] font-semibold text-lg">{item.day}</p>
+                      <p className="sd-timeline-step-title text-xl font-semibold text-gray-900 mt-1">{item.title}</p>
+                      <p className="sd-timeline-desc text-gray-600 mt-2">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Testimonios (versión alineada que ya tenías) */}
-            <section className="bg-white rounded-3xl p-10 shadow-sm">
-              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                <ShieldCheck className="text-green-600" /> Lo que dicen otros fundadores
+            {/* Testimonios */}
+            <section className="bg-white rounded-3xl shadow-xl p-8 lg:p-10">
+              <h2 className="sd-section-title flex items-center gap-3 text-2xl font-semibold text-gray-900 mb-8">
+                <ShieldCheck size={28} className="text-[#16a34a]" />
+                Lo que dicen otros fundadores
               </h2>
-              {/* Aquí se mantiene tu última versión de testimonios con fotos */}
+              <div className="sd-testi-grid grid grid-cols-1 md:grid-cols-2 gap-8">
+                {[
+                  {
+                    name: 'Andrés V.', 
+                    city: 'Madrid, España', 
+                    text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.',
+                    image: '/images/testimonio-andres.webp'
+                  },
+                  { 
+                    name: 'Lucía F.',  
+                    city: 'Bogotá, Colombia', 
+                    text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!',
+                    image: '/images/testimonio-lucia.webp'
+                  },
+                ].map((t, i) => (
+                  <div key={i} className="sd-testi-card flex flex-col bg-gray-50 rounded-3xl p-6">
+                    <div className="sd-testi-stars text-amber-400 text-2xl">★★★★★</div>
+                    <p className="sd-testi-text flex-grow text-gray-700 mt-4">"{t.text}"</p>
+                    <div className="flex items-center gap-4 mt-auto pt-6">
+                      {t.image ? (
+                        <img 
+                          src={t.image} 
+                          alt={t.name}
+                          className="w-16 h-16 object-cover rounded-2xl flex-shrink-0"
+                          width={64}
+                          height={64}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center text-2xl font-bold text-gray-500 flex-shrink-0">
+                          {t.name[0]}
+                        </div>
+                      )}
+                      <div>
+                        <p className="sd-testi-name font-semibold text-lg">{t.name}</p>
+                        <p className="sd-testi-city text-gray-600">{t.city}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
 
             {/* FAQ */}
-            <section className="bg-white rounded-3xl p-10 shadow-sm">
-              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                <HelpCircle className="text-blue-600" /> Preguntas frecuentes
+            <section className="bg-white rounded-3xl shadow-xl p-8 lg:p-10">
+              <h2 className="sd-section-title flex items-center gap-3 text-2xl font-semibold text-gray-900 mb-8">
+                <HelpCircle size={28} className="text-[#2563eb]" />
+                Preguntas frecuentes
               </h2>
-              {faqs.map((faq, i) => (
-                <details key={i} className="border-b border-gray-100 py-6 last:border-none">
-                  <summary className="font-medium cursor-pointer text-lg py-2">{faq.q}</summary>
-                  <p className="text-gray-600 mt-3 pl-4 pb-4">{faq.a}</p>
-                </details>
-              ))}
+              <div className="space-y-4">
+                {faqs.map((faq, i) => (
+                  <details key={i} className="sd-faq-item bg-gray-50 rounded-2xl px-6 py-5 group">
+                    <summary className="sd-faq-summary flex justify-between items-center cursor-pointer text-lg font-medium text-gray-800">
+                      {faq.q}
+                      <span className="sd-faq-chevron text-[#2563eb] text-2xl transition-transform group-open:rotate-180">›</span>
+                    </summary>
+                    <p className="sd-faq-answer text-gray-600 mt-4 pr-8">{faq.a}</p>
+                  </details>
+                ))}
+              </div>
             </section>
           </div>
 
-          {/* SIDEBAR */}
-          <div className="lg:col-span-4">
-            <div className="sticky top-8 space-y-8">
-              {/* Tarjeta de precio mejorada */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border">
-                <p className="text-sm text-gray-500">Precio total</p>
-                <p className="text-5xl font-bold text-blue-600 mt-2 mb-6">{precioFormateado}</p>
-                <Link 
-                  href={isPaquete ? `/paquetes/${slug}/onboarding` : `/servicios/${slug}/onboarding`}
-                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-5 rounded-2xl transition-all"
-                >
-                  Empezar proceso ahora
-                </Link>
-              </div>
+          {/* SIDEBAR STICKY */}
+          <div className="lg:col-span-4 lg:sticky lg:top-8 h-fit space-y-8">
+            {/* Precio */}
+            <div className="sd-price-card bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+              {isPaquete && <span className="sd-price-badge">✦ Mejor opción</span>}
+              <p className="sd-price-label text-gray-500 font-medium">Precio total</p>
+              <p className="sd-price-amount text-6xl font-semibold text-gray-900 mt-2">{precioFormateado}</p>
+              
+              {servicio.precio_recurrente && (
+                <p className="sd-price-note text-gray-500 mt-3">
+                  + {servicio.precio_recurrente?.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}/
+                  {servicio.frecuencia_recurrente === 'anual' ? 'año' : 'mes'} (renovación)
+                </p>
+              )}
+              {!servicio.precio_recurrente && (
+                <p className="sd-price-note text-emerald-600 mt-3">Pago único · Sin costes ocultos · Deducible fiscalmente</p>
+              )}
 
-              {/* Trust card */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm text-center">
-                <ShieldCheck size={80} className="mx-auto text-green-500 mb-6" />
-                <p className="font-bold text-2xl mb-3">Garantía de Tramitación 100% Sin Errores</p>
-                <p className="text-gray-600">Si cometemos cualquier error, lo corregimos sin coste adicional.</p>
+              <Link 
+                href={
+                  slug === 'obtencion-ein' 
+                    ? '/servicios/impuestos/obtencion-ein/onboarding'
+                    : isPaquete && !['reporte-anual'].includes(slug) 
+                      ? `/paquetes/${slug}/onboarding` 
+                      : `/servicios/${slug}/onboarding`
+                } 
+                className="sd-cta-button mt-8 block w-full bg-[#2563eb] hover:bg-[#1e40af] text-white text-xl font-semibold py-6 rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.03] shadow-lg"
+              >
+                Empezar proceso ahora
+                <ArrowRight size={22} />
+              </Link>
+
+              <div className="sd-trust-footer mt-8 space-y-4 text-sm">
+                <div className="sd-trust-row flex items-center gap-2">
+                  <Lock size={15} className="text-[#16a34a]" />
+                  <span>Pago 100% seguro · SSL cifrado</span>
+                </div>
+                <div className="sd-trust-row flex items-center gap-2">
+                  <HeadphonesIcon size={15} className="text-[#2563eb]" />
+                  <span>Soporte prioritario incluido</span>
+                </div>
+                <div className="sd-trust-row flex items-center gap-2">
+                  <ShieldCheck size={15} className="text-[#7c3aed]" />
+                  <span>Garantía de tramitación 100% sin errores</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Garantía */}
+            <div className="sd-guarantee-card bg-white rounded-3xl shadow-xl p-8 text-center relative overflow-hidden">
+              <div className="sd-guarantee-icon-bg flex justify-center mb-6">
+                <ShieldCheck size={150} className="text-[#16a34a] opacity-10" />
+              </div>
+              <p className="sd-guarantee-kicker text-[#16a34a] font-semibold">¿Por qué elegirnos?</p>
+              <p className="sd-guarantee-title text-2xl font-semibold text-gray-900 mt-2">Garantía de Tramitación 100% Sin Errores</p>
+              <p className="sd-guarantee-desc text-gray-600 mt-4">
+                Si cometemos cualquier error en la gestión de tu trámite, lo corregimos sin coste adicional. Tu expediente, bien hecho a la primera.
+              </p>
+              <div className="sd-avatars flex justify-center gap-2 mt-8">
+                {['A', 'L', 'M', 'R'].map((l, i) => (
+                  <div key={i} className="sd-avatar w-9 h-9 bg-gray-200 rounded-2xl flex items-center justify-center text-sm font-bold">{l}</div>
+                ))}
+                <div className="sd-avatar sd-avatar-count text-xs font-medium bg-[#2563eb] text-white">+500</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

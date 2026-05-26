@@ -45,9 +45,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-// === Tus funciones originales (mantengo completas) ===
-function getIconForSlug(slug: string) { 
- if (slug.includes('llc') || slug.includes('launch') || slug.includes('primer')) return Globe
+function getIconForSlug(slug: string) {
+  if (slug.includes('llc') || slug.includes('launch') || slug.includes('primer')) return Globe
   if (slug.includes('banking') || slug.includes('launch-banking')) return Smartphone
   if (slug.includes('ein')) return Search
   if (slug.includes('fiscal') || slug.includes('impuestos') || slug.includes('form')) return BookOpen
@@ -56,8 +55,9 @@ function getIconForSlug(slug: string) {
   return Zap
 }
 
+// === Tus funciones originales completas ===
 function getTimelineForSlug(slug: string) {
-  if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
+ if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
       { day: 'Día 1', title: 'Solicitud y Revisión', desc: 'Analizamos tus datos y preparamos los documentos estatales.' },
       { day: 'Día 2–4', title: 'Registro Estatal', desc: 'Tu LLC es aprobada oficialmente por el estado elegido.' },
@@ -128,7 +128,7 @@ function getTimelineForSlug(slug: string) {
   ]
 }
 
-function getFAQsForSlug(slug: string) {
+function getFAQsForSlug(slug: string) { 
  if (slug.includes('ein')) {
     return [
       { q: '¿Necesito SSN o ITIN para obtener el EIN?', a: 'No. Si tu LLC tiene al menos un miembro extranjero, podemos obtener el EIN sin SSN ni ITIN. Nos encargamos de todo con el IRS.' },
@@ -182,7 +182,7 @@ function getFAQsForSlug(slug: string) {
     { q: '¿Es legal si no soy residente americano?', a: 'Totalmente legal. La ley de EE.UU. permite a cualquier extranjero ser dueño y gestionar una LLC sin necesidad de visa ni residencia.' },
     { q: '¿Qué pasa después del primer año?', a: 'Tendrás obligaciones anuales: renovar el agente registrado, presentar el Annual Report (en algunos estados) y gestionar tus impuestos federales.' },
   ]
-}
+} 
 
 export default async function ServicioDetallePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -209,11 +209,11 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
-          <Link href="/">Inicio</Link>
+        {/* Breadcrumbs Mejorado */}
+        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-10">
+          <Link href="/" className="hover:text-blue-600">Inicio</Link>
           <ChevronRight size={16} />
-          <Link href="/servicios">Servicios</Link>
+          <Link href="/servicios" className="hover:text-blue-600">Servicios</Link>
           <ChevronRight size={16} />
           <span className="font-medium text-gray-900">{servicio.nombre}</span>
         </nav>
@@ -221,16 +221,16 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
         <div className="grid lg:grid-cols-12 gap-12">
           {/* COLUMNA PRINCIPAL */}
           <div className="lg:col-span-8 space-y-12">
-            {/* Hero */}
-            <div className="bg-white rounded-3xl p-10 shadow-sm text-center">
+            {/* Hero Mejorado */}
+            <div className="bg-white rounded-3xl p-12 shadow-sm text-center">
               <div className="flex justify-center mb-8">
-                <div className="w-32 h-32 bg-blue-50 rounded-3xl flex items-center justify-center">
-                  <IconHeader size={80} className="text-blue-600" />
+                <div className="w-36 h-36 bg-blue-50 rounded-3xl flex items-center justify-center">
+                  <IconHeader size={90} className="text-blue-600" />
                 </div>
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-6">{servicio.nombre}</h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {servicio.descripcion?.slice(0, 220)}{servicio.descripcion && servicio.descripcion.length > 220 ? '…' : ''}
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                {servicio.descripcion?.slice(0, 250)}{servicio.descripcion && servicio.descripcion.length > 250 ? '…' : ''}
               </p>
             </div>
 
@@ -246,7 +246,7 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
               </section>
             )}
 
-            {/* Timeline - Mantenido */}
+            {/* Timeline - Mantenido y mejorado */}
             <section className="bg-white rounded-3xl p-10 shadow-sm">
               <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                 <Zap className="text-blue-600" /> Línea de tiempo del proceso
@@ -254,25 +254,25 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
               <div className="space-y-8">
                 {timeline.map((item, i) => (
                   <div key={i} className="flex gap-6">
-                    <div className="w-20 text-right font-semibold text-blue-600 shrink-0">{item.day}</div>
+                    <div className="w-24 text-right font-semibold text-blue-600 shrink-0">{item.day}</div>
                     <div>
                       <p className="font-semibold text-lg">{item.title}</p>
-                      <p className="text-gray-600">{item.desc}</p>
+                      <p className="text-gray-600 mt-1">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Testimonios */}
+            {/* Testimonios - Ya mejorados */}
             <section className="bg-white rounded-3xl p-10 shadow-sm">
               <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                 <ShieldCheck className="text-green-600" /> Lo que dicen otros fundadores
               </h2>
-              {/* Aquí mantenemos tu última versión de testimonios */}
+              {/* Aquí mantengo tu última versión de testimonios */}
             </section>
 
-            {/* FAQ */}
+            {/* FAQ Mejorado */}
             <section className="bg-white rounded-3xl p-10 shadow-sm">
               <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
                 <HelpCircle className="text-blue-600" /> Preguntas frecuentes
@@ -286,26 +286,31 @@ export default async function ServicioDetallePage({ params }: { params: Promise<
             </section>
           </div>
 
-          {/* SIDEBAR - Mantenido */}
+          {/* SIDEBAR - Mantenido y mejorado */}
           <div className="lg:col-span-4">
             <div className="sticky top-8 space-y-8">
-              {/* Precio Card */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border">
+              {/* Precio Card Mejorado */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
                 <p className="text-sm text-gray-500">Precio total</p>
                 <p className="text-5xl font-bold text-blue-600 mt-2 mb-6">{precioFormateado}</p>
+                
                 <Link 
                   href={isPaquete ? `/paquetes/${slug}/onboarding` : `/servicios/${slug}/onboarding`}
-                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-5 rounded-2xl transition-all"
+                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-5 rounded-2xl transition-all text-lg"
                 >
-                  Empezar ahora
+                  Empezar proceso ahora
                 </Link>
-              </div>
 
-              {/* Garantía */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm text-center">
-                <ShieldCheck size={70} className="mx-auto text-green-500 mb-6" />
-                <h3 className="font-bold text-2xl mb-3">Garantía 100%</h3>
-                <p className="text-gray-600">Si cometemos algún error, lo corregimos sin coste adicional.</p>
+                <div className="mt-8 text-sm text-gray-600 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Lock size={18} className="text-green-500" />
+                    <span>Pago 100% seguro</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={18} className="text-green-500" />
+                    <span>Garantía sin errores</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

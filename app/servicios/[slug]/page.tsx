@@ -17,8 +17,7 @@ import {
   Lock,
   HeadphonesIcon
 } from 'lucide-react'
-
-// Design Tokens exactos de la homepage
+// Design Tokens - coherentes con la homepage
 const T = {
   bd: '#0C2047', b9: '#1E3A8A', b7: '#1D4ED8', b5: '#3B82F6',
   b1: '#DBEAFE', b0: '#EFF6FF',
@@ -27,7 +26,6 @@ const T = {
   tx: '#111827', ts: '#4B5563', tm: '#9CA3AF',
   br: '#E5E7EB', wh: '#FFFFFF', sf: '#F8FAFC',
 } as const
-
 interface Servicio {
   id: string
   slug: string
@@ -39,7 +37,6 @@ interface Servicio {
   requiere_llc: boolean
   tipo?: string
 }
-
 export async function generateMetadata({
   params,
 }: {
@@ -51,7 +48,6 @@ export async function generateMetadata({
     .select('nombre, descripcion')
     .eq('slug', slug)
     .single() as { data: Partial<Servicio> | null }
-
   if (!s) return {}
   return {
     title: `${s.nombre} | Open LLC USA`,
@@ -59,7 +55,6 @@ export async function generateMetadata({
     openGraph: { title: `${s.nombre} | Open LLC USA`, description: s.descripcion?.slice(0, 160) ?? '' }
   }
 }
-
 function getIconForSlug(slug: string) {
   if (slug.includes('llc') || slug.includes('launch') || slug.includes('primer')) return Globe
   if (slug.includes('banking') || slug.includes('launch-banking')) return Smartphone
@@ -69,7 +64,6 @@ function getIconForSlug(slug: string) {
   if (slug.includes('compliance') || slug.includes('agente')) return ShieldCheck
   return Zap
 }
-
 function getTimelineForSlug(slug: string) {
   if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
@@ -116,7 +110,7 @@ function getTimelineForSlug(slug: string) {
       { day: 'Paso 1', title: 'Reserva de sesión', desc: 'Programamos la videollamada en el horario que mejor te convenga.' },
       { day: 'Paso 2', title: 'Cuestionario Previo', desc: 'Nos envías el contexto y preguntas para aprovechar el tiempo al máximo.' },
       { day: 'En vivo', title: 'Videollamada de 1h', desc: 'Sesión personalizada para resolver tus dudas fiscales o societarias.' },
-      { day: 'Paso 4', title: 'Plan de acción', desc: 'Recibes notas y conclusiones clave al finalizar la asesoría.' },
+      { day: 'Paso 4', title: 'Plan de de acción', desc: 'Recibes notas y conclusiones clave al finalizar la asesoría.' },
     ]
   }
   if (slug.includes('compliance')) {
@@ -141,7 +135,6 @@ function getTimelineForSlug(slug: string) {
     { day: 'Paso 3', title: 'Entrega', desc: 'Recibes el resultado final en tu portal de cliente.' },
   ]
 }
-
 function getFAQsForSlug(slug: string) {
   if (slug.includes('ein')) {
     return [
@@ -197,7 +190,6 @@ function getFAQsForSlug(slug: string) {
     { q: '¿Qué pasa después del primer año?', a: 'Tendrás obligaciones anuales: renovar el agente registrado, presentar el Annual Report (en algunos estados) y gestionar tus impuestos federales.' },
   ]
 }
-
 export default async function ServicioDetallePage({
   params,
 }: {
@@ -209,9 +201,7 @@ export default async function ServicioDetallePage({
     .select('*')
     .eq('slug', slug)
     .single() as { data: Servicio | null; error: unknown }
-
   if (error || !servicio) notFound()
-
   const isPaquete = servicio.tipo === 'paquete'
   const IconHeader = getIconForSlug(slug)
   const timeline = getTimelineForSlug(slug)
@@ -219,173 +209,279 @@ export default async function ServicioDetallePage({
   const descripcionLineas = servicio.descripcion
     ? servicio.descripcion.split('\n').filter((l: string) => l.trim() !== '')
     : []
-
   const precioFormateado = servicio.precio?.toLocaleString('en-US', {
     style: 'currency', currency: 'USD', maximumFractionDigits: 0
   }) ?? '—'
-
+  const ctaHref = slug === 'obtencion-ein'
+    ? '/servicios/impuestos/obtencion-ein/onboarding'
+    : isPaquete && !['reporte-anual'].includes(slug)
+      ? `/paquetes/${slug}/onboarding`
+      : `/servicios/${slug}/onboarding`
   return (
-    <main style={{ backgroundColor: T.sf, minHeight: '100vh', paddingBottom: '80px' }}>
-      {/* Breadcrumbs */}
-      <nav style={{ maxWidth: 1160, margin: '0 auto', padding: '40px 24px 20px' }}>
-        <ol className="flex items-center gap-2 text-sm" style={{ color: T.tm }}>
-          <li><Link href="/" style={{ color: T.b7 }}>Inicio</Link></li>
-          <li><ChevronRight size={14} /></li>
-          <li><Link href="/servicios" style={{ color: T.b7 }}>Servicios</Link></li>
-          <li><ChevronRight size={14} /></li>
-          <li style={{ fontWeight: 700, color: T.tx }}>{servicio.nombre}</li>
-        </ol>
-      </nav>
-
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 380px', gap: 64 }}>
-
-        {/* COLUMNA PRINCIPAL */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 80 }}>
-
-          {/* HERO */}
-          <section style={{ backgroundColor: T.wh, borderRadius: 24, padding: 56, boxShadow: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 240, height: 240, margin: '0 auto 32px', backgroundColor: T.b0, borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <IconHeader size={160} style={{ color: T.b9 }} />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#111827]">
+      {/* Breadcrumbs premium */}
+      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-6">
+          <nav className="flex h-14 items-center text-sm">
+            <ol className="flex items-center gap-2 text-gray-500">
+              <li><Link href="/" className="hover:text-gray-700 transition-colors">Inicio</Link></li>
+              <li><ChevronRight size={14} className="text-gray-400" /></li>
+              <li><Link href="/servicios" className="hover:text-gray-700 transition-colors">Servicios</Link></li>
+              <li><ChevronRight size={14} className="text-gray-400" /></li>
+              <li className="font-semibold text-[#111827]">{servicio.nombre}</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-6 py-10 lg:py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* ====================== COLUMNA PRINCIPAL ====================== */}
+          <div className="lg:col-span-8 space-y-10">
+            {/* HERO / CABECERA DEL SERVICIO */}
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_4px_24px_rgba(17,24,39,0.06)] p-8 lg:p-12">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:gap-8">
+                <div className="flex-shrink-0 mb-6 lg:mb-0">
+                  <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl bg-gradient-to-br from-[#0C2047] to-[#1E3A8A] flex items-center justify-center text-white shadow-lg">
+                    <IconHeader size={48} />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <span className={`inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold tracking-wide ${isPaquete
+                        ? 'bg-orange-100 text-orange-700'
+                        : 'bg-blue-100 text-blue-700'
+                      }`}>
+                      {isPaquete ? '🔥 Paquete todo incluido' : '⚙️ Servicio individual'}
+                    </span>
+                    {servicio.requiere_llc && (
+                      <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold tracking-wide bg-amber-100 text-amber-700">
+                        Requiere LLC activa
+                      </span>
+                    )}
+                  </div>
+                  <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-4">
+                    {servicio.nombre}
+                  </h1>
+                  <p className="text-lg text-[#4B5563] max-w-2xl leading-relaxed">
+                    {servicio.descripcion?.slice(0, 260)}
+                    {servicio.descripcion && servicio.descripcion.length > 260 ? '…' : ''}
+                  </p>
+                  {/* Trust signals */}
+                  <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                    {[
+                      { icon: ShieldCheck, label: 'Garantía de satisfacción' },
+                      { icon: Clock, label: 'Trámite urgente disponible' },
+                      { icon: Globe, label: '100% online, sin viajar' },
+                      { icon: HeadphonesIcon, label: 'Soporte en español' },
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2.5 text-[#374151]">
+                        <item.icon size={18} className="text-[#1E3A8A]" />
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div style={{ display: 'inline-flex', gap: 12, marginBottom: 24 }}>
-                <span style={{ backgroundColor: isPaquete ? T.gl : T.b0, color: isPaquete ? T.gd : T.b7, fontWeight: 700, padding: '8px 24px', borderRadius: 9999, fontSize: 14 }}>
-                  {isPaquete ? '🔥 Paquete todo incluido' : '⚙️ Servicio individual'}
-                </span>
-                {servicio.requiere_llc && (
-                  <span style={{ backgroundColor: T.b0, color: T.b7, fontWeight: 700, padding: '8px 24px', borderRadius: 9999, fontSize: 14 }}>Requiere LLC activa</span>
+            </div>
+            {/* DESCRIPCIÓN COMPLETA */}
+            {descripcionLineas.length > 0 && (
+              <div className="bg-white rounded-3xl border border-gray-100 p-8 lg:p-10 shadow-sm">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-blue-100 rounded-xl">
+                    <BookOpen size={22} className="text-[#1E3A8A]" />
+                  </div>
+                  <h2 className="text-2xl font-bold tracking-tight">¿Qué esperar de este servicio?</h2>
+                </div>
+                <div className="prose prose-gray max-w-none text-[15px] leading-relaxed text-[#374151] space-y-4">
+                  {descripcionLineas.map((linea: string, i: number) => (
+                    <p key={i}>{linea}</p>
+                  ))}
+                </div>
+                {isPaquete && (
+                  <div className="mt-8 rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 p-6">
+                    <div className="flex items-center gap-2 mb-4 text-[#1E3A8A] font-semibold">
+                      <CheckCircle2 size={20} /> Incluido en el paquete
+                    </div>
+                    <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
+                      {[
+                        'Asesoría inicial 1:1',
+                        'Revisión de documentos',
+                        'Agente Registrado incluido',
+                        'Manual de cumplimiento fiscal',
+                        'Acceso al Portal del Cliente',
+                        'Alertas automáticas de plazos',
+                      ].map((b, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 size={16} className="mt-0.5 text-emerald-600 flex-shrink-0" />
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
-              <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 800, lineHeight: 1.1, color: T.tx }}>
-                {servicio.nombre}
-              </h1>
-              <p style={{ fontSize: 20, color: T.ts, lineHeight: 1.6, maxWidth: 680, margin: '24px auto' }}>
-                {servicio.descripcion?.slice(0, 280)}{servicio.descripcion && servicio.descripcion.length > 280 ? '…' : ''}
-              </p>
-            </div>
-          </section>
-
-          {/* Descripción */}
-          {descripcionLineas.length > 0 && (
-            <section style={{ backgroundColor: T.wh, borderRadius: 24, padding: 56, boxShadow: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)' }}>
-              <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.tx, marginBottom: 32 }}>¿Qué esperar de este servicio?</h2>
-              {descripcionLineas.map((linea, i) => (
-                <p key={i} style={{ fontSize: 18, lineHeight: 1.75, color: T.ts, marginBottom: 20 }}>{linea}</p>
-              ))}
-              {isPaquete && (
-                <div style={{ backgroundColor: T.gl, borderRadius: 20, padding: 40, marginTop: 40 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-                    <CheckCircle2 size={32} style={{ color: T.gd }} />
-                    <span style={{ fontSize: 24, fontWeight: 700, color: T.gd }}>Incluido en el paquete</span>
-                  </div>
-                  <ul style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                    {['Asesoría inicial 1:1', 'Revisión de documentos', 'Agente Registrado incluido', 'Manual de cumplimiento fiscal', 'Acceso al Portal del Cliente', 'Alertas automáticas de plazos'].map((b, i) => (
-                      <li key={i} style={{ display: 'flex', gap: 12 }}>
-                        <CheckCircle2 size={22} style={{ color: T.gd, marginTop: 2 }} />
-                        <span style={{ color: T.ts }}>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
+            )}
+            {/* TIMELINE */}
+            <div className="bg-white rounded-3xl border border-gray-100 p-8 lg:p-10 shadow-sm">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-orange-100 rounded-xl">
+                  <Zap size={22} className="text-[#EA580C]" />
                 </div>
-              )}
-            </section>
-          )}
-
-          {/* Timeline */}
-          <section style={{ backgroundColor: T.wh, borderRadius: 24, padding: 56, boxShadow: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)' }}>
-            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.tx, marginBottom: 32 }}>Línea de tiempo del proceso</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
-              {timeline.map((item, i) => (
-                <div key={i} style={{ display: 'flex', gap: 24 }}>
-                  <div style={{ flexShrink: 0 }}>
-                    <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: T.b0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: T.b9 }}>{i + 1}</div>
-                  </div>
-                  <div>
-                    <p style={{ color: T.b9, fontWeight: 600 }}>{item.day}</p>
-                    <p style={{ fontSize: 22, fontWeight: 700, color: T.tx, margin: '4px 0 8px' }}>{item.title}</p>
-                    <p style={{ color: T.ts, lineHeight: 1.6 }}>{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Testimonios */}
-          <section style={{ backgroundColor: T.wh, borderRadius: 24, padding: 56, boxShadow: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)' }}>
-            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.tx, marginBottom: 32 }}>Lo que dicen otros fundadores</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-              {[
-                { name: 'Andrés V.', city: 'Madrid, España', text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.', image: '/images/testimonio-andres.webp' },
-                { name: 'Lucía F.', city: 'Bogotá, Colombia', text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!', image: '/images/testimonio-lucia.webp' },
-              ].map((t, i) => (
-                <div key={i} style={{ backgroundColor: T.sf, borderRadius: 20, padding: 32 }}>
-                  <div style={{ color: '#F59E0B', fontSize: 24, marginBottom: 16 }}>★★★★★</div>
-                  <p style={{ fontSize: 17, lineHeight: 1.6, color: T.ts, marginBottom: 24 }}>"{t.text}"</p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <img src={t.image} alt={t.name} width={64} height={64} style={{ borderRadius: 16, objectFit: 'cover' }} />
-                    <div>
-                      <p style={{ fontWeight: 700, color: T.tx }}>{t.name}</p>
-                      <p style={{ color: T.tm }}>{t.city}</p>
+                <h2 className="text-2xl font-bold tracking-tight">Línea de tiempo del proceso</h2>
+              </div>
+              <div className="space-y-6 relative pl-8 before:absolute before:left-4 before:top-3 before:bottom-3 before:w-px before:bg-gradient-to-b before:from-blue-200 before:to-orange-200">
+                {timeline.map((item, i) => (
+                  <div key={i} className="relative">
+                    <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-[#1E3A8A] flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#1E3A8A]" />
+                    </div>
+                    <div className="pl-2">
+                      <div className="font-mono text-xs font-bold tracking-[1px] text-[#EA580C] mb-1">{item.day}</div>
+                      <div className="font-semibold text-lg text-[#111827] mb-1">{item.title}</div>
+                      <div className="text-[#4B5563] leading-snug">{item.desc}</div>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+            {/* TESTIMONIOS */}
+            <div>
+              <div className="flex items-center gap-3 mb-6 px-1">
+                <div className="p-2 bg-emerald-100 rounded-xl">
+                  <ShieldCheck size={22} className="text-emerald-600" />
                 </div>
-              ))}
+                <h2 className="text-2xl font-bold tracking-tight">Lo que dicen otros fundadores</h2>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {[
+                  {
+                    name: 'Andrés V.',
+                    city: 'Madrid, España',
+                    text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.',
+                    image: '/images/testimonio-andres.webp'
+                  },
+                  {
+                    name: 'Lucía F.',
+                    city: 'Bogotá, Colombia',
+                    text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!',
+                    image: '/images/testimonio-lucia.webp'
+                  },
+                ].map((t, i) => (
+                  <div key={i} className="bg-white rounded-3xl border border-gray-100 p-7 shadow-sm flex flex-col">
+                    <div className="text-emerald-500 text-lg mb-4">★★★★★</div>
+                    <p className="text-[#374151] leading-relaxed flex-grow">“{t.text}”</p>
+                    <div className="flex items-center gap-4 mt-8 pt-6 border-t">
+                      {t.image ? (
+                        <img
+                          src={t.image}
+                          alt={t.name}
+                          className="w-14 h-14 rounded-2xl object-cover flex-shrink-0 border border-gray-100"
+                          width={56}
+                          height={56}
+                        />
+                      ) : (
+                        <div className="w-14 h-14 rounded-2xl bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-500 flex-shrink-0">
+                          {t.name[0]}
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-semibold">{t.name}</div>
+                        <div className="text-sm text-gray-500">{t.city}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </section>
-
-          {/* FAQ */}
-          <section style={{ backgroundColor: T.wh, borderRadius: 24, padding: 56, boxShadow: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)' }}>
-            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.tx, marginBottom: 32 }}>Preguntas frecuentes</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {faqs.map((faq, i) => (
-                <details key={i} style={{ backgroundColor: T.sf, borderRadius: 16, padding: '20px 24px' }}>
-                  <summary style={{ fontWeight: 600, cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {faq.q}
-                    <span style={{ fontSize: 24, transition: 'transform 0.3s' }}>›</span>
-                  </summary>
-                  <p style={{ marginTop: 16, color: T.ts }}>{faq.a}</p>
-                </details>
-              ))}
+            {/* FAQ */}
+            <div>
+              <div className="flex items-center gap-3 mb-6 px-1">
+                <div className="p-2 bg-blue-100 rounded-xl">
+                  <HelpCircle size={22} className="text-[#1E3A8A]" />
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight">Preguntas frecuentes</h2>
+              </div>
+              <div className="space-y-3">
+                {faqs.map((faq, i) => (
+                  <details
+                    key={i}
+                    className="group bg-white border border-gray-200 rounded-2xl px-6 py-1 shadow-sm open:shadow-md transition-all"
+                  >
+                    <summary className="flex items-center justify-between py-4 cursor-pointer font-medium text-[#111827] list-none">
+                      {faq.q}
+                      <span className="text-[#9CA3AF] group-open:rotate-180 transition-transform">↓</span>
+                    </summary>
+                    <div className="pb-5 text-[#4B5563] leading-relaxed border-t pt-4">
+                      {faq.a}
+                    </div>
+                  </details>
+                ))}
+              </div>
             </div>
-          </section>
-        </div>
-
-        {/* SIDEBAR */}
-        <div style={{ position: 'sticky', top: 40, alignSelf: 'start' }}>
-          <div style={{ backgroundColor: T.wh, borderRadius: 24, padding: 48, boxShadow: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)' }}>
-            {isPaquete && <div style={{ backgroundColor: T.gd, color: 'white', padding: '6px 20px', borderRadius: 9999, display: 'inline-block', marginBottom: 16, fontWeight: 700 }}>✦ Mejor opción</div>}
-            <p style={{ color: T.tm, fontWeight: 600 }}>Precio total</p>
-            <p style={{ fontSize: 56, fontWeight: 800, color: T.tx, margin: '12px 0' }}>{precioFormateado}</p>
-            {!servicio.precio_recurrente && (
-              <p style={{ color: T.gn, fontWeight: 600 }}>Pago único · Sin costes ocultos · Deducible fiscalmente</p>
-            )}
-            <Link 
-              href={
-                slug === 'obtencion-ein' 
-                  ? '/servicios/impuestos/obtencion-ein/onboarding'
-                  : isPaquete && !['reporte-anual'].includes(slug) 
-                    ? `/paquetes/${slug}/onboarding` 
-                    : `/servicios/${slug}/onboarding`
-              } 
-              style={{
-                display: 'block',
-                marginTop: 40,
-                background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
-                color: 'white',
-                fontSize: 21,
-                fontWeight: 700,
-                padding: '24px 32px',
-                borderRadius: 9999,
-                textAlign: 'center',
-                textDecoration: 'none',
-                boxShadow: '0 6px 24px rgba(234,88,12,.38)'
-              }}
-            >
-              Empezar proceso ahora <ArrowRight size={24} style={{ verticalAlign: 'middle', marginLeft: 8 }} />
-            </Link>
+          </div>
+          {/* ====================== SIDEBAR STICKY ====================== */}
+          <div className="lg:col-span-4">
+            <div className="lg:sticky lg:top-8 space-y-6">
+              {/* PRECIO + CTA */}
+              <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8">
+                {isPaquete && (
+                  <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-bold tracking-widest px-4 py-1 rounded-full mb-5">
+                    ✦ MEJOR OPCIÓN
+                  </div>
+                )}
+                <div className="text-xs font-semibold tracking-widest text-gray-500 mb-1">PRECIO TOTAL</div>
+                <div className="text-5xl font-extrabold tracking-tighter text-[#111827] mb-1">
+                  {precioFormateado}
+                </div>
+                {servicio.precio_recurrente ? (
+                  <div className="text-sm text-[#4B5563]">
+                    + {servicio.precio_recurrente?.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}
+                    /{servicio.frecuencia_recurrente === 'anual' ? 'año' : 'mes'} (renovación)
+                  </div>
+                ) : (
+                  <div className="text-sm text-emerald-600 font-medium mt-1">
+                    Pago único · Sin costes ocultos · 100% deducible
+                  </div>
+                )}
+                <Link
+                  href={ctaHref}
+                  className="mt-7 w-full inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#EA580C] to-[#C2410C] py-4 text-base font-extrabold text-white shadow-[0_6px_24px_rgba(234,88,12,0.38)] transition-all active:scale-[0.985] hover:brightness-105"
+                >
+                  Empezar proceso ahora
+                  <ArrowRight size={20} />
+                </Link>
+                <div className="mt-6 space-y-2 text-xs text-[#4B5563]">
+                  <div className="flex items-center gap-2">
+                    <Lock size={14} className="text-emerald-600" /> Pago 100% seguro · SSL cifrado
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <HeadphonesIcon size={14} className="text-blue-600" /> Soporte prioritario incluido
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={14} className="text-violet-600" /> Garantía de tramitación sin errores
+                  </div>
+                </div>
+              </div>
+              {/* GARANTÍA */}
+              <div className="bg-white rounded-3xl border border-gray-100 p-7 text-center shadow-sm">
+                <div className="mx-auto mb-4 w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center text-white">
+                  <ShieldCheck size={36} />
+                </div>
+                <div className="font-bold text-lg tracking-tight mb-2">Garantía de Tramitación 100% Sin Errores</div>
+                <p className="text-sm text-[#4B5563] leading-relaxed">
+                  Si cometemos cualquier error en la gestión de tu trámite, lo corregimos sin coste adicional. Tu expediente, bien hecho a la primera.
+                </p>
+                <div className="mt-5 flex justify-center -space-x-2">
+                  {['A', 'L', 'M', 'R'].map((l, i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-bold text-gray-600">{l}</div>
+                  ))}
+                  <div className="w-8 h-8 rounded-full bg-emerald-600 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">+500</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

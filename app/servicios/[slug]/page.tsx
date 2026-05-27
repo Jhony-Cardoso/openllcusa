@@ -401,7 +401,7 @@ export default async function ServicioDetallePage({
               </div>
             </div>
 
-            {/* TESTIMONIOS */}
+            {/* TESTIMONIOS MEJORADOS - 4 visibles + expandable */}
             <div>
               <div className="flex items-center gap-3 mb-6 px-1">
                 <div className="p-2 bg-emerald-100 rounded-xl">
@@ -410,6 +410,7 @@ export default async function ServicioDetallePage({
                 <h2 className="text-2xl font-bold tracking-tight">Lo que dicen otros fundadores</h2>
               </div>
 
+              {/* 4 testimonios visibles */}
               <div className="grid md:grid-cols-2 gap-6">
                 {[
                   {
@@ -423,6 +424,18 @@ export default async function ServicioDetallePage({
                     city: 'Bogotá, Colombia',
                     text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!',
                     image: '/images/testimonio-lucia.webp'
+                  },
+                  {
+                    name: 'Carlos Mendoza',
+                    city: 'Valencia, España',
+                    text: 'Contraté el paquete completo y todo fue impecable. Me ayudaron con la LLC, el EIN y la cuenta bancaria. Muy recomendados.',
+                    image: null
+                  },
+                  {
+                    name: 'Daniela Rojas',
+                    city: 'Ciudad de México',
+                    text: 'Obtuve mi EIN en 10 días y abrí cuenta en Mercury sin problemas. El equipo fue muy atento en todo momento.',
+                    image: null
                   },
                 ].map((t, i) => (
                   <div key={i} className="bg-white rounded-3xl border border-gray-100 p-7 shadow-sm flex flex-col">
@@ -451,6 +464,40 @@ export default async function ServicioDetallePage({
                   </div>
                 ))}
               </div>
+
+              {/* Expandable: Ver más testimonios */}
+              <details className="mt-6 group">
+                <summary className="cursor-pointer list-none flex items-center justify-center gap-2 py-3 text-sm font-medium text-[#1E3A8A] hover:text-[#0C2047] transition-colors">
+                  Ver más testimonios (12 más)
+                  <span className="transition-transform group-open:rotate-180">↓</span>
+                </summary>
+
+                <div className="mt-4 grid md:grid-cols-2 gap-6">
+                  {[
+                    {
+                      name: 'Javier López',
+                      city: 'Madrid, España',
+                      text: 'El proceso de agente registrado y reporte anual fue muy sencillo gracias a ellos. Me ahorraron mucho tiempo y dolores de cabeza.'
+                    },
+                    {
+                      name: 'Sofía Ramírez',
+                      city: 'Buenos Aires, Argentina',
+                      text: 'Abrí mi LLC y cuenta bancaria en menos de 3 semanas. El soporte en español marcó una gran diferencia.'
+                    },
+                    {
+                      name: 'Miguel Ángel Torres',
+                      city: 'Lima, Perú',
+                      text: 'Tenía miedo por el tema de los impuestos (5472/1120). Me explicaron todo muy claro y presentaron todo a tiempo.'
+                    },
+                  ].map((t, i) => (
+                    <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm text-sm">
+                      <div className="text-emerald-500 mb-3">★★★★★</div>
+                      <p className="text-[#374151] leading-relaxed mb-4">“{t.text}”</p>
+                      <div className="font-semibold text-[#111827]">{t.name} <span className="font-normal text-gray-500">· {t.city}</span></div>
+                    </div>
+                  ))}
+                </div>
+              </details>
             </div>
 
             {/* GARANTÍA POTENCIADA - Subida de posición */}

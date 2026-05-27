@@ -17,6 +17,7 @@ import {
   Lock,
   HeadphonesIcon
 } from 'lucide-react'
+
 // Design Tokens - coherentes con la homepage
 const T = {
   bd: '#0C2047', b9: '#1E3A8A', b7: '#1D4ED8', b5: '#3B82F6',
@@ -26,6 +27,7 @@ const T = {
   tx: '#111827', ts: '#4B5563', tm: '#9CA3AF',
   br: '#E5E7EB', wh: '#FFFFFF', sf: '#F8FAFC',
 } as const
+
 interface Servicio {
   id: string
   slug: string
@@ -37,6 +39,7 @@ interface Servicio {
   requiere_llc: boolean
   tipo?: string
 }
+
 export async function generateMetadata({
   params,
 }: {
@@ -48,6 +51,7 @@ export async function generateMetadata({
     .select('nombre, descripcion')
     .eq('slug', slug)
     .single() as { data: Partial<Servicio> | null }
+
   if (!s) return {}
   return {
     title: `${s.nombre} | Open LLC USA`,
@@ -55,6 +59,7 @@ export async function generateMetadata({
     openGraph: { title: `${s.nombre} | Open LLC USA`, description: s.descripcion?.slice(0, 160) ?? '' }
   }
 }
+
 function getIconForSlug(slug: string) {
   if (slug.includes('llc') || slug.includes('launch') || slug.includes('primer')) return Globe
   if (slug.includes('banking') || slug.includes('launch-banking')) return Smartphone
@@ -64,6 +69,7 @@ function getIconForSlug(slug: string) {
   if (slug.includes('compliance') || slug.includes('agente')) return ShieldCheck
   return Zap
 }
+
 function getTimelineForSlug(slug: string) {
   if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
@@ -135,6 +141,7 @@ function getTimelineForSlug(slug: string) {
     { day: 'Paso 3', title: 'Entrega', desc: 'Recibes el resultado final en tu portal de cliente.' },
   ]
 }
+
 function getFAQsForSlug(slug: string) {
   if (slug.includes('ein')) {
     return [
@@ -190,6 +197,7 @@ function getFAQsForSlug(slug: string) {
     { q: '¿Qué pasa después del primer año?', a: 'Tendrás obligaciones anuales: renovar el agente registrado, presentar el Annual Report (en algunos estados) y gestionar tus impuestos federales.' },
   ]
 }
+
 export default async function ServicioDetallePage({
   params,
 }: {
@@ -201,7 +209,9 @@ export default async function ServicioDetallePage({
     .select('*')
     .eq('slug', slug)
     .single() as { data: Servicio | null; error: unknown }
+
   if (error || !servicio) notFound()
+
   const isPaquete = servicio.tipo === 'paquete'
   const IconHeader = getIconForSlug(slug)
   const timeline = getTimelineForSlug(slug)
@@ -209,14 +219,17 @@ export default async function ServicioDetallePage({
   const descripcionLineas = servicio.descripcion
     ? servicio.descripcion.split('\n').filter((l: string) => l.trim() !== '')
     : []
+
   const precioFormateado = servicio.precio?.toLocaleString('en-US', {
     style: 'currency', currency: 'USD', maximumFractionDigits: 0
   }) ?? '—'
+
   const ctaHref = slug === 'obtencion-ein'
     ? '/servicios/impuestos/obtencion-ein/onboarding'
     : isPaquete && !['reporte-anual'].includes(slug)
       ? `/paquetes/${slug}/onboarding`
       : `/servicios/${slug}/onboarding`
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#111827]">
       {/* Breadcrumbs premium */}
@@ -233,11 +246,14 @@ export default async function ServicioDetallePage({
           </nav>
         </div>
       </div>
+
       <div className="max-w-7xl mx-auto px-6 py-10 lg:py-14">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+
           {/* ====================== COLUMNA PRINCIPAL ====================== */}
           <div className="lg:col-span-8 space-y-10">
-            {/* HERO / CABECERA DEL SERVICIO */}
+
+            {/* HERO / CABECERA DEL SERVICIO - MEJORADO CON CTA */}
             <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_4px_24px_rgba(17,24,39,0.06)] p-8 lg:p-12">
               <div className="flex flex-col lg:flex-row lg:items-start lg:gap-8">
                 <div className="flex-shrink-0 mb-6 lg:mb-0">
@@ -245,6 +261,7 @@ export default async function ServicioDetallePage({
                     <IconHeader size={48} />
                   </div>
                 </div>
+
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-3 mb-4">
                     <span className={`inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold tracking-wide ${isPaquete
@@ -259,13 +276,16 @@ export default async function ServicioDetallePage({
                       </span>
                     )}
                   </div>
+
                   <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-4">
                     {servicio.nombre}
                   </h1>
+
                   <p className="text-lg text-[#4B5563] max-w-2xl leading-relaxed">
                     {servicio.descripcion?.slice(0, 260)}
                     {servicio.descripcion && servicio.descripcion.length > 260 ? '…' : ''}
                   </p>
+
                   {/* Trust signals */}
                   <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                     {[
@@ -280,9 +300,41 @@ export default async function ServicioDetallePage({
                       </div>
                     ))}
                   </div>
+
+                  {/* CTA SECUNDARIO EN HERO - Alta conversión */}
+                  <div className="mt-8">
+                    <Link
+                      href={ctaHref}
+                      className="inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#EA580C] to-[#C2410C] px-8 py-3.5 text-[15px] font-extrabold text-white shadow-[0_6px_24px_rgba(234,88,12,0.38)] transition-all hover:brightness-105 active:scale-[0.985]"
+                    >
+                      Comenzar mi trámite ahora
+                      <ArrowRight size={19} />
+                    </Link>
+                    <p className="mt-2 text-xs text-[#6B7280]">Proceso 100% remoto • Empieza en menos de 2 minutos</p>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* PRUEBA SOCIAL CUANTITATIVA - NUEVA (FOMO + Confianza) */}
+            <div className="bg-white border border-gray-100 rounded-2xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-2">
+                  {['A','L','M','R','S'].map((l,i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">{l}</div>
+                  ))}
+                </div>
+                <div>
+                  <span className="font-semibold text-[#111827]">+500 emprendedores</span>
+                  <span className="text-[#4B5563]"> ya contrataron este servicio este año</span>
+                </div>
+              </div>
+              <div className="text-sm text-emerald-600 font-medium flex items-center gap-1.5">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                98% lo recomiendan
+              </div>
+            </div>
+
             {/* DESCRIPCIÓN COMPLETA */}
             {descripcionLineas.length > 0 && (
               <div className="bg-white rounded-3xl border border-gray-100 p-8 lg:p-10 shadow-sm">
@@ -292,11 +344,13 @@ export default async function ServicioDetallePage({
                   </div>
                   <h2 className="text-2xl font-bold tracking-tight">¿Qué esperar de este servicio?</h2>
                 </div>
+
                 <div className="prose prose-gray max-w-none text-[15px] leading-relaxed text-[#374151] space-y-4">
                   {descripcionLineas.map((linea: string, i: number) => (
                     <p key={i}>{linea}</p>
                   ))}
                 </div>
+
                 {isPaquete && (
                   <div className="mt-8 rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 p-6">
                     <div className="flex items-center gap-2 mb-4 text-[#1E3A8A] font-semibold">
@@ -321,6 +375,7 @@ export default async function ServicioDetallePage({
                 )}
               </div>
             )}
+
             {/* TIMELINE */}
             <div className="bg-white rounded-3xl border border-gray-100 p-8 lg:p-10 shadow-sm">
               <div className="flex items-center gap-3 mb-8">
@@ -329,6 +384,7 @@ export default async function ServicioDetallePage({
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">Línea de tiempo del proceso</h2>
               </div>
+
               <div className="space-y-6 relative pl-8 before:absolute before:left-4 before:top-3 before:bottom-3 before:w-px before:bg-gradient-to-b before:from-blue-200 before:to-orange-200">
                 {timeline.map((item, i) => (
                   <div key={i} className="relative">
@@ -344,6 +400,7 @@ export default async function ServicioDetallePage({
                 ))}
               </div>
             </div>
+
             {/* TESTIMONIOS */}
             <div>
               <div className="flex items-center gap-3 mb-6 px-1">
@@ -352,6 +409,7 @@ export default async function ServicioDetallePage({
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">Lo que dicen otros fundadores</h2>
               </div>
+
               <div className="grid md:grid-cols-2 gap-6">
                 {[
                   {
@@ -370,6 +428,7 @@ export default async function ServicioDetallePage({
                   <div key={i} className="bg-white rounded-3xl border border-gray-100 p-7 shadow-sm flex flex-col">
                     <div className="text-emerald-500 text-lg mb-4">★★★★★</div>
                     <p className="text-[#374151] leading-relaxed flex-grow">“{t.text}”</p>
+
                     <div className="flex items-center gap-4 mt-8 pt-6 border-t">
                       {t.image ? (
                         <img
@@ -393,6 +452,27 @@ export default async function ServicioDetallePage({
                 ))}
               </div>
             </div>
+
+            {/* GARANTÍA POTENCIADA - Subida de posición */}
+            <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-3xl p-8 lg:p-10">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-white">
+                    <ShieldCheck size={36} />
+                  </div>
+                </div>
+                <div>
+                  <div className="font-bold text-xl tracking-tight mb-2 text-emerald-800">
+                    Garantía de Tramitación 100% Sin Errores
+                  </div>
+                  <p className="text-[#374151] leading-relaxed">
+                    Si cometemos cualquier error en la gestión de tu trámite, lo corregimos sin coste adicional. 
+                    Tu expediente, bien hecho a la primera. <span className="font-semibold">Riesgo cero para ti.</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* FAQ */}
             <div>
               <div className="flex items-center gap-3 mb-6 px-1">
@@ -401,6 +481,7 @@ export default async function ServicioDetallePage({
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">Preguntas frecuentes</h2>
               </div>
+
               <div className="space-y-3">
                 {faqs.map((faq, i) => (
                   <details
@@ -418,21 +499,26 @@ export default async function ServicioDetallePage({
                 ))}
               </div>
             </div>
+
           </div>
+
           {/* ====================== SIDEBAR STICKY ====================== */}
           <div className="lg:col-span-4">
             <div className="lg:sticky lg:top-8 space-y-6">
-              {/* PRECIO + CTA */}
+
+              {/* PRECIO + CTA MEJORADO */}
               <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8">
                 {isPaquete && (
                   <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-bold tracking-widest px-4 py-1 rounded-full mb-5">
                     ✦ MEJOR OPCIÓN
                   </div>
                 )}
+
                 <div className="text-xs font-semibold tracking-widest text-gray-500 mb-1">PRECIO TOTAL</div>
                 <div className="text-5xl font-extrabold tracking-tighter text-[#111827] mb-1">
                   {precioFormateado}
                 </div>
+
                 {servicio.precio_recurrente ? (
                   <div className="text-sm text-[#4B5563]">
                     + {servicio.precio_recurrente?.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}
@@ -443,13 +529,17 @@ export default async function ServicioDetallePage({
                     Pago único · Sin costes ocultos · 100% deducible
                   </div>
                 )}
+
+                {/* CTA PRINCIPAL OPTIMIZADO */}
                 <Link
                   href={ctaHref}
-                  className="mt-7 w-full inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#EA580C] to-[#C2410C] py-4 text-base font-extrabold text-white shadow-[0_6px_24px_rgba(234,88,12,0.38)] transition-all active:scale-[0.985] hover:brightness-105"
+                  className="mt-6 w-full inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#EA580C] to-[#C2410C] py-4 text-base font-extrabold text-white shadow-[0_6px_24px_rgba(234,88,12,0.38)] transition-all active:scale-[0.985] hover:brightness-105"
                 >
-                  Empezar proceso ahora
+                  Comenzar mi trámite ahora
                   <ArrowRight size={20} />
                 </Link>
+                <p className="text-center text-xs text-[#6B7280] mt-2">Proceso 100% remoto • Empieza en menos de 2 minutos</p>
+
                 <div className="mt-6 space-y-2 text-xs text-[#4B5563]">
                   <div className="flex items-center gap-2">
                     <Lock size={14} className="text-emerald-600" /> Pago 100% seguro · SSL cifrado
@@ -462,26 +552,35 @@ export default async function ServicioDetallePage({
                   </div>
                 </div>
               </div>
-              {/* GARANTÍA */}
-              <div className="bg-white rounded-3xl border border-gray-100 p-7 text-center shadow-sm">
-                <div className="mx-auto mb-4 w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center text-white">
-                  <ShieldCheck size={36} />
-                </div>
-                <div className="font-bold text-lg tracking-tight mb-2">Garantía de Tramitación 100% Sin Errores</div>
-                <p className="text-sm text-[#4B5563] leading-relaxed">
-                  Si cometemos cualquier error en la gestión de tu trámite, lo corregimos sin coste adicional. Tu expediente, bien hecho a la primera.
-                </p>
-                <div className="mt-5 flex justify-center -space-x-2">
-                  {['A', 'L', 'M', 'R'].map((l, i) => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-bold text-gray-600">{l}</div>
-                  ))}
-                  <div className="w-8 h-8 rounded-full bg-emerald-600 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">+500</div>
+
+              {/* GARANTÍA COMPACTA EN SIDEBAR */}
+              <div className="bg-white rounded-3xl border border-emerald-100 p-6 text-sm shadow-sm">
+                <div className="flex gap-3">
+                  <ShieldCheck className="text-emerald-600 mt-0.5 flex-shrink-0" size={20} />
+                  <div>
+                    <div className="font-semibold text-emerald-800 mb-1">Garantía sin riesgos</div>
+                    <p className="text-[#374151] leading-snug">Si hay algún error en tu trámite, lo corregimos gratis. Tu dinero y tu tiempo están protegidos.</p>
+                  </div>
                 </div>
               </div>
+
             </div>
           </div>
+
         </div>
       </div>
+
+      {/* ====================== MOBILE STICKY CTA BAR ====================== */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <Link
+          href={ctaHref}
+          className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#EA580C] to-[#C2410C] py-3.5 text-base font-extrabold text-white shadow-md active:scale-[0.985]"
+        >
+          Comenzar mi trámite ahora
+          <ArrowRight size={18} />
+        </Link>
+      </div>
+
     </div>
   )
 }

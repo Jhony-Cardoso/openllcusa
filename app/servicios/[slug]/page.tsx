@@ -540,6 +540,45 @@ export default async function ServicioDetallePage({
                   </p>
                 </div>
               </div>
+             </div>
+
+            {/* SECCIÓN DE OBJECIÓN - El verdadero coste de no actuar */}
+            <div className="bg-white border border-red-100 rounded-3xl p-8 lg:p-10 shadow-sm">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2 bg-red-100 rounded-xl">
+                  <ShieldCheck size={22} className="text-red-600" />
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight text-[#111827]">
+                  El verdadero coste de no actuar a tiempo
+                </h2>
+              </div>
+
+              <div className="space-y-4 text-[#374151] text-[15px] leading-relaxed">
+                <p>
+                  Muchos emprendedores subestiman lo que puede costar retrasar o no contratar este servicio:
+                </p>
+                <ul className="space-y-2.5 pl-1">
+                  <li className="flex gap-2">
+                    <span className="text-red-600 font-bold">•</span> 
+                    Multas del IRS de hasta <span className="font-semibold">$25,000 USD</span> por no presentar el Form 5472 a tiempo.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-red-600 font-bold">•</span> 
+                    Dificultad (o imposibilidad) para abrir cuenta bancaria en EE.UU. sin EIN.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-red-600 font-bold">•</span> 
+                    Riesgo de que el estado disuelva tu LLC por no mantener el Agente Registrado o no presentar reportes anuales.
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-red-600 font-bold">•</span> 
+                    Pérdida de oportunidades de negocio, clientes y credibilidad por no poder operar profesionalmente.
+                  </li>
+                </ul>
+                <p className="pt-2 font-medium text-[#111827]">
+                  En la mayoría de los casos, el coste de resolver el problema a tiempo es mucho menor que las consecuencias de no hacerlo.
+                </p>
+              </div>
             </div>
 
             {/* FAQ */}
@@ -609,15 +648,23 @@ export default async function ServicioDetallePage({
                 </Link>
                 <p className="text-center text-xs text-[#6B7280] mt-2">Proceso 100% remoto • Empieza en menos de 2 minutos</p>
 
-                <div className="mt-6 space-y-2 text-xs text-[#4B5563]">
-                  <div className="flex items-center gap-2">
-                    <Lock size={14} className="text-emerald-600" /> Pago 100% seguro · SSL cifrado
+                {/* Badges de Confianza mejorados */}
+                <div className="mt-6 grid grid-cols-1 gap-2">
+                  <div className="flex items-center gap-2.5 rounded-lg bg-gray-50 px-3 py-2 text-xs font-medium text-[#374151]">
+                    <Lock size={15} className="text-emerald-600 flex-shrink-0" />
+                    Pago 100% seguro con SSL
                   </div>
-                  <div className="flex items-center gap-2">
-                    <HeadphonesIcon size={14} className="text-blue-600" /> Soporte prioritario incluido
+                  <div className="flex items-center gap-2.5 rounded-lg bg-gray-50 px-3 py-2 text-xs font-medium text-[#374151]">
+                    <ShieldCheck size={15} className="text-emerald-600 flex-shrink-0" />
+                    Garantía de tramitación sin errores
                   </div>
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck size={14} className="text-violet-600" /> Garantía de tramitación sin errores
+                  <div className="flex items-center gap-2.5 rounded-lg bg-gray-50 px-3 py-2 text-xs font-medium text-[#374151]">
+                    <HeadphonesIcon size={15} className="text-blue-600 flex-shrink-0" />
+                    Soporte prioritario en español
+                  </div>
+                  <div className="flex items-center gap-2.5 rounded-lg bg-gray-50 px-3 py-2 text-xs font-medium text-[#374151]">
+                    <CheckCircle2 size={15} className="text-emerald-600 flex-shrink-0" />
+                    +500 clientes satisfechos
                   </div>
                 </div>
               </div>

@@ -749,7 +749,7 @@ function LatamSection() {
 // ─────────────────────────────────────────────────────────────────────────────
 const TESTIMONIOS = [
   {
-    image: '/images/testimonio-carlos.webp',
+    image: '/images/testimonials/carlos-colombia.webp',
     name: 'Carlos M.',
     country: 'co Colombia',
     quote: 'En solo 4 días tuve mi LLC en Delaware y ya estoy cobrando clientes de EE.UU. en dólares. Reduje mis impuestos un 42% el primer año. El proceso fue mucho más sencillo de lo que esperaba.',
@@ -757,7 +757,7 @@ const TESTIMONIOS = [
     stars: 5
   },
   {
-    image: '/images/testimonio-ana.webp',
+    image: '/images/testimonials/ana-mexico.webp',
     name: 'Ana R.',
     country: 'mx México',
     quote: 'Pensé que sería complicado por ser de México. Me gestionaron todo: LLC, EIN y cuenta en Mercury. En menos de 10 días ya tenía mi cuenta bancaria en EE.UU. funcionando.',
@@ -765,7 +765,7 @@ const TESTIMONIOS = [
     stars: 5
   },
   {
-    image: '/images/testimonio-miguel.webp',
+    image: '/images/testimonials/miguel-espana.webp',
     name: 'Miguel S.',
     country: 'es España',
     quote: 'Pasé de facturar como autónomo a tener una estructura profesional. En menos de un mes ya tenía mis primeros clientes americanos pagándome en dólares. Totalmente recomendable.',
@@ -773,7 +773,7 @@ const TESTIMONIOS = [
     stars: 5
   },
   {
-    image: '/images/testimonio-laura.webp',
+    image: '/images/testimonials/laura-espana.webp',
     name: 'Laura P.',
     country: 'es España',
     quote: 'Como consultora, necesitaba transmitir profesionalidad. La LLC me permitió trabajar con clientes de Estados Unidos sin complicaciones y con una imagen mucho más sólida.',
@@ -781,7 +781,7 @@ const TESTIMONIOS = [
     stars: 5
   },
   {    
-    image: '/images/testimonio-roberto.webp',
+    image: '/images/testimonials/roberto-argentina.webp',
     name: 'Roberto K.',
     country: 'ar Argentina',
     quote: 'Tengo un e-commerce y necesitaba recibir pagos de Amazon y clientes americanos. Con la LLC y la cuenta en Mercury todo se simplificó muchísimo. Muy buen servicio.',
@@ -789,7 +789,7 @@ const TESTIMONIOS = [
     stars: 5
   },
   {
-    image: '/images/testimonio-daniela.webp',
+    image: '/images/testimonials/daniela-colombia.webp',
     name: 'Daniela M.',
     country: 'co Colombia',
     quote: 'Como desarrolladora de software, la LLC me dio credibilidad inmediata con clientes americanos. Además, pude optimizar bastante mi situación fiscal. El acompañamiento fue excelente.',

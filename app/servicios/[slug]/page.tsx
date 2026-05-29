@@ -420,22 +420,22 @@ export default async function ServicioDetallePage({
                     image: '/images/testimonials/testimonio-lucia.webp'
                   },
                   {
-                    name: 'Carlos Mendoza',
+                    name: 'Carlos Álvarez',
                     city: 'Valencia, España',
                     text: 'Contraté el paquete completo y todo fue impecable. Me ayudaron con la LLC, el EIN y la apertura de cuenta en Mercury. Muy recomendados.',
-                    image: null
+                    image: '/images/testimonials/carlos-alvarez.webp'
                   },
                   {
                     name: 'Javier López',
                     city: 'Madrid, España',
                     text: 'El agente registrado y el reporte anual los gestionan de forma impecable. Me avisan de todo y nunca he tenido problemas con el estado.',
-                    image: null
+                    image: '/images/testimonials/javier-lopez.webp'
                   },
                   {
                     name: 'Sofía Ramírez',
                     city: 'Buenos Aires, Argentina',
                     text: 'Presentaron mis formularios 5472 y 1120 a tiempo y sin errores. Me explicaron todo con mucha claridad. Gran tranquilidad.',
-                    image: null
+                    image: '/images/testimonials/sofia-ramirez.webp'
                   },
                 ].map((t, i) => (
                   <div key={i} className="bg-white rounded-3xl border border-gray-100 p-7 shadow-sm flex flex-col">
@@ -478,19 +478,19 @@ export default async function ServicioDetallePage({
                       name: 'Daniela Rojas',
                       city: 'Ciudad de México',
                       text: 'Obtuve mi EIN en solo 10 días y pude abrir cuenta en Mercury sin complicaciones. El equipo fue muy profesional y atento.',
-                      image: null
+                      image: '/images/testimonials/daniela-rojas.webp'
                     },
                     {
-                      name: 'Andrés Vargas',
+                      name: 'Andrés Carrasco',
                       city: 'Madrid, España',
                       text: 'Contraté el paquete de formación de LLC y todo el proceso fue mucho más fácil de lo que esperaba. Comunicación excelente.',
-                      image: null
+                      image: '/images/testimonials/andres-carrasco.webp'
                     },
                     {
                       name: 'Valentina Cruz',
                       city: 'Santiago, Chile',
                       text: 'Me ayudaron a abrir mi cuenta bancaria empresarial en EE.UU. desde Chile. Todo muy claro y sin necesidad de viajar.',
-                      image: null
+                      image: '/images/testimonials/valentina-cruz.webp'
                     },
                   ].map((t, i) => (
                     <div key={i} className="bg-white rounded-3xl border border-gray-100 p-7 shadow-sm flex flex-col">

@@ -417,7 +417,7 @@ export default async function ServicioDetallePage({
                     name: 'Lucía F.',
                     city: 'Bogotá, Colombia',
                     text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!',
-                    image: '/images/testimonio-lucia.webp'
+                    image: '/images/testimonials/testimonio-lucia.webp'
                   },
                   {
                     name: 'Carlos Mendoza',

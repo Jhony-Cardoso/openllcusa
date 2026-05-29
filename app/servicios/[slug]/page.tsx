@@ -414,12 +414,6 @@ export default async function ServicioDetallePage({
               <div className="grid md:grid-cols-2 gap-6">
                 {[
                   {
-                    name: 'Andrés V.',
-                    city: 'Madrid, España',
-                    text: 'Tenía mil dudas sobre el EIN y me lo resolvieron en menos de dos semanas. Trato increíblemente profesional y claro.',
-                    image: '/images/testimonio-andres.webp'
-                  },
-                  {
                     name: 'Lucía F.',
                     city: 'Bogotá, Colombia',
                     text: 'Al principio me parecía complicado abrir una LLC desde fuera. Con ellos fue todo sencillo y súper rápido. ¡Muy recomendados!',
@@ -428,13 +422,19 @@ export default async function ServicioDetallePage({
                   {
                     name: 'Carlos Mendoza',
                     city: 'Valencia, España',
-                    text: 'Contraté el paquete completo y todo fue impecable. Me ayudaron con la LLC, el EIN y la cuenta bancaria. Muy recomendados.',
+                    text: 'Contraté el paquete completo y todo fue impecable. Me ayudaron con la LLC, el EIN y la apertura de cuenta en Mercury. Muy recomendados.',
                     image: null
                   },
                   {
-                    name: 'Daniela Rojas',
-                    city: 'Ciudad de México',
-                    text: 'Obtuve mi EIN en 10 días y abrí cuenta en Mercury sin problemas. El equipo fue muy atento en todo momento.',
+                    name: 'Javier López',
+                    city: 'Madrid, España',
+                    text: 'El agente registrado y el reporte anual los gestionan de forma impecable. Me avisan de todo y nunca he tenido problemas con el estado.',
+                    image: null
+                  },
+                  {
+                    name: 'Sofía Ramírez',
+                    city: 'Buenos Aires, Argentina',
+                    text: 'Presentaron mis formularios 5472 y 1120 a tiempo y sin errores. Me explicaron todo con mucha claridad. Gran tranquilidad.',
                     image: null
                   },
                 ].map((t, i) => (
@@ -475,25 +475,47 @@ export default async function ServicioDetallePage({
                 <div className="mt-4 grid md:grid-cols-2 gap-6">
                   {[
                     {
-                      name: 'Javier López',
+                      name: 'Daniela Rojas',
+                      city: 'Ciudad de México',
+                      text: 'Obtuve mi EIN en solo 10 días y pude abrir cuenta en Mercury sin complicaciones. El equipo fue muy profesional y atento.',
+                      image: null
+                    },
+                    {
+                      name: 'Andrés Vargas',
                       city: 'Madrid, España',
-                      text: 'El proceso de agente registrado y reporte anual fue muy sencillo gracias a ellos. Me ahorraron mucho tiempo y dolores de cabeza.'
+                      text: 'Contraté el paquete de formación de LLC y todo el proceso fue mucho más fácil de lo que esperaba. Comunicación excelente.',
+                      image: null
                     },
                     {
-                      name: 'Sofía Ramírez',
-                      city: 'Buenos Aires, Argentina',
-                      text: 'Abrí mi LLC y cuenta bancaria en menos de 3 semanas. El soporte en español marcó una gran diferencia.'
-                    },
-                    {
-                      name: 'Miguel Ángel Torres',
-                      city: 'Lima, Perú',
-                      text: 'Tenía miedo por el tema de los impuestos (5472/1120). Me explicaron todo muy claro y presentaron todo a tiempo.'
+                      name: 'Valentina Cruz',
+                      city: 'Santiago, Chile',
+                      text: 'Me ayudaron a abrir mi cuenta bancaria empresarial en EE.UU. desde Chile. Todo muy claro y sin necesidad de viajar.',
+                      image: null
                     },
                   ].map((t, i) => (
-                    <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm text-sm">
-                      <div className="text-emerald-500 mb-3">★★★★★</div>
-                      <p className="text-[#374151] leading-relaxed mb-4">“{t.text}”</p>
-                      <div className="font-semibold text-[#111827]">{t.name} <span className="font-normal text-gray-500">· {t.city}</span></div>
+                    <div key={i} className="bg-white rounded-3xl border border-gray-100 p-7 shadow-sm flex flex-col">
+                      <div className="text-emerald-500 text-lg mb-4">★★★★★</div>
+                      <p className="text-[#374151] leading-relaxed flex-grow">“{t.text}”</p>
+
+                      <div className="flex items-center gap-4 mt-8 pt-6 border-t">
+                        {t.image ? (
+                          <img
+                            src={t.image}
+                            alt={t.name}
+                            className="w-14 h-14 rounded-2xl object-cover flex-shrink-0 border border-gray-100"
+                            width={56}
+                            height={56}
+                          />
+                        ) : (
+                          <div className="w-14 h-14 rounded-2xl bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-500 flex-shrink-0">
+                            {t.name[0]}
+                          </div>
+                        )}
+                        <div>
+                          <div className="font-semibold">{t.name}</div>
+                          <div className="text-sm text-gray-500">{t.city}</div>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -17,6 +17,15 @@ import {
   Lock,
   HeadphonesIcon
 } from 'lucide-react'
+import {
+  isEIN,
+  isReporteAnual,
+  isAgenteRegistrado,
+  isLaunchBanking,
+  isConsultoriaFiscal,
+  isTaxFilingSlug,
+  SERVICE_SLUGS
+} from '@/lib/constants'
 
 // Design Tokens - coherentes con la homepage
 const T = {
@@ -61,9 +70,13 @@ export async function generateMetadata({
 }
 
 function getIconForSlug(slug: string) {
-  if (slug.includes('llc') || slug.includes('launch') || slug.includes('primer')) return Globe
-  if (slug.includes('banking') || slug.includes('launch-banking')) return Smartphone
-  if (slug.includes('ein')) return Search
+  if (isEIN(slug)) return Search
+  if (isTaxFilingSlug(slug)) return BookOpen
+  if (isReporteAnual(slug)) return ShieldCheck
+  if (isAgenteRegistrado(slug)) return ShieldCheck
+  if (isLaunchBanking(slug)) return Smartphone
+  if (isConsultoriaFiscal(slug)) return HeadphonesIcon
+  if (slug.includes('launch') || slug.includes('primer') || slug.includes('llc')) return Globe
   if (slug.includes('fiscal') || slug.includes('impuestos') || slug.includes('form')) return BookOpen
   if (slug.includes('consultoria')) return HeadphonesIcon
   if (slug.includes('compliance') || slug.includes('agente')) return ShieldCheck
@@ -71,6 +84,7 @@ function getIconForSlug(slug: string) {
 }
 
 function getTimelineForSlug(slug: string) {
+  // Paquetes (starter/professional/business)
   if (slug.includes('starter') || slug.includes('professional') || slug.includes('business')) {
     return [
       { day: 'Día 1', title: 'Solicitud y Revisión', desc: 'Analizamos tus datos y preparamos los documentos estatales.' },
@@ -79,15 +93,17 @@ function getTimelineForSlug(slug: string) {
       { day: 'Día 16+', title: '¡Listo para operar!', desc: 'Recibes tu kit documental completo y guía para abrir cuenta bancaria.' },
     ]
   }
-  if (slug.includes('ein')) {
+
+  if (isEIN(slug)) {
     return [
       { day: 'Día 1', title: 'Envío de Formulario SS-4', desc: 'Preparamos y enviamos el formulario firmado al IRS en tu nombre.' },
       { day: 'Día 3–7', title: 'Gestión con el IRS', desc: 'Mantenemos contacto directo con el agente del IRS asignado.' },
       { day: 'Día 8–12', title: 'Confirmación del EIN', desc: 'Recibimos y verificamos tu número fiscal oficial.' },
-      { day: '¡Listo!', title: 'Entrega de Carta CP 575', desc: 'Te entregamos el documento oficial que el banco te pedirá.' },
+      { day: '¡Listo!', title: 'Entrega de Carta CP 575', desc: 'Te entregamos el documento oficial que el banco te pedirás.' },
     ]
   }
-  if (slug.includes('form') || slug.includes('5472') || slug.includes('impuestos')) {
+
+  if (isTaxFilingSlug(slug)) {
     return [
       { day: 'Paso 1', title: 'Recogida de datos', desc: 'Completás el cuestionario fiscal con tus transacciones del año.' },
       { day: 'Paso 2', title: 'Preparación de formularios', desc: 'Nuestro equipo prepara el Form 5472 + 1120 correctamente.' },
@@ -95,7 +111,8 @@ function getTimelineForSlug(slug: string) {
       { day: 'Paso 4', title: 'Presentación al IRS', desc: 'Enviamos en plazo para evitar la multa de $25,000 USD.' },
     ]
   }
-  if (slug.includes('reporte-anual')) {
+
+  if (isReporteAnual(slug)) {
     return [
       { day: 'Paso 1', title: 'Recopilación de información', desc: 'Verificamos si hubo cambios en tu LLC durante el último año.' },
       { day: 'Paso 2', title: 'Preparación del reporte', desc: 'Elaboramos el Annual Report cumpliendo con los requisitos de tu estado.' },
@@ -103,7 +120,8 @@ function getTimelineForSlug(slug: string) {
       { day: '¡Listo!', title: 'Certificado de Good Standing', desc: 'Te confirmamos que tu LLC sigue activa y en regla por un año más.' },
     ]
   }
-  if (slug.includes('agente-registrado')) {
+
+  if (isAgenteRegistrado(slug)) {
     return [
       { day: 'Paso 1', title: 'Contratación y Alta', desc: 'Te damos de alta en nuestro sistema para actuar como tu Registered Agent.' },
       { day: 'Paso 2', title: 'Actualización en el Estado', desc: 'Presentamos el cambio de Agente Registrado ante la Secretaría de Estado (si aplica).' },
@@ -111,7 +129,8 @@ function getTimelineForSlug(slug: string) {
       { day: '24 hrs', title: 'Escaneo y Notificación', desc: 'Subimos todos los documentos importantes a tu portal y te avisamos de inmediato.' },
     ]
   }
-  if (slug.includes('consultoria-legal') || slug.includes('consultoria-fiscal')) {
+
+  if (isConsultoriaFiscal(slug) || slug.includes('consultoria-legal')) {
     return [
       { day: 'Paso 1', title: 'Reserva de sesión', desc: 'Programamos la videollamada en el horario que mejor te convenga.' },
       { day: 'Paso 2', title: 'Cuestionario Previo', desc: 'Nos envías el contexto y preguntas para aprovechar el tiempo al máximo.' },
@@ -119,6 +138,7 @@ function getTimelineForSlug(slug: string) {
       { day: 'Paso 4', title: 'Plan de de acción', desc: 'Recibes notas y conclusiones clave al finalizar la asesoría.' },
     ]
   }
+
   if (slug.includes('compliance')) {
     return [
       { day: 'Paso 1', title: 'Auditoría de Estado', desc: 'Verificamos los vencimientos de tu LLC en su estado particular.' },
@@ -127,7 +147,8 @@ function getTimelineForSlug(slug: string) {
       { day: '¡Listo!', title: 'Entrega de Good Standing', desc: 'Recibes el comprobante oficial de que tu LLC está en verde probatorio.' },
     ]
   }
-  if (slug.includes('launch-banking')) {
+
+  if (isLaunchBanking(slug)) {
     return [
       { day: 'Paso 1', title: 'Recopilación de datos', desc: 'Nos envías la información de tu empresa y el tipo de cuenta que necesitas.' },
       { day: 'Paso 2', title: 'Preparación de documentos', desc: 'Preparamos toda la documentación usando la dirección del Agente Registrado.' },
@@ -135,6 +156,7 @@ function getTimelineForSlug(slug: string) {
       { day: 'Paso 4', title: '¡Cuenta activa!', desc: 'Recibes acceso a tu nueva cuenta bancaria en dólares.' },
     ]
   }
+
   return [
     { day: 'Paso 1', title: 'Solicitud', desc: 'Nos proporcionas la información necesaria para el trámite.' },
     { day: 'Paso 2', title: 'Procesamiento', desc: 'Nuestro equipo experto gestiona la solicitud con el organismo correspondiente.' },
@@ -143,40 +165,45 @@ function getTimelineForSlug(slug: string) {
 }
 
 function getFAQsForSlug(slug: string) {
-  if (slug.includes('ein')) {
+  if (isEIN(slug)) {
     return [
       { q: '¿Necesito SSN o ITIN para obtener el EIN?', a: 'No. Si tu LLC tiene al menos un miembro extranjero, podemos obtener el EIN sin SSN ni ITIN. Nos encargamos de todo con el IRS.' },
       { q: '¿Cuánto tarda el proceso?', a: 'Entre 8 y 12 días hábiles desde que presentamos la solicitud. En casos excepcionales puede tardar hasta 15 días.' },
       { q: '¿Puedo usar el EIN para abrir cuenta bancaria?', a: 'Sí. Es el documento clave que bancos como Mercury, Relay y Wise Business te solicitarán para abrir tu cuenta empresarial.' },
     ]
   }
-  if (slug.includes('form') || slug.includes('5472') || slug.includes('impuestos')) {
+
+  if (isTaxFilingSlug(slug)) {
     return [
       { q: '¿Qué pasa si no presento estos formularios?', a: 'El IRS impone multas desde $25,000 USD por Form 5472 no presentado o presentado incompleto.' },
       { q: '¿Cuándo es la fecha límite?', a: 'Generalmente el 15 de abril de cada año, para las operaciones del año anterior. Se puede pedir prórroga si se necesita más tiempo.' },
       { q: '¿Necesito pagar impuestos en EE.UU.?', a: 'Si eres extranjero no residente, operas desde fuera de EE.UU. y no tienes presencia física (ETBUS), normalmente no pagas Income Tax, pero sí debes presentar estos formularios de forma informativa.' },
     ]
   }
-  if (slug.includes('reporte-anual')) {
+
+  if (isReporteAnual(slug)) {
     return [
       { q: '¿Qué es el Reporte Anual?', a: 'Es una actualización obligatoria que exige el estado para mantener tu LLC activa. Suele incluir confirmar la dirección y directores.' },
       { q: '¿El precio incluye las tasas del estado?', a: 'No, este servicio cubre nuestros honorarios por preparación, seguimiento y presentación. Las tasas del estado varían (ej. Wyoming $60, Delaware $300).' },
       { q: '¿Qué pasa si no lo presento?', a: 'El estado añadirá multas de penalización y eventualmente disolverá (cerrará) tu empresa, bloqueando su capacidad legal y cuenta bancaria.' },
     ]
   }
-  if (slug.includes('agente-registrado')) {
+
+  if (isAgenteRegistrado(slug)) {
     return [
       { q: '¿Es obligatorio tener Agente Registrado?', a: 'Sí. Todos los estados exigen por ley que tengas una dirección física abierta en horario laboral en el estado de formación para recibir notificaciones formales.' },
       { q: '¿El servicio se renueva anualmente?', a: 'Así es, como exige el estado, proveer la dirección oficial y representación es un servicio continuo que se abona por cada año.' },
       { q: '¿Me enviarán también el correo bloqueado o paquetes?', a: 'El Agente Registrado recibe notificaciones oficiales del gobierno o demandas. No es un servicio de buzón virtual (mail forwarding) ordinario para paquetes, sino legal.' },
     ]
   }
-  if (slug.includes('consultoria')) {
+
+  if (isConsultoriaFiscal(slug)) {
     return [
       { q: '¿Podremos ver mi caso en particular?', a: 'Totalmente. Estudiaremos tu país, tu modelo de venta y la estructuración de tu LLC para optimizar e ir sobre seguro.' },
       { q: '¿Es deducible el costo de la consultoría?', a: 'Sí, la consultoría fiscal y legal es un gasto legítimo directamente imputable a los gastos de funcionamiento de tu LLC.' },
     ]
   }
+
   if (slug.includes('compliance')) {
     return [
       { q: '¿Es obligatorio el compliance básico?', a: 'Sí, no mantener el Agente Registrado activo o no presentar el Reporte Anual lleva al cierre administrativo (disolución) de la LLC.' },
@@ -184,13 +211,15 @@ function getFAQsForSlug(slug: string) {
       { q: '¿Cuánto tiempo cubre este paquete?', a: 'Cubre la renovación exigida y el servicio de agente registrado por 1 año calendario completo.' },
     ]
   }
-  if (slug.includes('launch-banking')) {
+
+  if (isLaunchBanking(slug)) {
     return [
       { q: '¿Puedo abrir cuenta sin LLC?', a: 'Sí. Podemos abrir la cuenta con tu pasaporte y dirección del Agente Registrado, aunque aún no tengas la LLC formada.' },
       { q: '¿Qué bancos usáis?', a: 'Principalmente Mercury y Relay (los más usados por no residentes). También Wise Business si prefieres.' },
       { q: '¿Cuánto tarda la apertura?', a: 'Entre 5 y 12 días hábiles desde que enviamos la solicitud.' },
     ]
   }
+
   return [
     { q: '¿Necesito estar físicamente en EE.UU.?', a: 'No. Todo el proceso se realiza de forma 100% remota. Nunca necesitarás volar a EE.UU. para crear o gestionar tu LLC.' },
     { q: '¿Es legal si no soy residente americano?', a: 'Totalmente legal. La ley de EE.UU. permite a cualquier extranjero ser dueño y gestionar una LLC sin necesidad de visa ni residencia.' },
@@ -204,6 +233,8 @@ export default async function ServicioDetallePage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  console.log("=== SUPABASE EN DESARROLLO ===");
+  console.log("URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
   const { data: servicio, error } = await supabaseAdmin
     .from('servicios')
     .select('*')
@@ -224,9 +255,9 @@ export default async function ServicioDetallePage({
     style: 'currency', currency: 'USD', maximumFractionDigits: 0
   }) ?? '—'
 
-  const ctaHref = slug === 'obtencion-ein'
-    ? '/servicios/impuestos/obtencion-ein/onboarding'
-    : isPaquete && !['reporte-anual'].includes(slug)
+const ctaHref = isEIN(slug) 
+    ? `/servicios/${SERVICE_SLUGS.OBTENCION_EIN}/onboarding`
+    : isPaquete && slug !== SERVICE_SLUGS.REPORTE_ANUAL
       ? `/paquetes/${slug}/onboarding`
       : `/servicios/${slug}/onboarding`
 
@@ -385,16 +416,26 @@ export default async function ServicioDetallePage({
                 <h2 className="text-2xl font-bold tracking-tight">Línea de tiempo del proceso</h2>
               </div>
 
-              <div className="space-y-6 relative pl-8 before:absolute before:left-4 before:top-3 before:bottom-3 before:w-px before:bg-gradient-to-b before:from-blue-200 before:to-orange-200">
+              <div className="relative">
+                {/* Vertical line */}
+                <div className="absolute left-[13px] top-3 bottom-3 w-px bg-gradient-to-b from-blue-200 to-orange-200" />
+
                 {timeline.map((item, i) => (
-                  <div key={i} className="relative">
-                    <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-[#1E3A8A] flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#1E3A8A]" />
+                  <div key={i} className="flex gap-4 mb-8 last:mb-0 relative">
+                    {/* Circle + Paso label (horizontally aligned) */}
+                    <div className="flex items-center gap-2 z-10 flex-shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-white border-2 border-[#1E3A8A] flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-[#1E3A8A]" />
+                      </div>
+                      <span className="text-sm font-semibold text-[#EA580C] whitespace-nowrap">
+                        {item.day}
+                      </span>
                     </div>
-                    <div className="pl-2">
-                      <div className="font-mono text-xs font-bold tracking-[1px] text-[#EA580C] mb-1">{item.day}</div>
+
+                    {/* Content */}
+                    <div className="flex-1 pt-0.5">
                       <div className="font-semibold text-lg text-[#111827] mb-1">{item.title}</div>
-                      <div className="text-[#4B5563] leading-snug">{item.desc}</div>
+                      <div className="text-[#4B5563]">{item.desc}</div>
                     </div>
                   </div>
                 ))}

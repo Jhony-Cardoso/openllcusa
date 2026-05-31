@@ -107,7 +107,7 @@ export default function ServiciosPage() {
 
               <Link
                 href={`/servicios/${s.slug}`}
-                onClick={() => analyticsEvents.trackEvent('cta_click', 'servicio_individual', s.slug)}
+                onClick={() => analyticsEvents.ctaClick(`servicio_${s.slug}`)}
                 className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-4 rounded-2xl transition-all"
               >
                 Ver detalles y contratar →

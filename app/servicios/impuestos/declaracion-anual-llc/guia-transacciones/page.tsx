@@ -13,7 +13,7 @@ export default function GuiaTransaccionesPage() {
             <header className="bg-white border-b border-slate-200 py-6 sticky top-0 z-10">
                 <div className="max-w-4xl mx-auto px-6 flex items-center gap-4">
                     <Link
-                        href="/servicios/form-5472-1120/onboarding"
+                        href="/servicios/impuestos/declaracion-anual-llc/onboarding"
                         className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-600 transition-colors"
                         title="Volver al formulario"
                     >
@@ -130,7 +130,7 @@ export default function GuiaTransaccionesPage() {
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-4">
                             <Link 
-                                href="/servicios/form-5472-1120/onboarding"
+                                href="/servicios/impuestos/declaracion-anual-llc/onboarding"
                                 className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-lg hover:-translate-y-1"
                             >
                                 Volver al Formulario

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Package, ChevronRight, Calendar, DollarSign } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
+import { isReporteAnual } from '@/lib/constants'
 
 
 export default async function PedidosPage() {
@@ -27,7 +28,7 @@ export default async function PedidosPage() {
         numero: completo.numero_pedido || `#${completo.id.slice(0, 5)}`,
         servicio: (completo.metadata as any)?.tipo_servicio === 'tax_filing_5472' || ((completo as any).tax_data && Object.keys((completo as any).tax_data).length > 0)
           ? 'Presentación Forms 5472 + 1120'
-          : completo.servicio?.slug === 'reporte-anual'
+          : isReporteAnual(completo.servicio?.slug)
             ? 'Reporte Anual Estatal'
             : (completo.paquete?.nombre || completo.servicio?.nombre || completo.paquete?.title || completo.servicio?.title || 'Servicio Open LLC'),
         descripcion: completo.paquete?.tagline || completo.servicio?.tagline || (completo.paquete_id ? 'Paquete de formación' : 'Servicio individual'),

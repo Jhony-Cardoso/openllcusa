@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { AlertCircle, Loader2, Check, Star, ChevronDown } from 'lucide-react'
+import { isEIN, isReporteAnual } from '@/lib/constants'
 
 export default function EstadoPage() {
   const router = useRouter()
@@ -11,7 +12,7 @@ export default function EstadoPage() {
   const searchParams = useSearchParams()
 
   const slug = (params?.slug as string) || ''
-  const isEIN = slug === 'obtencion-ein'
+  const isEinSlug = isEIN(slug)
 
   const pedidoIdFromUrl = searchParams.get('pedido')
   const { user, isLoaded: isUserLoaded } = useUser()
@@ -149,7 +150,7 @@ export default function EstadoPage() {
       return
     }
 
-    if (!isEIN) {
+    if (!isEinSlug) {
       if (!selectedEstado) {
         setError('Por favor, selecciona un estado para tu LLC.')
         return
@@ -252,7 +253,7 @@ export default function EstadoPage() {
   }
 
   // UI EIN
-  if (isEIN) {
+  if (isEinSlug) {
     return (
       <div className="max-w-2xl">
         <h1 className="text-3xl font-semibold text-gray-900 mb-2">Datos de tu LLC (ya creada)</h1>
@@ -359,17 +360,17 @@ export default function EstadoPage() {
   }
 
   // UI original (LLC): Selección de estados
-  const isReporteAnual = slug === 'reporte-anual'
+  const isReporteAnualSlug = isReporteAnual(slug)
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-3">
-          {isReporteAnual
+          {isReporteAnualSlug
             ? '¿En qué estado está registrada tu LLC?'
             : '¿Dónde quieres constituir tu LLC?'}
         </h2>
         <p className="text-gray-600">
-          {isReporteAnual
+          {isReporteAnualSlug
             ? 'Selecciona el estado donde está registrada tu LLC. El coste del reporte anual varía según el estado.'
             : 'Selecciona el estado donde se registrará tu LLC. Te recomendamos Wyoming por su bajo coste anual y máxima privacidad.'}
         </p>

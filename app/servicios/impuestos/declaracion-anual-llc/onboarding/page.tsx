@@ -1065,7 +1065,7 @@ export default function Form5472OnboardingPage() {
                                                     </p>
                                                     <div className="flex flex-wrap items-center gap-3">
                                                         <a
-                                                            href="/servicios/form-5472-1120/guia-transacciones"
+                                                            href="/servicios/impuestos/declaracion-anual-llc/guia-transacciones"
                                                             target="_blank"
                                                             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-sm font-semibold text-xs uppercase tracking-wider"
                                                         >

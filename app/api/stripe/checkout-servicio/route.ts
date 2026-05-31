@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import Stripe from 'stripe'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { isReporteAnual, isEIN, SERVICE_SLUGS } from '@/lib/constants'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy_build', {
   apiVersion: '2024-12-18.acacia',
@@ -63,8 +64,8 @@ export async function POST(request: NextRequest) {
     console.log('📍 [checkout-servicio] estado:', estadoUsa?.nombre, 'filing_anual:', estadoUsa?.filing_anual)
 
     const precioServicio = Number(servicio?.precio ?? 0)
-    const isReporteAnual = slug === 'reporte-anual'
-    const filingAnual = isReporteAnual ? Number(estadoUsa?.filing_anual ?? 0) : 0
+    const isReporteAnualSlug = isReporteAnual(slug)
+    const filingAnual = isReporteAnualSlug ? Number(estadoUsa?.filing_anual ?? 0) : 0
 
     if (!precioServicio || precioServicio <= 0) {
       console.error('❌ [checkout-servicio] Precio inválido:', precioServicio)
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
       },
     ]
 
-    if (isReporteAnual && filingAnual > 0) {
+    if (isReporteAnualSlug && filingAnual > 0) {
       lineItems.push({
         price_data: {
           currency: 'usd',
@@ -105,8 +106,8 @@ export async function POST(request: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
-    const basePath = slug === 'obtencion-ein' 
-      ? `/servicios/impuestos/obtencion-ein` 
+    const basePath = isEIN(slug) 
+      ? `/servicios/${SERVICE_SLUGS.OBTENCION_EIN}` 
       : `/servicios/${slug}`
 
     const session = await stripe.checkout.sessions.create({

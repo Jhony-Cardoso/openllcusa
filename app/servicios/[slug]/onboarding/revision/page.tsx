@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
+import { isEIN, isReporteAnual } from '@/lib/constants'
 import { AlertCircle, Loader2 } from 'lucide-react'
 
 export default function RevisionPage() {
@@ -12,7 +13,7 @@ export default function RevisionPage() {
   const { user, isLoaded } = useUser()
 
   const slug = (params?.slug as string) || ''
-  const isEIN = slug === 'obtencion-ein'
+  const isEinSlug = isEIN(slug)
   const pedidoId = searchParams.get('pedido')
 
   const [pedido, setPedido] = useState<any>(null)
@@ -108,14 +109,14 @@ export default function RevisionPage() {
   }, [pedido])
 
   const einData = useMemo(() => {
-    if (!isEIN) return null
+    if (!isEinSlug) return null
     try {
       const obj = pedido?.descripcion_negocio ? JSON.parse(pedido.descripcion_negocio) : {}
       return obj?.ein || null
     } catch {
       return null
     }
-  }, [isEIN, pedido])
+  }, [isEinSlug, pedido])
 
   if (loading) {
     return (
@@ -142,7 +143,7 @@ export default function RevisionPage() {
   }
 
   // EIN
-  if (isEIN) {
+  if (isEinSlug) {
     const rp = einData?.responsible_party || {}
     const yaPagado = pedido?.estado_pedido === 'pagado'
 
@@ -221,11 +222,11 @@ export default function RevisionPage() {
   }
 
   // NO EIN (LLC): mantener comportamiento actual
-  const isReporteAnual = slug === 'reporte-anual'
+  const isReporteAnualSlug = isReporteAnual(slug)
   const filingInicial = Number(pedido?.estado_usa?.filing_inicial ?? 0)
   const filingAnual = Number(pedido?.estado_usa?.filing_anual ?? 0)
-  const stateFee = isReporteAnual ? filingAnual : filingInicial
-  const stateFeeName = isReporteAnual ? 'Filing estatal anual' : 'Filing estatal inicial'
+  const stateFee = isReporteAnualSlug ? filingAnual : filingInicial
+  const stateFeeName = isReporteAnualSlug ? 'Filing estatal anual' : 'Filing estatal inicial'
   const total = precioServicio + stateFee
 
   return (

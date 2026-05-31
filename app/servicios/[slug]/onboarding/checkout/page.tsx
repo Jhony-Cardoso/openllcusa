@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { AlertCircle, Loader2 } from 'lucide-react'
+import { isEIN, isReporteAnual, isTaxFilingSlug } from '@/lib/constants'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -13,7 +14,7 @@ export default function CheckoutPage() {
 
   const slug = (params?.slug as string) || ''
   const pedidoIdFromUrl = searchParams.get('pedidoId') || searchParams.get('pedido') // Acepta ambos formatos
-  const isEIN = slug === 'obtencion-ein'
+  const isEinSlug = isEIN(slug)
 
   const [pedido, setPedido] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -96,7 +97,7 @@ export default function CheckoutPage() {
 
   const precioBase = useMemo(() => {
     // Determinar si es Tax Filing basándose en el slug de la URL
-    const esTaxFiling = slug === 'impuestos-llc-5472-1120' || slug === 'form-5472-1120'
+    const esTaxFiling = isTaxFilingSlug(slug)
 
     // Si es Tax Filing, leer el precio real del servicio
     if (esTaxFiling) {
@@ -122,14 +123,14 @@ export default function CheckoutPage() {
     return Number.isFinite(n) ? n : 0
   }, [pedido])
 
-  const isReporteAnual = slug === 'reporte-anual'
+  const isReporteAnualSlug = isReporteAnual(slug)
   
-  const stateFeeName = isReporteAnual ? 'Filing estatal anual' : 'Filing estatal inicial'
-  const stateFee = isReporteAnual 
+  const stateFeeName = isReporteAnualSlug ? 'Filing estatal anual' : 'Filing estatal inicial'
+  const stateFee = isReporteAnualSlug 
     ? Number(pedido?.estado_usa?.filing_anual ?? 0) 
     : Number(pedido?.estado_usa?.filing_inicial ?? 0)
 
-  const total = isEIN ? precioBase : precioBase + stateFee
+  const total = isEinSlug ? precioBase : precioBase + stateFee
 
   // Obtener el ID actual (puede haber cambiado tras recuperación)
   const getCurrentPedidoId = () => {
@@ -149,7 +150,7 @@ export default function CheckoutPage() {
 
     try {
       // Determinar el endpoint basado en el slug de la URL actual
-      const esTaxFiling = slug === 'impuestos-llc-5472-1120' || slug === 'form-5472-1120'
+      const esTaxFiling = isTaxFilingSlug(slug)
 
       // Seleccionar endpoint según el tipo de servicio
       let endpoint = '/api/stripe/checkout' // Default para paquetes
@@ -159,7 +160,7 @@ export default function CheckoutPage() {
         // Para Tax Filing, usar endpoint específico que usa el pedido existente
         endpoint = '/api/stripe/checkout-tax-filing'
         body = { pedidoId: currentId }
-      } else if (isEIN || isReporteAnual) {
+      } else if (isEinSlug || isReporteAnualSlug) {
         // Para EIN y Reporte Anual, usar endpoint de servicios
         endpoint = '/api/stripe/checkout-servicio'
         body = { pedidoId: currentId, slug }
@@ -220,7 +221,7 @@ export default function CheckoutPage() {
     <div className="max-w-2xl">
       <button
         onClick={() =>
-          router.push(`/servicios/${slug}/onboarding/${isEIN ? '' : 'revision'}?pedido=${currentPedidoId}`)
+            router.push(`/servicios/${slug}/onboarding/${isEinSlug ? '' : 'revision'}?pedido=${currentPedidoId}`)
         }
         className="text-sm text-gray-600 underline"
       >
@@ -252,7 +253,7 @@ export default function CheckoutPage() {
           <span>${precioBase}</span>
         </div>
 
-        {!isEIN && (
+        {!isEinSlug && (
           <div className="flex justify-between text-gray-700 mb-2">
             <span>{stateFeeName} ({pedido?.estado_usa?.nombre || 'Estado'})</span>
             <span>${stateFee}</span>

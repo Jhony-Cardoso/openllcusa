@@ -400,7 +400,7 @@ export default function Header() {
         items: [
           { href: '/servicios/formacion-llc', label: 'Formación de LLCs', icon: <Globe size={18} /> },
           { href: '/servicios/inc', label: 'Corporaciones Inc', icon: <Smartphone size={18} /> },
-          { href: '/servicios/obtencion-ein', label: 'Obtención de EIN (IRS)', icon: <Search size={18} /> }
+          { href: '/servicios/impuestos/obtencion-ein', label: 'Obtención de EIN (IRS)', icon: <Search size={18} /> }
         ]
       },
       {
@@ -409,7 +409,7 @@ export default function Header() {
           { href: '/servicios/agente-registrado', label: 'Agente Registrado', icon: <HelpCircle size={18} /> },
           { href: '/servicios/impuestos/declaracion-anual-llc', label: 'Impuestos Federales', icon: <BookOpen size={18} /> },
           { href: '/servicios/reporte-anual', label: 'Reporte Anual', icon: <HelpCircle size={18} /> },
-          { href: '/servicios/consultoria-legal', label: 'Consultoría Legal', icon: <Send size={18} /> }
+          { href: '/servicios/consultoria-fiscal', label: 'Consultoría Fiscal', icon: <Send size={18} /> }
         ]
       }
     ],

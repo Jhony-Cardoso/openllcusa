@@ -11,6 +11,7 @@ import { PedidoModel } from '@/lib/models/pedido'
 import { FacturaModel } from '@/lib/models/factura'
 import AdminDocumentManager from '@/components/admin/AdminDocumentManager'
 import AdminTaxFilingManager from '@/components/admin/AdminTaxFilingManager'
+import { isEIN, isReporteAnual, isTaxFilingSlug } from '@/lib/constants'
 
 export default async function AdminPedidoDetallePage({
     params,
@@ -44,12 +45,12 @@ export default async function AdminPedidoDetallePage({
     const hasRealTaxData = taxDataObj && Object.keys(taxDataObj).length > 0
 
     const esTaxFiling =
-        pedido.servicio?.slug === 'form-5472-1120' ||
+        isTaxFilingSlug(pedido.servicio?.slug) ||
         pedido.metadata?.tipo_servicio === 'tax_filing_5472' ||
         hasRealTaxData
 
-    const esEIN = pedido.servicio?.slug === 'obtencion-ein' || pedido.paquete?.slug === 'ein-express'
-    const esReporteAnual = pedido.servicio?.slug === 'reporte-anual'
+    const esEIN = isEIN(pedido.servicio?.slug) || pedido.paquete?.slug === 'ein-express'
+    const esReporteAnual = isReporteAnual(pedido.servicio?.slug)
 
     const estadoNombre = (pedido as any).estado_usa?.nombre || pedido.metadata?.estado_nombre || 'N/A'
     const llcNombre = pedido.metadata?.empresa_nombre || pedido.nombre_empresa || 'N/A'

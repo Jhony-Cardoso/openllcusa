@@ -197,9 +197,9 @@ export default function PricingPage() {
                     <a href="/paquetes/llc-esencial/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
                       Empezar con LLC Esencial
                     </a>
-                    <a href="/servicios/llc-esencial" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
-                      Ver detalles del servicio →
-                    </a>
+<a href="/servicios/agente-registrado" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
+                       Ver detalles del servicio →
+                     </a>
                     <p className="pricing-card-footnote">
                       Ideal si quieres arrancar lean y luego ampliar con planes de mantenimiento.
                     </p>
@@ -302,9 +302,9 @@ export default function PricingPage() {
                     <a href="/paquetes/primer-ano-pro/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
                       Quiero olvidarme del primer año
                     </a>
-                    <a href="/servicios/primer-ano-pro" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
-                      Ver detalles del servicio →
-                    </a>
+<a href="/servicios/reporte-anual" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
+                       Ver detalles del servicio →
+                     </a>
                     <p className="pricing-card-footnote">
                       Puedes pasar a un plan mensual de mantenimiento al terminar el primer año.
                     </p>
@@ -379,9 +379,9 @@ export default function PricingPage() {
                     <a href="/paquetes/compliance-basico/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
                       Activar Compliance Básico
                     </a>
-                    <a href="/servicios/compliance-basico" className="btn btn-white" style={{ display: 'block', textAlign: 'center' }}>
-                      Ver detalles del servicio →
-                    </a>
+<a href="/servicios/reporte-anual" className="btn btn-white" style={{ display: 'block', textAlign: 'center' }}>
+                       Ver detalles del servicio →
+                     </a>
                   </div>
                 </div>
               </article>

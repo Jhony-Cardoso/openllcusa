@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
+import { isEIN } from '@/lib/constants'
 import { analyticsEvents } from "../../../../../lib/analytics"
 import { trackEvent } from "../../../../../lib/analytics";
 
@@ -12,7 +13,7 @@ export default function CompletadoPage() {
   const searchParams = useSearchParams()
 
   const slug = (params?.slug as string) || ''
-  const isEIN = slug === 'obtencion-ein'
+  const isEinSlug = isEIN(slug)
 
   const sessionId = searchParams.get('session_id')
   const pedidoId = searchParams.get('pedido')
@@ -103,7 +104,7 @@ useEffect(() => {
   }
 
   // --- EIN: Gracias / Recibido ---
-  if (isEIN) {
+  if (isEinSlug) {
     return (
       <div className="max-w-2xl">
         <div className="flex items-center gap-2 text-green-700 font-semibold mb-4">

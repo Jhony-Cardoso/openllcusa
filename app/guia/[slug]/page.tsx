@@ -26,7 +26,7 @@ const guiasContent: Record<string, { title: string, content: React.ReactNode, me
         <p>A diferencia de Europa, en EE.UU. el registro de empresas es competencia de cada estado. Los 50 estados tienen leyes distintas, pero si no vas a tener presencia física (local o empleados allí), tu decisión suele reducirse a los tres gigantes pro-negocios: <strong>Wyoming, Delaware o New Mexico</strong>. Wyoming es famoso por sus bajos costos y fuerte privacidad; Delaware por ser el estándar para startups que buscan rondas de inversión; y New Mexico destaca por un anonimato total y bajo costo de mantenimiento.</p>
 
         <h3>2. Contrata un Agente Registrado (Registered Agent)</h3>
-        <p>Por ley estatal, toda empresa norteamericana necesita una dirección física en el estado de formación y una persona designada para recibir notificaciones legales (demandas, avisos del gobierno) en horario comercial. Puesto que estás en el extranjero, debes contratar un servicio de Agente Registrado. La buena noticia es que todos nuestros paquetes de <Link href="/servicios/llc-esencial" className="text-blue-600 underline">formación de LLC</Link> ya incluyen este servicio gratuitamente durante tu primer año.</p>
+        <p>Por ley estatal, toda empresa norteamericana necesita una dirección física en el estado de formación y una persona designada para recibir notificaciones legales (demandas, avisos del gobierno) en horario comercial. Puesto que estás en el extranjero, debes contratar un servicio de Agente Registrado. La buena noticia es que todos nuestros paquetes de <Link href="/servicios/agente-registrado" className="text-blue-600 underline">formación de LLC</Link> ya incluyen este servicio gratuitamente durante tu primer año.</p>
 
         <h3>3. Presenta los Articles of Organization</h3>
         <p>Es el documento fundacional de tu LLC que se presenta ante la Secretaría de Estado correspondiente. Necesitarás proponer el nombre de tu empresa (debe terminar en "LLC" o "L.L.C.") y abonar las tasas estatales de tramitación.</p>
@@ -247,7 +247,7 @@ const guiasContent: Record<string, { title: string, content: React.ReactNode, me
           <li>El <strong>Formulario 1120</strong> es literalmente una carcasa (hoja pro-forma principal en blanco) que acompaña al interior rellenado del Formulario 5472. Simplemente va firmado para indicarle al Servicio de Rentas Internas quién emite y responde ante los estatutos.</li>
         </ul>
         <div className="bg-red-50 text-red-800 p-4 rounded-lg my-4 text-sm font-medium border border-red-200">
-          ⚠️ <strong>ATENCIÓN AL PRECIO:</strong> Como hemos dejado claro a lo largo del extracto, el importe de $25,000 USD de multa es estrictamente la cifra base que te interpone de multado directo o requerimiento de penalización el fisco en EE.UU por evadir a conciencia (o no mandar a tiempo durante semanas y meses) tu bloque 5472/1120. ¡Con nuestra agencia los servicios cubren <Link href="/servicios/impuestos-llc-5472-1120" className="underline font-bold text-red-900">declarar anualmente bajo la supervisión de auditores</Link> eliminando por completo este enorme riego latente y evitando disgustos irreparables en visados e inversiones futuras!
+          ⚠️ <strong>ATENCIÓN AL PRECIO:</strong> Como hemos dejado claro a lo largo del extracto, el importe de $25,000 USD de multa es estrictamente la cifra base que te interpone de multado directo o requerimiento de penalización el fisco en EE.UU por evadir a conciencia (o no mandar a tiempo durante semanas y meses) tu bloque 5472/1120. ¡Con nuestra agencia los servicios cubren <Link href="/servicios/impuestos/declaracion-anual-llc" className="underline font-bold text-red-900">declarar anualmente bajo la supervisión de auditores</Link> eliminando por completo este enorme riego latente y evitando disgustos irreparables en visados e inversiones futuras!
         </div>
 
         <h2>Beneficial Ownership (BOIR) ante la FinCEN</h2>
@@ -262,7 +262,7 @@ const guiasContent: Record<string, { title: string, content: React.ReactNode, me
           <li><strong>Delaware:</strong> Con su famosa "Franchise Tax", no te perdona nada menos de $300 anuales de base de golpe.</li>
           <li><strong>New Mexico:</strong> Es el paraíso de retención sin tasas; ¡no emite Annual Report ni Franchise tax, tu costo de estado es cero dólares! (Solo la tarifa fija pequeña de mantener a tu Agente).</li>
         </ul>
-        <p>Puedes encargar en piloto automático nuestra salvaguardia adquiriendo planes de <strong><Link href="/servicios/compliance-basico" className="underline text-blue-600">Compliance Anuales</Link></strong>.</p>
+        <p>Puedes encargar en piloto automático nuestra salvaguardia adquiriendo planes de <strong><Link href="/servicios/reporte-anual" className="underline text-blue-600">Compliance Anuales</Link></strong>.</p>
       </>
     )
   }

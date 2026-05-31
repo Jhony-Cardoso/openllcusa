@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { Loader2, AlertCircle } from 'lucide-react'
+import { isTaxFilingSlug } from '@/lib/constants'
 
 type Servicio = {
   id: string
@@ -48,10 +49,8 @@ export default function OnboardingInicioPage() {
         }
 
         // === Flujo dedicado: Tax Filing (Form 5472 + 1120) ===
-        // Si el slug corresponde a impuestos, redirigir al wizard fiscal específico
-        const TAX_SLUGS = ['impuestos-llc-5472-1120', 'form-5472-1120', 'impuestos-federales', 'declaracion-anual-5472', 'form-5472']
-        if (TAX_SLUGS.includes(slug)) {
-          router.replace('/servicios/form-5472-1120/onboarding')
+        if (isTaxFilingSlug(slug)) {
+          router.replace('/servicios/impuestos/declaracion-anual-llc/onboarding')
           return
         }
 

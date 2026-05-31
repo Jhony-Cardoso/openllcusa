@@ -10,7 +10,7 @@ export interface EmailConfirmacionPagoParams {
   pedidoId: string           // UUID interno para links
   numeroPedido?: string      // Nº legible (PED-xxxx)
   fechaPago: string
-  tipoServicio?: string      // 'reporte-anual' | 'obtencion-ein' | 'tax_filing_5472' | default
+  tipoServicio?: string      // 'reporte-anual' | 'impuestos/obtencion-ein' | 'tax_filing_5472' | default
   estadoUsa?: string         // Solo para Reporte Anual
 }
 
@@ -44,7 +44,7 @@ export class EmailService {
               numeroPedido, tipoServicio, estadoUsa } = params
 
       const esReporteAnual = tipoServicio === 'reporte-anual'
-      const esEIN = tipoServicio === 'obtencion-ein'
+      const esEIN = tipoServicio === 'impuestos/obtencion-ein'
       const pedidoDisplay = numeroPedido ? `#${numeroPedido}` : pedidoId.slice(0, 8) + '...'
 
       // Pasos específicos por servicio

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { Loader2, AlertCircle } from 'lucide-react'
+import { isEIN, isReporteAnual } from '@/lib/constants'
 
 type ResponsibleForm = {
   rp_full_name: string
@@ -38,8 +39,8 @@ export default function DatosEmpresaPage() {
   const { user, isLoaded: isUserLoaded } = useUser()
 
   const slug = (params?.slug as string) || ''
-  const isEIN = slug === 'obtencion-ein'
-  const isReporteAnual = slug === 'reporte-anual'
+  const isEinSlug = isEIN(slug)
+  const isReporteAnualSlug = isReporteAnual(slug)
 
   const [pedidoId, setPedidoId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -118,7 +119,7 @@ export default function DatosEmpresaPage() {
         if (pedido.nombre_empresa) setForm(f => ({ ...f, nombre_empresa: pedido.nombre_empresa }))
         if (pedido.email_empresa) setForm(f => ({ ...f, email_empresa: pedido.email_empresa }))
 
-        if (isEIN && pedido.descripcion_negocio) {
+        if (isEinSlug && pedido.descripcion_negocio) {
           try {
             const obj = JSON.parse(pedido.descripcion_negocio)
             const prev = obj?.ein?.responsible_party || null
@@ -126,7 +127,7 @@ export default function DatosEmpresaPage() {
           } catch { /* ignore */ }
         }
 
-        if (isEIN && !rp.rp_full_name) {
+        if (isEinSlug && !rp.rp_full_name) {
           const fullName = (user.fullName || '').trim() || `${user.firstName || ''} ${user.lastName || ''}`.trim()
           if (fullName) setRp(p => ({ ...p, rp_full_name: fullName }))
         }
@@ -140,7 +141,7 @@ export default function DatosEmpresaPage() {
 
     cargarDatos()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUserLoaded, user, searchParams, router, isEIN])
+  }, [isUserLoaded, user, searchParams, router, isEinSlug])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -181,7 +182,7 @@ export default function DatosEmpresaPage() {
 
   // --- Guardar EIN (Responsible Party) ---
   const validar = (): string | null => {
-    if (!isEIN) return null
+    if (!isEinSlug) return null
     if (!rp.rp_full_name.trim()) return 'Escribe el nombre completo del Responsible Party.'
     if (!rp.rp_passport_country.trim()) return 'Indica el país del pasaporte.'
     if (!rp.rp_passport_number.trim()) return 'Indica el número de pasaporte.'
@@ -251,7 +252,7 @@ export default function DatosEmpresaPage() {
   }
 
   // 1. UI de EIN (Responsible Party)
-  if (isEIN) {
+  if (isEinSlug) {
     return (
       <div className="max-w-2xl">
         <h1 className="text-3xl font-semibold text-gray-900 mb-2">Responsible Party</h1>

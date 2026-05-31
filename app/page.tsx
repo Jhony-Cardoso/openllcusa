@@ -438,7 +438,7 @@ const SERVICES = [
       '✅ Válido para abrir cuentas bancarias'
     ],
     cta: 'Solicitar mi EIN ahora →',
-    href: '/servicios/impuestos/obtencion-ein'   // Cambia si el slug real es distinto
+    href: '/servicios/impuestos/obtencion-ein'
   },
   {
     title: 'Agente Registrado + Dirección Física',

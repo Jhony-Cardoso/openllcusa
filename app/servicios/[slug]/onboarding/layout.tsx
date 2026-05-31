@@ -3,6 +3,7 @@
 import React from 'react'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Check } from 'lucide-react'
+import { isEIN } from '@/lib/constants'
 
 interface OnboardingLayoutProps {
   children: React.ReactNode
@@ -16,10 +17,10 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
 
   const slug = (params?.slug as string) || ''
   const pedidoId = searchParams.get('pedido')
-  const isEIN = slug === 'obtencion-ein'
+  const isEinSlug = isEIN(slug)
 
   const getCurrentStep = () => {
-    if (isEIN) {
+    if (isEinSlug) {
       if (pathname.includes('/completado')) return 3
       if (pathname.includes('/checkout')) return 2
       return 1
@@ -35,7 +36,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
 
   const currentStep = getCurrentStep()
 
-  const steps = isEIN
+  const steps = isEinSlug
     ? [
       { id: 1, name: 'Elegibilidad', path: '' },
       { id: 2, name: 'Pago', path: '/checkout' },

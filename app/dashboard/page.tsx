@@ -15,6 +15,7 @@ import {
   AlertCircle
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
+import { isReporteAnual } from '@/lib/constants'
 
 export default async function DashboardPage() {
   const { userId } = await auth()
@@ -91,7 +92,7 @@ export default async function DashboardPage() {
                   const hasTaxData = taxData && Object.keys(taxData).length > 0;
                   const esTaxFiling = pedido.metadata?.tipo_servicio === 'tax_filing_5472' || hasTaxData;
 
-                  const esReporteAnual = pedido.servicio?.slug === 'reporte-anual'
+                  const esReporteAnual = isReporteAnual(pedido.servicio?.slug)
 
                   const nombre = esTaxFiling
                     ? 'Preparación Formulario 5472 + 1120'

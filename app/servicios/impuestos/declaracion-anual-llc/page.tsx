@@ -1,6 +1,6 @@
-// app/servicios/form-5472-1120/page.tsx
-// Esta carpeta existe como ruta estática y Next.js NO usa [slug]/page.tsx.
-// Creamos aquí la página de presentación del servicio de Impuestos Federales.
+// Página de detalle del servicio de Impuestos (Declaración Anual LLC)
+// Ruta estática: /servicios/impuestos/declaracion-anual-llc
+// Usa el slug actual de la base de datos.
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import Link from 'next/link'
@@ -19,7 +19,7 @@ import {
   HeadphonesIcon
 } from 'lucide-react'
 
-const SLUG = 'form-5472-1120'
+const SLUG = 'impuestos/declaracion-anual-llc'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: s } = await supabaseAdmin
@@ -59,24 +59,13 @@ export default async function ImpuestosFederalesPage() {
     .eq('slug', SLUG)
     .single() as { data: any; error: unknown }
 
-  // Si no encuentra 'form-5472-1120', intentar con 'form-5472'
   let servicio = dbServicio;
   if (error || !servicio) {
-    const { data: altServicio } = await supabaseAdmin
-      .from('servicios')
-      .select('*')
-      .eq('slug', 'form-5472')
-      .single() as { data: any; error: unknown }
-    
-    if (altServicio) {
-      servicio = altServicio;
-    } else {
-      // Fallback estricto si no hay BD para que la build no falle (404)
-      servicio = {
-        nombre: 'Declaración de Impuestos Federales',
-        descripcion: 'Presentación anual del Formulario 1120 + 5472.',
-        precio: 397
-      }
+    // Fallback si no hay datos en BD (evita que la build rompa)
+    servicio = {
+      nombre: 'Declaración de Impuestos Federales',
+      descripcion: 'Presentación anual del Formulario 1120 + 5472.',
+      precio: 397
     }
   }
 

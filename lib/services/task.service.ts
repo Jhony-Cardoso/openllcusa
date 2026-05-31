@@ -58,7 +58,7 @@ export class TaskService {
         const tareasCreadas = []
 
         try {
-            if (servicioSlug === 'obtencion-ein') {
+            if (servicioSlug === 'impuestos/obtencion-ein') {
                 // Tarea 1: Tramitar SS-4
                 const t1 = await this.crear({
                     pedidoId: pedido.id,

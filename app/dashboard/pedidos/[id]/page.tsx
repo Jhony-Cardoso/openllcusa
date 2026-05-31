@@ -11,6 +11,7 @@ import { FacturaModel } from '@/lib/models/factura'
 import OnboardingWizard from '@/components/dashboard/OnboardingWizard'
 import TaxFormViewer from '@/components/dashboard/TaxFormViewer'
 import SS4FormViewer from '@/components/dashboard/SS4FormViewer'
+import { isEIN, isReporteAnual, isTaxFilingSlug } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
 
@@ -88,7 +89,7 @@ export default async function PedidoDetallePage({
   const isLegalSetupPending = isPaid && (pedidoFull.paso_actual < 7)
 
   // Detectar tipo de trámite de forma robusta
-  const esEIN = pedidoFull.servicio?.slug === 'obtencion-ein' || pedidoFull.paquete?.slug === 'ein-express'
+  const esEIN = isEIN(pedidoFull.servicio?.slug) || pedidoFull.paquete?.slug === 'ein-express'
 
   // Tax Filing se detecta por: 
   // 1. Slug específico
@@ -98,12 +99,11 @@ export default async function PedidoDetallePage({
   const hasRealTaxData = taxDataObj && Object.keys(taxDataObj).length > 0
 
   const esTaxFiling =
-    pedidoFull.servicio?.slug === 'impuestos-llc-5472-1120' ||
-    pedidoFull.servicio?.slug === 'form-5472-1120' ||
+    isTaxFilingSlug(pedidoFull.servicio?.slug) ||
     pedidoFull.metadata?.tipo_servicio === 'tax_filing_5472' ||
     hasRealTaxData
 
-  const esReporteAnual = pedidoFull.servicio?.slug === 'reporte-anual'
+  const esReporteAnual = isReporteAnual(pedidoFull.servicio?.slug)
 
   const nombreProducto = esTaxFiling
     ? 'Presentación Forms 5472 + 1120'
@@ -168,7 +168,7 @@ export default async function PedidoDetallePage({
 
   if (esTaxFiling) {
     // Para Tax Filing, usar el slug específico
-    slugParaCheckout = 'impuestos-llc-5472-1120'
+    slugParaCheckout = 'impuestos/declaracion-anual-llc'
   } else if (pedidoFull.paquete?.slug) {
     // Si tiene paquete, usar su slug
     slugParaCheckout = pedidoFull.paquete.slug

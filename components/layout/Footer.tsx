@@ -36,7 +36,7 @@ export default function Footer() {
               <li><Link href="/paquetes/starter/onboarding" className="hover:text-white transition-colors">Crear LLC (Starter)</Link></li>
               <li><Link href="/paquetes/professional/onboarding" className="hover:text-white transition-colors">Professional</Link></li>
               <li><Link href="/paquetes/business/onboarding" className="hover:text-white transition-colors">Business</Link></li>
-              <li><Link href="/servicios/obtencion-ein" className="hover:text-white transition-colors">Obtener EIN</Link></li>
+              <li><Link href="/servicios/impuestos/obtencion-ein" className="hover:text-white transition-colors">Obtener EIN</Link></li>
               <li><Link href="/servicios/agente-registrado" className="hover:text-white transition-colors">Agente Registrado</Link></li>
             </ul>
           </div>

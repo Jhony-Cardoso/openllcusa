@@ -82,18 +82,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  async rewrites() {
-    return [
-      {
-        source: '/servicios/impuestos/obtencion-ein',
-        destination: '/servicios/obtencion-ein',
-      },
-      {
-        source: '/servicios/impuestos/obtencion-ein/:path*',
-        destination: '/servicios/obtencion-ein/:path*',
-      }
-    ];
-  },
 };
 
 export default nextConfig;

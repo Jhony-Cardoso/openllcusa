@@ -24,8 +24,8 @@ export default function DiagnosticoPage() {
         addLog('🔍 Iniciando prueba de conexión...')
 
         try {
-            addLog('📡 Consultando API /api/servicios?slug=obtencion-ein...')
-            const response = await fetch('/api/servicios?slug=obtencion-ein')
+            addLog('📡 Consultando API /api/servicios?slug=impuestos/obtencion-ein...')
+            const response = await fetch('/api/servicios?slug=impuestos/obtencion-ein')
 
             if (!response.ok) {
                 const error = await response.json()
@@ -132,7 +132,7 @@ export default function DiagnosticoPage() {
                             onClick={testConnection}
                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
                         >
-                            Probar servicio "obtencion-ein"
+                            Probar servicio "impuestos/obtencion-ein"
                         </button>
                         <button
                             onClick={testAllServicios}

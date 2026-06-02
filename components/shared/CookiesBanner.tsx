@@ -5,7 +5,9 @@ import styles from './CookiesBanner.module.css';
 
 declare global {
   interface Window {
+    // @ts-expect-error - Google Analytics gtag global (added dynamically)
     gtag?: (...args: any[]) => void;
+    // @ts-expect-error - Google Analytics dataLayer global
     dataLayer?: any[];
   }
 }

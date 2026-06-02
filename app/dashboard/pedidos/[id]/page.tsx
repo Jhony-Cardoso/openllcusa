@@ -86,24 +86,26 @@ export default async function PedidoDetallePage({
   }
 
   const isPaid = pedidoFull.estado_pedido === 'pagado'
-  const isLegalSetupPending = isPaid && (pedidoFull.paso_actual < 7)
+  const isLegalSetupPending = isPaid && (pedidoFull.paso_actual ?? 0) < 7
 
   // Detectar tipo de trámite de forma robusta
-  const esEIN = isEIN(pedidoFull.servicio?.slug) || pedidoFull.paquete?.slug === 'ein-express'
+  const p = pedidoFull as any
+  const esEIN = isEIN(p.servicio?.slug) || p.paquete?.slug === 'ein-express'
 
   // Tax Filing se detecta por: 
   // 1. Slug específico
   // 2. Metadata explícita
   // 3. Opcionalmente tax_data PERO solo si tiene campos reales (evitando el default '{}')
-  const taxDataObj = pedidoFull.tax_data as any
-  const hasRealTaxData = taxDataObj && Object.keys(taxDataObj).length > 0
+  const taxDataObj = ((pedidoFull as any).tax_data ?? {}) as Record<string, any>
+  const hasRealTaxData = Object.keys(taxDataObj).length > 0
+  const metadata = (pedidoFull.metadata ?? {}) as Record<string, any>;
 
   const esTaxFiling =
-    isTaxFilingSlug(pedidoFull.servicio?.slug) ||
-    pedidoFull.metadata?.tipo_servicio === 'tax_filing_5472' ||
+    isTaxFilingSlug(p.servicio?.slug) ||
+    metadata.tipo_servicio === 'tax_filing_5472' ||
     hasRealTaxData
 
-  const esReporteAnual = isReporteAnual(pedidoFull.servicio?.slug)
+  const esReporteAnual = isReporteAnual(p.servicio?.slug)
 
   const nombreProducto = esTaxFiling
     ? 'Presentación Forms 5472 + 1120'
@@ -113,7 +115,7 @@ export default async function PedidoDetallePage({
 
   // SI EL PAGO ESTÁ HECHO PERO FALTA EL CHECKLIST LEGAL
   // Excepción: Tax Filing y Reporte Anual no requieren wizard posterior
-  const showWizard = isPaid && !esTaxFiling && !esReporteAnual && (pedidoFull.paso_actual || 0) < 7
+  const showWizard = isPaid && !esTaxFiling && !esReporteAnual && (pedidoFull.paso_actual ?? 0) < 7
 
   if (showWizard) {
     return (
@@ -136,30 +138,32 @@ export default async function PedidoDetallePage({
 
   const precio = pedidoFull.total_pagado || pedidoFull.paquete?.precio || pedidoFull.servicio?.precio || 0
 
+  const safeDate = (d: string | null | undefined) => d ? new Date(d).toLocaleDateString() : '—'
+
   // Mapeo de progreso visual (Adaptado para EIN vs LLC vs Impuestos)
   const pasos = esTaxFiling ? [
-    { id: 1, label: 'Datos Recibidos', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: true },
+    { id: 1, label: 'Datos Recibidos', date: safeDate(pedidoFull.created_at), completado: true },
     { id: 2, label: 'Pago Verificado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
-    { id: 3, label: 'Documentos Preparados', date: pedidoFull.metadata?.documents?.form_5472_url ? (pedidoFull.metadata?.documents?.form_5472_approved ? 'Completado - Copia oficial lista' : 'Pendiente de tu revisión y aprobación') : 'En proceso de preparación por nuestro equipo', completado: !!pedidoFull.metadata?.documents?.form_5472_url },
+    { id: 3, label: 'Documentos Preparados', date: metadata.documents?.form_5472_url ? (metadata.documents?.form_5472_approved ? 'Completado - Copia oficial lista' : 'Pendiente de tu revisión y aprobación') : 'En proceso de preparación por nuestro equipo', completado: !!metadata.documents?.form_5472_url },
     { id: 4, label: 'Presentación al IRS', date: 'Pendiente - Nuestro equipo lo enviará próximamente', completado: false },
     { id: 5, label: 'Acuse de Recibo del IRS', date: 'Pendiente - Se enviará cuando esté disponible', completado: false },
   ] : esReporteAnual ? [
-    { id: 1, label: 'Solicitud recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: true },
+    { id: 1, label: 'Solicitud recibida', date: safeDate(pedidoFull.created_at), completado: true },
     { id: 2, label: 'Pago verificado', date: isPaid ? 'Verificado' : 'Pendiente', completado: isPaid },
-    { id: 3, label: `Presentación ante ${(pedidoFull as any).estado_usa?.nombre || 'el estado'}`, date: pedidoFull.paso_actual >= 8 ? 'Completado' : 'Nuestro equipo lo gestionará a la mayor brevedad', completado: pedidoFull.paso_actual >= 8 },
-    { id: 4, label: 'Confirmación oficial del estado', date: pedidoFull.paso_actual >= 9 ? 'Completado' : 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
+    { id: 3, label: `Presentación ante ${(pedidoFull as any).estado_usa?.nombre || 'el estado'}`, date: (pedidoFull.paso_actual ?? 0) >= 8 ? 'Completado' : 'Nuestro equipo lo gestionará a la mayor brevedad', completado: (pedidoFull.paso_actual ?? 0) >= 8 },
+    { id: 4, label: 'Confirmación oficial del estado', date: (pedidoFull.paso_actual ?? 0) >= 9 ? 'Completado' : 'Próximamente', completado: (pedidoFull.paso_actual ?? 0) >= 9 },
   ] : esEIN ? [
-    { id: 1, label: 'Solicitud Recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
+    { id: 1, label: 'Solicitud Recibida', date: safeDate(pedidoFull.created_at), completado: (pedidoFull.paso_actual ?? 0) >= 1 },
     { id: 2, label: 'Pago Confirmado', date: isPaid ? 'Completado' : 'Pendiente', completado: isPaid },
-    { id: 7, label: 'Autorización Firmada', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
-    { id: 4, label: 'Tramitación ante IRS', date: pedidoFull.paso_actual >= 8 ? (pedidoFull.metadata?.borrador_ss4_path ? (pedidoFull.metadata?.borrador_ss4_approved ? 'Borrador Aprobado - Enviando al IRS' : 'Borrador listo - Revísalo abajo') : 'Preparando borrador') : 'En espera', completado: pedidoFull.paso_actual >= 8 },
-    { id: 5, label: 'EIN Entregado', date: 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
+    { id: 7, label: 'Autorización Firmada', date: (pedidoFull.paso_actual ?? 0) >= 7 ? 'Completado' : 'Pendiente', completado: (pedidoFull.paso_actual ?? 0) >= 7 },
+    { id: 4, label: 'Tramitación ante IRS', date: (pedidoFull.paso_actual ?? 0) >= 8 ? (metadata.borrador_ss4_path ? (metadata.borrador_ss4_approved ? 'Borrador Aprobado - Enviando al IRS' : 'Borrador listo - Revísalo abajo') : 'Preparando borrador') : 'En espera', completado: (pedidoFull.paso_actual ?? 0) >= 8 },
+    { id: 5, label: 'EIN Entregado', date: 'Próximamente', completado: (pedidoFull.paso_actual ?? 0) >= 9 },
   ] : [
-    { id: 1, label: 'Información recibida', date: new Date(pedidoFull.created_at).toLocaleDateString(), completado: pedidoFull.paso_actual >= 1 },
+    { id: 1, label: 'Información recibida', date: safeDate(pedidoFull.created_at), completado: (pedidoFull.paso_actual ?? 0) >= 1 },
     { id: 2, label: 'Pago verificado', date: isPaid ? 'Verificado' : 'Pendiente', completado: isPaid },
-    { id: 7, label: 'Configuración Legal', date: pedidoFull.paso_actual >= 7 ? 'Completado' : 'Pendiente', completado: pedidoFull.paso_actual >= 7 },
-    { id: 4, label: 'Presentación gubernamental', date: 'Próximamente', completado: pedidoFull.paso_actual >= 8 },
-    { id: 5, label: 'Documentación entregada', date: 'Próximamente', completado: pedidoFull.paso_actual >= 9 },
+    { id: 7, label: 'Configuración Legal', date: (pedidoFull.paso_actual ?? 0) >= 7 ? 'Completado' : 'Pendiente', completado: (pedidoFull.paso_actual ?? 0) >= 7 },
+    { id: 4, label: 'Presentación gubernamental', date: 'Próximamente', completado: (pedidoFull.paso_actual ?? 0) >= 8 },
+    { id: 5, label: 'Documentación entregada', date: 'Próximamente', completado: (pedidoFull.paso_actual ?? 0) >= 9 },
   ]
 
   // Generar URL de checkout si no está pagado
@@ -171,10 +175,10 @@ export default async function PedidoDetallePage({
     slugParaCheckout = 'impuestos/declaracion-anual-llc'
   } else if (pedidoFull.paquete?.slug) {
     // Si tiene paquete, usar su slug
-    slugParaCheckout = pedidoFull.paquete.slug
+    slugParaCheckout = (pedidoFull.paquete as any).slug
   } else if (pedidoFull.servicio?.slug) {
     // Si tiene servicio, usar su slug
-    slugParaCheckout = pedidoFull.servicio.slug
+    slugParaCheckout = (pedidoFull.servicio as any).slug
   }
 
   const checkoutUrl = `/servicios/${slugParaCheckout}/onboarding/checkout?pedidoId=${pedidoFull.id}`
@@ -224,7 +228,7 @@ export default async function PedidoDetallePage({
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fecha</p>
-                <p className="font-bold text-slate-700">{new Date(pedidoFull.created_at).toLocaleDateString()}</p>
+                 <p className="font-bold text-slate-700">{safeDate(pedidoFull.created_at)}</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Monto</p>
@@ -299,14 +303,14 @@ export default async function PedidoDetallePage({
                           <CreditCard size={16} />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-slate-900 truncate">
-                            Factura {factura.numero_factura}
-                          </p>
+                           <p className="text-xs font-bold text-slate-900 truncate">
+                             Factura {(factura as any).numero_factura}
+                           </p>
                           <p className="text-[10px] text-blue-500 font-bold uppercase">Disponible</p>
                         </div>
                       </div>
                       <a
-                        href={`/api/facturas/${factura.id}/descargar`}
+                         href={`/api/facturas/${(factura as any).id}/descargar`}
                         target="_blank"
                         className="p-2 bg-white text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-600 hover:text-white transition-colors"
                       >
@@ -315,7 +319,7 @@ export default async function PedidoDetallePage({
                     </div>
                   )}
 
-                  {pedidoFull.metadata?.documento_identidad_path ? (
+                  {metadata.documento_identidad_path ? (
                     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 group">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-200 text-blue-600">
@@ -323,13 +327,13 @@ export default async function PedidoDetallePage({
                         </div>
                         <div>
                           <p className="text-xs font-bold text-slate-900 truncate max-w-[120px]">
-                            {pedidoFull.metadata.documento_identidad_nombre || 'Identificación'}
+                            {metadata.documento_identidad_nombre || 'Identificación'}
                           </p>
                           <p className="text-[10px] text-slate-400 font-bold uppercase">Cargado</p>
                         </div>
                       </div>
                       <a
-                        href={`/api/pedidos/${pedidoFull.id}/ver-documento?path=${pedidoFull.metadata.documento_identidad_path}`}
+                        href={`/api/pedidos/${pedidoFull.id}/ver-documento?path=${metadata.documento_identidad_path}`}
                         target="_blank"
                         className="p-2 hover:bg-white hover:text-blue-600 rounded-lg transition-all text-slate-400"
                         title="Ver Documento"
@@ -342,7 +346,7 @@ export default async function PedidoDetallePage({
                   )}
 
                   {/* CARTA EIN DEL IRS */}
-                  {pedidoFull.metadata?.carta_ein_path && (
+                  {metadata.carta_ein_path && (
                     <div className="mt-6 pt-6 border-t border-slate-100">
                       <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-green-200/20 rounded-full -mr-16 -mt-16"></div>
@@ -391,20 +395,20 @@ export default async function PedidoDetallePage({
         </div>
 
         {/* VISOR COMPLETO — fuera de la grilla para máximo ancho */}
-        {esTaxFiling && pedidoFull.metadata?.documents?.form_5472_url && isPaid && (
+        {esTaxFiling && metadata.documents?.form_5472_url && isPaid && (
           <TaxFormViewer
             pedidoId={pedidoFull.id}
-            isApproved={!!pedidoFull.metadata.documents.form_5472_approved}
+            isApproved={!!metadata.documents?.form_5472_approved}
             isCompleted={pedidoFull.estado_pedido === 'completado'}
           />
         )}
 
         {/* VISOR SS-4 — para trámites de EIN */}
-        {esEIN && pedidoFull.metadata?.borrador_ss4_path && isPaid && (
+        {esEIN && metadata.borrador_ss4_path && isPaid && (
           <SS4FormViewer
             pedidoId={pedidoFull.id}
-            isApproved={!!pedidoFull.metadata.borrador_ss4_approved}
-            isCompleted={pedidoFull.paso_actual >= 9}
+            isApproved={!!metadata.borrador_ss4_approved}
+            isCompleted={(pedidoFull.paso_actual ?? 0) >= 9}
           />
         )}
 

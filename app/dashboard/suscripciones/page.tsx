@@ -12,7 +12,7 @@ function formatDate(value: string | null) {
 }
 
 export default async function SuscripcionesPage() {
-  const { userId } = auth();
+  const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
   const { data: subs } = await supabaseAdmin

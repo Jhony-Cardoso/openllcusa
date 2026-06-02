@@ -138,17 +138,19 @@ export async function POST(
             return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
         }
 
-        console.log('📦 Pedido obtenido:', pedido.id)
-        console.log('📄 tax_data raw:', JSON.stringify(pedido.tax_data)?.substring(0, 300))
+        const taxDataRaw = (pedido.tax_data ?? {}) as Record<string, any>
 
-        if (!pedido.tax_data) {
+        console.log('📦 Pedido obtenido:', pedido.id)
+        console.log('📄 tax_data raw:', JSON.stringify(taxDataRaw).substring(0, 300))
+
+        if (!taxDataRaw || Object.keys(taxDataRaw).length === 0) {
             return NextResponse.json({
                 error: 'No se encontraron datos fiscales en este pedido. Verifique que el cliente completó el formulario.'
             }, { status: 400 })
         }
 
         // 2. Transformar datos planos → estructura anidada que espera TaxFormService
-        const taxData = transformToTaxFormData(pedido.tax_data)
+        const taxData = transformToTaxFormData(taxDataRaw)
         console.log('📄 tax_data transformado:', JSON.stringify(taxData).substring(0, 300))
 
         // Validar datos mínimos

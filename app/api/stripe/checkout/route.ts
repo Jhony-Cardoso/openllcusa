@@ -10,7 +10,7 @@ import { PedidoModel } from '@/lib/models/pedido';
 
 // Inicializar Stripe con tu clave secreta
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy_build', {
-  apiVersion: '2024-12-18.acacia', // Usa la última versión de la API
+  apiVersion: '2025-12-15.clover',
 });
 
 export async function POST(request: NextRequest) {

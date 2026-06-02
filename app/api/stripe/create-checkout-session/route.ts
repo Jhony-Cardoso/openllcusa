@@ -59,12 +59,13 @@ export async function POST(request: NextRequest) {
 
         // 1. Paquete principal
         if (pedido.paquete) {
+            const paquete = pedido.paquete as any;
             lineItems.push({
                 price_data: {
                     currency: 'usd',
                     product_data: {
-                        name: pedido.paquete.nombre,
-                        description: pedido.paquete.descripcion_corta || undefined,
+                        name: paquete.nombre,
+                        description: paquete.descripcion_corta || undefined,
                     },
                     unit_amount: Math.round(precioPaquete * 100), // Convertir a centavos
                 },
@@ -74,12 +75,13 @@ export async function POST(request: NextRequest) {
 
         // 2. Filing inicial del estado
         if (pedido.estado_usa && filingInicial > 0) {
+            const estado = pedido.estado_usa as any;
             lineItems.push({
                 price_data: {
                     currency: 'usd',
                     product_data: {
-                        name: `Filing Inicial - ${pedido.estado_usa.nombre}`,
-                        description: `Costo de registro en ${pedido.estado_usa.nombre}`,
+                        name: `Filing Inicial - ${estado.nombre}`,
+                        description: `Costo de registro en ${estado.nombre}`,
                     },
                     unit_amount: Math.round(filingInicial * 100),
                 },

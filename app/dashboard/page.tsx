@@ -88,9 +88,10 @@ export default async function DashboardPage() {
                   const isPaid = pedido.estado_pedido === 'pagado'
 
                   // Detectar tipo de servicio (prioridad a Tax Filing)
-                  const taxData = (pedido as any).tax_data;
-                  const hasTaxData = taxData && Object.keys(taxData).length > 0;
-                  const esTaxFiling = pedido.metadata?.tipo_servicio === 'tax_filing_5472' || hasTaxData;
+                  const t = (pedido.tax_data ?? {}) as Record<string, any>;
+                  const hasTaxData = Object.keys(t).length > 0;
+                  const m = (pedido.metadata ?? {}) as Record<string, any>;
+                  const esTaxFiling = m.tipo_servicio === 'tax_filing_5472' || hasTaxData;
 
                   const esReporteAnual = isReporteAnual(pedido.servicio?.slug)
 

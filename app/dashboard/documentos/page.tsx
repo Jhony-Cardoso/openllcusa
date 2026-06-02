@@ -118,7 +118,9 @@ export default async function DocumentosPage({
               </div>
 
               <div className="divide-y divide-slate-100">
-                {documentos.map((doc) => (
+                {documentos.map((rawDoc) => {
+                  const doc = rawDoc as any;
+                  return (
                   <div key={doc.id} className="p-6 hover:bg-slate-50/50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
@@ -126,16 +128,19 @@ export default async function DocumentosPage({
                       </div>
                       <div>
                         <h3 className="font-bold text-slate-800 text-lg group-hover:text-blue-600 transition-colors">{doc.nombre_archivo}</h3>
-                        <p className="text-sm text-slate-500 flex items-center gap-2">
-                          <span className="uppercase font-bold text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{doc.tipo || 'PDF'}</span>
-                          <span>Procesado el {new Date(doc.created_at).toLocaleDateString('es-ES')}</span>
-                          {doc.tamanio_bytes && (
-                            <>
-                              <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                              <span>{(doc.tamanio_bytes / 1024 / 1024).toFixed(2)} MB</span>
-                            </>
-                          )}
-                        </p>
+                         <p className="text-sm text-slate-500 flex items-center gap-2">
+                           <span className="uppercase font-bold text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{doc.tipo || 'PDF'}</span>
+                             <span>Procesado el {doc.created_at ? new Date(doc.created_at).toLocaleDateString('es-ES') : '—'}</span>
+                             {(() => {
+                               const size = typeof doc.tamanio_bytes === 'number' ? doc.tamanio_bytes : 0;
+                               return size > 0 ? (
+                                 <>
+                                   <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                                   <span>{(size / 1024 / 1024).toFixed(2)} MB</span>
+                                 </>
+                               ) : null;
+                             })()}
+                         </p>
                       </div>
                     </div>
 
@@ -148,9 +153,10 @@ export default async function DocumentosPage({
                       <Download size={18} />
                       Descargar
                     </a>
-                  </div>
-                ))}
-              </div>
+                   </div>
+                 );
+                })}
+               </div>
             </div>
           )}
         </div>

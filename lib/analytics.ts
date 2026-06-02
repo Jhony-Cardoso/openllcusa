@@ -22,6 +22,11 @@ export const trackEvent = (action: string, category?: string, label?: string, va
 
 // Eventos clave para nuestro funnel
 export const analyticsEvents = {
+  // Generic method for backward compatibility (prevents runtime errors)
+  trackEvent: (action: string, category?: string, label?: string, value?: number) => {
+    trackEvent(action, category, label, value);
+  },
+
   // Lead-form
   leadFormViewed: () => trackEvent('lead_form_viewed', 'lead', 'calculadora'),
   leadFormStep2: () => trackEvent('lead_form_step2', 'lead', 'continuar_quiz'),

@@ -22,14 +22,16 @@ export default async function AnaliticasPage() {
     const mesAnterior = mesActual === 0 ? 11 : mesActual - 1
     const añoMesAnterior = mesActual === 0 ? añoActual - 1 : añoActual
 
+    const safeDate = (d: string | null | undefined) => d ? new Date(d) : null
+
     const pedidosMesActual = pedidos.filter(p => {
-        const fecha = new Date(p.created_at)
-        return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual
+        const fecha = safeDate(p.created_at)
+        return fecha && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual
     })
 
     const pedidosMesAnterior = pedidos.filter(p => {
-        const fecha = new Date(p.created_at)
-        return fecha.getMonth() === mesAnterior && fecha.getFullYear() === añoMesAnterior
+        const fecha = safeDate(p.created_at)
+        return fecha && fecha.getMonth() === mesAnterior && fecha.getFullYear() === añoMesAnterior
     })
 
     const pedidosPagados = pedidos.filter(p => p.estado_pedido === 'pagado')
@@ -53,11 +55,11 @@ export default async function AnaliticasPage() {
         : 0
 
     // Calcular tiempo promedio de tramitación
-    const pedidosCompletados = pedidos.filter(p => p.paso_actual >= 9)
+    const pedidosCompletados = pedidos.filter(p => (p.paso_actual ?? 0) >= 9)
     const tiemposPromedio = pedidosCompletados.map(p => {
-        const inicio = new Date(p.created_at)
-        const fin = new Date(p.updated_at)
-        return (fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24) // días
+        const inicio = safeDate(p.created_at)
+        const fin = safeDate(p.updated_at)
+        return (inicio && fin) ? (fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24) : 0
     })
     const tiempoPromedioTramitacion = tiemposPromedio.length > 0
         ? tiemposPromedio.reduce((a, b) => a + b, 0) / tiemposPromedio.length
@@ -67,7 +69,7 @@ export default async function AnaliticasPage() {
     const distribucionEstados = {
         pendiente: pedidos.filter(p => p.estado_pedido !== 'pagado').length,
         pagado: pedidosPagados.length,
-        tramitando: pedidos.filter(p => p.paso_actual >= 7 && p.paso_actual < 9).length,
+        tramitando: pedidos.filter(p => (p.paso_actual ?? 0) >= 7 && (p.paso_actual ?? 0) < 9).length,
         completado: pedidosCompletados.length,
     }
 
@@ -75,8 +77,8 @@ export default async function AnaliticasPage() {
     const ventasPorMes = Array.from({ length: 6 }, (_, i) => {
         const mes = new Date(añoActual, mesActual - i, 1)
         const pedidosMes = pedidos.filter(p => {
-            const fecha = new Date(p.created_at)
-            return fecha.getMonth() === mes.getMonth() && fecha.getFullYear() === mes.getFullYear()
+            const fecha = safeDate(p.created_at)
+            return fecha && fecha.getMonth() === mes.getMonth() && fecha.getFullYear() === mes.getFullYear()
         })
         const ingresosMes = pedidosMes
             .filter(p => p.estado_pedido === 'pagado')

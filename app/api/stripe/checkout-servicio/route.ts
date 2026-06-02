@@ -5,7 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 import { isReporteAnual, isEIN, SERVICE_SLUGS } from '@/lib/constants'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy_build', {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 })
 
 export async function POST(request: NextRequest) {

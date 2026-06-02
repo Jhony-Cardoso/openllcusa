@@ -4,15 +4,19 @@ import Link from 'next/link'
 import {
     AlertCircle, Clock, CheckCircle2, XCircle,
     ArrowLeft, Bell, AlertTriangle, Info,
-    FileText, Users, Package, TrendingDown
+    FileText, Package, TrendingDown
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
+
+const safeDate = (d: string | null | undefined) => d ? new Date(d) : null
 
 export default async function AlertasCriticasPage() {
     const { userId } = await auth()
     if (!userId) redirect('/sign-in')
 
     // Obtener todos los pedidos
+    // TODO: Optimizar carga — actualmente trae todos los pedidos aunque solo necesitemos unos campos y filtros por fecha.
     const pedidos = await PedidoModel.listarTodosAdmin()
 
     // Calcular alertas
@@ -20,48 +24,108 @@ export default async function AlertasCriticasPage() {
     const hace7Dias = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const hace14Dias = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
     const hace30Dias = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-
-    // 1. Pedidos pagados sin onboarding completado (más de 7 días)
-    const onboardingPendiente = pedidos.filter(p => {
-        const fecha = new Date(p.created_at)
-        return p.estado_pedido === 'pagado' && p.paso_actual < 7 && fecha < hace7Dias
-    })
-
-    // 2. Pedidos con onboarding completado pero sin tramitar (más de 3 días)
     const hace3Dias = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000)
-    const sinTramitar = pedidos.filter(p => {
-        const fecha = new Date(p.updated_at)
-        return p.paso_actual === 7 && fecha < hace3Dias
-    })
 
-    // 3. Pedidos en tramitación hace más de 14 días
-    const tramitacionLenta = pedidos.filter(p => {
-        const fecha = new Date(p.updated_at)
-        return p.paso_actual === 8 && fecha < hace14Dias
-    })
+    /**
+     * Definición declarativa de todas las alertas del panel.
+     * Facilita añadir, modificar o desactivar alertas sin tocar lógica de render.
+     */
+    type AlertDefinition = {
+        key: string
+        title: string
+        description: string
+        color: 'red' | 'amber'
+        icon: LucideIcon
+        isCritical: boolean
+        filter: (p: any) => boolean
+    }
 
-    // 4. Pedidos pendientes de pago hace más de 30 días
-    const pagosPendientes = pedidos.filter(p => {
-        const fecha = new Date(p.created_at)
-        return p.estado_pedido !== 'pagado' && fecha < hace30Dias
-    })
+    const alertDefinitions: AlertDefinition[] = [
+        {
+            key: 'onboardingPendiente',
+            title: 'Onboarding Pendiente (+7 días)',
+            description: 'Clientes que pagaron pero no han completado el checklist legal',
+            color: 'red',
+            icon: Clock,
+            isCritical: true,
+            filter: (p) => {
+                const fecha = safeDate(p.created_at)
+                return p.estado_pedido === 'pagado' && (p.paso_actual ?? 0) < 7 && !!fecha && fecha < hace7Dias
+            }
+        },
+        {
+            key: 'sinTramitar',
+            title: 'Sin Tramitar (+3 días)',
+            description: 'SS-4 firmado pero no enviado al IRS',
+            color: 'red',
+            icon: FileText,
+            isCritical: true,
+            filter: (p) => {
+                const fecha = safeDate(p.updated_at)
+                return (p.paso_actual ?? 0) === 7 && !!fecha && fecha < hace3Dias
+            }
+        },
+        {
+            key: 'tramitacionLenta',
+            title: 'Tramitación Lenta (+14 días)',
+            description: 'Pedidos en tramitación hace más de 2 semanas',
+            color: 'red',
+            icon: TrendingDown,
+            isCritical: true,
+            filter: (p) => {
+                const fecha = safeDate(p.updated_at)
+                return (p.paso_actual ?? 0) === 8 && !!fecha && fecha < hace14Dias
+            }
+        },
+        {
+            key: 'pagosPendientes',
+            title: 'Pagos Pendientes (+30 días)',
+            description: 'Pedidos sin pago hace más de un mes',
+            color: 'amber',
+            icon: XCircle,
+            isCritical: false,
+            filter: (p) => {
+                const fecha = safeDate(p.created_at)
+                return p.estado_pedido !== 'pagado' && !!fecha && fecha < hace30Dias
+            }
+        },
+        {
+            key: 'sinActividad',
+            title: 'Sin Actividad Reciente (+30 días)',
+            description: 'Pedidos estancados sin actualizaciones',
+            color: 'amber',
+            icon: Info,
+            isCritical: false,
+            filter: (p) => {
+                const fecha = safeDate(p.updated_at)
+                return (p.paso_actual ?? 0) < 9 && !!fecha && fecha < hace30Dias
+            }
+        },
+        {
+            key: 'documentosFaltantes',
+            title: 'Documentos Faltantes',
+            description: 'Pedidos pagados sin documento de identidad',
+            color: 'amber',
+            icon: FileText,
+            isCritical: false,
+            filter: (p) => {
+                const m = (p.metadata ?? {}) as Record<string, any>
+                return p.estado_pedido === 'pagado' && (p.paso_actual ?? 0) >= 7 && !m.documento_identidad_path
+            }
+        }
+    ]
 
-    // 5. Pedidos sin actividad reciente (más de 30 días)
-    const sinActividad = pedidos.filter(p => {
-        const fecha = new Date(p.updated_at)
-        return p.paso_actual < 9 && fecha < hace30Dias
-    })
+    const alerts = alertDefinitions.map(def => ({
+        ...def,
+        pedidos: pedidos.filter(def.filter)
+    }))
 
-    // 6. Documentos faltantes
-    const documentosFaltantes = pedidos.filter(p => {
-        return p.estado_pedido === 'pagado' && p.paso_actual >= 7 && !p.metadata?.documento_identidad_path
-    })
+    const criticalAlerts = alerts.filter(a => a.isCritical && a.pedidos.length > 0)
+    const warningAlerts = alerts.filter(a => !a.isCritical && a.pedidos.length > 0)
 
-    const totalAlertas = onboardingPendiente.length + sinTramitar.length + tramitacionLenta.length +
-        pagosPendientes.length + sinActividad.length + documentosFaltantes.length
-
-    const alertasCriticas = onboardingPendiente.length + sinTramitar.length + tramitacionLenta.length
-    const alertasAdvertencia = pagosPendientes.length + sinActividad.length + documentosFaltantes.length
+    const totalAlertas = alerts.reduce((sum, a) => sum + a.pedidos.length, 0)
+    const hasCritical = criticalAlerts.length > 0
+    const hasWarning = warningAlerts.length > 0
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 text-slate-900">
@@ -96,7 +160,7 @@ export default async function AlertasCriticasPage() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-red-600 uppercase tracking-widest">Críticas</p>
-                            <p className="text-3xl font-black text-red-900">{alertasCriticas}</p>
+                            <p className="text-3xl font-black text-red-900">{criticalAlerts.reduce((sum, a) => sum + a.pedidos.length, 0)}</p>
                         </div>
                     </div>
                     <p className="text-sm text-red-700 font-medium">Requieren acción inmediata</p>
@@ -109,7 +173,7 @@ export default async function AlertasCriticasPage() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Advertencias</p>
-                            <p className="text-3xl font-black text-amber-900">{alertasAdvertencia}</p>
+                            <p className="text-3xl font-black text-amber-900">{warningAlerts.reduce((sum, a) => sum + a.pedidos.length, 0)}</p>
                         </div>
                     </div>
                     <p className="text-sm text-amber-700 font-medium">Revisar próximamente</p>
@@ -130,7 +194,7 @@ export default async function AlertasCriticasPage() {
             </div>
 
             {/* ALERTAS CRÍTICAS */}
-            {alertasCriticas > 0 && (
+            {hasCritical && (
                 <div className="bg-white rounded-[2.5rem] border-2 border-red-200 shadow-sm overflow-hidden">
                     <div className="px-8 py-6 border-b border-red-100 bg-red-50/50">
                         <h2 className="font-black text-red-900 flex items-center gap-2 uppercase tracking-tight text-sm">
@@ -139,39 +203,22 @@ export default async function AlertasCriticasPage() {
                         </h2>
                     </div>
                     <div className="divide-y divide-red-50">
-                        {onboardingPendiente.length > 0 && (
+                        {criticalAlerts.map(alert => (
                             <AlertSection
-                                title="Onboarding Pendiente (+7 días)"
-                                description="Clientes que pagaron pero no han completado el checklist legal"
-                                pedidos={onboardingPendiente}
-                                icon={Clock}
-                                color="red"
+                                key={alert.key}
+                                title={alert.title}
+                                description={alert.description}
+                                pedidos={alert.pedidos}
+                                icon={alert.icon}
+                                color={alert.color}
                             />
-                        )}
-                        {sinTramitar.length > 0 && (
-                            <AlertSection
-                                title="Sin Tramitar (+3 días)"
-                                description="SS-4 firmado pero no enviado al IRS"
-                                pedidos={sinTramitar}
-                                icon={FileText}
-                                color="red"
-                            />
-                        )}
-                        {tramitacionLenta.length > 0 && (
-                            <AlertSection
-                                title="Tramitación Lenta (+14 días)"
-                                description="Pedidos en tramitación hace más de 2 semanas"
-                                pedidos={tramitacionLenta}
-                                icon={TrendingDown}
-                                color="red"
-                            />
-                        )}
+                        ))}
                     </div>
                 </div>
             )}
 
             {/* ADVERTENCIAS */}
-            {alertasAdvertencia > 0 && (
+            {hasWarning && (
                 <div className="bg-white rounded-[2.5rem] border-2 border-amber-200 shadow-sm overflow-hidden">
                     <div className="px-8 py-6 border-b border-amber-100 bg-amber-50/50">
                         <h2 className="font-black text-amber-900 flex items-center gap-2 uppercase tracking-tight text-sm">
@@ -180,33 +227,16 @@ export default async function AlertasCriticasPage() {
                         </h2>
                     </div>
                     <div className="divide-y divide-amber-50">
-                        {pagosPendientes.length > 0 && (
+                        {warningAlerts.map(alert => (
                             <AlertSection
-                                title="Pagos Pendientes (+30 días)"
-                                description="Pedidos sin pago hace más de un mes"
-                                pedidos={pagosPendientes}
-                                icon={XCircle}
-                                color="amber"
+                                key={alert.key}
+                                title={alert.title}
+                                description={alert.description}
+                                pedidos={alert.pedidos}
+                                icon={alert.icon}
+                                color={alert.color}
                             />
-                        )}
-                        {sinActividad.length > 0 && (
-                            <AlertSection
-                                title="Sin Actividad Reciente (+30 días)"
-                                description="Pedidos estancados sin actualizaciones"
-                                pedidos={sinActividad}
-                                icon={Info}
-                                color="amber"
-                            />
-                        )}
-                        {documentosFaltantes.length > 0 && (
-                            <AlertSection
-                                title="Documentos Faltantes"
-                                description="Pedidos pagados sin documento de identidad"
-                                pedidos={documentosFaltantes}
-                                icon={FileText}
-                                color="amber"
-                            />
-                        )}
+                        ))}
                     </div>
                 </div>
             )}
@@ -256,7 +286,7 @@ function AlertSection({ title, description, pedidos, icon: Icon, color }: any) {
 
             <div className="space-y-3">
                 {pedidos.slice(0, 5).map((pedido: any) => {
-                    const diasDesde = Math.floor((new Date().getTime() - new Date(pedido.updated_at).getTime()) / (1000 * 60 * 60 * 24))
+                    const diasDesde = Math.floor((new Date().getTime() - (safeDate(pedido.updated_at)?.getTime() ?? 0)) / (1000 * 60 * 60 * 24))
 
                     return (
                         <Link
@@ -270,14 +300,14 @@ function AlertSection({ title, description, pedidos, icon: Icon, color }: any) {
                                 </div>
                                 <div>
                                     <p className="font-bold text-slate-900">#{pedido.numero_pedido}</p>
-                                    <p className="text-xs text-slate-500 font-medium">
-                                        {pedido.paquetes?.nombre || pedido.servicios?.nombre || 'Servicio'}
-                                    </p>
+                                         <p className="text-xs text-slate-500 font-medium">
+                                         {pedido.paquete?.nombre || pedido.servicio?.nombre || 'Servicio'}
+                                         </p>
                                 </div>
                             </div>
                             <div className="text-right">
                                 <p className="text-xs font-bold text-slate-600">Hace {diasDesde} días</p>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase">Paso {pedido.paso_actual}/9</p>
+                                 <p className="text-[10px] text-slate-400 font-bold uppercase">Paso {(pedido.paso_actual ?? 0)}/9</p>
                             </div>
                         </Link>
                     )

@@ -18,16 +18,20 @@ export default async function AdminPedidosPage() {
         total: pedidos.length,
         pagados: pedidos.filter(p => p.estado_pedido === 'pagado').length,
         pendientes: pedidos.filter(p => p.estado_pedido !== 'pagado').length,
-        onboardingCompletado: pedidos.filter(p => p.paso_actual >= 7).length
+        onboardingCompletado: pedidos.filter(p => (p.paso_actual ?? 0) >= 7).length
     }
 
     // Helper compartido: nombre legible del servicio para cualquier tipo de pedido
     const getNombrePedido = (p: any) => {
-        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
-            (p.tax_data && Object.keys(p.tax_data).length > 0)
+        const m = (p.metadata ?? {}) as Record<string, any>
+        const t = (p.tax_data ?? {}) as Record<string, any>
+        const esTaxFiling = m.tipo_servicio === 'tax_filing_5472' ||
+            Object.keys(t).length > 0
         if (esTaxFiling) return 'Form 5472 + 1120'
-        return p.paquetes?.nombre || p.servicios?.nombre || 'Servicio'
+        return p.paquete?.nombre || p.servicio?.nombre || 'Servicio'
     }
+
+    const safeDate = (d: string | null | undefined) => d ? new Date(d).toLocaleDateString() : '—'
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 text-slate-900">
@@ -86,17 +90,17 @@ export default async function AdminPedidosPage() {
                         </thead>
                         <tbody>
                             {pedidos.map((p) => {
-                                const isPaid = p.estado_pedido === 'pagado'
-                                const onboardingDone = p.paso_actual >= 7
-                                const servicio = getNombrePedido(p)
-                                const estadoUsa = p.estados_usa?.codigo || 'N/A'
+                                  const isPaid = p.estado_pedido === 'pagado'
+                                  const onboardingDone = (p.paso_actual ?? 0) >= 7
+                                  const servicio = getNombrePedido(p)
+                                  const estadoUsa = p.estados_usa?.codigo || 'N/A'
 
                                 return (
                                     <tr key={p.id} className="hover:bg-slate-50/80 transition-colors border-b border-slate-50 last:border-0 group">
                                         <td className="px-6 py-5">
                                             <div className="font-black text-slate-900 leading-tight">#{p.numero_pedido?.split('-')[1]}</div>
                                             <div className="text-[10px] text-slate-400 font-bold mt-1 uppercase">
-                                                {new Date(p.created_at).toLocaleDateString()}
+                                                 {safeDate(p.created_at)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">

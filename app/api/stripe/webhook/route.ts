@@ -11,7 +11,7 @@ function required(name: string, value: string | undefined) {
 }
 
 function toIsoFromUnixSeconds(value: number | null | undefined) {
-  if (!value) return null;
+  if (value == null) return null;
   return new Date(value * 1000).toISOString();
 }
 
@@ -70,9 +70,11 @@ export async function POST(req: Request) {
             stripe_customer_id,
             estado: sub.status,
             cancel_at_period_end: sub.cancel_at_period_end,
-            current_period_start: toIsoFromUnixSeconds(sub.current_period_start),
-            current_period_end: toIsoFromUnixSeconds(sub.current_period_end),
-          },
+            // @ts-ignore - Stripe + Supabase type friction on period dates
+            current_period_start: toIsoFromUnixSeconds(sub.current_period_start as any),
+            // @ts-ignore - Stripe + Supabase type friction on period dates
+            current_period_end: toIsoFromUnixSeconds(sub.current_period_end as any),
+          } as any,
           { onConflict: "stripe_subscription_id" }
         );
       } else if (mode === 'payment') {
@@ -199,10 +201,10 @@ export async function POST(req: Request) {
                     .single();
 
                   if (pedidoFull?.tax_data) {
-                    const taxData = pedidoFull.tax_data;
+                    const taxData = (pedidoFull.tax_data ?? {}) as Record<string, any>;
 
                     // 1. Generar PDF
-                    const pdfBytes = await TaxFormService.generate5472Package(taxData);
+                    const pdfBytes = await TaxFormService.generate5472Package(taxData as any);
 
                     // 2. Subir a Storage
                     // Ruta: tax-forms/{userId}/{pedidoId}/form-5472-1120.pdf
@@ -257,8 +259,8 @@ export async function POST(req: Request) {
                 await NotificacionService.notificarPagoExitoso(
                   userId,
                   pedidoId,
-                  pedido.servicios?.nombre || 'Servicio',
-                  session.amount_total / 100
+                   (pedido as any).servicios?.nombre || (pedido as any).servicio?.nombre || 'Servicio',
+                   (session.amount_total || 0) / 100
                 );
                 console.log('🔔 [WEBHOOK] Notificación dashboard creada');
               } catch (e) { console.error('Error notificacion:', e); }

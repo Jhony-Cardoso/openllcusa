@@ -9,7 +9,7 @@ function jsonError(message: string, status = 400) {
 
 export async function POST(req: Request) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) return jsonError("No autenticado", 401);
 
     const body = await req.json().catch(() => null);

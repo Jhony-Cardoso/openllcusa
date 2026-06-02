@@ -44,7 +44,7 @@ export async function POST(req: Request) {
             .single()
 
         if (!getError && pedido) {
-            const taxData = (pedido.tax_data as any) || {}
+            const taxData = (pedido.tax_data ?? {}) as Record<string, any>
             const statements = (taxData.bankStatements || []) as string[]
             
             // Si el nombre temporal ya está, lo filtramos. Añadimos el PATH relativo.

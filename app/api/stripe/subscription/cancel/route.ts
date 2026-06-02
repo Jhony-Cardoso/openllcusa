@@ -8,13 +8,13 @@ function jsonError(message: string, status = 400) {
 }
 
 function toIsoFromUnixSeconds(value: number | null | undefined) {
-  if (!value) return null;
+  if (value == null) return null;
   return new Date(value * 1000).toISOString();
 }
 
 export async function POST(req: Request) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) return jsonError("No autenticado", 401);
 
     const body = await req.json().catch(() => null);
@@ -50,9 +50,11 @@ export async function POST(req: Request) {
       .update({
         estado: updated.status,
         cancel_at_period_end: updated.cancel_at_period_end,
-        current_period_start: toIsoFromUnixSeconds(updated.current_period_start),
-        current_period_end: toIsoFromUnixSeconds(updated.current_period_end),
-      })
+        // @ts-ignore - Stripe + Supabase type friction on period dates
+        current_period_start: toIsoFromUnixSeconds(updated.current_period_start as any),
+        // @ts-ignore - Stripe + Supabase type friction on period dates
+        current_period_end: toIsoFromUnixSeconds(updated.current_period_end as any),
+      } as any)
       .eq("stripe_subscription_id", updated.id);
 
     return NextResponse.json({ ok: true });

@@ -214,14 +214,14 @@ export default function RevisionPage() {
           </p>
           {pedido.paquete?.descripcion_corta && (
             <p className="text-sm text-gray-600 mb-3">
-              {pedido.paquete.descripcion_corta}
+              {(pedido.paquete as any).descripcion_corta}
             </p>
           )}
           <p className="text-2xl font-bold text-blue-600">
             ${precioPaquete}
             {pedido.paquete?.precio_mensual && (
               <span className="text-base text-gray-500 ml-2">
-                o ${pedido.paquete.precio_mensual}/mes
+                o ${(pedido.paquete as any).precio_mensual}/mes
               </span>
             )}
           </p>
@@ -253,7 +253,7 @@ export default function RevisionPage() {
           </p>
           {pedido.estado_usa?.descripcion && (
             <p className="text-sm text-gray-600 mb-3">
-              {pedido.estado_usa.descripcion}
+              {(pedido.estado_usa as any).descripcion}
             </p>
           )}
 

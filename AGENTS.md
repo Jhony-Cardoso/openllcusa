@@ -53,3 +53,34 @@ Compact guidance for agents. Extracted only from executable sources (package.jso
 - Other: INSTRUCCIONES_ESTADOS.md, PAYMENT_METHODS.md, TROUBLESHOOTING_PAYMENT_METHODS.md
 
 Only edit if you can verify against current package.json/next.config/scripts. Omit generic advice.
+
+
+# Directrices de Comportamiento del Agente
+
+## Regla de Archivado Obligatorio y Automático
+1. **Momento de ejecución:** Cada vez que completes con éxito una tarea importante (como crear un script, corregir un bug) o antes de que el usuario finalice la sesión, debes documentar la conversación.
+2. **Ubicación del archivo:** Guarda el registro en un archivo de texto llamado `chat_history.md` situado en la raíz de este proyecto.
+3. **Formato del historial:** Si el archivo `chat_history.md` ya existe, debes **añadir (append)** la nueva conversación al final sin borrar lo anterior. Si no existe, créalo desde cero.
+
+## Estructura del Documento (Markdown)
+Cada bloque de chat que agregues debe seguir estrictamente este diseño visual:
+
+---
+### 📅 Sesión del Chat: [Insertar Fecha y Hora Actual]
+**Objetivo principal:** [Escribe un resumen muy corto de una frase sobre qué se hizo en este chat]
+
+#### 👤 Petición del Usuario:
+> [Resume de forma compacta qué te pidió el usuario]
+
+#### 🤖 Solución de Grok Build:
+- **Resumen:** [Breve explicación de los cambios realizados]
+- **Archivos creados/modificados:** 
+  - `[Ruta del archivo 1]`
+  - `[Ruta del archivo 2]`
+
+#### 💻 Código Generado Clave:
+```[lenguaje]
+[Pega aquí solo el bloque de código final o más importante generado en la conversación, no todo el chat completo]
+```
+---
+

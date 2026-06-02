@@ -145,14 +145,16 @@ export async function POST(
             return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
         }
 
-        if (!pedido.tax_data) {
+        const taxDataRaw = (pedido.tax_data ?? {}) as Record<string, any>
+
+        if (!taxDataRaw || Object.keys(taxDataRaw).length === 0) {
             return NextResponse.json({
                 error: 'No se encontraron datos fiscales en este pedido.'
             }, { status: 400 })
         }
 
         // 2. Transformar datos y validar mínimos
-        const taxData = transformToTaxFormData(pedido.tax_data)
+        const taxData = transformToTaxFormData(taxDataRaw)
 
         if (!taxData.llc.name || !taxData.llc.ein) {
             return NextResponse.json({
@@ -167,7 +169,7 @@ export async function POST(
 
         // 4. Obtener email del cliente vía Clerk
         let clienteEmail: string = ''
-        let clienteNombre: string = pedido.tax_data?.ownerName || pedido.tax_data?.llcName || 'Cliente'
+        let clienteNombre: string = taxDataRaw.ownerName || taxDataRaw.llcName || 'Cliente'
         const clienteClerkId: string = pedido.user_id || pedido.clerk_user_id || ''
 
         if (clienteClerkId) {

@@ -37,13 +37,13 @@ export async function GET() {
         // Formateamos los datos básicos para que el frontal los procese
         const llcData = {
             name: lastPedido.nombre_empresa,
-            ein: (lastPedido.metadata as any)?.ein_number || '',
+            ein: (lastPedido.metadata as Record<string, any>)?.ein_number || '',
             state: lastPedido.estado_usa?.nombre || '',
-            formationDate: (lastPedido.metadata as any)?.fecha_formacion || new Date(lastPedido.created_at).toISOString().split('T')[0],
+            formationDate: ((lastPedido.metadata as Record<string, any>)?.fecha_formacion as string | undefined) || (lastPedido.created_at ? new Date(lastPedido.created_at).toISOString().split('T')[0] : ''),
             soleOwnerName: profile?.full_name || '',
-            address: (lastPedido.metadata as any)?.direccion_empresa || '',
-            city: (lastPedido.metadata as any)?.ciudad_empresa || '',
-            zip: (lastPedido.metadata as any)?.zip_empresa || '',
+            address: (lastPedido.metadata as Record<string, any>)?.direccion_empresa || '',
+            city: (lastPedido.metadata as Record<string, any>)?.ciudad_empresa || '',
+            zip: (lastPedido.metadata as Record<string, any>)?.zip_empresa || '',
         }
 
         return NextResponse.json({ data: llcData })

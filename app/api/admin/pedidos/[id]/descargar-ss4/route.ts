@@ -34,7 +34,7 @@ export async function GET(
         }
 
         // Verificar que el pedido tiene datos de SS-4
-        if (!pedido.metadata || pedido.paso_actual < 7) {
+        if (!pedido.metadata || pedido.paso_actual == null || pedido.paso_actual < 7) {
             return NextResponse.json(
                 { error: 'El cliente aún no ha completado el formulario SS-4' },
                 { status: 400 }
@@ -45,7 +45,7 @@ export async function GET(
         const pdfBytes = await generarSS4PDF(pedido.metadata, pedido.id)
 
         // Devolver el PDF
-        return new NextResponse(pdfBytes, {
+        return new NextResponse(Buffer.from(pdfBytes), {
             headers: {
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': `attachment; filename="SS4_${pedido.numero_pedido}_${Date.now()}.pdf"`,

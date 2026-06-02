@@ -11,6 +11,7 @@ import { PedidoModel } from '@/lib/models/pedido'
 import { FacturaModel } from '@/lib/models/factura'
 import AdminDocumentManager from '@/components/admin/AdminDocumentManager'
 import AdminTaxFilingManager from '@/components/admin/AdminTaxFilingManager'
+import ResumenEjecutivo from '@/components/admin/ResumenEjecutivo'
 import { isEIN, isReporteAnual, isTaxFilingSlug } from '@/lib/constants'
 
 export default async function AdminPedidoDetallePage({
@@ -36,29 +37,29 @@ export default async function AdminPedidoDetallePage({
     if (!pedido) redirect('/admin/pedidos')
 
     const factura = await FacturaModel.obtenerPorPedidoId(id)
+    const facturaData = (factura as any) || {}
 
-    const metadata = pedido.metadata || {}
-    const hasOnboarding = pedido.paso_actual >= 7
+    const metadata = (pedido.metadata ?? {}) as Record<string, any>
+    const hasCompletedOnboarding = (pedido.paso_actual ?? 0) >= 7
+    const currentYear = new Date().getFullYear().toString()
 
-    // Detectar tipo de servicio de forma robusta
-    const taxDataObj = (pedido as any).tax_data
-    const hasRealTaxData = taxDataObj && Object.keys(taxDataObj).length > 0
+    // ============================================
+    // Detección de tipo de servicio (robusta)
+    // ============================================
+    const taxDataObj = ((pedido as any).tax_data ?? {}) as Record<string, any>
+    const hasRealTaxData = Object.keys(taxDataObj).length > 0
 
     const esTaxFiling =
         isTaxFilingSlug(pedido.servicio?.slug) ||
-        pedido.metadata?.tipo_servicio === 'tax_filing_5472' ||
+        metadata.tipo_servicio === 'tax_filing_5472' ||
         hasRealTaxData
 
     const esEIN = isEIN(pedido.servicio?.slug) || pedido.paquete?.slug === 'ein-express'
     const esReporteAnual = isReporteAnual(pedido.servicio?.slug)
 
-    const estadoNombre = (pedido as any).estado_usa?.nombre || pedido.metadata?.estado_nombre || 'N/A'
-    const llcNombre = pedido.metadata?.empresa_nombre || pedido.nombre_empresa || 'N/A'
-
-    // DEBUG: Ver qué datos tenemos
-    console.log('🔍 [Admin Page] Pedido completo:', pedido)
-    console.log('🔍 [Admin Page] tax_data:', (pedido as any).tax_data)
-    console.log('🔍 [Admin Page] esTaxFiling:', esTaxFiling, 'esReporteAnual:', esReporteAnual)
+    const estadoUsa = (pedido as any).estado_usa
+    const estadoNombre = estadoUsa?.nombre || metadata.estado_nombre || 'N/A'
+    const llcNombre = metadata.empresa_nombre || pedido.nombre_empresa || 'N/A'
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 text-slate-900">
@@ -82,6 +83,14 @@ export default async function AdminPedidoDetallePage({
                 </div>
             </div>
 
+            {/* RESUMEN EJECUTIVO */}
+            <ResumenEjecutivo
+              pedido={pedido}
+              esTaxFiling={esTaxFiling}
+              esEIN={esEIN}
+              esReporteAnual={esReporteAnual}
+            />
+
             {/* GRID PRINCIPAL */}
             <div className={`grid grid-cols-1 ${esTaxFiling ? 'lg:grid-cols-12' : 'lg:grid-cols-3'} gap-8`}>
 
@@ -101,7 +110,7 @@ export default async function AdminPedidoDetallePage({
                             <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                                 <InfoItem label="LLC / Nombre de la empresa" value={llcNombre} icon={Building2} />
                                 <InfoItem label="Estado de registro" value={estadoNombre} icon={MapPin} />
-                                <InfoItem label="Año fiscal del reporte" value={pedido.metadata?.anio_reporte || new Date().getFullYear().toString()} icon={Calendar} />
+                                     <InfoItem label="Año fiscal del reporte" value={metadata.anio_reporte || currentYear} icon={Calendar} />
                                 <InfoItem label="Email de contacto" value={pedido.email_empresa || '—'} icon={Mail} />
                             </div>
                         </section>
@@ -115,7 +124,7 @@ export default async function AdminPedidoDetallePage({
                                     <UserIcon className="text-blue-600" size={18} />
                                     Información del Member (Propietario)
                                 </h2>
-                                {!hasOnboarding && (
+                                 {!hasCompletedOnboarding && (
                                     <span className="px-3 py-1 bg-amber-50 text-amber-600 text-[10px] font-black rounded-lg border border-amber-100">ONBOARDING PENDIENTE</span>
                                 )}
                             </div>
@@ -205,13 +214,13 @@ export default async function AdminPedidoDetallePage({
                                 pedidoId={pedido.id}
                                 numeroPedido={pedido.numero_pedido}
                                 metadata={metadata}
-                                taxData={(pedido as any).tax_data}
+                                 taxData={taxDataObj}
                             />
                         ) : (
                             <AdminDocumentManager
                                 pedidoId={pedido.id}
                                 numeroPedido={pedido.numero_pedido}
-                                pasoActual={pedido.paso_actual}
+                                 pasoActual={pedido.paso_actual ?? 0}
                                 metadata={metadata}
                                 esReporteAnual={esReporteAnual}
                                 estadoNombre={estadoNombre}
@@ -236,10 +245,10 @@ export default async function AdminPedidoDetallePage({
                             </h3>
                             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                                 <div>
-                                    <p className="text-sm font-black text-slate-800">#{factura.numero_factura}</p>
-                                    <p className="text-xs text-slate-500 font-bold mt-1">${(factura as any).total}</p>
-                                </div>
-                                {(factura as any).pdf_path ? (
+                                     <p className="text-sm font-black text-slate-800">#{factura.numero_factura}</p>
+                                     <p className="text-xs text-slate-500 font-bold mt-1">${facturaData.total}</p>
+                                 </div>
+                                 {facturaData.pdf_path ? (
                                     <a
                                         href={`/api/facturas/${factura.id}/descargar`}
                                         target="_blank"

@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { PDFGenerator, SS4Data } from '@/lib/utils/pdfGenerator'
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params
+        const { id } = await params
 
         // 1. Obtener pedido con metadatos completos
         const { data: pedido, error } = await supabaseAdmin
@@ -17,7 +17,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
             return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 })
         }
 
-        const metadata = pedido.metadata || {}
+        const metadata = (pedido.metadata ?? {}) as Record<string, any>
 
         // 2. Construir dirección combinada
         const city = metadata.ss4_city || metadata.member_ciudad || ''

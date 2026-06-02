@@ -18,14 +18,16 @@ export default async function AdminDashboardPage() {
         totalPedidos: pedidos.length,
         gananciasEstimadas: pedidos.filter(p => p.estado_pedido === 'pagado').reduce((acc, curr) => acc + (curr.total_pagado || 0), 0),
         pedidosPendientes: pedidos.filter(p => p.estado_pedido !== 'pagado').length,
-        onboardingPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && p.paso_actual < 7).length,
-        tramitacionPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && (p.paso_actual === 7 || p.paso_actual === 8)).length
+        onboardingPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && (p.paso_actual ?? 0) < 7).length,
+        tramitacionPendiente: pedidos.filter(p => p.estado_pedido === 'pagado' && ((p.paso_actual ?? 0) === 7 || (p.paso_actual ?? 0) === 8)).length
     }
 
     // Helper: nombre del servicio para cualquier tipo de pedido
     const getNombrePedido = (p: any) => {
-        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
-            (p.tax_data && Object.keys(p.tax_data).length > 0)
+        const m = (p.metadata ?? {}) as Record<string, any>
+        const t = (p.tax_data ?? {}) as Record<string, any>
+        const esTaxFiling = m.tipo_servicio === 'tax_filing_5472' ||
+            Object.keys(t).length > 0
         if (esTaxFiling) return 'Form 5472 + 1120'
         return p.paquetes?.nombre || p.servicios?.nombre || p.paquete?.nombre || p.servicio?.nombre || 'Servicio'
     }
@@ -33,16 +35,20 @@ export default async function AdminDashboardPage() {
     // Pedidos que requieren atención: flujo normal (paso_actual < 9) + tax filing pagados sin documentos
     const pedidosParaAtencion = pedidos.filter(p => {
         if (p.estado_pedido !== 'pagado') return false
-        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
-            (p.tax_data && Object.keys(p.tax_data).length > 0)
+        const m = (p.metadata ?? {}) as Record<string, any>
+        const t = (p.tax_data ?? {}) as Record<string, any>
+        const esTaxFiling = m.tipo_servicio === 'tax_filing_5472' ||
+            Object.keys(t).length > 0
         if (esTaxFiling) {
             // Aparece si aún no tiene el PDF del form 5472 adjunto
-            return !p.metadata?.documents?.form_5472_url
+            return !m.documents?.form_5472_url
         }
-        return p.paso_actual < 9
+        return (p.paso_actual ?? 0) < 9
     })
 
     const pedidosRecientes = pedidos.slice(0, 5)
+
+    const safeDate = (d: string | null | undefined) => d ? new Date(d).toLocaleDateString() : '—'
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 text-slate-900">
@@ -81,21 +87,29 @@ export default async function AdminDashboardPage() {
                                 <div className="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">¡Todo al día! No hay pedidos pendientes de acción.</div>
                             ) : (
                                 pedidosParaAtencion
-                                    .sort((a, b) => {
-                                        const aTax = a.metadata?.tipo_servicio === 'tax_filing_5472' || (a.tax_data && Object.keys(a.tax_data).length > 0);
-                                        const bTax = b.metadata?.tipo_servicio === 'tax_filing_5472' || (b.tax_data && Object.keys(b.tax_data).length > 0);
-                                        const aPriority = aTax || a.paso_actual >= 7;
-                                        const bPriority = bTax || b.paso_actual >= 7;
+                                      .sort((a, b) => {
+                                          const ma = (a.metadata ?? {}) as Record<string, any>
+                                          const mb = (b.metadata ?? {}) as Record<string, any>
+                                          const ta = (a.tax_data ?? {}) as Record<string, any>
+                                          const tb = (b.tax_data ?? {}) as Record<string, any>
+                                          const aTax = ma.tipo_servicio === 'tax_filing_5472' || Object.keys(ta).length > 0;
+                                          const bTax = mb.tipo_servicio === 'tax_filing_5472' || Object.keys(tb).length > 0;
+                                         const aPriority = aTax || (a.paso_actual ?? 0) >= 7;
+                                         const bPriority = bTax || (b.paso_actual ?? 0) >= 7;
                                         if (aPriority && !bPriority) return -1;
                                         if (!aPriority && bPriority) return 1;
-                                        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                                         const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+                                         const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+                                         return bTime - aTime;
                                     })
-                                    .slice(0, 10).map(p => {
-                                        const esTaxFiling = p.metadata?.tipo_servicio === 'tax_filing_5472' ||
-                                            (p.tax_data && Object.keys(p.tax_data).length > 0)
-                                        const isWaitingOnboarding = !esTaxFiling && p.paso_actual < 7;
-                                        const isReadyForAdmin = esTaxFiling || p.paso_actual === 7;
-                                        const isIRSProcessing = !esTaxFiling && p.paso_actual === 8;
+                                      .slice(0, 10).map(p => {
+                                          const m = (p.metadata ?? {}) as Record<string, any>
+                                          const t = (p.tax_data ?? {}) as Record<string, any>
+                                          const esTaxFiling = m.tipo_servicio === 'tax_filing_5472' ||
+                                              Object.keys(t).length > 0
+                                         const isWaitingOnboarding = !esTaxFiling && (p.paso_actual ?? 0) < 7;
+                                         const isReadyForAdmin = esTaxFiling || (p.paso_actual ?? 0) === 7;
+                                         const isIRSProcessing = !esTaxFiling && (p.paso_actual ?? 0) === 8;
                                         const nombre = getNombrePedido(p)
 
                                         return (
@@ -153,7 +167,7 @@ export default async function AdminDashboardPage() {
                                         <tr key={p.id} className="border-b border-slate-50 last:border-0">
                                             <td className="px-8 py-4">
                                                 <p className="font-bold text-slate-900 text-sm">{getNombrePedido(p)}</p>
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase">{new Date(p.created_at).toLocaleDateString()}</p>
+                                                 <p className="text-[10px] text-slate-400 font-bold uppercase">{safeDate(p.created_at)}</p>
                                             </td>
                                             <td className="px-8 py-4">
                                                 <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${p.estado_pedido === 'pagado' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'

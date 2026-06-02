@@ -66,11 +66,12 @@ export async function POST(request: NextRequest) {
         const user = await currentUser()
         const pedidoCompleto = await PedidoModel.obtenerCompleto(pedidoId)
 
+        const p = pedidoCompleto as any
         const nombreProducto =
-          pedidoCompleto?.paquete?.nombre ||
-          pedidoCompleto?.paquete?.title ||
-          pedidoCompleto?.servicio?.nombre ||
-          pedidoCompleto?.servicio?.title ||
+          p?.paquete?.nombre ||
+          p?.paquete?.title ||
+          p?.servicio?.nombre ||
+          p?.servicio?.title ||
           (session.metadata?.tipo_servicio === 'tax_filing_5472' ? 'Presentación Forms 5472 + 1120' : 'Servicio Open LLC')
 
         // 1. Email al Cliente

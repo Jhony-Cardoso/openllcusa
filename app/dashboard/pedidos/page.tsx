@@ -23,19 +23,22 @@ export default async function PedidosPage() {
       const completo = await PedidoModel.obtenerCompleto(p.id)
       if (!completo) return null
 
+      const c = completo as any
+      const safeDate = (d: string | null | undefined) => d ? new Date(d).toLocaleDateString('es-ES') : '—'
+
       return {
-        id: completo.id,
-        numero: completo.numero_pedido || `#${completo.id.slice(0, 5)}`,
-        servicio: (completo.metadata as any)?.tipo_servicio === 'tax_filing_5472' || ((completo as any).tax_data && Object.keys((completo as any).tax_data).length > 0)
+        id: c.id,
+        numero: c.numero_pedido || `#${c.id.slice(0, 5)}`,
+        servicio: (c.metadata as any)?.tipo_servicio === 'tax_filing_5472' || Object.keys((c.tax_data ?? {}) as Record<string, any>).length > 0
           ? 'Presentación Forms 5472 + 1120'
-          : isReporteAnual(completo.servicio?.slug)
+          : isReporteAnual(c.servicio?.slug)
             ? 'Reporte Anual Estatal'
-            : (completo.paquete?.nombre || completo.servicio?.nombre || completo.paquete?.title || completo.servicio?.title || 'Servicio Open LLC'),
-        descripcion: completo.paquete?.tagline || completo.servicio?.tagline || (completo.paquete_id ? 'Paquete de formación' : 'Servicio individual'),
-        fecha: new Date(completo.created_at).toLocaleDateString('es-ES'),
-        monto: completo.total_pagado ? `$\${completo.total_pagado}` : '$0',
-        estado: completo.estado_pedido === 'pagado' ? 'Completado' : 'En progreso',
-        estadoColor: completo.estado_pedido === 'pagado' ? 'green' : 'blue',
+            : (c.paquete?.nombre || c.servicio?.nombre || c.paquete?.title || c.servicio?.title || 'Servicio Open LLC'),
+        descripcion: c.paquete?.tagline || c.servicio?.tagline || (c.paquete_id ? 'Paquete de formación' : 'Servicio individual'),
+        fecha: safeDate(c.created_at),
+        monto: c.total_pagado ? `$${c.total_pagado}` : '$0',
+        estado: c.estado_pedido === 'pagado' ? 'Completado' : 'En progreso',
+        estadoColor: c.estado_pedido === 'pagado' ? 'green' : 'blue',
       }
     })
   ).then(list => list.filter(item => item !== null))

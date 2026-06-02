@@ -250,7 +250,7 @@ export default function RevisionPage() {
           <div className="text-sm text-gray-700">
             <div><span className="text-gray-500">Nombre:</span> {pedido.nombre_empresa}</div>
             {pedido.email_empresa && <div><span className="text-gray-500">Email:</span> {pedido.email_empresa}</div>}
-            {pedido.estado_usa && <div><span className="text-gray-500">Estado:</span> {pedido.estado_usa.nombre}</div>}
+            {pedido.estado_usa && <div><span className="text-gray-500">Estado:</span> {(pedido.estado_usa as any).nombre}</div>}
           </div>
         </div>
       )}

@@ -38,14 +38,15 @@ export async function POST(req: Request) {
             throw new Error('Pedido no encontrado')
         }
 
-        const taxData = pedido.tax_data || {}
+        // @ts-ignore - tax_data JSONB typing with Supabase generated types
+        const taxData = (pedido.tax_data ?? {}) as Record<string, any>
 
         // Determinar URL base dinámica (útil para pruebas locales vs prod)
         const baseUrl = req.headers.get('origin') || process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'
 
         // Calcular precio exacto (fallback a 39700 si no se encuentra en DB)
-        // @ts-ignore
-        const dbPrice = pedido?.servicio?.precio ? Number(pedido.servicio.precio) * 100 : 39700
+        const servicio = (pedido as any)?.servicio
+        const dbPrice = servicio?.precio ? Number(servicio.precio) * 100 : 39700
 
         // Crear Sesión de Stripe Checkout
         const session = await stripe.checkout.sessions.create({

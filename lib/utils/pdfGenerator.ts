@@ -290,7 +290,8 @@ import { PedidoModel } from '@/lib/models/pedido'
 /**
  * Función auxiliar para generar el PDF del SS-4 desde la API
  */
-export async function generarSS4PDF(metadata: any, pedidoId: string): Promise<Uint8Array> {
+export async function generarSS4PDF(metadataInput: any, pedidoId: string): Promise<Uint8Array> {
+    const metadata = (metadataInput ?? {}) as Record<string, any>
     const pedido = await PedidoModel.obtenerCompleto(pedidoId);
 
     // Nombre legal de la entidad (SS-4 L-1):
@@ -328,7 +329,7 @@ export async function generarSS4PDF(metadata: any, pedidoId: string): Promise<Ui
         stateOfFormation: metadata.empresa_estado_usa || 'WYOMING',
         reasonForApplying: metadata.ss4_razon_solicitud || 'Started new business',
         reasonSpecifyType: metadata.ss4_actividad_principal || 'E-COMMERCE',
-        startDate: metadata.ss4_fecha_inicio || new Date().toLocaleDateString(),
+        startDate: metadata.ss4_fecha_inicio || metadata.ss4_start_date || new Date().toLocaleDateString(),
         closingMonth: metadata.ss4_cierre_fiscal || 'DECEMBER',
         principalActivity: metadata.ss4_actividad_principal || 'E-COMMERCE',
         principalProduct: metadata.ss4_principal_producto || 'DIGITAL SERVICES',

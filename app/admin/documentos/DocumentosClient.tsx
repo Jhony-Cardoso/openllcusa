@@ -15,18 +15,19 @@ export default function AdminDocumentosClient({ initialPedidos }: { initialPedid
 
     // Extraer documentos de los pedidos
     const documentos = initialPedidos.flatMap(p => {
+        const m = (p.metadata ?? {}) as Record<string, any>
         const docs = []
-        if (p.metadata?.documento_identidad_path) {
+        if (m.documento_identidad_path) {
             docs.push({
                 id: `${p.id}-id-storage`,
-                nombre: p.metadata.documento_identidad_nombre || `ID/Pasaporte - ${p.metadata.member_nombre_completo || 'Cliente'}`,
+                nombre: m.documento_identidad_nombre || `ID/Pasaporte - ${m.member_nombre_completo || 'Cliente'}`,
                 tipo: 'Identificación',
                 pedido: p.numero_pedido,
                 pedidoId: p.id,
-                fecha: p.metadata.fecha_subida_id || p.updated_at,
+                fecha: m.fecha_subida_id || p.updated_at,
                 estado: 'Recibido',
-                formato: p.metadata.documento_identidad_nombre?.split('.').pop()?.toUpperCase() || 'PDF',
-                path: p.metadata.documento_identidad_path
+                formato: m.documento_identidad_nombre?.split('.').pop()?.toUpperCase() || 'PDF',
+                path: m.documento_identidad_path
             })
         }
         return docs

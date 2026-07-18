@@ -57,6 +57,15 @@ Only edit if you can verify against current package.json/next.config/scripts. Om
 
 # Directrices de Comportamiento del Agente
 
+## Idioma de Respuesta
+- **Idioma obligatorio:** Muestra SIEMPRE todos los textos, explicaciones, resúmenes, mensajes, preguntas de aclaración, listados y cualquier otra información en idioma español.
+- Todos los outputs dirigidos al usuario (incluyendo razonamiento visible, confirmaciones y documentación generada) deben estar completamente en español.
+- Solo usa inglés cuando sea estrictamente necesario:
+  - Para identificadores de código (nombres de funciones, variables, clases) que sigan convenciones existentes.
+  - Para literales de APIs, logs o mensajes de error que deban coincidir con el original.
+  - Si el usuario solicita explícitamente otro idioma para una tarea concreta.
+- Adapta los comentarios en código nuevo o modificado al español cuando sea natural y no rompa el estilo existente del proyecto.
+
 ## Regla de Archivado Obligatorio y Automático
 1. **Momento de ejecución:** Cada vez que completes con éxito una tarea importante (como crear un script, corregir un bug) o antes de que el usuario finalice la sesión, debes documentar la conversación.
 2. **Ubicación del archivo:** Guarda el registro en un archivo de texto llamado `chat_history.md` situado en la raíz de este proyecto.

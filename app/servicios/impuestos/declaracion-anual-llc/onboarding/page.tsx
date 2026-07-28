@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 import { Loader2, ArrowRight, ArrowLeft, CheckCircle, FileText, DollarSign, Building, User, Plus, Trash2, Info, ExternalLink, HelpCircle, Upload } from 'lucide-react'
 import SignaturePad from '@/components/ui/SignaturePad'
 
@@ -179,10 +180,13 @@ const steps = [
 
 export default function Form5472OnboardingPage() {
     const router = useRouter()
+    const { isLoaded, isSignedIn } = useUser()
+
     const [currentStep, setCurrentStep] = useState(1)
     const [loading, setLoading] = useState(false)
     const [isAutoFilling, setIsAutoFilling] = useState(true)
     const [statementFiles, setStatementFiles] = useState<File[]>([])
+    const [submitError, setSubmitError] = useState('')
 
     useEffect(() => {
         async function fetchAutoFillData() {
@@ -390,6 +394,7 @@ export default function Form5472OnboardingPage() {
             alert(error)
             return
         }
+        setSubmitError('')
         if (currentStep < steps.length) {
             setCurrentStep(prev => prev + 1)
             window.scrollTo(0, 0)
@@ -435,6 +440,7 @@ export default function Form5472OnboardingPage() {
     const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
     const handleBack = () => {
+        setSubmitError('')
         if (currentStep > 1) {
             setCurrentStep(prev => prev - 1)
             window.scrollTo(0, 0)
@@ -579,10 +585,22 @@ export default function Form5472OnboardingPage() {
 
         } catch (error: any) {
             console.error('Error:', error)
-            alert(error.message || 'Hubo un error al procesar su solicitud. Por favor intente nuevamente.')
+            setSubmitError(error.message || 'Hubo un error al procesar su solicitud. Por favor intente nuevamente.')
         } finally {
             setLoading(false)
         }
+    }
+
+    // Protección de autenticación (después de TODOS los hooks)
+    if (!isLoaded || !isSignedIn) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="animate-spin h-8 w-8 mx-auto mb-4 text-slate-600" />
+            <p className="text-slate-600">Verificando sesión... Redirigiendo al inicio de sesión si es necesario.</p>
+          </div>
+        </div>
+      )
     }
 
     return (
@@ -1731,10 +1749,18 @@ export default function Form5472OnboardingPage() {
                                 </div>
                             </div>
                         </div>
-                    )}
+                     )}
 
-                    {/* Botones de Navegación */}
-                    <div className="mt-10 flex justify-between pt-6 border-t border-gray-200">
+                     {/* Error de envío */}
+                     {submitError && (
+                       <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                         <strong>Error:</strong> {submitError}
+                         <button onClick={() => setSubmitError('')} className="ml-4 underline text-red-600">Cerrar</button>
+                       </div>
+                     )}
+
+                     {/* Botones de Navegación */}
+                     <div className="mt-10 flex justify-between pt-6 border-t border-gray-200">
                         <button
                             type="button"
                             onClick={handleBack}

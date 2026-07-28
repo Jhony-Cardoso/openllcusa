@@ -311,28 +311,31 @@ export class PedidoModel {
     pedidoId: string,
     taxData: any
   ): Promise<boolean> {
-    // IMPORTANTE: Usar adminClient para evitar problemas con RLS
+    // IMPORTANT: Usar adminClient para evitar problemas con RLS
     const supabase = createAdminClient()
 
     console.log('📝 [MODELO] Guardando tax_data para pedido:', pedidoId)
     console.log('📝 [MODELO] taxData recibido:', JSON.stringify(taxData).substring(0, 200))
 
+    // Guardamos los datos fiscales dentro de metadata (porque en este proyecto la columna 'tax_data' no existe en la tabla pedidos)
     const { data, error } = await supabase
       .from('pedidos')
       .update({
-        tax_data: taxData,
+        metadata: {
+          taxData: taxData
+        },
         estado_pedido: 'pendiente_pago',
         paso_actual: 2
       } as any)
       .eq('id', pedidoId)
-      .select('id, tax_data')
+      .select('id, metadata')
 
     if (error) {
       console.error('❌ [MODELO] Error guardando tax_data:', error)
       return false
     }
 
-    console.log('✅ [MODELO] tax_data guardado correctamente:', data)
+    console.log('✅ [MODELO] tax_data guardado correctamente en metadata:', data)
     return true
   }
 }

@@ -1,13 +1,21 @@
-'use client'
 
-import React, { useEffect, useState } from 'react'
+import { Metadata } from 'next'
+import TrackedLink from '@/components/home/TrackedLink'
+import ScrollObserver from '@/components/home/ScrollObserver'
+import MobileStickyCTA from '@/components/home/MobileStickyCTA'
+import QuickContactSection from '@/components/home/QuickContactSection'
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://openllcusa.com',
+  },
+}
+
+import React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import ReactCountryFlag from 'react-country-flag'
 import { ArrowRight, Check, CheckCircle2, Loader2 } from 'lucide-react'
 import './homepage-v4.css'
-import { analyticsEvents } from "../lib/analytics";
-import { Metadata } from 'next'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DESIGN TOKENS
@@ -29,30 +37,6 @@ const T = {
   shBlue: '0 6px 24px rgba(30,58,138,.24)',
 } as const
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SCROLL ANIMATION HOOK
-// ─────────────────────────────────────────────────────────────────────────────
-function useFadeUp() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return
-          const siblings = Array.from(
-            entry.target.parentElement?.querySelectorAll('.hp-fu') ?? []
-          )
-            ; (entry.target as HTMLElement).style.transitionDelay =
-              `${siblings.indexOf(entry.target) * 85}ms`
-          entry.target.classList.add('hp-on')
-          observer.unobserve(entry.target)
-        })
-      },
-      { threshold: 0.1 }
-    )
-    document.querySelectorAll('.hp-fu').forEach((el) => observer.observe(el))
-    return () => observer.disconnect()
-  }, [])
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHARED SUB-COMPONENTS
@@ -157,9 +141,8 @@ function HeroSection() {
 
             {/* Primary CTA */}
             <div className="mb-6">
-              <Link
+              <TrackedLink
                 href="#precios"
-                onClick={() => analyticsEvents.trackEvent('cta_click', 'hero', 'ver_precios')}
                 className="hp-pcta inline-flex items-center gap-3 font-extrabold rounded-full"
                 style={{
                   background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
@@ -172,7 +155,7 @@ function HeroSection() {
               >
                 Ver planes desde $349
                 <ArrowRight size={24} />
-              </Link>
+              </TrackedLink>
             </div>
 
             {/* Trust line */}
@@ -299,59 +282,6 @@ function TrustBar() {
 // ─────────────────────────────────────────────────────────────────────────────
 // BENEFITS SECTION
 // ─────────────────────────────────────────────────────────────────────────────
-{/* ===================== NUEVA SECCIÓN DE BENEFICIOS OPTIMIZADA ===================== */}
-<section className="py-16 bg-white">
-  <div className="max-w-6xl mx-auto px-6">
-    <div className="text-center mb-12">
-      <span className="text-sm font-semibold tracking-widest text-purple-600">POR QUÉ FUNCIONA</span>
-      <h2 className="text-4xl font-bold text-gray-900 mt-3">
-        Lo que cambia el día que tienes tu LLC
-      </h2>
-      <p className="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">
-        No es solo abrir una empresa. Es abrir una puerta que antes estaba cerrada.
-      </p>
-    </div>
-
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-        <div className="text-4xl mb-6">💰</div>
-        <h3 className="text-2xl font-semibold mb-3">Paga menos impuestos, de forma legal</h3>
-        <p className="text-gray-600">Reduce tu carga fiscal entre un 30% y un 50% de forma 100% legal.</p>
-      </div>
-
-      <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-        <div className="text-4xl mb-6">💳</div>
-        <h3 className="text-2xl font-semibold mb-3">Cobra en dólares con facilidad</h3>
-        <p className="text-gray-600">Abre cuentas en Mercury, Relay o Stripe y recibe pagos internacionales sin barreras.</p>
-      </div>
-
-      <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-        <div className="text-4xl mb-6">🌍</div>
-        <h3 className="text-2xl font-semibold mb-3">Proyecta imagen profesional</h3>
-        <p className="text-gray-600">"TuNombre LLC" en lugar de tu nombre personal. Ganas credibilidad inmediata.</p>
-      </div>
-
-      <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-        <div className="text-4xl mb-6">🔒</div>
-        <h3 className="text-2xl font-semibold mb-3">Protege tu patrimonio personal</h3>
-        <p className="text-gray-600">La LLC separa tus bienes personales de las deudas de la empresa.</p>
-      </div>
-
-      <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-        <div className="text-4xl mb-6">📋</div>
-        <h3 className="text-2xl font-semibold mb-3">Cumplimiento fiscal sin dolores de cabeza</h3>
-        <p className="text-gray-600">Nos encargamos de las declaraciones y el EIN. Tú solo firmas.</p>
-      </div>
-
-      <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-shadow">
-        <div className="text-4xl mb-6">⚡</div>
-        <h3 className="text-2xl font-semibold mb-3">Operativa en 72 horas</h3>
-        <p className="text-gray-600">Olvídate de meses de espera. Tu LLC está lista para facturar en 3 días.</p>
-      </div>
-    </div>
-  </div>
-</section>
-{/* ===================== FIN SECCIÓN BENEFICIOS ===================== */}
   
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -501,13 +431,12 @@ function ServicesSection() {
                 ))}
               </ul>
 
-              <Link
+              <TrackedLink
                 href={service.href}
-                onClick={() => analyticsEvents?.trackEvent('cta_click', 'servicios', service.title)}
                 className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition"
               >
                 {service.cta}
-              </Link>
+              </TrackedLink>
             </div>
           ))}
         </div>
@@ -647,9 +576,8 @@ function ProcessSection() {
 
         {/* CTA below timeline */}
         <div className="hp-fu text-center mt-[60px]">
-          <Link
+          <TrackedLink
             href="#comenzar"
-            onClick={() => analyticsEvents.trackEvent('cta_click', 'process', 'iniciar_llc')}
             className="inline-flex items-center gap-2 font-bold rounded-full"
             style={{ 
               background: T.b9, 
@@ -661,7 +589,7 @@ function ProcessSection() {
             }}
           >
             Iniciar mi LLC ahora <ArrowRight size={16} />
-          </Link>
+          </TrackedLink>
           <p className="text-sm mt-3.5" style={{ color: T.tm }}>
             🔒 Sin tarjeta de crédito · Sin compromiso · Garantía 100%
           </p>
@@ -716,7 +644,7 @@ function LatamSection() {
 
           <div className="flex flex-wrap gap-4 justify-center">
             {COUNTRIES.map(([code, href, name]) => (
-              <Link
+              <TrackedLink
                 key={code}
                 href={href}
                 className="group inline-flex flex-col items-center gap-2 text-sm font-medium px-6 py-4 rounded-2xl hover:bg-white transition-all hover:shadow-md"
@@ -731,7 +659,7 @@ function LatamSection() {
                   style={{ fontSize: '2.4em', borderRadius: '6px' }} 
                 />
                 <span className="group-hover:text-purple-600 transition-colors">{name}</span>
-              </Link>
+              </TrackedLink>
             ))}
           </div>
 
@@ -875,105 +803,7 @@ return (
 }
 
  
-{/* ===================== SECCIÓN PRECIOS OPTIMIZADA ===================== */}
-<section className="py-20 bg-white" id="precios">
-  <div className="max-w-6xl mx-auto px-6">
-    <div className="text-center mb-12">
-      <span className="text-sm font-semibold tracking-widest text-purple-600">PRECIOS TRANSPARENTES</span>
-      <h2 className="text-4xl font-bold text-gray-900 mt-3">Planes profesionales sin costos ocultos</h2>
-      <p className="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">
-        Elige el plan que mejor se adapte a tu situación. <span className="font-semibold">Todos incluyen nuestro proceso 100% gestionado.</span>
-      </p>
-    </div>
 
-    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-      {/* STARTER */}
-      <div className="bg-white border border-gray-200 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col">
-        <div className="text-center mb-8">
-          <span className="text-sm font-semibold text-gray-500">STARTER</span>
-          <div className="mt-4">
-            <span className="text-5xl font-bold text-gray-900">$349</span>
-            <span className="text-gray-500">/pago único</span>
-          </div>
-          <p className="text-sm text-gray-600 mt-2">Ideal para freelancers y primeros pasos</p>
-        </div>
-        
-        <ul className="space-y-4 mb-10 flex-1">
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Registro de LLC</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> EIN + Documentos básicos</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Agente Registrado 1 año</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia en español</li>
-        </ul>
-        
-        <a href="#asesoria" 
-           onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'starter')}
-           className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
-          Elegir Starter
-        </a>
-      </div>
-
-      {/* PROFESSIONAL - MÁS POPULAR */}
-      <div className="bg-gradient-to-b from-purple-50 to-white border-2 border-purple-600 rounded-3xl p-8 relative flex flex-col scale-[1.03] shadow-2xl">
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-6 py-1.5 rounded-full">
-          MÁS POPULAR
-        </div>
-        
-        <div className="text-center mb-8">
-          <span className="text-sm font-semibold text-purple-600">PROFESSIONAL</span>
-          <div className="mt-4">
-            <span className="text-5xl font-bold text-gray-900">$499</span>
-            <span className="text-gray-500">/pago único</span>
-          </div>
-          <p className="text-sm text-purple-600 mt-2 font-semibold">El más elegido por emprendedores serios</p>
-        </div>
-        
-        <ul className="space-y-4 mb-10 flex-1">
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Starter</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Cuenta bancaria en EE.UU. (Mercury o Relay)</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Operating Agreement personalizado</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia prioritaria en español</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte 30 días post-entrega</li>
-        </ul>
-        
-        <a href="#asesoria" 
-           onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'professional')}
-           className="block text-center py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition">
-          Elegir Professional
-        </a>
-      </div>
-
-      {/* BUSINESS */}
-      <div className="bg-white border border-gray-200 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col">
-        <div className="text-center mb-8">
-          <span className="text-sm font-semibold text-gray-500">BUSINESS</span>
-          <div className="mt-4">
-            <span className="text-5xl font-bold text-gray-900">$849</span>
-            <span className="text-gray-500">/pago único</span>
-          </div>
-          <p className="text-sm text-gray-600 mt-2">Servicio completo y premium</p>
-        </div>
-        
-        <ul className="space-y-4 mb-10 flex-1">
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Todo del Professional</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Presentación 5472 + 1120</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Dirección física real en EE.UU.</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte VIP 90 días</li>
-          <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Revisión anual incluida</li>
-        </ul>
-        
-        <a href="#asesoria" 
-           onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'business')}
-           className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
-          Elegir Business
-        </a>
-      </div>
-    </div>
-
-    <p className="text-center text-sm text-gray-500 mt-10">
-      ✅ Precio final. Sin sorpresas. Garantía de devolución 100%.
-    </p>
-  </div>
-</section>
 
     
  
@@ -1065,171 +895,6 @@ function GuaranteeSection() {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUICK CONTACT FORM OPTIMIZADO  (con COUNTRIES_LIST incluida)
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Lista de países para el formulario
-const COUNTRIES_LIST = [
-  'España', 'México', 'Colombia', 'Argentina', 'Chile', 'Perú',
-  'Paraguay', 'Estados Unidos', 'Venezuela', 'Ecuador', 'Otro país',
-];
-
-function QuickContactSection() {
-  const [form, setForm] = useState({ name: '', email: '', country: '' })
-  const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    analyticsEvents.trackEvent('cta_click', 'asesoria_rapida', 'enviar');
-
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          country: form.country,
-        }),
-      });
-
-      if (response.ok) {
-        setSent(true);
-        analyticsEvents.trackEvent('form_submit_success', 'asesoria_rapida');
-      } else {
-        alert('Hubo un error al enviar. Inténtalo de nuevo.');
-      }
-    } catch (error) {
-      alert('Error de conexión. Por favor, inténtalo más tarde.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '14px 16px', fontSize: 16, color: T.tx,
-    background: T.sf, border: `1.5px solid ${T.br}`, borderRadius: 12,
-    fontFamily: "'Inter',sans-serif",
-  };
-
-  return (
-    <section
-      id="contacto-rapido"
-      style={{
-        background: `linear-gradient(135deg, ${T.b0} 0%, #E8F0FF 100%)`,
-        padding: '96px 0',
-        borderTop: `1px solid ${T.b1}`,
-        borderBottom: `1px solid ${T.b1}`,
-      }}
-    >
-      <div style={{ maxWidth: 780, margin: '0 auto', padding: '0 24px' }}>
-        {/* Header */}
-        <div className="hp-fu text-center mb-11">
-          <Eyebrow text="Asesoría rápida" />
-          <h2
-            className="font-extrabold mt-3.5 mb-3"
-            style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(26px,3vw,38px)', color: T.b9 }}
-          >
-            ¿Tienes dudas? Recibe asesoría personalizada en menos de 12 horas
-          </h2>
-          <p className="text-base mx-auto" style={{ color: T.ts, maxWidth: 520 }}>
-            Sin compromiso. Un especialista en español te responderá de forma clara y adaptada a tu situación.
-          </p>
-        </div>
-
-        {/* Success state */}
-        {sent ? (
-          <div
-            className="hp-fu text-center rounded-2xl mx-auto"
-            style={{ background: T.wh, border: `1.5px solid rgba(16,185,129,.35)`, padding: '48px 36px', boxShadow: T.shCard, maxWidth: 560 }}
-          >
-            <div className="text-4xl mb-5">✅</div>
-            <h3 className="font-bold text-xl mb-2.5" style={{ color: T.tx }}>¡Solicitud recibida!</h3>
-            <p className="text-[15.5px]" style={{ color: T.ts }}>
-              Un especialista revisará tu caso y te responderá en menos de 12 horas.<br /><br />
-              <strong>Si quieres que preparemos mejor tu respuesta</strong>, responde a este mismo email contándonos tu duda principal.
-            </p>
-          </div>
-        ) : (
-          /* Formulario simple */
-          <form
-            onSubmit={handleSubmit}
-            className="hp-fu rounded-2xl mx-auto"
-            style={{ background: T.wh, border: `1.5px solid ${T.br}`, padding: '40px 36px', boxShadow: T.shCard, maxWidth: 680 }}
-          >
-            <div className="hp-fgrid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-              <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: T.ts }}>Nombre completo *</label>
-                <input
-                  required
-                  type="text"
-                  placeholder="Tu nombre"
-                  value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  style={inputStyle}
-                />
-              </div>
-              <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: T.ts }}>Email *</label>
-                <input
-                  required
-                  type="email"
-                  placeholder="tu@email.com"
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  style={inputStyle}
-                />
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: T.ts }}>País de residencia *</label>
-              <select
-                required
-                value={form.country}
-                onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
-                style={{ ...inputStyle, color: form.country ? T.tx : T.tm }}
-              >
-                <option value="" disabled>Selecciona tu país…</option>
-                {COUNTRIES_LIST.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full font-bold text-base rounded-full border-0 cursor-pointer"
-              style={{
-                background: loading ? T.tm : `linear-gradient(135deg,${T.ct},${T.ch})`,
-                color: T.wh,
-                padding: '16px 32px',
-                fontFamily: "'Plus Jakarta Sans',sans-serif",
-                boxShadow: loading ? 'none' : T.shCta,
-              }}
-            >
-              {loading ? (
-                <span className="inline-flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin" /> Enviando…
-                </span>
-              ) : '✉️ Recibir asesoría gratuita'}
-            </button>
-
-            <p className="text-[12.5px] text-center mt-4" style={{ color: T.tm }}>
-              🔒 Tus datos están protegidos • Respuesta garantizada en menos de 12 horas • Sin spam
-            </p>
-          </form>
-        )}
-      </div>
-    </section>
-  )
-}
-       
-
-// ─────────────────────────────────────────────────────────────────────────────
 // CTA FINAL SECTION OPTIMIZADA
 // ─────────────────────────────────────────────────────────────────────────────
 function CTAFinalSection() {
@@ -1262,9 +927,8 @@ function CTAFinalSection() {
           </p>
 
           {/* Primary CTA */}
-          <Link
+          <TrackedLink
             href="#precios"
-            onClick={() => analyticsEvents.trackEvent('cta_click', 'final_cta', 'crear_llc')}
             className="hp-pcta inline-flex items-center gap-2.5 font-extrabold rounded-full mb-6"
             style={{
               background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
@@ -1277,7 +941,7 @@ function CTAFinalSection() {
             }}
           >
             👉 Crear mi LLC ahora
-          </Link>
+          </TrackedLink>
 
           {/* Trust line */}
           <p className="text-sm" style={{ color: 'rgba(255,255,255,.7)' }}>
@@ -1293,74 +957,15 @@ function CTAFinalSection() {
 // ─────────────────────────────────────────────────────────────────────────────
 // MOBILE STICKY CTA - VERSIÓN MEJORADA
 // ─────────────────────────────────────────────────────────────────────────────
-function MobileStickyCTA() {
-  const [show, setShow] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShow(window.scrollY > 300) // Bajamos el umbral
-    }
-
-    // Comprobamos el scroll al cargar la página
-    handleScroll()
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  return (
-    <div 
-      className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-all duration-300 ${
-        show ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
-      }`}
-    >
-      <div className="bg-white border-t border-gray-200 px-4 py-3 shadow-lg">
-        <div className="flex items-center justify-between max-w-md mx-auto gap-3">
-          <div className="flex-1 min-w-0">
-            <div 
-              className="text-[13px] font-bold truncate" 
-              style={{ 
-                fontFamily: "'Plus Jakarta Sans', sans-serif", 
-                color: T.tx 
-              }}
-            >
-              Abre tu LLC desde $349
-            </div>
-            <div className="text-xs" style={{ color: T.tm }}>
-              72 horas · Sin visa · Soporte en español
-            </div>
-          </div>
-
-          <Link
-            href="#precios"
-            onClick={() => analyticsEvents?.trackEvent('cta_click', 'sticky_cta', 'precios')}
-            className="inline-flex items-center font-bold rounded-full whitespace-nowrap flex-shrink-0 text-sm px-5 py-2.5"
-            style={{
-              background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
-              color: T.wh,
-              textDecoration: 'none',
-              boxShadow: T.shCta,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-          >
-            Comenzar ahora →
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE (root export) - VERSIÓN CORREGIDA Y LIMPIA
 // ─────────────────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  useFadeUp()
-
   return (
     <main>
+      <ScrollObserver />
     <script
   type="application/ld+json"
   dangerouslySetInnerHTML={{
@@ -1373,8 +978,8 @@ export default function HomePage() {
       "logo": "https://openllcusa.com/logo.png",
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+34-XXX-XXX-XXX",
-        "contactType": "customer service",
+        "email": "hola@openllcusa.com",
+        "contactType": "customer support",
         "areaServed": "ES",
         "availableLanguage": "Spanish"
       },
@@ -1456,13 +1061,9 @@ export default function HomePage() {
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Agente Registrado 1 año</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia en español</li>
               </ul>
-              <Link 
-                href="/paquetes/starter/onboarding"
-                onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'starter')}
-                className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition"
-              >
+              <TrackedLink href="/paquetes/starter/onboarding" trackAction="cta_click" trackCategory="pricing" trackLabel="starter" className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
                 Elegir Starter
-              </Link>
+              </TrackedLink>
             </div>
 
             {/* PROFESSIONAL - MÁS POPULAR */}
@@ -1483,13 +1084,9 @@ export default function HomePage() {
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Asistencia prioritaria</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Soporte 30 días</li>
               </ul>
-              <Link 
-                href="/paquetes/professional/onboarding"
-                onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'professional')}
-                className="block text-center py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition"
-              >
+              <TrackedLink href="/paquetes/professional/onboarding" trackAction="cta_click" trackCategory="pricing" trackLabel="professional" className="block text-center py-4 rounded-2xl bg-purple-600 text-white font-semibold hover:bg-purple-700 transition">
                 Elegir Professional
-              </Link>
+              </TrackedLink>
             </div>
 
             {/* BUSINESS */}
@@ -1510,13 +1107,9 @@ export default function HomePage() {
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Reportes Anuales</li>
                 <li className="flex items-start gap-3"><span className="text-green-500">✓</span> Revisión anual incluida</li>
               </ul>
-              <Link 
-                href="/paquetes/business/onboarding"
-                onClick={() => analyticsEvents?.trackEvent('cta_click', 'pricing', 'business')}
-                className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition"
-              >
+              <TrackedLink href="/paquetes/business/onboarding" trackAction="cta_click" trackCategory="pricing" trackLabel="business" className="block text-center py-4 rounded-2xl border border-gray-300 hover:bg-gray-50 font-semibold transition">
                 Elegir Business
-              </Link>
+              </TrackedLink>
             </div>
           </div>
 

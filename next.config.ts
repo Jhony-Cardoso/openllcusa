@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     // Desactiva la caché persistente en disco durante el build cuando sea necesario
     webpackBuildWorker: false,
   },
+  
+  // Permite acceso a recursos dev desde el móvil
+  allowedDevOrigins: ['192.168.42.113'],
 
   // Configuración recomendada para evitar problemas de permisos en Docker
   webpack: (config, { dev, isServer }) => {

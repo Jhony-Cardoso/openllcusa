@@ -16,11 +16,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_dummy_build', {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-    }
-
     const { sessionId, pedidoId } = await request.json()
     if (!sessionId || !pedidoId) {
       return NextResponse.json({ error: 'Faltan parámetros requeridos' }, { status: 400 })
@@ -28,11 +23,14 @@ export async function POST(request: NextRequest) {
 
     const session = await stripe.checkout.sessions.retrieve(sessionId)
 
-    // Seguridad: comprobar metadata
+    // Seguridad básica: la sesión debe corresponder al pedido
     if (session.metadata?.pedidoId !== pedidoId) {
       return NextResponse.json({ error: 'La sesión no corresponde al pedido' }, { status: 400 })
     }
-    if (session.metadata?.userId !== userId) {
+
+    // Si hay usuario autenticado, validamos que coincida
+    const { userId } = await auth()
+    if (userId && session.metadata?.userId !== userId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 

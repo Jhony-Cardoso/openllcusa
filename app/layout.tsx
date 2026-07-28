@@ -56,7 +56,11 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ClerkProvider localization={esES}>
+        <ClerkProvider 
+          localization={esES}
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+        >
           <Header />
           {children}
           <Footer />

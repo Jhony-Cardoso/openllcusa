@@ -26,7 +26,7 @@ export default async function PedidoDetallePage({
   const user = await currentUser()
   const { id } = await params
   const resolvedSearchParams = await searchParams
-  const verifySessionId = resolvedSearchParams?.verify_session
+  const verifySessionId = resolvedSearchParams?.verify_session || resolvedSearchParams?.session_id
 
   if (!userId) redirect('/sign-in')
 
@@ -96,7 +96,7 @@ export default async function PedidoDetallePage({
   // 1. Slug específico
   // 2. Metadata explícita
   // 3. Opcionalmente tax_data PERO solo si tiene campos reales (evitando el default '{}')
-  const taxDataObj = ((pedidoFull as any).tax_data ?? {}) as Record<string, any>
+  const taxDataObj = ((pedidoFull as any).tax_data ?? (pedidoFull as any).metadata?.taxData ?? {}) as Record<string, any>
   const hasRealTaxData = Object.keys(taxDataObj).length > 0
   const metadata = (pedidoFull.metadata ?? {}) as Record<string, any>;
 

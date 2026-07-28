@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         const user = await currentUser()
 
         if (!userId || !user) {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+            return NextResponse.json({ error: 'Debes iniciar sesión para crear un pedido.' }, { status: 401 })
         }
 
         const body = await req.json()
@@ -41,9 +41,19 @@ export async function POST(req: Request) {
         }
 
         // 3. ACTUALIZAR METADATA (CRÍTICO para identificar el servicio en Dashboard)
+        // Fusionamos con lo que ya guardamos (incluyendo taxData)
         const adminDb = createAdminClient()
+        const { data: currentPedido } = await adminDb
+          .from('pedidos')
+          .select('metadata')
+          .eq('id', pedido.id)
+          .single()
+
+        const existingMetadata = (currentPedido?.metadata as any) || {}
+
         await adminDb.from('pedidos').update({
             metadata: {
+                ...existingMetadata,
                 tipo_servicio: 'tax_filing_5472',
                 tax_year: taxData.taxYear || new Date().getFullYear() - 1
             }
@@ -67,7 +77,7 @@ export async function POST(req: Request) {
             ],
             mode: 'payment',
             // Usamos NEXT_PUBLIC_BASE_URL que es la que está definida en .env.local (ngrok o dominio real)
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/pedidos/${pedido.id}?verify_session={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pago-exitoso?session_id={CHECKOUT_SESSION_ID}&pedido=${pedido.id}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/servicios/impuestos/declaracion-anual-llc/onboarding?canceled=true`,
             metadata: {
                 pedidoId: pedido.id,

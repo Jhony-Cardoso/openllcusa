@@ -65,7 +65,7 @@ export async function POST(req: Request) {
                 },
             ],
             mode: 'payment',
-            success_url: `${baseUrl}/dashboard/pedidos/${pedidoId}?verify_session={CHECKOUT_SESSION_ID}`,
+            success_url: `${baseUrl}/pago-exitoso?session_id={CHECKOUT_SESSION_ID}&pedido=${pedidoId}`,
             cancel_url: `${baseUrl}/servicios/impuestos/declaracion-anual-llc/onboarding/checkout?pedidoId=${pedidoId}`,
             metadata: {
                 pedidoId: pedidoId,

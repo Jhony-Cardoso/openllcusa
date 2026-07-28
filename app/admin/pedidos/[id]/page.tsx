@@ -46,7 +46,7 @@ export default async function AdminPedidoDetallePage({
     // ============================================
     // Detección de tipo de servicio (robusta)
     // ============================================
-    const taxDataObj = ((pedido as any).tax_data ?? {}) as Record<string, any>
+    const taxDataObj = ((pedido as any).tax_data ?? (pedido as any).metadata?.taxData ?? {}) as Record<string, any>
     const hasRealTaxData = Object.keys(taxDataObj).length > 0
 
     const esTaxFiling =

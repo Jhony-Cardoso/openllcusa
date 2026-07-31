@@ -1,109 +1,125 @@
 // app/precios/page.tsx
-import type { Metadata } from 'next';
+// Server Component — alineado con el design system de la homepage
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import Image from 'next/image'
+import '../homepage-v4.css'
+import ScrollObserver from '@/components/home/ScrollObserver'
 
-const SITE_URL = 'https://openllcusa.com'; // TODO: cambia por tu dominio real
-const BRAND_NAME = 'Open LLC USA'; // TODO: cambia por tu marca
+const SITE_URL = 'https://openllcusa.com'
 
+// ─── Design tokens (mismo sistema que homepage) ───────────────────────────────
+const T = {
+  bd: '#0C2047', b9: '#1E3A8A', b7: '#1D4ED8', b5: '#3B82F6',
+  b1: '#DBEAFE', b0: '#EFF6FF',
+  gn: '#10B981', gd: '#059669', gl: '#D1FAE5',
+  ct: '#EA580C', ch: '#C2410C',
+  tx: '#111827', ts: '#4B5563', tm: '#9CA3AF',
+  br: '#E5E7EB', wh: '#FFFFFF', sf: '#F8FAFC',
+  shCard: '0 1px 4px rgba(17,24,39,.06), 0 4px 16px rgba(17,24,39,.07)',
+  shCta: '0 6px 24px rgba(234,88,12,.38)',
+  shBlue: '0 6px 24px rgba(30,58,138,.24)',
+} as const
+
+// ─── SEO Metadata ─────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Precios para crear y mantener tu LLC en Estados Unidos | ' + BRAND_NAME,
+  title: 'Precios para crear y mantener tu LLC en EE. UU. | Open LLC USA',
   description:
-    'Precios claros para formar, mantener y optimizar tu LLC en Estados Unidos desde España. ' +
-    'Planes desde 597 USD + tasas. Comparativa transparente frente a EZFrontiers, Circle Club, Openbiz y LLC Hub.',
+    'Planes claros desde $349 para formar, mantener y optimizar tu LLC en Estados Unidos. Sin letra pequeña, sin sorpresas. Comparativa con EZFrontiers, Circle Club y Openbiz.',
   alternates: {
     canonical: `${SITE_URL}/precios`,
   },
   openGraph: {
     type: 'website',
     url: `${SITE_URL}/precios`,
-    title: 'Precios claros para tu LLC en EE. UU. | ' + BRAND_NAME,
+    title: 'Precios claros para tu LLC en EE. UU. | Open LLC USA',
     description:
-      'Formar, mantener y optimizar tu LLC en Estados Unidos con precios cerrados, soporte en español y foco en residentes en España.',
-    siteName: BRAND_NAME,
+      'Forma, mantén y optimiza tu LLC en Estados Unidos. Planes desde $349 con soporte en español.',
+    siteName: 'Open LLC USA',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Precios para crear tu LLC en Estados Unidos',
+    title: 'Precios para crear tu LLC en EE. UU. | Open LLC USA',
     description:
-      'Planes por etapas: Formar, Mantener y Optimizar tu LLC en EE. UU. desde España, sin letra pequeña.',
+      'Planes por etapas: Formar ($349–$849), Mantener ($49/mes) y Optimizar tu LLC en EE. UU.',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+  robots: { index: true, follow: true },
+}
 
+// ─── JSON-LD ──────────────────────────────────────────────────────────────────
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
-  name: BRAND_NAME,
+  name: 'Open LLC USA',
   url: SITE_URL,
   description:
-    'Servicio especializado en creación y mantenimiento de LLC en Estados Unidos para residentes en España y otros no residentes.',
+    'Servicio especializado en creación y mantenimiento de LLC en Estados Unidos para hispanohablantes no residentes.',
   areaServed: [
-    {
-      '@type': 'Country',
-      name: 'Spain',
-    },
-    {
-      '@type': 'Country',
-      name: 'Mexico',
-    },
-    {
-      '@type': 'Country',
-      name: 'Argentina',
-    },
+    { '@type': 'Country', name: 'Spain' },
+    { '@type': 'Country', name: 'Mexico' },
+    { '@type': 'Country', name: 'Colombia' },
+    { '@type': 'Country', name: 'Argentina' },
   ],
   serviceType: 'US LLC formation and compliance for non-US residents',
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
-    name: 'Planes de formación y mantenimiento de LLC en EE. UU.',
+    name: 'Planes para tu LLC en EE. UU.',
     itemListElement: [
-      {
-        '@type': 'Offer',
-        name: 'LLC Esencial',
-        price: '597',
-        priceCurrency: 'USD',
-        category: 'Formar',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Launch + Banking',
-        price: '897',
-        priceCurrency: 'USD',
-        category: 'Formar',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Primer Año Pro',
-        price: '1397',
-        priceCurrency: 'USD',
-        category: 'Formar',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Plan Compliance Básico',
-        price: '49',
-        priceCurrency: 'USD',
-        category: 'Mantener',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Plan Crecimiento',
-        price: '129',
-        priceCurrency: 'USD',
-        category: 'Mantener',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Pack Optimización España–EE. UU.',
-        price: '397',
-        priceCurrency: 'USD',
-        category: 'Optimizar',
-      },
+      { '@type': 'Offer', name: 'Starter', price: '349', priceCurrency: 'USD', category: 'Formar' },
+      { '@type': 'Offer', name: 'Professional', price: '499', priceCurrency: 'USD', category: 'Formar' },
+      { '@type': 'Offer', name: 'Business', price: '849', priceCurrency: 'USD', category: 'Formar' },
+      { '@type': 'Offer', name: 'Plan Compliance Básico', price: '49', priceCurrency: 'USD', category: 'Mantener' },
+      { '@type': 'Offer', name: 'Plan Crecimiento', price: '129', priceCurrency: 'USD', category: 'Mantener' },
+      { '@type': 'Offer', name: 'Pack Optimización', price: '397', priceCurrency: 'USD', category: 'Optimizar' },
     ],
   },
-};
+}
 
+// ─── Sub-componentes ──────────────────────────────────────────────────────────
+function Eyebrow({ text, green }: { text: string; green?: boolean }) {
+  return (
+    <span
+      className="inline-block text-xs font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full"
+      style={{ background: green ? T.gl : T.b0, color: green ? T.gd : T.b7 }}
+    >
+      {text}
+    </span>
+  )
+}
+
+function CheckItem({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3 text-sm" style={{ color: T.ts }}>
+      <span
+        className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+        style={{ background: T.gl }}
+      >
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <path d="M1.5 5l2.5 2.5 4.5-5" stroke={T.gd} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+      {children}
+    </li>
+  )
+}
+
+function StageBadge({ number, label }: { number: string; label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-8">
+      <div
+        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
+        style={{ background: T.b9, color: T.wh }}
+      >
+        {number}
+      </div>
+      <span className="font-extrabold text-xl" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: T.tx }}>
+        {label}
+      </span>
+    </div>
+  )
+}
+
+// ─── PÁGINA ───────────────────────────────────────────────────────────────────
 export default function PricingPage() {
   return (
     <>
@@ -112,497 +128,671 @@ export default function PricingPage() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="pricing-page">
-        {/* HERO PRICING */}
-        <section className="pricing-hero">
-          <div className="section-container">
-            <p className="pricing-hero-eyebrow">
-              Formar · Mantener · Optimizar tu LLC en EE. UU.
-            </p>
-            <h1 className="pricing-hero-title">
-              Precios claros para crear y mantener tu LLC en Estados Unidos desde tu país
+      <ScrollObserver />
+
+      <main style={{ fontFamily: "'Inter', sans-serif", background: T.sf }}>
+
+        {/* ═══ HERO ═══════════════════════════════════════════════════════════ */}
+        <section
+          style={{
+            background: `linear-gradient(145deg, ${T.bd} 0%, ${T.b9} 65%, #1a368a 100%)`,
+            padding: '96px 0 80px',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Glow */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(ellipse 55% 55% at 80% 50%, rgba(59,130,246,.14) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }}
+          />
+          <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1, textAlign: 'center' }}>
+            <div className="hp-fu mb-5">
+              <Eyebrow text="Precios transparentes · Sin letra pequeña" />
+            </div>
+            <h1
+              className="hp-fu font-extrabold leading-tight"
+              style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 'clamp(30px, 4.5vw, 56px)',
+                color: T.wh,
+                marginBottom: 20,
+              }}
+            >
+              Forma, mantén y optimiza<br />tu LLC en EE.&nbsp;UU.
             </h1>
-            <p className="pricing-hero-subtitle">
-              Sin letra pequeña, sin paquetes confusos. Eliges el nivel de acompañamiento que
-              necesitas hoy y siempre sabrás qué incluye cada euro que pagas.
+            <p
+              className="hp-fu"
+              style={{ fontSize: 'clamp(16px, 1.8vw, 20px)', color: 'rgba(255,255,255,.75)', maxWidth: 600, margin: '0 auto 36px' }}
+            >
+              Tres etapas lógicas para que siempre sepas qué estás pagando y por qué.
+              Soporte en español pensado para hispanohablantes.
             </p>
-            <div className="pricing-hero-badges">
-              <span className="pricing-pill">
-                Desde 597 USD + tasas para formar tu LLC
-              </span>
-              <span className="pricing-pill pricing-pill-secondary">
-                Planes mensuales desde 49 USD/mes para mantenerla al día
-              </span>
+            {/* Anchors rápidos */}
+            <div className="hp-fu flex flex-wrap gap-3 justify-center">
+              {[
+                { href: '#formar', label: '1. Formar LLC' },
+                { href: '#mantener', label: '2. Mantener' },
+                { href: '#optimizar', label: '3. Optimizar' },
+                { href: '#comparativa', label: 'Ver comparativa' },
+              ].map(({ href, label }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="text-sm font-semibold px-5 py-2.5 rounded-full transition"
+                  style={{
+                    background: 'rgba(255,255,255,.10)',
+                    border: '1px solid rgba(255,255,255,.22)',
+                    color: T.wh,
+                  }}
+                >
+                  {label}
+                </a>
+              ))}
             </div>
-            <div className="pricing-hero-cta">
-              <a href="/contacto" className="btn btn-primary btn-lg">
-                Reservar consultoría gratuita
-              </a>
-              <a href="#comparativa" className="btn btn-white btn-lg">
-                Ver comparativa con otros proveedores
-              </a>
-            </div>
-            <p className="pricing-hero-note">
-              Competidores como EZFrontiers, Circle Club u Openbiz se mueven entre 499 y 699 USD
-              solo por la formación inicial. Nosotros te damos más contexto fiscal España–EE. UU.
-              manteniendo un precio competitivo.
-            </p>
           </div>
         </section>
 
-        {/* ETAPA 1: FORMAR */}
-        <section className="section pricing-section" aria-labelledby="formar-heading">
-          <div className="section-container">
-            <header className="section-header">
-              <h2 id="formar-heading">1. Formar tu LLC en Estados Unidos</h2>
-              <p className="section-subtitle">
-                Empezamos por lo esencial: elegir bien el estado, crear tu LLC, conseguir tu EIN y
-                dejar listos los documentos que te van a pedir bancos, pasarelas de pago y
-                clientes.
+        {/* ═══ ETAPA 1: FORMAR ════════════════════════════════════════════════ */}
+        <section id="formar" style={{ padding: '96px 0', background: T.wh }}>
+          <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 24px' }}>
+            <div className="hp-fu text-center mb-14">
+              <Eyebrow text="Etapa 1" />
+              <StageBadge number="1" label="Forma tu LLC en Estados Unidos" />
+              <p className="text-base mx-auto" style={{ color: T.ts, maxWidth: 560 }}>
+                Elegir bien el estado, crear tu LLC, conseguir tu EIN y dejar listos los documentos que
+                te pedirán bancos, pasarelas de pago y clientes. Todo gestionado por nosotros.
               </p>
-            </header>
+            </div>
 
-            <div className="pricing-grid">
-              {/* LLC ESENCIAL */}
-              <article className="pricing-card">
-                <div className="pricing-card-header">
-                  <h3>LLC Esencial</h3>
-                  <p className="pricing-card-tag">Para validar tu negocio sin complicarte</p>
-                  <p className="pricing-card-price">
-                    <span className="pricing-card-amount">597 USD</span>
-                    <span className="pricing-card-label">+ tasas estatales · pago único</span>
-                  </p>
-                  <p className="pricing-card-anchor">
-                    Referencia: EZFrontiers (699 USD) o Circle Club (647 USD) por servicios
-                    comparables.
-                  </p>
+            {/* Cards de planes */}
+            <div
+              className="hp-pgrid"
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, alignItems: 'start' }}
+            >
+              {/* STARTER */}
+              <article
+                className="hp-fu hp-pcard rounded-3xl p-8 flex flex-col"
+                style={{ background: T.wh, border: `1.5px solid ${T.br}`, boxShadow: T.shCard }}
+              >
+                <span
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: T.tm }}
+                >
+                  STARTER
+                </span>
+                <div className="mb-2">
+                  <span
+                    className="font-extrabold"
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 48, color: T.tx }}
+                  >
+                    $349
+                  </span>
+                  <span className="text-sm ml-1.5" style={{ color: T.tm }}>+ tasa estatal</span>
                 </div>
-                <div className="pricing-card-body">
-                  <p className="pricing-card-description">
-                    Creación de tu LLC en el estado correcto, EIN y documentación base listos para
-                    operar online, con todo explicado en español y pensando en Hacienda España.
-                  </p>
-                  <ul className="pricing-card-features">
-                    <li>Constitución de tu LLC en el estado óptimo (Wyoming, Delaware u otro).</li>
-                    <li>Obtención de tu EIN aunque no tengas SSN o ITIN.</li>
-                    <li>
-                      Operating agreement y documentos esenciales listos para bancos y clientes.
-                    </li>
-                    <li>1 año de agente registrado y dirección básica oficial.</li>
-                    <li>
-                      Guía clara sobre impuestos básicos, BOIR y relación con Hacienda España.
-                    </li>
-                  </ul>
-                  <div className="pricing-card-cta">
-                    <a href="/paquetes/llc-esencial/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
-                      Empezar con LLC Esencial
-                    </a>
-<a href="/servicios/agente-registrado" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
-                       Ver detalles del servicio →
-                     </a>
-                    <p className="pricing-card-footnote">
-                      Ideal si quieres arrancar lean y luego ampliar con planes de mantenimiento.
-                    </p>
-                  </div>
-                </div>
+                <p className="text-sm mb-6" style={{ color: T.ts }}>Ideal para freelancers y primeros pasos</p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <CheckItem>Registro de LLC en el estado óptimo</CheckItem>
+                  <CheckItem>EIN sin SSN ni ITIN</CheckItem>
+                  <CheckItem>Documentos esenciales para bancos y clientes</CheckItem>
+                  <CheckItem>Agente registrado gratis 1 año</CheckItem>
+                  <CheckItem>Asistencia completa en español</CheckItem>
+                </ul>
+                <Link
+                  href="/paquetes/starter/onboarding"
+                  className="block text-center font-bold rounded-full py-4 transition"
+                  style={{ background: T.sf, border: `1.5px solid ${T.br}`, color: T.tx }}
+                >
+                  Empezar con Starter
+                </Link>
+                <p className="text-xs text-center mt-3" style={{ color: T.tm }}>
+                  Ideal para validar tu negocio sin complicarte
+                </p>
               </article>
 
-              {/* LAUNCH + BANKING */}
-              <article className="pricing-card pricing-card-featured">
-                <div className="pricing-card-header">
-                  <div className="pricing-card-badge">Plan más elegido</div>
-                  <h3>Launch + Banking</h3>
-                  <p className="pricing-card-tag">
-                    Para lanzar y cobrar con tu LLC desde el primer mes
-                  </p>
-                  <p className="pricing-card-price">
-                    <span className="pricing-card-amount">897 USD</span>
-                    <span className="pricing-card-label">+ tasas estatales · pago único</span>
-                  </p>
-                  <p className="pricing-card-anchor">
-                    Menos que combinar varios servicios sueltos de Circle Club u Openbiz, con más
-                    foco en negocios digitales desde España.
-                  </p>
+              {/* PROFESSIONAL — DESTACADO */}
+              <article
+                className="hp-fu hp-pcard rounded-3xl p-8 flex flex-col relative"
+                style={{
+                  background: `linear-gradient(150deg, #f5f3ff 0%, ${T.wh} 100%)`,
+                  border: `2px solid #7c3aed`,
+                  boxShadow: '0 8px 40px rgba(124,58,237,.18)',
+                  transform: 'scale(1.03)',
+                }}
+              >
+                <div
+                  className="absolute -top-4 left-1/2 -translate-x-1/2 text-xs font-bold px-5 py-1.5 rounded-full"
+                  style={{ background: '#7c3aed', color: T.wh }}
+                >
+                  MÁS POPULAR
                 </div>
-                <div className="pricing-card-body">
-                  <p className="pricing-card-description">
-                    Todo lo de LLC Esencial más acompañamiento para abrir tu cuenta bancaria o
-                    fintech y una sesión 1:1 para diseñar tu estrategia fiscal básica España–
-                    Estados Unidos.
-                  </p>
-                  <ul className="pricing-card-features">
-                    <li>Todo lo incluido en LLC Esencial.</li>
-                    <li>
-                      Acompañamiento para apertura de cuenta en banca online o fintech alineadas
-                      con no residentes.
-                    </li>
-                    <li>
-                      Revisión de tu primera factura y estructura de cobros a clientes
-                      internacionales.
-                    </li>
-                    <li>
-                      Sesión 1:1 de 45–60 minutos para definir estado, banco y enfoque fiscal
-                      inicial.
-                    </li>
-                    <li>
-                      Checklist de lanzamiento: de “LLC creada” a “LLC facturando” sin pasos
-                      ocultos.
-                    </li>
-                  </ul>
-                  <div className="pricing-card-cta">
-                    <a href="/paquetes/launch-banking/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
-                      Lanzar mi LLC con acompañamiento
-                    </a>
-                    <a href="/servicios/launch-banking" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
-                      Ver detalles del servicio →
-                    </a>
-                    <p className="pricing-card-footnote">
-                      Recomendado si tu objetivo es facturar en los próximos 30–60 días.
-                    </p>
-                  </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span
+                    className="text-xs font-bold tracking-widest uppercase"
+                    style={{ color: '#7c3aed' }}
+                  >
+                    PROFESSIONAL
+                  </span>
+                  <span className="text-xs font-bold px-3 py-1 rounded-full shadow-sm" style={{ background: '#FEE2E2', color: '#DC2626' }}>
+                    🔥 Solo 3 plazas a este precio
+                  </span>
                 </div>
+                <div className="mb-2">
+                  <span
+                    className="font-extrabold"
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 48, color: T.tx }}
+                  >
+                    $499
+                  </span>
+                  <span className="text-sm ml-1.5" style={{ color: T.tm }}>+ tasa estatal</span>
+                </div>
+                <p className="text-sm font-semibold mb-6" style={{ color: '#7c3aed' }}>El más elegido por emprendedores</p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <CheckItem>Todo del Starter</CheckItem>
+                  <CheckItem>Apertura de cuenta bancaria en EE.UU.</CheckItem>
+                  <CheckItem>Operating Agreement personalizado</CheckItem>
+                  <CheckItem>Sesión 1:1 para definir estrategia fiscal inicial</CheckItem>
+                  <CheckItem>Soporte prioritario 30 días</CheckItem>
+                </ul>
+                <Link
+                  href="/paquetes/professional/onboarding"
+                  className="block text-center font-bold rounded-full py-4 transition"
+                  style={{ background: '#7c3aed', color: T.wh }}
+                >
+                  Elegir Professional
+                </Link>
+                <p className="text-xs text-center mt-3" style={{ color: T.tm }}>
+                  Recomendado si facturas en los próximos 30–60 días
+                </p>
               </article>
 
-              {/* PRIMER AÑO PRO */}
-              <article className="pricing-card">
-                <div className="pricing-card-header">
-                  <h3>Primer Año Pro</h3>
-                  <p className="pricing-card-tag">Primer año casi todo resuelto</p>
-                  <p className="pricing-card-price">
-                    <span className="pricing-card-amount">1.397 USD</span>
-                    <span className="pricing-card-label">+ tasas estatales · primer año</span>
-                  </p>
-                  <p className="pricing-card-anchor">
-                    Alternativa más ligera a paquetes de 1.200–3.997 USD/año de Openbiz para
-                    impuestos y contabilidad.
-                  </p>
+              {/* BUSINESS */}
+              <article
+                className="hp-fu hp-pcard rounded-3xl p-8 flex flex-col"
+                style={{ background: T.wh, border: `1.5px solid ${T.br}`, boxShadow: T.shCard }}
+              >
+                <span
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: T.tm }}
+                >
+                  BUSINESS
+                </span>
+                <div className="mb-2">
+                  <span
+                    className="font-extrabold"
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 48, color: T.tx }}
+                  >
+                    $849
+                  </span>
+                  <span className="text-sm ml-1.5" style={{ color: T.tm }}>+ tasa estatal</span>
                 </div>
-                <div className="pricing-card-body">
-                  <p className="pricing-card-description">
-                    Pensado para que en tu primer año no se te pase ningún plazo: BOIR,
-                    obligaciones estatales y dudas operativas resueltas sin que tengas que estar
-                    persiguiendo a nadie.
-                  </p>
-                  <ul className="pricing-card-features">
-                    <li>Todo lo incluido en Launch + Banking.</li>
-                    <li>Preparación y presentación del BOIR dentro de plazo.</li>
-                    <li>
-                      Gestión del reporte o impuesto anual estatal (nuestros honorarios incluidos,
-                      tasas aparte).
-                    </li>
-                    <li>
-                      Soporte prioritario por email/WhatsApp para dudas operativas y fiscales del
-                      día a día.
-                    </li>
-                    <li>
-                      Revisión básica de tu contabilidad hasta un volumen máximo de movimientos.
-                    </li>
-                  </ul>
-                  <div className="pricing-card-cta">
-                    <a href="/paquetes/primer-ano-pro/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
-                      Quiero olvidarme del primer año
-                    </a>
-<a href="/servicios/reporte-anual" className="btn btn-white" style={{ marginBottom: '16px', display: 'block', textAlign: 'center' }}>
-                       Ver detalles del servicio →
-                     </a>
-                    <p className="pricing-card-footnote">
-                      Puedes pasar a un plan mensual de mantenimiento al terminar el primer año.
-                    </p>
-                  </div>
-                </div>
+                <p className="text-sm mb-6" style={{ color: T.ts }}>Primer año casi todo resuelto</p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <CheckItem>Todo del Professional</CheckItem>
+                  <CheckItem>Presentación Forms 5472 + 1120</CheckItem>
+                  <CheckItem>Dirección física real en EE.UU.</CheckItem>
+                  <CheckItem>BOIR incluido dentro de plazo</CheckItem>
+                  <CheckItem>Soporte VIP 90 días + revisión anual</CheckItem>
+                </ul>
+                <Link
+                  href="/paquetes/business/onboarding"
+                  className="block text-center font-bold rounded-full py-4 transition"
+                  style={{ background: T.sf, border: `1.5px solid ${T.br}`, color: T.tx }}
+                >
+                  Elegir Business
+                </Link>
+                <p className="text-xs text-center mt-3" style={{ color: T.tm }}>
+                  Puedes añadir un plan de mantenimiento tras el primer año
+                </p>
               </article>
             </div>
-          </div>
-        </section>
 
-        {/* BANNER FACILIDADES DE PAGO */}
-        <section className="pricing-payment-banner-section" aria-label="Facilidades de pago">
-          <div className="section-container">
-            <div className="pricing-payment-banner">
-              <div className="pricing-payment-icon">
-                <span aria-hidden="true">💳</span>
-              </div>
-              <div className="pricing-payment-content">
-                <p className="pricing-payment-title">Facilidades de pago</p>
-                <p className="pricing-payment-text">
-                  Al efectuar el pago, la pasarela de Stripe podrá ofrecerte la posibilidad de
-                  fraccionar el importe en cuotas mensuales, según disponibilidad en tu país y
-                  método de pago.
+            {/* Trust footnote */}
+            <p className="hp-fu text-center text-sm mt-10" style={{ color: T.tm }}>
+              ✅ Precio cerrado + tasa estatal según el estado elegido &nbsp;•&nbsp; Sin sorpresas &nbsp;•&nbsp; Garantía de devolución 100%
+            </p>
+
+            {/* Banner pago fraccionado */}
+            <div
+              className="hp-fu flex items-center gap-5 rounded-2xl mt-10 p-6"
+              style={{ background: T.b0, border: `1.5px solid ${T.b1}` }}
+            >
+              <span className="text-3xl flex-shrink-0">💳</span>
+              <div>
+                <p className="font-bold text-sm mb-0.5" style={{ color: T.b9 }}>Facilidades de pago</p>
+                <p className="text-sm" style={{ color: T.ts }}>
+                  Al pagar con Stripe, podrás fraccionar el importe en cuotas mensuales según disponibilidad en tu país y método de pago.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ETAPA 2: MANTENER */}
-        <section className="section pricing-section" aria-labelledby="mantener-heading">
-          <div className="section-container">
-            <header className="section-header">
-              <h2 id="mantener-heading">2. Mantener tu LLC al día</h2>
-              <p className="section-subtitle">
+        {/* ═══ ETAPA 2: MANTENER ══════════════════════════════════════════════ */}
+        <section
+          id="mantener"
+          style={{
+            padding: '96px 0',
+            background: `linear-gradient(135deg, ${T.b0} 0%, #E8F0FF 100%)`,
+            borderTop: `1px solid ${T.b1}`,
+          }}
+        >
+          <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
+            <div className="hp-fu text-center mb-14">
+              <Eyebrow text="Etapa 2" />
+              <div className="flex items-center justify-center gap-3 mt-5 mb-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                  style={{ background: T.b9, color: T.wh }}
+                >
+                  2
+                </div>
+                <h2
+                  className="font-extrabold text-left"
+                  style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(22px, 3vw, 34px)', color: T.tx }}
+                >
+                  Mantén tu LLC al día
+                </h2>
+              </div>
+              <p className="text-base mx-auto" style={{ color: T.ts, maxWidth: 560 }}>
                 Si tu LLC ya está creada, estos planes te ayudan a no perder plazos ni pagar multas
                 absurdas por despistes con el estado o el IRS.
               </p>
-            </header>
+            </div>
 
-            <div className="pricing-grid pricing-grid-two">
-              {/* PLAN COMPLIANCE BÁSICO */}
-              <article className="pricing-card">
-                <div className="pricing-card-header">
-                  <h3>Plan Compliance Básico</h3>
-                  <p className="pricing-card-tag">Lo mínimo para estar tranquilo</p>
-                  <p className="pricing-card-price">
-                    <span className="pricing-card-amount">49 USD</span>
-                    <span className="pricing-card-label">al mes · sin permanencia</span>
-                  </p>
-                  <p className="pricing-card-anchor">
-                    Equivalente a pagar unos 588 USD/año, frente a planes desde 600 USD/año de LLC
-                    Hub solo por mantenimiento básico.
-                  </p>
+            <div
+              className="hp-pgrid"
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}
+            >
+              {/* COMPLIANCE BÁSICO */}
+              <article
+                className="hp-fu hp-pcard rounded-3xl p-8 flex flex-col"
+                style={{ background: T.wh, border: `1.5px solid ${T.br}`, boxShadow: T.shCard }}
+              >
+                <span className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: T.tm }}>
+                  PLAN COMPLIANCE BÁSICO
+                </span>
+                <div className="mb-1">
+                  <span className="font-extrabold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 44, color: T.tx }}>
+                    $49
+                  </span>
+                  <span className="text-sm ml-1.5" style={{ color: T.tm }}>/mes · sin permanencia</span>
                 </div>
-                <div className="pricing-card-body">
-                  <p className="pricing-card-description">
-                    Para quien quiere que alguien vigile plazos y obligaciones mínimas de su LLC en
-                    Estados Unidos, pero mantiene la contabilidad en otra parte.
-                  </p>
-                  <ul className="pricing-card-features">
-                    <li>Agente registrado y dirección básica mientras el plan esté activo.</li>
-                    <li>
-                      Recordatorios y guía detallada para annual report o impuesto de franquicia en
-                      tu estado.
-                    </li>
-                    <li>Checklist para BOIR y otros formularios informativos clave.</li>
-                    <li>Soporte por email para dudas recurrentes sobre obligaciones mínimas.</li>
-                    <li>Sin permanencia: puedes pausar o cambiar de plan cuando lo necesites.</li>
-                  </ul>
-                  <div className="pricing-card-cta">
-                    <a href="/paquetes/compliance-basico/onboarding" className="btn btn-primary" style={{ marginBottom: '10px' }}>
-                      Activar Compliance Básico
-                    </a>
-<a href="/servicios/reporte-anual" className="btn btn-white" style={{ display: 'block', textAlign: 'center' }}>
-                       Ver detalles del servicio →
-                     </a>
-                  </div>
-                </div>
+                <p className="text-sm mb-6" style={{ color: T.ts }}>Lo mínimo para estar tranquilo</p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <CheckItem>Agente registrado y dirección oficial activos</CheckItem>
+                  <CheckItem>Recordatorios de annual report y obligaciones estatales</CheckItem>
+                  <CheckItem>Checklist BOIR y formularios informativos clave</CheckItem>
+                  <CheckItem>Soporte por email para dudas recurrentes</CheckItem>
+                  <CheckItem>Sin permanencia — pausa o cambia cuando quieras</CheckItem>
+                </ul>
+                <Link
+                  href="/paquetes/compliance-basico/onboarding"
+                  className="block text-center font-bold rounded-full py-4 transition"
+                  style={{ background: T.b9, color: T.wh }}
+                >
+                  Activar Compliance Básico
+                </Link>
               </article>
 
               {/* PLAN CRECIMIENTO */}
-              <article className="pricing-card">
-                <div className="pricing-card-header">
-                  <h3>Plan Crecimiento</h3>
-                  <p className="pricing-card-tag">Compliance + contabilidad ligera</p>
-                  <p className="pricing-card-price">
-                    <span className="pricing-card-amount">129 USD</span>
-                    <span className="pricing-card-label">al mes · para negocios en marcha</span>
-                  </p>
-                  <p className="pricing-card-anchor">
-                    Alternativa accesible frente a planes completos de hasta 3.997–6.000 USD/año de
-                    otros proveedores.
-                  </p>
+              <article
+                className="hp-fu hp-pcard rounded-3xl p-8 flex flex-col"
+                style={{ background: T.wh, border: `1.5px solid ${T.br}`, boxShadow: T.shCard }}
+              >
+                <span className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: T.tm }}>
+                  PLAN CRECIMIENTO
+                </span>
+                <div className="mb-1">
+                  <span className="font-extrabold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 44, color: T.tx }}>
+                    $129
+                  </span>
+                  <span className="text-sm ml-1.5" style={{ color: T.tm }}>/mes · para negocios en marcha</span>
                 </div>
-                <div className="pricing-card-body">
-                  <p className="pricing-card-description">
-                    Para negocios online que ya facturan de forma recurrente y quieren números
-                    claros mes a mes sin pagar un despacho completo en Estados Unidos.
-                  </p>
-                  <ul className="pricing-card-features">
-                    <li>Todo lo incluido en el Plan Compliance Básico.</li>
-                    <li>
-                      Conciliación mensual básica hasta un número definido de movimientos al mes.
-                    </li>
-                    <li>Informe trimestral con resumen de ingresos, gastos y márgenes.</li>
-                    <li>
-                      Una sesión estratégica anual para revisar estructura y planificación fiscal
-                      internacional.
-                    </li>
-                    <li>
-                      Preparación de documentación base para tu asesor en España si lo necesitas.
-                    </li>
-                  </ul>
-                  <div className="pricing-card-cta">
-                    <a href="/paquetes/plan-crecimiento/onboarding" className="btn btn-primary">
-                      Quiero mantener y crecer
-                    </a>
-                  </div>
-                </div>
+                <p className="text-sm mb-6" style={{ color: T.ts }}>Compliance + contabilidad ligera</p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <CheckItem>Todo del Plan Compliance Básico</CheckItem>
+                  <CheckItem>Conciliación mensual básica de movimientos</CheckItem>
+                  <CheckItem>Informe trimestral de ingresos, gastos y márgenes</CheckItem>
+                  <CheckItem>Sesión estratégica anual de revisión fiscal</CheckItem>
+                  <CheckItem>Documentación lista para tu asesor en España</CheckItem>
+                </ul>
+                <Link
+                  href="/paquetes/plan-crecimiento/onboarding"
+                  className="block text-center font-bold rounded-full py-4 transition"
+                  style={{ background: T.b9, color: T.wh }}
+                >
+                  Activar Plan Crecimiento
+                </Link>
               </article>
             </div>
           </div>
         </section>
 
-        {/* ETAPA 3: OPTIMIZAR */}
-        <section className="section pricing-section" aria-labelledby="optimizar-heading">
-          <div className="section-container">
-            <header className="section-header">
-              <h2 id="optimizar-heading">3. Optimizar impuestos y estructura</h2>
-              <p className="section-subtitle">
-                Cuando ya generas ingresos, el retorno está en tomar mejores decisiones fiscales y
-                de estructura, no en ahorrar 50 USD en el agente registrado.
+        {/* ═══ ETAPA 3: OPTIMIZAR ═════════════════════════════════════════════ */}
+        <section id="optimizar" style={{ padding: '96px 0', background: T.wh }}>
+          <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px' }}>
+            <div className="hp-fu text-center mb-14">
+              <Eyebrow text="Etapa 3" green />
+              <div className="flex items-center justify-center gap-3 mt-5 mb-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                  style={{ background: T.gd, color: T.wh }}
+                >
+                  3
+                </div>
+                <h2
+                  className="font-extrabold text-left"
+                  style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(22px, 3vw, 34px)', color: T.tx }}
+                >
+                  Optimiza impuestos y estructura
+                </h2>
+              </div>
+              <p className="text-base mx-auto" style={{ color: T.ts, maxWidth: 560 }}>
+                Cuando ya generas ingresos, el retorno está en mejores decisiones fiscales.
+                No en ahorrar $50 en el agente registrado.
               </p>
-            </header>
+            </div>
 
-            <div className="pricing-grid pricing-grid-two">
+            <div
+              className="hp-pgrid"
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}
+            >
               {/* PACK OPTIMIZACIÓN */}
-              <article className="pricing-card">
-                <div className="pricing-card-header">
-                  <h3>Pack Optimización España–EE. UU.</h3>
-                  <p className="pricing-card-tag">Diagnóstico y plan de acción</p>
-                  <p className="pricing-card-price">
-                    <span className="pricing-card-amount">397 USD</span>
-                    <span className="pricing-card-label">pago único</span>
-                  </p>
+              <article
+                className="hp-fu hp-pcard rounded-3xl p-8 flex flex-col"
+                style={{ background: T.wh, border: `1.5px solid ${T.br}`, boxShadow: T.shCard }}
+              >
+                <span className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: T.tm }}>
+                  PACK OPTIMIZACIÓN ESPAÑA–EE. UU.
+                </span>
+                <div className="mb-1">
+                  <span className="font-extrabold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 44, color: T.tx }}>
+                    $397
+                  </span>
+                  <span className="text-sm ml-1.5" style={{ color: T.tm }}>pago único</span>
                 </div>
-                <div className="pricing-card-body">
-                  <p className="pricing-card-description">
-                    Una revisión de tu situación actual en España y Estados Unidos, con un plan
-                    estructurado por escrito y una sesión para que salgas sin dudas pendientes.
-                  </p>
-                  <ul className="pricing-card-features">
-                    <li>
-                      Cuestionario previo para entender tu negocio, modelo de ingresos y
-                      jurisdicciones.
-                    </li>
-                    <li>
-                      Informe escrito con recomendaciones concretas de estructura, estados y bancos.
-                    </li>
-                    <li>
-                      Sesión 1:1 de hasta 90 minutos para revisar el informe y resolver dudas.
-                    </li>
-                    <li>
-                      Priorización de acciones para los próximos 12 meses (quick wins y cambios
-                      estructurales).
-                    </li>
-                  </ul>
-                  <div className="pricing-card-cta">
-                    <a href="/paquetes/pack-optimizacion/onboarding" className="btn btn-primary">
-                      Quiero revisar mi estructura
-                    </a>
-                  </div>
-                </div>
+                <p className="text-sm mb-6" style={{ color: T.ts }}>Diagnóstico + plan de acción escrito</p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <CheckItem>Cuestionario previo sobre tu negocio y modelo de ingresos</CheckItem>
+                  <CheckItem>Informe con recomendaciones concretas de estructura, estados y bancos</CheckItem>
+                  <CheckItem>Sesión 1:1 de hasta 90 min para revisar el informe</CheckItem>
+                  <CheckItem>Priorización de acciones para los próximos 12 meses</CheckItem>
+                </ul>
+                <Link
+                  href="/contacto"
+                  className="block text-center font-bold rounded-full py-4 transition"
+                  style={{
+                    background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
+                    color: T.wh,
+                    boxShadow: T.shCta,
+                  }}
+                >
+                  Quiero revisar mi estructura
+                </Link>
               </article>
 
               {/* ASESORÍA CONTINUA */}
-              <article className="pricing-card">
-                <div className="pricing-card-header">
-                  <h3>Asesoría continua de alto valor</h3>
-                  <p className="pricing-card-tag">Para cuando tu LLC ya es clave</p>
-                  <p className="pricing-card-price">
-                    <span className="pricing-card-amount">997 USD</span>
-                    <span className="pricing-card-label">al año · o desde 97 USD/mes</span>
-                  </p>
+              <article
+                className="hp-fu hp-pcard rounded-3xl p-8 flex flex-col"
+                style={{ background: T.wh, border: `1.5px solid ${T.br}`, boxShadow: T.shCard }}
+              >
+                <span className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: T.tm }}>
+                  ASESORÍA CONTINUA DE ALTO VALOR
+                </span>
+                <div className="mb-1">
+                  <span className="font-extrabold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 44, color: T.tx }}>
+                    $997
+                  </span>
+                  <span className="text-sm ml-1.5" style={{ color: T.tm }}>/año · o desde $97/mes</span>
                 </div>
-                <div className="pricing-card-body">
-                  <p className="pricing-card-description">
-                    Pensado para fundadores que prefieren tomar decisiones apoyados en alguien que
-                    vive día a día las fricciones entre Estados Unidos y España.
-                  </p>
-                  <ul className="pricing-card-features">
-                    <li>Bolsa de horas de consultoría avanzada al año.</li>
-                    <li>
-                      Revisión anual de tu estructura para ajustar estados, bancos y flujos de
-                      cobro.
-                    </li>
-                    <li>
-                      Soporte para casos puntuales de expansión, inversión o cambio de residencia.
-                    </li>
-                    <li>
-                      Coordinación básica con tu asesoría en España cuando sea necesario.
-                    </li>
-                  </ul>
-                  <div className="pricing-card-cta">
-                    <a href="/contacto" className="btn btn-primary">
-                      Hablar sobre asesoría continua
-                    </a>
-                  </div>
-                </div>
+                <p className="text-sm mb-6" style={{ color: T.ts }}>Para cuando tu LLC ya es clave en tu negocio</p>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <CheckItem>Bolsa de horas de consultoría avanzada al año</CheckItem>
+                  <CheckItem>Revisión anual de estructura, estados, bancos y flujos de cobro</CheckItem>
+                  <CheckItem>Soporte para expansión, inversión o cambio de residencia</CheckItem>
+                  <CheckItem>Coordinación con tu asesoría en España si la necesitas</CheckItem>
+                </ul>
+                <Link
+                  href="/contacto"
+                  className="block text-center font-bold rounded-full py-4 transition"
+                  style={{ background: T.sf, border: `1.5px solid ${T.br}`, color: T.tx }}
+                >
+                  Hablar sobre asesoría continua
+                </Link>
               </article>
             </div>
           </div>
         </section>
 
-        {/* TABLA COMPARATIVA */}
+        {/* ═══ TABLA COMPARATIVA COMPETIDORES ════════════════════════════════ */}
         <section
           id="comparativa"
-          className="section pricing-section pricing-compare-section"
-          aria-labelledby="comparativa-heading"
+          style={{
+            padding: '96px 0',
+            background: `linear-gradient(135deg, ${T.b0} 0%, #E8F0FF 100%)`,
+            borderTop: `1px solid ${T.b1}`,
+          }}
         >
-          <div className="section-container">
-            <header className="section-header">
-              <h2 id="comparativa-heading">Comparativa rápida con otros proveedores</h2>
-              <p className="section-subtitle">
-                Números aproximados de mercado para que veas en qué rango nos movemos frente a otros
-                proveedores populares en el mundo hispano.
+          <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px' }}>
+            <div className="hp-fu text-center mb-14">
+              <Eyebrow text="Comparativa de mercado" />
+              <h2
+                className="font-extrabold mt-4 mb-3"
+                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(24px, 3.5vw, 38px)', color: T.tx }}
+              >
+                ¿Cómo nos comparamos con otros proveedores?
+              </h2>
+              <p className="text-base mx-auto" style={{ color: T.ts, maxWidth: 560 }}>
+                Cifras aproximadas basadas en información pública. No somos los más baratos;
+                somos los más claros con el contexto España–EE.&nbsp;UU.
               </p>
-            </header>
+            </div>
 
-            <div className="pricing-compare">
-              <table className="pricing-compare-table">
+            <div className="hp-fu overflow-x-auto rounded-2xl" style={{ boxShadow: T.shCard }}>
+              <table
+                style={{
+                  width: '100%',
+                  borderCollapse: 'collapse',
+                  background: T.wh,
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 14,
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                }}
+              >
                 <thead>
-                  <tr>
-                    <th>Proveedor</th>
-                    <th>Precio entrada LLC</th>
-                    <th>Tipo de acompañamiento</th>
-                    <th>Fiscalidad España–EE. UU.</th>
+                  <tr style={{ background: T.b9, color: T.wh }}>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 700 }}>Proveedor</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 700 }}>Precio entrada LLC</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 700 }}>Acompañamiento</th>
+                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 700 }}>Contexto España–EE. UU.</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Nosotros</td>
-                    <td>Desde 597 USD + tasas</td>
-                    <td>
-                      Por etapas: Formar, Mantener y Optimizar. Soporte en español pensando en
-                      residentes en España.
-                    </td>
-                    <td>Explicada de forma explícita en todos los planes.</td>
-                  </tr>
-                  <tr>
-                    <td>EZFrontiers</td>
-                    <td>≈699 USD + tasas</td>
-                    <td>Paquete cerrrado de creación de LLC con foco en no residentes.</td>
-                    <td>
-                      Contenido educativo potente, pero orientación fiscal personalizada suele ir
-                      aparte.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Circle Club</td>
-                    <td>647 USD + tasas (plan Essential)</td>
-                    <td>Paquetes con fuerte enfoque en ahorro fiscal y acompañamiento.</td>
-                    <td>
-                      Fuerte foco comercial en fiscalidad, pero menos desglosado por etapas.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Openbiz</td>
-                    <td>≈599 USD + tasas (incorporación)</td>
-                    <td>
-                      Escala rápido a 1.200–3.997 USD/año cuando entra impuestos y contabilidad.
-                    </td>
-                    <td>
-                      Muy completo, pero concentrado en planes anuales altos más que en tickets
-                      intermedios.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>LLC Hub</td>
-                    <td>≈600 USD/año (plan Esenciales)</td>
-                    <td>Modelo por suscripción anual con 600–1.400 USD/año según nivel.</td>
-                    <td>
-                      Mantenimiento corporativo sólido, pero fiscalidad España–EE. UU. menos al
-                      centro del mensaje.
-                    </td>
-                  </tr>
+                  {[
+                    {
+                      name: '✅ Open LLC USA',
+                      price: 'Desde $349 + tasas',
+                      support: 'Por etapas: Formar, Mantener y Optimizar. Soporte en español.',
+                      context: 'Explicado de forma explícita en todos los planes.',
+                      highlight: true,
+                    },
+                    {
+                      name: 'EZFrontiers',
+                      price: '≈ $699 + tasas',
+                      support: 'Paquete cerrado de creación de LLC con foco en no residentes.',
+                      context: 'Contenido educativo sólido; asesoría fiscal personalizada va aparte.',
+                    },
+                    {
+                      name: 'Circle Club',
+                      price: '$647 + tasas (Essential)',
+                      support: 'Fuerte enfoque en ahorro fiscal y acompañamiento.',
+                      context: 'Buen foco fiscal, pero menos desglosado por etapas.',
+                    },
+                    {
+                      name: 'Openbiz',
+                      price: '≈ $599 + tasas',
+                      support: 'Escala rápido a $1.200–$3.997/año al incluir impuestos.',
+                      context: 'Muy completo pero concentrado en planes anuales altos.',
+                    },
+                    {
+                      name: 'American Prana',
+                      price: '$999 + tasas (Master Plan)',
+                      support: 'Plataforma SaaS con app propia. Incluye LLC, EIN, cuenta bancaria y primer cierre fiscal.',
+                      context: 'Renovación anual $599. Muy fuerte en compliance IRS; precio de entrada más alto.',
+                    },
+                    {
+                      name: 'Firmaway',
+                      price: 'Desde $499 + tasas (Starter)',
+                      support: 'Planes desde $499 (1 socio) hasta $1.199 (All-in). Muy orientado a Latinoamérica.',
+                      context: 'Tax Season $699. Buena apertura bancaria; fiscalidad integrada solo en plan alto.',
+                    },
+                  ].map((row, i) => (
+                    <tr
+                      key={row.name}
+                      style={{
+                        background: row.highlight ? T.b0 : i % 2 === 0 ? T.wh : T.sf,
+                        borderBottom: `1px solid ${T.br}`,
+                      }}
+                    >
+                      <td style={{ padding: '14px 20px', fontWeight: row.highlight ? 700 : 400, color: row.highlight ? T.b9 : T.tx }}>
+                        {row.name}
+                      </td>
+                      <td style={{ padding: '14px 20px', color: T.ts, fontWeight: row.highlight ? 600 : 400 }}>
+                        {row.price}
+                      </td>
+                      <td style={{ padding: '14px 20px', color: T.ts }}>{row.support}</td>
+                      <td style={{ padding: '14px 20px', color: T.ts }}>{row.context}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
-              <p className="pricing-compare-note">
-                Los precios anteriores son rangos aproximados basados en la información pública de
-                cada proveedor. No vendemos “ser los más baratos”, sino darte claridad y etapas
-                lógicas para que siempre sepas qué estás pagando y por qué.
-              </p>
+            </div>
+            <p className="hp-fu text-xs text-center mt-5" style={{ color: T.tm }}>
+              Precios aproximados basados en información pública de cada proveedor en julio 2026. No vendemos &ldquo;ser los más baratos&rdquo;, sino darte claridad en cada etapa.
+            </p>
+          </div>
+        </section>
+
+        {/* ═══ GARANTÍA ═══════════════════════════════════════════════════════ */}
+        <section style={{ padding: '80px 24px', background: T.wh, borderTop: `1px solid ${T.br}` }}>
+          <div style={{ maxWidth: 900, margin: '0 auto' }}>
+            <div className="hp-fu flex flex-col md:flex-row items-center gap-10 bg-slate-50 p-8 md:p-12 rounded-3xl border border-slate-200 shadow-sm">
+              <div className="flex-shrink-0 relative">
+                <div style={{ width: 140, height: 140, borderRadius: '50%', background: 'linear-gradient(145deg, #0C2047, #1E3A8A)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(12,32,71,0.2)' }}>
+                  <Image src="/images/garantia.webp" alt="Garantía 100%" width={100} height={100} />
+                </div>
+              </div>
+              <div>
+                <Eyebrow text="Riesgo Cero" green />
+                <h2 className="font-extrabold mt-3 mb-4 text-2xl md:text-3xl text-gray-900">
+                  Garantía 100% de Tramitación sin Errores
+                </h2>
+                <p className="text-gray-600 leading-relaxed mb-5">
+                  La LLC no es un juego. Un error al formarla puede costarte multas o problemas con el IRS. Por eso, <strong>si cometemos algún error técnico en la constitución de tu LLC, nos hacemos cargo del 100% de los gastos para solucionarlo</strong>. 
+                </p>
+                <div className="flex gap-2 items-center text-sm font-semibold text-green-700">
+                  <span className="bg-green-100 p-1 rounded-full px-3">✓ Proceso Seguro</span>
+                  <span className="bg-green-100 p-1 rounded-full px-3">✓ Agentes Autorizados</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
+
+        {/* ═══ FAQ ════════════════════════════════════════════════════════════ */}
+        <section style={{ padding: '80px 24px', background: T.sf, borderTop: `1px solid ${T.br}` }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <div className="text-center mb-12 hp-fu">
+              <Eyebrow text="Dudas frecuentes" />
+              <h2 className="font-extrabold mt-4 mb-4 text-3xl text-gray-900">
+                Preguntas antes de empezar
+              </h2>
+            </div>
+            
+            <div className="space-y-4 hp-fu">
+              {[
+                {
+                  q: '¿Qué pasa después de pagar?',
+                  a: 'Recibirás acceso a tu portal seguro de onboarding donde te pediremos tus datos básicos (pasaporte y nombre de la empresa). Tras rellenarlo en 5 minutos, nosotros empezamos a trabajar de inmediato.'
+                },
+                {
+                  q: '¿Hay algún costo oculto mensual?',
+                  a: 'No. Nuestros paquetes de formación (Starter, Professional, Business) son de pago único. A partir del segundo año solo deberás pagar el mantenimiento y los impuestos de tu estado.'
+                },
+                {
+                  q: '¿Por qué elegir el plan Professional?',
+                  a: 'Porque incluye la apertura de cuenta bancaria y la sesión 1:1. Es el plan ideal si planeas recibir pagos de clientes o plataformas americanas en los próximos 30 días.'
+                }
+              ].map((faq, i) => (
+                <details key={i} className="group bg-white p-6 rounded-2xl border border-gray-200 cursor-pointer shadow-sm hover:shadow-md transition">
+                  <summary className="font-bold text-lg text-gray-900 flex justify-between items-center list-none outline-none">
+                    {faq.q}
+                    <span className="text-blue-600 group-open:rotate-180 transition-transform font-normal">▼</span>
+                  </summary>
+                  <p className="mt-4 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
+                    {faq.a}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ CTA FINAL ══════════════════════════════════════════════════════ */}
+        <section
+          style={{
+            padding: '96px 24px',
+            background: `linear-gradient(145deg, ${T.bd} 0%, ${T.b9} 100%)`,
+            textAlign: 'center',
+          }}
+        >
+          <div className="hp-fu" style={{ maxWidth: 620, margin: '0 auto' }}>
+            <Eyebrow text="¿No sabes por dónde empezar?" />
+            <h2
+              className="font-extrabold mt-5 mb-4"
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(26px, 3.5vw, 40px)', color: T.wh }}
+            >
+              Háblanos de tu situación y te decimos qué plan encaja
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,.75)', fontSize: 17, marginBottom: 36 }}>
+              Sin compromiso. Un especialista en español te responde en menos de 12 horas.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Link
+                href="/contacto"
+                className="font-bold rounded-full px-8 py-4 transition"
+                style={{
+                  background: `linear-gradient(135deg, ${T.ct}, ${T.ch})`,
+                  color: T.wh,
+                  boxShadow: T.shCta,
+                  fontSize: 16,
+                }}
+              >
+                Recibir asesoría gratuita →
+              </Link>
+              <Link
+                href="/paquetes/starter/onboarding"
+                className="font-bold rounded-full px-8 py-4 transition"
+                style={{
+                  background: 'rgba(255,255,255,.10)',
+                  border: '1.5px solid rgba(255,255,255,.30)',
+                  color: T.wh,
+                  fontSize: 16,
+                }}
+              >
+                Empezar con Starter ($349)
+              </Link>
+            </div>
+          </div>
+        </section>
+
       </main>
     </>
-  );
+  )
 }

@@ -1116,6 +1116,30 @@ export default function HomePage() {
           <p className="text-center text-sm text-gray-500 mt-10">
             ✅ Precio final + tasa estatal según el estado elegido • Sin sorpresas • Garantía de devolución 100%
           </p>
+
+          {/* CTAs to the full pricing page */}
+          <div className="text-center mt-8 flex flex-wrap gap-4 justify-center">
+            <TrackedLink
+              href="/precios"
+              trackAction="cta_click"
+              trackCategory="pricing"
+              trackLabel="ver_todos_planes"
+              className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-full transition hover:-translate-y-1"
+              style={{ background: '#EFF6FF', color: '#1E3A8A', border: '1.5px solid #DBEAFE', boxShadow: '0 4px 14px rgba(30,58,138,0.08)' }}
+            >
+              Ver todos los planes (Mantener + Optimizar) →
+            </TrackedLink>
+            <TrackedLink
+              href="/precios#comparativa"
+              trackAction="cta_click"
+              trackCategory="pricing"
+              trackLabel="ver_comparativa"
+              className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-full transition hover:-translate-y-1"
+              style={{ background: '#F8FAFC', color: '#4B5563', border: '1.5px solid #E5E7EB' }}
+            >
+              Comparar con competidores →
+            </TrackedLink>
+          </div>
         </div>
       </section>
               

@@ -22,6 +22,14 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   return {
     title: `Cómo abrir una LLC desde ${country.name} | Open LLC USA`,
     description: `Guía definitiva para emprendedores en ${country.name}. Descubre cómo abrir tu LLC en Estados Unidos sin viajar y sin SSN.`,
+    alternates: {
+      canonical: `https://openllcusa.com/guias/${countryCode}`,
+    },
+    openGraph: {
+      title: `Cómo abrir una LLC desde ${country.name} | Open LLC USA`,
+      description: `Guía definitiva para emprendedores en ${country.name}. Descubre cómo abrir tu LLC en Estados Unidos sin viajar y sin SSN.`,
+      url: `https://openllcusa.com/guias/${countryCode}`,
+    }
   };
 }
 

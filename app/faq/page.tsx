@@ -127,6 +127,9 @@ export const metadata: Metadata = {
   title: 'Preguntas frecuentes sobre LLC en Estados Unidos para no residentes | Open LLC USA',
   description:
     'Resolvemos las dudas más frecuentes sobre cómo crear y mantener una LLC en Estados Unidos siendo no residente: requisitos, impuestos, banca y cumplimiento anual.',
+  alternates: {
+    canonical: 'https://openllcusa.com/faq',
+  },
   keywords: [
     'LLC en Estados Unidos',
     'LLC para no residentes',

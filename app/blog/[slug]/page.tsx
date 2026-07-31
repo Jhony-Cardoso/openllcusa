@@ -38,10 +38,14 @@ export async function generateMetadata(
     description:
       post.excerpt ||
       'Guía completa sobre LLC en Estados Unidos para emprendedores hispanohablantes.',
+    alternates: {
+      canonical: `https://openllcusa.com/blog/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: 'article',
+      publishedTime: post.date,
     },
   };
 }

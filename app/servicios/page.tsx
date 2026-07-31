@@ -1,9 +1,6 @@
-'use client';
-
 import React from 'react';
-import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
-import { analyticsEvents } from '@/lib/analytics';
+import TrackedLink from '@/components/home/TrackedLink';
 
 const paquetes = [ /* ... mismo código de paquetes ... */ ];
 
@@ -105,13 +102,15 @@ export default function ServiciosPage() {
                 ))}
               </ul>
 
-              <Link
+              <TrackedLink
                 href={`/servicios/${s.slug}`}
-                onClick={() => analyticsEvents.ctaClick(`servicio_${s.slug}`)}
+                trackAction="cta_click"
+                trackCategory="servicio"
+                trackLabel={s.slug}
                 className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-4 rounded-2xl transition-all"
               >
                 Ver detalles y contratar →
-              </Link>
+              </TrackedLink>
             </div>
           ))}
         </div>

@@ -16,17 +16,17 @@ export const homePageJsonLd = {
             },
             contactPoint: {
                 '@type': 'ContactPoint',
-                telephone: '+1-234-567-890',
                 contactType: 'customer service',
                 availableLanguage: ['Spanish', 'English'],
                 areaServed: 'Worldwide',
             },
-            sameAs: [
-                'https://facebook.com/openllcusa',
-                'https://twitter.com/openllcusa',
-                'https://linkedin.com/company/openllcusa',
-                'https://instagram.com/openllcusa',
-            ],
+            aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: '4.9',
+                reviewCount: '500',
+                bestRating: '5',
+                worstRating: '1',
+            },
         },
         // Website Schema
         {
@@ -96,18 +96,7 @@ export const homePageJsonLd = {
                 },
             ],
         },
-        // Aggregate Rating
-        {
-            '@type': 'Organization',
-            '@id': 'https://openllcusa.com/#organization',
-            aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: '4.9',
-                reviewCount: '500',
-                bestRating: '5',
-                worstRating: '1',
-            },
-        },
+
         // FAQPage Schema
         {
             '@type': 'FAQPage',

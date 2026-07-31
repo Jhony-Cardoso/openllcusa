@@ -306,3 +306,115 @@ experimental: {
 // Permite acceso a recursos dev desde el móvil
 allowedDevOrigins: ['192.168.42.113'],
 ```
+
+---
+### 📅 Chat Session: 2026-07-31 11:25
+**Main objective:** Completar TAREA 3 de PROJECT_HANDOVER (Canonicals y Limpieza JSON-LD/UI)
+
+#### 👤 User Request:
+> Añadir urls canonical a todas las páginas sin él, y limpiar los placeholders de redes sociales, teléfono, Carla y WhatsApp.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se añadieron Server Components `layout.tsx` con metadata y canonicals para las páginas de cliente (/contacto, /servicios, /quiz, /lead-form). Se modificó la metadata en páginas dinámicas (/faq, /blog, /guias). Se eliminaron placeholders del JSON-LD y se redirigieron los botones de WhatsApp y Carla hacia /contacto para evitar fugas de CRO.
+- **Files created/modified:**
+  - `app/contacto/layout.tsx` (NEW)
+  - `app/servicios/layout.tsx` (NEW)
+  - `app/quiz/layout.tsx` (NEW)
+  - `app/lead-form/layout.tsx` (NEW)
+  - `app/faq/page.tsx`
+  - `app/blog/[slug]/page.tsx`
+  - `app/guias/[country]/page.tsx`
+  - `lib/jsonld-schema.ts`
+  - `components/FloatingButtons.tsx`
+
+#### 💻 Key Code:
+```tsx
+// app/contacto/layout.tsx
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contacto',
+  description: 'Contacta con Open LLC USA para resolver tus dudas sobre la creación de tu LLC en Estados Unidos.',
+  alternates: {
+    canonical: 'https://openllcusa.com/contacto',
+  },
+};
+
+export default function ContactoLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+```
+
+---
+### 📅 Chat Session: 2026-07-31 11:55
+**Main objective:** Completar TAREA 4 de PROJECT_HANDOVER (Optimizar Landing de Servicios)
+
+#### 👤 User Request:
+> Simplificar /servicios/* (TAREA 4), eliminando framer-motion (ausente) y migrando a Server Components para acelerar FCP.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se migró `app/servicios/page.tsx` a React Server Component (RSC) eliminando la directiva `'use client'`. En lugar de manejar los eventos onClick manualmente en el cliente dentro del componente principal, se sustituyó la etiqueta `<Link>` por nuestro componente especializado `<TrackedLink>` (que aísla el comportamiento de cliente).
+- **Files created/modified:**
+  - `app/servicios/page.tsx`
+
+#### 💻 Key Code:
+```tsx
+// app/servicios/page.tsx (antes: 'use client', ahora RSC)
+import TrackedLink from '@/components/home/TrackedLink';
+
+// ...
+
+<TrackedLink
+  href={`/servicios/${s.slug}`}
+  trackAction="cta_click"
+  trackCategory="servicio"
+  trackLabel={s.slug}
+  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-4 rounded-2xl transition-all"
+>
+  Ver detalles y contratar →
+</TrackedLink>
+```
+
+---
+### 📅 Chat Session: 2026-07-31 12:04
+**Main objective:** Completar TAREA 5 de PROJECT_HANDOVER (Optimizar Calculadora Fiscal)
+
+#### 👤 User Request:
+> Optimización de la Calculadora Fiscal (Hacerla más reactiva y ligera para la indexación).
+
+#### 🤖 Agent Solution:
+- **Summary:** Se refactorizó la calculadora fiscal (`app/calculadora-fiscal/page.tsx`) que era un componente monolítico de más de 700 líneas. Se extrajo toda la lógica interactiva, cálculos y `useState` a un componente cliente independiente (`components/calculator/CalculadoraClient.tsx`). La página principal (`/calculadora-fiscal`) quedó como un React Server Component (RSC), lo que garantiza que los metadatos y el JSON-LD sean inyectados instantáneamente desde el servidor, optimizando drásticamente el SEO y FCP de la herramienta.
+- **Files created/modified:**
+  - `app/calculadora-fiscal/page.tsx`
+  - `components/calculator/CalculadoraClient.tsx` (NEW)
+
+#### 💻 Key Code:
+```tsx
+// app/calculadora-fiscal/page.tsx (Ahora es un Server Component)
+import React from 'react';
+import CalculadoraClient from '@/components/calculator/CalculadoraClient';
+
+function CalculatorSchema() {
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    // ...
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+    />
+  );
+}
+
+export default function CalculadoraFiscal() {
+  return (
+    <>
+      <CalculatorSchema />
+      <CalculadoraClient />
+    </>
+  );
+}
+```

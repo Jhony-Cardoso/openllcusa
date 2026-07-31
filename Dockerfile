@@ -22,9 +22,9 @@ ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51StqGUJEd1MIEnRaKvUk1rhStNGHHrbn
 ENV NEXT_PUBLIC_BASE_URL=https://openllcusa.com
 ENV NEXT_PUBLIC_GA_ID=G-LY8T63H5SZ
 
-# Asignar suficiente memoria al proceso Node durante el build
-# (evita FATAL ERROR: Zone Allocation failed en Dokploy)
-ENV NODE_OPTIONS=--max-old-space-size=4096
+# Asignar memoria al proceso Node durante el build.
+# VPS tiene 4GB RAM; dejamos margen para el OS, Dokploy y el contenedor en producción.
+ENV NODE_OPTIONS=--max-old-space-size=2048
 
 # Build de Next.js (usa output: 'standalone')
 RUN npm run build

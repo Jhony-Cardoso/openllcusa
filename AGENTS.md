@@ -14,9 +14,15 @@ Combine verified technical facts with project priorities and safe operating rule
 - Use English only for code identifiers, API literals, error messages, or when the user explicitly requests it.
 - Write new code comments in Spanish when it feels natural and does not break existing style.
 
+## Infrastructure
+- **Dev PC (local)**: 16 GB RAM → `NODE_OPTIONS=--max-old-space-size=8192` en `package.json`
+- **VPS Dokploy (producción)**: 4 GB RAM → `NODE_OPTIONS=--max-old-space-size=4096` en `Dockerfile`
+- Regla: usar ~50% de la RAM disponible para el proceso de build de Node.
+- El `Dockerfile` también tiene `eslint.ignoreDuringBuilds: true` en `next.config.ts` para evitar fallos de OOM durante el lint.
+
 ## Commands
-- `npm run dev` — starts with `cross-env NODE_OPTIONS=--max-old-space-size=4096` (required). Variants: `dev:safe`, `dev:notrace`
-- `npm run build` — production build (standalone output)
+- `npm run dev` — starts with `cross-env NODE_OPTIONS=--max-old-space-size=8192` (local 16 GB). Variants: `dev:safe`, `dev:notrace`
+- `npm run build` — production build (standalone output), uses `--webpack` flag
 - `npm run lint` — **broken**. Use instead: `npx eslint . --ext .ts,.tsx,.js,.mjs`
 - `npx tsc --noEmit` — typecheck (many existing errors; see quirks)
 - Clean restart after middleware / .env.local / Clerk changes: delete `.next/` then `npm run dev` (or use `scripts/restart-dev.ps1`)

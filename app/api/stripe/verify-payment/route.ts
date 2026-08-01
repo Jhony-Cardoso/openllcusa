@@ -84,6 +84,66 @@ export async function POST(request: NextRequest) {
 
         console.log('✅ [VERIFY] Pedido marcado como pagado');
 
+        // DISPARAR EMAILS POST-PAGO (solo si no se enviaron ya)
+        const metadata = (pedido.metadata as any) || {};
+        const emailEnviado = metadata.email_confirmacion_enviado === true;
+
+        if (!emailEnviado) {
+            try {
+                const { currentUser } = await import('@clerk/nextjs/server');
+                const { EmailService } = await import('@/lib/services/email.service');
+                const clerkUser = await currentUser();
+                const p = pedidoCompleto as any;
+
+                // Determinar si es plan de mantenimiento
+                const isMaintenance = p?.paquete?.slug === 'compliance-basico' || p?.paquete?.slug === 'plan-crecimiento';
+                const precioMensual = p?.paquete?.precio_mensual || 0;
+                const totalReal = isMaintenance ? precioMensual : total;
+
+                const nombreProducto =
+                    p?.paquete?.nombre ||
+                    p?.servicio?.nombre ||
+                    'Servicio Open LLC';
+
+                // Determinar tipo de servicio para la plantilla de email
+                const tipoServicio = isMaintenance ? 'maintenance' : undefined;
+
+                // 1. Email al Cliente
+                const emailCliente = session.customer_details?.email || clerkUser?.emailAddresses[0]?.emailAddress || '';
+                await EmailService.enviarConfirmacionPago({
+                    to: emailCliente,
+                    nombreUsuario: clerkUser?.firstName || 'Emprendedor',
+                    nombreServicio: nombreProducto,
+                    montoPagado: totalReal,
+                    pedidoId: pedidoCompleto?.numero_pedido || pedidoId,
+                    fechaPago: new Date().toISOString(),
+                    tipoServicio,
+                });
+
+                // 2. Notificación al Equipo
+                await EmailService.notificarEquipo({
+                    tipo: 'nuevo_pedido',
+                    pedidoId: pedidoCompleto?.numero_pedido || pedidoId,
+                    nombreServicio: nombreProducto,
+                    monto: totalReal,
+                    cliente: `${clerkUser?.firstName} ${clerkUser?.lastName} (${emailCliente})`,
+                });
+
+                // 3. Marcar en Base de Datos que ya se envió
+                const adminClient = await import('@/lib/supabase/admin');
+                const supabase = adminClient.createAdminClient();
+                await supabase.from('pedidos').update({
+                    metadata: { ...metadata, email_confirmacion_enviado: true }
+                } as any).eq('id', pedidoId);
+
+                console.log('📬 [VERIFY-PAYMENT] Emails post-pago enviados correctamente');
+            } catch (emailError) {
+                console.error('❌ [VERIFY-PAYMENT] Error enviando emails (no bloquea el flujo):', emailError);
+            }
+        } else {
+            console.log('📬 [VERIFY-PAYMENT] Email ya enviado previamente. Saltando...');
+        }
+
         return NextResponse.json({
             success: true,
             paymentStatus: 'paid',

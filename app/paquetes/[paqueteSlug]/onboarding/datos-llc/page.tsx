@@ -154,7 +154,8 @@ export default function DatosLLCPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <div className="bg-slate-100 min-h-screen py-12">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6">
       <div className="mb-8">
         <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Paso 2 de 4</p>
         <h1 className="text-3xl font-bold text-gray-900">Datos de tu LLC</h1>
@@ -249,6 +250,7 @@ export default function DatosLLCPage() {
           </div>
         </form>
       </div>
+    </div>
     </div>
   )
 }

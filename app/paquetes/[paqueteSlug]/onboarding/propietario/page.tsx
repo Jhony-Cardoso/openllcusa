@@ -11,6 +11,7 @@ type PropietarioForm = {
   pasaporte: string
   direccion: string
   email_personal: string
+  email_corporativo: string
 }
 
 const INICIAL: PropietarioForm = {
@@ -19,6 +20,7 @@ const INICIAL: PropietarioForm = {
   pasaporte: '',
   direccion: '',
   email_personal: '',
+  email_corporativo: '',
 }
 
 export default function PropietarioPage() {
@@ -70,6 +72,7 @@ export default function PropietarioPage() {
           pasaporte: meta.passport || '',
           direccion: meta.owner_address || '',
           email_personal: meta.personal_email || user.emailAddresses?.[0]?.emailAddress || '',
+          email_corporativo: meta.corporate_email || '',
         })
       } catch (e) {
         setError('Error al cargar los datos.')
@@ -131,6 +134,7 @@ export default function PropietarioPage() {
               passport: form.pasaporte,
               owner_address: form.direccion,
               personal_email: form.email_personal,
+              corporate_email: form.email_corporativo,
             }
           },
         }),
@@ -157,7 +161,8 @@ export default function PropietarioPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <div className="bg-slate-100 min-h-screen py-12">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6">
       <div className="mb-8">
         <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Paso 3 de {paqueteSlug === 'plan-crecimiento' ? '5' : '4'}</p>
         <h1 className="text-3xl font-bold text-gray-900">Datos del Propietario</h1>
@@ -237,6 +242,18 @@ export default function PropietarioPage() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Corporativo / de la LLC <span className="text-gray-400 font-normal">(Opcional)</span></label>
+            <input
+              type="email"
+              name="email_corporativo"
+              value={form.email_corporativo}
+              onChange={handleChange}
+              placeholder="info@millc.com"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none transition"
+            />
+          </div>
+
           <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
             <button
               type="button"
@@ -260,6 +277,7 @@ export default function PropietarioPage() {
           </div>
         </form>
       </div>
+    </div>
     </div>
   )
 }

@@ -45,10 +45,26 @@ export class EmailService {
 
       const esReporteAnual = tipoServicio === 'reporte-anual'
       const esEIN = tipoServicio === 'impuestos/obtencion-ein'
+      const esMaintenance = tipoServicio === 'maintenance'
       const pedidoDisplay = numeroPedido ? `#${numeroPedido}` : pedidoId.slice(0, 8) + '...'
 
       // Pasos específicos por servicio
-      const pasosHtml = esReporteAnual ? `
+      const pasosHtml = esMaintenance ? `
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #0ea5e9; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Revisión de tu documentación</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Nuestro equipo revisará los datos de tu LLC y los documentos que has aportado para configurar tu plan.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 2: Activación de tu suscripción</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Tu plan queda activo de inmediato. Recibirás un resumen mensual con las tareas y recordatorios de compliance.</p>
+        </div>
+        <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative;">
+          <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #cbd5e1; border-radius: 50%;"></div>
+          <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 3: Seguimiento continuo</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Accede a tu dashboard en cualquier momento para ver el estado de tus obligaciones, documentos y próximas fechas importantes.</p>
+        </div>` : esReporteAnual ? `
         <div style="border-left: 2px solid #e0f2fe; margin-left: 10px; padding-left: 20px; position: relative; margin-bottom: 20px;">
           <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background-color: #0ea5e9; border-radius: 50%;"></div>
           <p style="margin: 0; font-weight: 700; color: #1e293b;">Paso 1: Revisión de datos</p>
@@ -95,7 +111,9 @@ export class EmailService {
           <p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">Recibirás tus documentos digitales oficiales directamente en tu dashboard y por email.</p>
         </div>`
 
-      const ctaLabel = esReporteAnual
+      const ctaLabel = esMaintenance
+        ? 'Ver mi suscripción'
+        : esReporteAnual
         ? 'Ver estado de mi trámite'
         : esEIN
           ? 'Firmar Autorización SS-4'

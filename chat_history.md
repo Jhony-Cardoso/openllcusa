@@ -418,3 +418,32 @@ export default function CalculadoraFiscal() {
   );
 }
 ```
+
+---
+### ?? Chat Session: 2026-08-01 14:36
+**Main objective:** Añadir flujos de onboarding personalizados para los planes de mantenimiento compliance-basico y plan-crecimiento.
+
+#### ?? User Request:
+> Registrar en la base de datos los planes Compliance Básico (\/mes) y Plan Crecimiento (\/mes), y crear un onboarding personalizado con pasos para: datos de la LLC existente, datos del propietario (nombre, apellidos, pasaporte, dirección, email), y subida de documentos (extractos bancarios, movimientos contables, otros) exclusivo para Plan Crecimiento.
+
+#### ?? Agent Solution:
+- **Summary:** Se crearon los pasos de onboarding dinámicos y la arquitectura de almacenamiento de documentos. El enrutador del onboarding es ahora inteligente y detecta si el paquete es de formación de LLC o de mantenimiento. El checkout de Stripe usa modo subscription para planes mensuales.
+- **Files created/modified:**
+  - supabase/migrations_self_hosted/010_add_maintenance_plans.sql (NUEVO)
+  - pp/paquetes/[paqueteSlug]/onboarding/page.tsx (MOD - enrutador dinámico)
+  - pp/paquetes/[paqueteSlug]/onboarding/datos-llc/page.tsx (NUEVO)
+  - pp/paquetes/[paqueteSlug]/onboarding/propietario/page.tsx (NUEVO)
+  - pp/paquetes/[paqueteSlug]/onboarding/documentos/page.tsx (NUEVO)
+  - pp/paquetes/[paqueteSlug]/onboarding/revision/page.tsx (MOD)
+  - pp/api/pedidos/[id]/upload-document/route.ts (NUEVO)
+  - pp/api/stripe/create-checkout-session/route.ts (MOD - modo subscription)
+  - 
+ext.config.ts (MOD - limpieza de config deprecada)
+
+#### ?? Key Code:
+```typescript
+// Flujo dinámico por tipo de paquete en onboarding/page.tsx
+const isMaintenance = paqueteSlug === 'compliance-basico' || paqueteSlug === 'plan-crecimiento';
+const nextStep = isMaintenance ? 'datos-llc' : 'estado';
+router.push(/paquetes/\/onboarding/\?pedido=\);
+```

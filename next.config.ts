@@ -28,15 +28,11 @@ const nextConfig: NextConfig = {
   // Forzar directorio de caché en /tmp para evitar problemas de permisos
   distDir: '.next',
 
-  // ==================== TU CONFIGURACIÓN ORIGINAL (sin cambios) ====================
   typescript: {
     // Permite compilar aunque haya errores de TypeScript
     ignoreBuildErrors: true,
   },
-  eslint: {
-    // Permite compilar aunque haya errores de ESLint (y evita fallos por memoria de Node)
-    ignoreDuringBuilds: true,
-  },
+
 
   // Configuración de headers para CORS (Stripe, etc.)
   async headers() {

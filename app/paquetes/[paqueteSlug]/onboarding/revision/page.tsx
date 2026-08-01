@@ -37,6 +37,7 @@ type PedidoCompleto = {
     filing_inicial?: number | null;
     filing_anual?: number | null;
   } | null;
+  metadata?: any;
 };
 
 export default function RevisionPage() {
@@ -141,7 +142,8 @@ export default function RevisionPage() {
   // ============================================
   const handleEditarEstado = () => {
     if (!pedidoId) return;
-    router.push(`/paquetes/${paqueteSlug}/onboarding/estado?pedido=${pedidoId}`);
+    const isMaintenance = paqueteSlug === 'compliance-basico' || paqueteSlug === 'plan-crecimiento';
+    router.push(`/paquetes/${paqueteSlug}/onboarding/${isMaintenance ? 'datos-llc' : 'estado'}?pedido=${pedidoId}`);
   };
 
   // ============================================
@@ -149,7 +151,8 @@ export default function RevisionPage() {
   // ============================================
   const handleEditarDatos = () => {
     if (!pedidoId) return;
-    router.push(`/paquetes/${paqueteSlug}/onboarding/datos-empresa?pedido=${pedidoId}`);
+    const isMaintenance = paqueteSlug === 'compliance-basico' || paqueteSlug === 'plan-crecimiento';
+    router.push(`/paquetes/${paqueteSlug}/onboarding/${isMaintenance ? 'propietario' : 'datos-empresa'}?pedido=${pedidoId}`);
   };
 
   // ============================================
@@ -176,10 +179,12 @@ export default function RevisionPage() {
   }
 
   // Calcular el precio total (paquete + filing del estado)
+  const isMaintenance = paqueteSlug === 'compliance-basico' || paqueteSlug === 'plan-crecimiento';
   const precioPaquete = pedido.paquete?.precio || 0;
-  const filingInicial = pedido.estado_usa?.filing_inicial || 0;
+  const precioMensual = pedido.paquete?.precio_mensual || 0;
+  const filingInicial = isMaintenance ? 0 : (pedido.estado_usa?.filing_inicial || 0);
   const filingAnual = pedido.estado_usa?.filing_anual || 0;
-  const total = precioPaquete + filingInicial;
+  const total = isMaintenance ? precioMensual : (precioPaquete + filingInicial);
 
   // ============================================
   // UI: Resumen del pedido
@@ -229,55 +234,97 @@ export default function RevisionPage() {
       </div>
 
       {/* Card: Estado Seleccionado */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center">
-            <CheckCircle2 className="h-6 w-6 text-green-600 mr-3" />
-            <h2 className="text-xl font-semibold text-gray-900">
-              Estado de registro
-            </h2>
+      {!isMaintenance && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center">
+              <CheckCircle2 className="h-6 w-6 text-green-600 mr-3" />
+              <h2 className="text-xl font-semibold text-gray-900">
+                Estado de registro
+              </h2>
+            </div>
+            <button
+              onClick={handleEditarEstado}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+            >
+              <Edit2 className="h-4 w-4" />
+              Editar
+            </button>
           </div>
-          <button
-            onClick={handleEditarEstado}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
-          >
-            <Edit2 className="h-4 w-4" />
-            Editar
-          </button>
-        </div>
 
-        <div className="pl-9">
-          <p className="text-lg font-medium text-gray-900 mb-1">
-            {pedido.estado_usa?.nombre || 'Estado no seleccionado'}{' '}
-            <span className="text-gray-500">({pedido.estado_usa?.codigo})</span>
-          </p>
-          {pedido.estado_usa?.descripcion && (
-            <p className="text-sm text-gray-600 mb-3">
-              {(pedido.estado_usa as any).descripcion}
+          <div className="pl-9">
+            <p className="text-lg font-medium text-gray-900 mb-1">
+              {pedido.estado_usa?.nombre || 'Estado no seleccionado'}{' '}
+              <span className="text-gray-500">({pedido.estado_usa?.codigo})</span>
             </p>
-          )}
+            {pedido.estado_usa?.descripcion && (
+              <p className="text-sm text-gray-600 mb-3">
+                {(pedido.estado_usa as any).descripcion}
+              </p>
+            )}
 
-          <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-            <div>
-              <p className="text-gray-600">Filing inicial:</p>
-              <p className="font-semibold text-gray-900">${filingInicial}</p>
-            </div>
-            <div>
-              <p className="text-gray-600">Filing anual:</p>
-              <p className="font-semibold text-gray-900">${filingAnual}/año</p>
+            <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+              <div>
+                <p className="text-gray-600">Filing inicial:</p>
+                <p className="font-semibold text-gray-900">${filingInicial}</p>
+              </div>
+              <div>
+                <p className="text-gray-600">Filing anual:</p>
+                <p className="font-semibold text-gray-900">${filingAnual}/año</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Card: Datos de la Empresa */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center">
-            <CheckCircle2 className="h-6 w-6 text-green-600 mr-3" />
-            <h2 className="text-xl font-semibold text-gray-900">
-              Datos de tu empresa
-            </h2>
+      {isMaintenance ? (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center">
+              <CheckCircle2 className="h-6 w-6 text-green-600 mr-3" />
+              <h2 className="text-xl font-semibold text-gray-900">
+                Datos de la LLC y Propietario
+              </h2>
+            </div>
+            <button
+              onClick={handleEditarDatos}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+            >
+              <Edit2 className="h-4 w-4" />
+              Editar
+            </button>
+          </div>
+
+          <div className="pl-9 space-y-4">
+            <div>
+              <p className="text-sm font-medium text-gray-600">LLC / Estado / EIN:</p>
+              <p className="text-base text-gray-900">
+                {pedido.nombre_empresa} ({pedido.metadata?.estado_formacion}) - {pedido.metadata?.ein || 'Sin EIN'}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Propietario:</p>
+              <p className="text-base text-gray-900">
+                {pedido.metadata?.owner_name} {pedido.metadata?.owner_lastname} (Pasaporte: {pedido.metadata?.passport})
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Contacto:</p>
+              <p className="text-base text-gray-900">
+                {pedido.metadata?.personal_email}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center">
+              <CheckCircle2 className="h-6 w-6 text-green-600 mr-3" />
+              <h2 className="text-xl font-semibold text-gray-900">
+                Datos de tu empresa
+              </h2>
           </div>
           <button
             onClick={handleEditarDatos}
@@ -340,8 +387,9 @@ export default function RevisionPage() {
               </p>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Card: Resumen de Precios */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
@@ -352,13 +400,15 @@ export default function RevisionPage() {
         <div className="space-y-3">
           <div className="flex justify-between text-base text-gray-700">
             <span>Paquete {pedido.paquete?.nombre}:</span>
-            <span className="font-medium">${precioPaquete}</span>
+            <span className="font-medium">${isMaintenance ? precioMensual + '/mes' : precioPaquete}</span>
           </div>
 
-          <div className="flex justify-between text-base text-gray-700">
-            <span>Filing inicial ({pedido.estado_usa?.codigo}):</span>
-            <span className="font-medium">${filingInicial}</span>
-          </div>
+          {!isMaintenance && (
+            <div className="flex justify-between text-base text-gray-700">
+              <span>Filing inicial ({pedido.estado_usa?.codigo}):</span>
+              <span className="font-medium">${filingInicial}</span>
+            </div>
+          )}
 
           <div className="border-t border-blue-300 pt-3 mt-3">
             <div className="flex justify-between text-xl font-bold text-gray-900">
@@ -367,9 +417,11 @@ export default function RevisionPage() {
             </div>
           </div>
 
-          <p className="text-sm text-gray-600 mt-2">
-            💡 El filing anual de ${filingAnual} se pagará directamente al estado en el futuro.
-          </p>
+          {!isMaintenance && (
+            <p className="text-sm text-gray-600 mt-2">
+              💡 El filing anual de ${filingAnual} se pagará directamente al estado en el futuro.
+            </p>
+          )}
         </div>
       </div>
 

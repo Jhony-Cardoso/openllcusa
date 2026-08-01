@@ -82,7 +82,10 @@ export default function OnboardingPaso1Page() {
         pedidoId = nuevoPedido.id;
       }
 
-      router.push(`/paquetes/${paqueteSlug}/onboarding/estado?pedido=${pedidoId}`);
+      const isMaintenance = paqueteSlug === 'compliance-basico' || paqueteSlug === 'plan-crecimiento';
+      const nextStep = isMaintenance ? 'datos-llc' : 'estado';
+
+      router.push(`/paquetes/${paqueteSlug}/onboarding/${nextStep}?pedido=${pedidoId}`);
     } catch (err) {
       setError('Error al preparar el pedido. Inténtalo de nuevo.');
     } finally {
@@ -135,17 +138,20 @@ export default function OnboardingPaso1Page() {
         )}
 
         <div className="border-t border-gray-200 pt-8">
-          <p className="text-sm text-gray-500">Precio total (pago único)</p>
+          <p className="text-sm text-gray-500">
+            {paquete.precio_mensual ? 'Precio (suscripción mensual)' : 'Precio total (pago único)'}
+          </p>
           <p className="text-5xl font-bold text-gray-900 mt-1">
-            ${paquete.precio} <span className="text-xl font-normal text-gray-500">+ tasa estatal</span>
+            ${paquete.precio_mensual || paquete.precio}{' '}
+            {!paquete.precio_mensual && <span className="text-xl font-normal text-gray-500">+ tasa estatal</span>}
           </p>
         </div>
       </div>
 
       <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 mt-8 text-center">
         <p className="text-blue-900">
-          En los siguientes pasos te ayudaremos a elegir el estado, completar tus datos y revisar todo.<br />
-          <strong>El proceso completo toma aproximadamente 5-10 minutos.</strong>
+          En los siguientes pasos te ayudaremos a completar tus datos y revisar todo.<br />
+          <strong>El proceso completo toma unos minutos.</strong>
         </p>
       </div>
 

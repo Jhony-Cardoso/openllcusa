@@ -50,9 +50,10 @@ export async function POST(request: NextRequest) {
         });
 
         // Calcular el total
+        const isMaintenance = slug === 'compliance-basico' || slug === 'plan-crecimiento';
         const precioPaquete = pedido.paquete?.precio || 0;
-        const filingInicial = pedido.estado_usa?.filing_inicial || 0;
-        const total = precioPaquete + filingInicial;
+        const precioMensual = pedido.paquete?.precio_mensual || 0;
+        const filingInicial = isMaintenance ? 0 : (pedido.estado_usa?.filing_inicial || 0);
 
         // Crear line items para Stripe
         const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
@@ -60,21 +61,36 @@ export async function POST(request: NextRequest) {
         // 1. Paquete principal
         if (pedido.paquete) {
             const paquete = pedido.paquete as any;
-            lineItems.push({
-                price_data: {
-                    currency: 'usd',
-                    product_data: {
-                        name: paquete.nombre,
-                        description: paquete.descripcion_corta || undefined,
+            
+            const productData = {
+                name: paquete.nombre,
+                description: paquete.descripcion_corta || undefined,
+            };
+
+            if (isMaintenance && precioMensual > 0) {
+                lineItems.push({
+                    price_data: {
+                        currency: 'usd',
+                        product_data: productData,
+                        unit_amount: Math.round(precioMensual * 100),
+                        recurring: { interval: 'month' }
                     },
-                    unit_amount: Math.round(precioPaquete * 100), // Convertir a centavos
-                },
-                quantity: 1,
-            });
+                    quantity: 1,
+                });
+            } else {
+                lineItems.push({
+                    price_data: {
+                        currency: 'usd',
+                        product_data: productData,
+                        unit_amount: Math.round(precioPaquete * 100),
+                    },
+                    quantity: 1,
+                });
+            }
         }
 
         // 2. Filing inicial del estado
-        if (pedido.estado_usa && filingInicial > 0) {
+        if (!isMaintenance && pedido.estado_usa && filingInicial > 0) {
             const estado = pedido.estado_usa as any;
             lineItems.push({
                 price_data: {
@@ -106,7 +122,7 @@ export async function POST(request: NextRequest) {
                 },
             },
             line_items: lineItems,
-            mode: 'payment',
+            mode: isMaintenance ? 'subscription' : 'payment',
             success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paquetes/${slug}/onboarding/completado?session_id={CHECKOUT_SESSION_ID}&pedido=${pedidoId}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paquetes/${slug}/onboarding/checkout?pedido=${pedidoId}`,
             metadata: {

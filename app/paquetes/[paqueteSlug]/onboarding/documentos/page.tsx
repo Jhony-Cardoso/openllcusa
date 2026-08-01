@@ -234,7 +234,7 @@ export default function DocumentosPage() {
             {uploading ? (
               <>Subiendo <Loader2 className="animate-spin h-5 w-5" /></>
             ) : (
-              'Subir Documento'
+              'Subir Documentos'
             )}
           </button>
         </div>

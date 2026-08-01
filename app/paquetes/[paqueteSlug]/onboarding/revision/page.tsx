@@ -223,11 +223,17 @@ export default function RevisionPage() {
             </p>
           )}
           <p className="text-2xl font-bold text-blue-600">
-            ${precioPaquete}
-            {pedido.paquete?.precio_mensual && (
-              <span className="text-base text-gray-500 ml-2">
-                o ${(pedido.paquete as any).precio_mensual}/mes
-              </span>
+            {isMaintenance ? (
+              <>${precioMensual}<span className="text-base font-normal text-gray-500">/mes</span></>
+            ) : (
+              <>
+                ${precioPaquete}
+                {pedido.paquete?.precio_mensual && (
+                  <span className="text-base text-gray-500 ml-2">
+                    o ${(pedido.paquete as any).precio_mensual}/mes
+                  </span>
+                )}
+              </>
             )}
           </p>
         </div>

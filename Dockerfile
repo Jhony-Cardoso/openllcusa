@@ -27,7 +27,8 @@ ENV NEXT_PUBLIC_GA_ID=G-LY8T63H5SZ
 ENV NODE_OPTIONS=--max-old-space-size=2048
 
 # Build de Next.js (usa output: 'standalone')
-RUN npm run build
+# Ejecutamos 'next build' directamente para que no lea el NODE_OPTIONS=8192 del package.json
+RUN npx next build --webpack
 
 # ==================== STAGE 2: PRODUCTION ====================
 FROM node:20-alpine AS runner

@@ -416,11 +416,24 @@ export default function Header() {
     []
   )
 
-  const herramientasItems = useMemo(
+  const recursosItems = useMemo(
     () => [
-      { href: '/guia', label: 'Guías', icon: <BookOpen size={18} /> },
-      { href: '/lead-form', label: 'Calculadora', icon: <Search size={18} /> },
-      { href: '/quiz', label: 'Quiz', icon: <HelpCircle size={18} /> }
+      {
+        title: 'HERRAMIENTAS',
+        items: [
+          { href: '/lead-form', label: 'Calculadora Fiscal', icon: <Search size={18} /> },
+          { href: '/quiz', label: 'Quiz', icon: <HelpCircle size={18} /> }
+        ]
+      },
+      {
+        title: 'APRENDER Y CONTACTO',
+        items: [
+          { href: '/blog', label: 'Blog', icon: <BookOpen size={18} /> },
+          { href: '/guia', label: 'Guías', icon: <BookOpen size={18} /> },
+          { href: '/faq', label: 'FAQ', icon: <HelpCircle size={18} /> },
+          { href: '/contacto', label: 'Contacto', icon: <Send size={18} /> }
+        ]
+      }
     ],
     []
   )
@@ -461,61 +474,52 @@ export default function Header() {
                 Precios
               </Link>
 
-              {/* Herramientas dropdown */}
+              {/* Recursos dropdown */}
               <div className="header-dropdown-container">
                 <Link href="/recursos" className="header-nav-link">
-                  Herramientas <ChevronDown size={16} />
+                  Recursos <ChevronDown size={16} />
                 </Link>
 
-                <div className="header-dropdown-content" style={{ minWidth: '320px' }}>
-                  <div className="dropdown-column">
-                    <h4>HERRAMIENTAS</h4>
-                    {herramientasItems.map((it) => (
-                      <Link href={it.href} className="dropdown-item" key={it.href}>
-                        {it.icon} {it.label}
-                      </Link>
-                    ))}
-                  </div>
+                <div className="header-dropdown-content" style={{ minWidth: '400px' }}>
+                  {recursosItems.map((col) => (
+                    <div className="dropdown-column" key={col.title}>
+                      <h4>{col.title}</h4>
+                      {col.items.map((it) => (
+                        <Link href={it.href} className="dropdown-item" key={it.href}>
+                          {it.icon} {it.label}
+                        </Link>
+                      ))}
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              <Link href="/faq" className="header-nav-link">
-                FAQ
-              </Link>
-
-              <Link href="/blog" className="header-nav-link">
-                Blog
-              </Link>
-
-              <Link href="/contacto" className="header-nav-link">
-                Contacto
-              </Link>
             </nav>
           </div>
 
-          <div className="site-header__right">
-            {/* CTA Carla (visible siempre) */}
+          <div className="site-header__right" style={{ alignItems: 'center' }}>
             <button
-              className="header-auth-button header-auth-button-signup"
+              className="header-auth-button header-auth-button-signin mr-3"
               onClick={() => setIsCarlaOpen(true)}
             >
               Asesoría con Carla
             </button>
 
             {/* Desktop Auth Buttons */}
-            <div className="header-auth-buttons">
+            <div className="header-auth-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button className="header-auth-button header-auth-button-signin">Iniciar sesión</button>
+                  <button style={{ background: 'transparent', border: 'none', color: '#f8fafc', fontWeight: 500, cursor: 'pointer', padding: '0.5rem' }}>
+                    Iniciar sesión
+                  </button>
                 </SignInButton>
 
-                <SignUpButton mode="modal">
-                  <button className="header-auth-button header-auth-button-signup">Registro</button>
-                </SignUpButton>
+                <Link href="/precios" className="header-auth-button header-auth-button-signup">
+                  Empezar
+                </Link>
               </SignedOut>
 
               <SignedIn>
-                <Link href="/dashboard" className="header-auth-button header-auth-button-signin">
+                <Link href="/dashboard" style={{ background: 'transparent', border: 'none', color: '#f8fafc', fontWeight: 500, cursor: 'pointer', padding: '0.5rem', textDecoration: 'none' }}>
                   Panel
                 </Link>
                 <UserButton afterSignOutUrl="/" />
@@ -600,7 +604,7 @@ export default function Header() {
               Precios
             </Link>
 
-            {/* Herramientas toggle + link */}
+            {/* Recursos toggle + link */}
             <div className="mobile-section">
               <div className="mobile-toggle-row">
                 <Link
@@ -608,7 +612,7 @@ export default function Header() {
                   style={{ flex: 1, color: 'white', textDecoration: 'none' }}
                   onClick={closeMobileMenu}
                 >
-                  Herramientas
+                  Recursos
                 </Link>
                 <button
                   onClick={() => setIsHerramientasOpen(!isHerramientasOpen)}
@@ -621,7 +625,7 @@ export default function Header() {
                     display: 'flex',
                     alignItems: 'center'
                   }}
-                  aria-label="Abrir herramientas"
+                  aria-label="Abrir recursos"
                 >
                   <ChevronDown
                     size={18}
@@ -635,34 +639,30 @@ export default function Header() {
 
               {isHerramientasOpen && (
                 <div className="mobile-submenu">
-                  <div className="mobile-category">
-                    <h4>HERRAMIENTAS</h4>
-                    {herramientasItems.map((it) => (
-                      <Link
-                        href={it.href}
-                        className="mobile-dropdown-item"
-                        key={it.href}
-                        onClick={closeMobileMenu}
-                      >
-                        {it.label}
-                      </Link>
-                    ))}
-                  </div>
+                  {recursosItems.map((col) => (
+                    <div className="mobile-category" key={col.title}>
+                      <h4>{col.title}</h4>
+                      {col.items.map((it) => (
+                        <Link
+                          href={it.href}
+                          className="mobile-dropdown-item"
+                          key={it.href}
+                          onClick={closeMobileMenu}
+                        >
+                          {/* icon */}
+                          {it.icon && (
+                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                              {it.icon as any}
+                            </span>
+                          )}
+                          {it.label}
+                        </Link>
+                      ))}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-
-            <Link href="/faq" className="header-nav-link" onClick={closeMobileMenu}>
-              FAQ
-            </Link>
-
-            <Link href="/blog" className="header-nav-link" onClick={closeMobileMenu}>
-              Blog
-            </Link>
-
-            <Link href="/contacto" className="header-nav-link" onClick={closeMobileMenu}>
-              Contacto
-            </Link>
 
             <button
               className="mobile-carla-btn"
@@ -670,6 +670,7 @@ export default function Header() {
                 setIsCarlaOpen(true)
                 closeMobileMenu()
               }}
+              style={{ background: 'transparent', border: '1px solid white', color: 'white' }}
             >
               Asesoría con Carla
             </button>
@@ -679,21 +680,15 @@ export default function Header() {
               <SignedOut>
                 <SignInButton mode="modal">
                   <button
-                    className="header-auth-button header-auth-button-signin"
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', background: 'transparent', border: 'none', color: '#f8fafc', fontWeight: 500, cursor: 'pointer', padding: '0.5rem' }}
                   >
                     Iniciar sesión
                   </button>
                 </SignInButton>
 
-                <SignUpButton mode="modal">
-                  <button
-                    className="header-auth-button header-auth-button-signup"
-                    style={{ width: '100%' }}
-                  >
-                    Registro
-                  </button>
-                </SignUpButton>
+                <Link href="/precios" className="header-auth-button header-auth-button-signup" style={{ width: '100%', textAlign: 'center' }} onClick={closeMobileMenu}>
+                  Empezar
+                </Link>
               </SignedOut>
 
               <SignedIn>

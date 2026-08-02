@@ -20,7 +20,7 @@ type Servicio = {
 export default function OnboardingInicioPage() {
   const router = useRouter()
   const params = useParams()
-  const slug = (params?.slug as string) || ''
+  const slug = ((params?.slug as string) || '').replace(/^impuestos-/, 'impuestos/')
   const { user, isLoaded } = useUser()
 
   const [servicio, setServicio] = useState<Servicio | null>(null)

@@ -10,8 +10,7 @@ export default function EstadoPage() {
   const router = useRouter()
   const params = useParams()
   const searchParams = useSearchParams()
-
-  const slug = (params?.slug as string) || ''
+  const slug = ((params?.slug as string) || '').replace(/^impuestos-/, 'impuestos/')
   const isEinSlug = isEIN(slug)
 
   const pedidoIdFromUrl = searchParams.get('pedido')

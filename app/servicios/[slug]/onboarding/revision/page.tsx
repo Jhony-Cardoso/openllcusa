@@ -12,7 +12,7 @@ export default function RevisionPage() {
   const searchParams = useSearchParams()
   const { user, isLoaded } = useUser()
 
-  const slug = (params?.slug as string) || ''
+  const slug = ((params?.slug as string) || '').replace(/^impuestos-/, 'impuestos/')
   const isEinSlug = isEIN(slug)
   const pedidoId = searchParams.get('pedido')
 

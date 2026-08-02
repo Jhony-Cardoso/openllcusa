@@ -11,12 +11,11 @@ export default function CompletadoPage() {
   const router = useRouter()
   const params = useParams()
   const searchParams = useSearchParams()
-
-  const slug = (params?.slug as string) || ''
+  const pedidoId = searchParams?.get('pedido')
+  const slug = ((params?.slug as string) || '').replace(/^impuestos-/, 'impuestos/')
   const isEinSlug = isEIN(slug)
 
   const sessionId = searchParams.get('session_id')
-  const pedidoId = searchParams.get('pedido')
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')

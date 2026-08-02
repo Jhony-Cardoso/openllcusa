@@ -232,7 +232,8 @@ export default async function ServicioDetallePage({
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const { slug } = await params
+  const { slug: rawSlug } = await params
+  const slug = rawSlug.replace(/^impuestos-/, 'impuestos/')
   console.log("=== SUPABASE EN DESARROLLO ===");
   console.log("URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
   const { data: servicio, error } = await supabaseAdmin

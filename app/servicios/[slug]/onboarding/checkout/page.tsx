@@ -12,7 +12,7 @@ export default function CheckoutPage() {
   const searchParams = useSearchParams()
   const { user, isLoaded } = useUser()
 
-  const slug = (params?.slug as string) || ''
+  const slug = ((params?.slug as string) || '').replace(/^impuestos-/, 'impuestos/')
   const pedidoIdFromUrl = searchParams.get('pedidoId') || searchParams.get('pedido') // Acepta ambos formatos
   const isEinSlug = isEIN(slug)
 

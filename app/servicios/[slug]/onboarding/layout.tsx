@@ -14,8 +14,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const params = useParams()
-
-  const slug = (params?.slug as string) || ''
+  const slug = ((params?.slug as string) || '').replace(/^impuestos-/, 'impuestos/')
   const pedidoId = searchParams.get('pedido')
   const isEinSlug = isEIN(slug)
 

@@ -38,7 +38,7 @@ export default function DatosEmpresaPage() {
   const searchParams = useSearchParams()
   const { user, isLoaded: isUserLoaded } = useUser()
 
-  const slug = (params?.slug as string) || ''
+  const slug = ((params?.slug as string) || '').replace(/^impuestos-/, 'impuestos/')
   const isEinSlug = isEIN(slug)
   const isReporteAnualSlug = isReporteAnual(slug)
 

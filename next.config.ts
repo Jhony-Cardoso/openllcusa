@@ -85,6 +85,21 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  // Rewrites para que Next.js compile rutas anidadas sin usar páginas estáticas físicas
+  // y así evitar OOM Killer durante 'Collecting build traces' en Dokploy.
+  async rewrites() {
+    return [
+      {
+        source: '/servicios/impuestos/:service',
+        destination: '/servicios/impuestos-:service',
+      },
+      {
+        source: '/servicios/impuestos/:service/onboarding/:path*',
+        destination: '/servicios/impuestos-:service/onboarding/:path*',
+      }
+    ];
+  },
+
 };
 
 export default nextConfig;

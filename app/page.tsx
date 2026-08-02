@@ -1067,7 +1067,7 @@ export default function HomePage() {
             </div>
 
             {/* PROFESSIONAL - MÁS POPULAR */}
-            <div className="bg-gradient-to-b from-purple-50 to-white border-2 border-purple-600 rounded-3xl p-8 relative flex flex-col scale-[1.03] shadow-2xl">
+            <div className="bg-gradient-to-b from-purple-50 to-white border-2 border-purple-600 rounded-3xl p-8 relative flex flex-col md:scale-105 shadow-[0_8px_40px_rgba(147,51,234,0.25)] z-10">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-6 py-1.5 rounded-full">MÁS POPULAR</div>
               <div className="text-center mb-8">
                 <span className="text-sm font-semibold text-purple-600">PROFESSIONAL</span>

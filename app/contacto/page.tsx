@@ -11,7 +11,7 @@ export default function ContactoPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <section className="bg-sky-400 text-white py-16">
+      <section className="bg-gradient-to-br from-[#0C2047] to-[#1E3A8A] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Agenda tu Consulta Gratuita
@@ -135,7 +135,7 @@ export default function ContactoPage() {
             {/* Columna derecha: Widget de Calendly */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="bg-sky-400 text-white p-6">
+                <div className="bg-gradient-to-br from-[#0C2047] to-[#1E3A8A] text-white p-6">
                   <h2 className="text-2xl font-bold mb-2">
                     Selecciona día y hora
                   </h2>
@@ -272,7 +272,7 @@ export default function ContactoPage() {
       </section>
 
       {/* CTA final */}
-      <section className="bg-sky-400 text-white py-12">
+      <section className="bg-gradient-to-br from-[#0C2047] to-[#1E3A8A] text-white py-12">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">
             ¿Listo para dar el primer paso?

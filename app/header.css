@@ -8,6 +8,7 @@
   top: 0;
   z-index: 1000;
   backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Separamos logo, nav y acciones en 3 columnas con nav centrada */
@@ -102,20 +103,31 @@
   position: relative;
 }
 
+/* Puente invisible para evitar que el dropdown desaparezca al mover el cursor */
+.header-dropdown-container::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: transparent;
+}
+
 .header-dropdown-container:hover .header-dropdown-content {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
   pointer-events: auto;
 }
 
 /* ============ DROPDOWN CONTENT — MEGA MENU MODERNO ============ */
 .header-dropdown-content {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%) translateY(8px);
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px) saturate(1.8);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   border: 1px solid rgba(226, 232, 240, 0.8);
@@ -716,7 +728,12 @@
   }
 
   .header-auth-buttons {
-    display: none;
+    display: none !important;
+  }
+
+  /* Ocultar Asesoría con Carla en móvil (ya está en el menú hamburguesa) */
+  .header-carla-btn-desktop {
+    display: none !important;
   }
 
   .header-mobile-menu-button {
@@ -727,8 +744,19 @@
     padding: 0 1rem;
   }
 
+  .site-header__right {
+    gap: 0.5rem;
+  }
+
   .header-logo {
     font-size: 1.1rem;
+  }
+
+  /* Solo mostrar Empezar + hamburger en móvil */
+  .header-mobile-empezar {
+    display: inline-flex !important;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
   }
 
   .carla-dialog {

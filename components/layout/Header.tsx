@@ -498,7 +498,7 @@ export default function Header() {
 
           <div className="site-header__right" style={{ alignItems: 'center' }}>
             <button
-              className="header-auth-button header-auth-button-signin mr-3"
+              className="header-auth-button header-auth-button-signin header-carla-btn-desktop"
               onClick={() => setIsCarlaOpen(true)}
             >
               Asesoría con Carla
@@ -525,6 +525,17 @@ export default function Header() {
                 <UserButton afterSignOutUrl="/" />
               </SignedIn>
             </div>
+
+            {/* Mobile-only Empezar CTA (visible junto al hamburger) */}
+            <SignedOut>
+              <Link
+                href="/precios"
+                className="header-auth-button header-auth-button-signup header-mobile-empezar"
+                style={{ display: 'none' }}
+              >
+                Empezar
+              </Link>
+            </SignedOut>
 
             {/* Mobile Menu Button */}
             <button

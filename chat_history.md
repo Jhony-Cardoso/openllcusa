@@ -447,3 +447,55 @@ const isMaintenance = paqueteSlug === 'compliance-basico' || paqueteSlug === 'pl
 const nextStep = isMaintenance ? 'datos-llc' : 'estado';
 router.push(/paquetes/\/onboarding/\?pedido=\);
 ```
+
+---
+### 📅 Chat Session: 2026-08-02
+**Main objective:** Mejoras de CRO y alineación de diseño en el Header y páginas de herramientas y contacto.
+
+#### 👤 User Request:
+> Rediseñar el menú principal con colores corporativos, crear dropdowns modernos, alinear botones de /recursos con el nuevo diseño y corregir los fondos de la página /contacto.
+
+#### 🤖 Agent Solution:
+- **Summary:** Refactoricé el header con Flexbox centrado, apliqué el azul corporativo y programé dropdowns modernos. Además, actualicé las variables CSS globales para que todos los botones primarios sean azul corporativo, completé las tarjetas en /recursos y cambié los fondos de /contacto por el degradado oficial.
+- **Files created/modified:**
+  - pp/header.css
+  - components/layout/Header.tsx
+  - pp/recursos/page.tsx
+  - pp/globals.css
+  - pp/contacto/page.tsx
+
+#### 💻 Key Code:
+`css
+.header-dropdown-container::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: transparent;
+}
+`
+
+---
+### 📅 Chat Session: 2026-08-02
+**Main objective:** Restaurar la página eliminada de Obtención EIN.
+
+#### 👤 User Request:
+> La URL /servicios/impuestos/obtencion-ein devuelve un 404, investigar y restaurar.
+
+#### 🤖 Agent Solution:
+- **Summary:** Encontré en el historial de Git que la página se había eliminado accidentalmente en abril durante una reestructuración de la carpeta \pp/servicios/obtencion-ein\. La restauré en la ruta correcta \/servicios/impuestos/obtencion-ein\ reescribiéndola con el componente moderno corporativo \sd-page\ para que coincida con el estilo de la web actual, reemplazando el diseño obsoleto \pricing-hero\.
+- **Files created/modified:**
+  - \pp/servicios/impuestos/obtencion-ein/page.tsx
+#### 💻 Key Code:
+`	sx
+export default async function ObtencionEinPage() {
+  const { data: dbServicio, error } = await supabaseAdmin
+    .from('servicios')
+    .select('*')
+    .eq('slug', SLUG)
+    .single() as { data: any; error: unknown }
+  // ... Renderiza con plantilla sd-page ...
+}
+`

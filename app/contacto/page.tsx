@@ -13,7 +13,7 @@ export default function ContactoPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-[#0C2047] to-[#1E3A8A] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             Agenda tu Consulta Gratuita
           </h1>
           <p className="text-xl max-w-2xl mx-auto text-blue-100">
@@ -136,7 +136,7 @@ export default function ContactoPage() {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
                 <div className="bg-gradient-to-br from-[#0C2047] to-[#1E3A8A] text-white p-6">
-                  <h2 className="text-2xl font-bold mb-2">
+                  <h2 className="text-2xl font-bold mb-2 text-white">
                     Selecciona día y hora
                   </h2>
                   <p className="text-blue-100">
@@ -274,7 +274,7 @@ export default function ContactoPage() {
       {/* CTA final */}
       <section className="bg-gradient-to-br from-[#0C2047] to-[#1E3A8A] text-white py-12">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
+          <h2 className="text-3xl font-bold mb-4 text-white">
             ¿Listo para dar el primer paso?
           </h2>
           <p className="text-xl text-blue-100 mb-6">

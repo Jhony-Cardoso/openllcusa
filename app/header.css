@@ -8,7 +8,7 @@
   top: 0;
   z-index: 1000;
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Separamos logo, nav y acciones en 3 columnas con nav centrada */

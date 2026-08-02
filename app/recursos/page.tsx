@@ -121,8 +121,8 @@ export default function HerramientasPage() {
 
               <article
                 style={{
-                  background: 'rgba(33, 128, 141, 0.06)',
-                  border: '1px solid rgba(33, 128, 141, 0.35)',
+                  background: 'rgba(29, 78, 216, 0.06)',
+                  border: '1px solid rgba(29, 78, 216, 0.35)',
                   borderRadius: 16,
                   padding: 22,
                   boxShadow: '0 8px 22px rgba(7, 36, 55, 0.08)',
@@ -135,14 +135,96 @@ export default function HerramientasPage() {
                 <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
                   Asesoría gratis 24/7 por voz con transcripción (modo demo por ahora).
                 </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 'auto' }}>
                   <Link className="btn btn-primary" href="/carla">
                     Abrir Carla
                   </Link>
-                  <Link className="btn btn-white" href="/contacto">
-                    Contacto
-                  </Link>
                 </div>
+              </article>
+
+              {/* Nuevas tarjetas: Blog, Guías, FAQ, Contacto */}
+              <article
+                style={{
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-card-border)',
+                  borderRadius: 16,
+                  padding: 22,
+                  boxShadow: '0 8px 22px rgba(7, 36, 55, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10
+                }}
+              >
+                <h2 style={{ fontSize: 20, fontWeight: 800 }}>Blog</h2>
+                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
+                  Artículos, noticias y novedades sobre LLCs en EE. UU.
+                </p>
+                <Link className="btn btn-white" style={{ marginTop: 'auto', alignSelf: 'flex-start' }} href="/blog">
+                  Leer Blog
+                </Link>
+              </article>
+
+              <article
+                style={{
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-card-border)',
+                  borderRadius: 16,
+                  padding: 22,
+                  boxShadow: '0 8px 22px rgba(7, 36, 55, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10
+                }}
+              >
+                <h2 style={{ fontSize: 20, fontWeight: 800 }}>Guías</h2>
+                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
+                  Guías detalladas para crear y mantener tu LLC desde cualquier país.
+                </p>
+                <Link className="btn btn-white" style={{ marginTop: 'auto', alignSelf: 'flex-start' }} href="/guia">
+                  Ver Guías
+                </Link>
+              </article>
+
+              <article
+                style={{
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-card-border)',
+                  borderRadius: 16,
+                  padding: 22,
+                  boxShadow: '0 8px 22px rgba(7, 36, 55, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10
+                }}
+              >
+                <h2 style={{ fontSize: 20, fontWeight: 800 }}>FAQ</h2>
+                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
+                  Respuestas rápidas a las preguntas más frecuentes de nuestros clientes.
+                </p>
+                <Link className="btn btn-white" style={{ marginTop: 'auto', alignSelf: 'flex-start' }} href="/faq">
+                  Ver FAQ
+                </Link>
+              </article>
+
+              <article
+                style={{
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-card-border)',
+                  borderRadius: 16,
+                  padding: 22,
+                  boxShadow: '0 8px 22px rgba(7, 36, 55, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10
+                }}
+              >
+                <h2 style={{ fontSize: 20, fontWeight: 800 }}>Contacto</h2>
+                <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
+                  ¿Necesitas ayuda personalizada? Escríbenos y te responderemos lo antes posible.
+                </p>
+                <Link className="btn btn-white" style={{ marginTop: 'auto', alignSelf: 'flex-start' }} href="/contacto">
+                  Contactar
+                </Link>
               </article>
             </div>
 

@@ -499,3 +499,29 @@ export default async function ObtencionEinPage() {
   // ... Renderiza con plantilla sd-page ...
 }
 `
+
+---
+### 📅 Chat Session: 2026-08-02
+**Main objective:** Migrar las páginas de impuestos al layout dinámico centralizado.
+
+#### 👤 User Request:
+> El diseño que has implementado creo que es el antiguo. El diseño UI/UX y CRO debe ser como el que presentan las páginas: /servicios/agente-registrado
+
+#### 🤖 Agent Solution:
+- **Summary:** Eliminé el código estático y obsoleto que había creado para \obtencion-ein\ y que existía en \declaracion-anual-llc\. Ahora ambas rutas delegan directamente la renderización a \pp/servicios/[slug]/page.tsx\, que es la plantilla centralizada y moderna, inyectándole el slug correcto. De esta forma todo el diseño y el CRO queda perfectamente unificado para cualquier servicio, manteniendo las URL por SEO.
+- **Files created/modified:**
+  - \pp/servicios/impuestos/obtencion-ein/page.tsx  - \pp/servicios/impuestos/declaracion-anual-llc/page.tsx
+#### 💻 Key Code:
+`	sx
+import ServicioDetallePage, { generateMetadata as baseGenerateMetadata } from '@/app/servicios/[slug]/page'
+
+const SLUG = 'impuestos/obtencion-ein'
+
+export async function generateMetadata() {
+  return baseGenerateMetadata({ params: Promise.resolve({ slug: SLUG }) })
+}
+
+export default function ObtencionEinPage() {
+  return <ServicioDetallePage params={Promise.resolve({ slug: SLUG })} />
+}
+`

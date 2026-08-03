@@ -21,8 +21,9 @@ interface ScenarioResult {
   socialSecurity: number;
   effectiveRate: number;
   breakdown: string[];
-  requiresConsultation?: boolean;
   tooltip?: string;
+  advantages?: string[];
+  disadvantages?: string[];
 }
 
 const ACTIVITIES = [
@@ -61,6 +62,7 @@ export default function CalculadoraClient() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showLLCWarning, setShowLLCWarning] = useState(false);
   const [cameFromQuiz, setCameFromQuiz] = useState(false);
+  const [isB2C, setIsB2C] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // ✅ GATE: Asegurar que el usuario pasó por el lead-form/quiz
@@ -129,8 +131,8 @@ export default function CalculadoraClient() {
 
     const scenario1 = calculateAutonomo(netRevenue);
     const scenario2 = calculateSL(netRevenue);
-    const scenario3 = calculateLLCSpain(netRevenue);
-    const scenario4 = calculateNomad(netRevenue);
+    const scenario3 = calculateLLCSpain(netRevenue, isB2C);
+    const scenario4 = calculateNomad(netRevenue, isB2C);
 
     return [scenario1, scenario2, scenario3, scenario4];
   };
@@ -164,10 +166,14 @@ export default function CalculadoraClient() {
       socialSecurity,
       effectiveRate,
       breakdown: [
-        `Ingresos netos: €${netRevenue.toLocaleString()}`,
-        `Seguridad Social: €${socialSecurity.toLocaleString()}`,
+        `Ingresos netos: €${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `Seguridad Social: €${socialSecurity.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `IRPF: €${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `Beneficio neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
+      disadvantages: [
+        'Modelos trimestrales obligatorios (IVA/IRPF)',
+        'Flujo de caja retenido (Adelanto de IVA)'
       ]
     };
   };
@@ -206,11 +212,19 @@ export default function CalculadoraClient() {
         `Salario neto: €${netSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `Dividendos netos: €${netDividends.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `Seguridad Social empresa: €${ssSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
+      disadvantages: [
+        'Modelos trimestrales obligatorios (IVA/IRPF)',
+        'Flujo de caja retenido (Adelanto de IVA)'
       ]
     };
   };
 
-  const calculateLLCSpain = (netRevenue: number): ScenarioResult => {
+  const calculateLLCSpain = (baseNetRevenue: number, b2c: boolean): ScenarioResult => {
+    // Si vende B2C, la LLC gana un 21% extra de margen sobre los INGRESOS BRUTOS al no repercutir IVA
+    const extraMargin = b2c ? (grossIncome * 0.21) : 0;
+    const netRevenue = baseNetRevenue + extraMargin;
+
     const socialSecurity = 3600;
     const taxableIncome = netRevenue - socialSecurity;
     let irpf = 0;
@@ -240,16 +254,24 @@ export default function CalculadoraClient() {
       effectiveRate,
       requiresConsultation: true,
       breakdown: [
-        `Ingresos LLC: €${netRevenue.toLocaleString()}`,
-        `Cuota autónomos España: €${socialSecurity.toLocaleString()}`,
+        `Ingresos LLC: €${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}${b2c ? ' (Incluye +21% de margen extra B2C)' : ''}`,
+        `Cuota autónomos España: €${socialSecurity.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `IRPF España: €${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `Sin impuestos USA (no residente)`,
         `Beneficio neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
+      advantages: [
+        'Sin declaraciones trimestrales de IVA',
+        'Flujo de caja 100% libre para reinvertir',
+        'Privacidad patrimonial absoluta'
       ]
     };
   };
 
-  const calculateNomad = (netRevenue: number): ScenarioResult => {
+  const calculateNomad = (baseNetRevenue: number, b2c: boolean): ScenarioResult => {
+    const extraMargin = b2c ? (grossIncome * 0.21) : 0;
+    const netRevenue = baseNetRevenue + extraMargin;
+
     let corporateTax = 0;
     if (netRevenue > 102000) {
       corporateTax = (netRevenue - 102000) * 0.09;
@@ -269,13 +291,18 @@ export default function CalculadoraClient() {
       effectiveRate,
       tooltip: 'Visa de nómada digital disponible por €550/año • Sin impuestos personales',
       breakdown: [
-        `Ingresos: €${netRevenue.toLocaleString()}`,
+        `Ingresos: €${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}${b2c ? ' (Incluye +21% de margen extra B2C)' : ''}`,
         `Impuesto personal: €0 (0%)`,
         netRevenue > 102000
           ? `Impuesto corporativo (9% sobre >€102k): €${corporateTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
           : `Impuesto corporativo: €0 (exento hasta €102k)`,
         `Sin Seguridad Social`,
         `Beneficio neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
+      advantages: [
+        'Sin declaraciones trimestrales de IVA',
+        'Flujo de caja 100% libre para reinvertir',
+        'Privacidad patrimonial absoluta'
       ]
     };
   };
@@ -436,6 +463,22 @@ export default function CalculadoraClient() {
             </select>
           </div>
 
+          {/* ✅ NUEVO CHECKBOX B2C */}
+          <div className={styles.checkboxGroup} style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '8px', border: '1px solid #bae6fd' }}>
+            <input
+              type="checkbox"
+              checked={isB2C}
+              onChange={(e) => setIsB2C(e.target.checked)}
+              className={styles.checkbox}
+              id="b2c-accept"
+            />
+            <label htmlFor="b2c-accept" className={styles.checkboxLabel} style={{ color: '#0369a1', fontWeight: 500 }}>
+              Mis clientes son particulares (B2C) fuera de EE.UU. 
+              <br/>
+              <small style={{ fontWeight: 400 }}>Aplica la exención del 21% de IVA como margen extra para la LLC.</small>
+            </label>
+          </div>
+
           {/* Checkbox Legal */}
           <div className={styles.checkboxGroup}>
             <input
@@ -519,6 +562,27 @@ export default function CalculadoraClient() {
                       Depende de tu situación personal, deducciones aplicables y normativa autonómica
                     </p>
                   </div>
+
+                  {/* ✅ NUEVO: Ventajas / Desventajas Operativas */}
+                  {(scenario.advantages || scenario.disadvantages) && (
+                    <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0', fontSize: '0.85rem' }}>
+                      <strong style={{ display: 'block', marginBottom: '0.75rem', color: '#334155' }}>⚡ Impacto Operativo (IVA / Flujo de caja)</strong>
+                      
+                      {scenario.disadvantages?.map((dis, idx) => (
+                        <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', color: '#b91c1c' }}>
+                          <span style={{ flexShrink: 0 }}>❌</span>
+                          <span>{dis}</span>
+                        </div>
+                      ))}
+                      
+                      {scenario.advantages?.map((adv, idx) => (
+                        <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', color: '#15803d' }}>
+                          <span style={{ flexShrink: 0 }}>✅</span>
+                          <span>{adv}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {scenario.requiresConsultation && (
                     <>

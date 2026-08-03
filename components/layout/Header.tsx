@@ -11,7 +11,8 @@ import {
   Search,
   HelpCircle,
   BookOpen,
-  Send
+  Send,
+  Building
 } from 'lucide-react'
 import {
   SignInButton,
@@ -399,8 +400,8 @@ export default function Header() {
         title: 'CONSTITUCIÓN DE EMPRESAS',
         items: [
           { href: '/servicios/formacion-llc', label: 'Formación de LLCs', icon: <Globe size={18} /> },
-          { href: '/servicios/inc', label: 'Corporaciones Inc', icon: <Smartphone size={18} /> },
-          { href: '/servicios/impuestos/obtencion-ein', label: 'Obtención de EIN (IRS)', icon: <Search size={18} /> }
+          { href: '/servicios/impuestos/obtencion-ein', label: 'Obtención de EIN (IRS)', icon: <Search size={18} /> },
+          { href: '/servicios/cuenta-bancaria-empresarial', label: 'Cuenta Bancaria Empresarial', icon: <Building size={18} /> }
         ]
       },
       {

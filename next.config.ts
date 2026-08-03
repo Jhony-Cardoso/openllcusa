@@ -90,6 +90,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: '/servicios/cuenta-bancaria-empresarial',
+        destination: '/servicios/launch-banking',
+      },
+      {
         source: '/servicios/impuestos/:service',
         destination: '/servicios/impuestos-:service',
       },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '@/app/calculadora-fiscal/page.module.css';
@@ -61,6 +61,7 @@ export default function CalculadoraClient() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showLLCWarning, setShowLLCWarning] = useState(false);
   const [cameFromQuiz, setCameFromQuiz] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // ✅ GATE: Asegurar que el usuario pasó por el lead-form/quiz
   useEffect(() => {
@@ -451,7 +452,12 @@ export default function CalculadoraClient() {
           </div>
 
           <button
-            onClick={() => setShowResults(true)}
+            onClick={() => {
+              setShowResults(true);
+              setTimeout(() => {
+                resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 100);
+            }}
             disabled={!acceptedLegal}
             className={styles.calculateButton}
           >
@@ -461,7 +467,7 @@ export default function CalculadoraClient() {
 
         {/* Resultados */}
         {showResults && (
-          <div className={styles.results}>
+          <div className={styles.results} ref={resultsRef}>
             <h2 className={styles.resultsTitle}>📊 Comparativa de Escenarios</h2>
 
             <div className={styles.scenariosGrid}>

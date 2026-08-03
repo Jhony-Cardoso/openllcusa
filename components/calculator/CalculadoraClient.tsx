@@ -21,9 +21,11 @@ interface ScenarioResult {
   socialSecurity: number;
   effectiveRate: number;
   breakdown: string[];
+  detailedBreakdown?: string[];
   tooltip?: string;
   advantages?: string[];
   disadvantages?: string[];
+  requiresConsultation?: boolean;
 }
 
 const ACTIVITIES = [
@@ -63,6 +65,7 @@ export default function CalculadoraClient() {
   const [showLLCWarning, setShowLLCWarning] = useState(false);
   const [cameFromQuiz, setCameFromQuiz] = useState(false);
   const [isB2C, setIsB2C] = useState(false);
+  const [expandedDetails, setExpandedDetails] = useState<number | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // ✅ GATE: Asegurar que el usuario pasó por el lead-form/quiz
@@ -142,7 +145,28 @@ export default function CalculadoraClient() {
     const taxableIncome = netRevenue - socialSecurity;
     let irpf = 0;
 
+    // Cálculo IRPF por tramos
+    const irpfTramos: string[] = [];
     if (taxableIncome > 0) {
+      const t1 = Math.min(taxableIncome, 12450) * 0.19;
+      irpfTramos.push(`Tramo 1 (hasta €12.450 al 19%): €${t1.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      if (taxableIncome > 12450) {
+        const t2 = Math.min(taxableIncome - 12450, 7750) * 0.24;
+        irpfTramos.push(`Tramo 2 (€12.450–€20.200 al 24%): €${t2.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+      if (taxableIncome > 20200) {
+        const t3 = Math.min(taxableIncome - 20200, 15000) * 0.30;
+        irpfTramos.push(`Tramo 3 (€20.200–€35.200 al 30%): €${t3.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+      if (taxableIncome > 35200) {
+        const t4 = Math.min(taxableIncome - 35200, 24800) * 0.37;
+        irpfTramos.push(`Tramo 4 (€35.200–€60.000 al 37%): €${t4.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+      if (taxableIncome > 60000) {
+        const t5 = (taxableIncome - 60000) * 0.45;
+        irpfTramos.push(`Tramo 5 (más de €60.000 al 45%): €${t5.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+
       if (taxableIncome <= 12450) {
         irpf = taxableIncome * 0.19;
       } else if (taxableIncome <= 20200) {
@@ -171,6 +195,19 @@ export default function CalculadoraClient() {
         `IRPF: €${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `Beneficio neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
       ],
+      detailedBreakdown: [
+        `Ingresos Brutos: €${grossIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(-) Gastos deducibles (${deductibleExpensesPercent}%): €${(grossIncome * deductibleExpensesPercent / 100).toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Beneficio Bruto: €${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(-) Seguridad Social (cuota fija): €${socialSecurity.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Base imponible IRPF: €${taxableIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Desglose IRPF por tramos ---`,
+        ...irpfTramos,
+        `(=) IRPF Total: €${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Resultado ---`,
+        `Beneficio Bruto (€${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}) - SS (€${socialSecurity.toLocaleString('es-ES', { maximumFractionDigits: 0 })}) - IRPF (€${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })})`,
+        `= Beneficio Neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
       disadvantages: [
         'Modelos trimestrales obligatorios (IVA/IRPF)',
         'Flujo de caja retenido (Adelanto de IVA)'
@@ -194,7 +231,8 @@ export default function CalculadoraClient() {
     }
 
     const netSalary = salary - irpfSalary;
-    const dividends = (afterTax - salary - ssSalary) * 0.7;
+    const grossDividends = afterTax - salary - ssSalary;
+    const dividends = grossDividends * 0.7;
     const dividendTax = dividends * 0.19;
     const netDividends = dividends - dividendTax;
     const netIncome = netSalary + netDividends;
@@ -209,9 +247,32 @@ export default function CalculadoraClient() {
       effectiveRate,
       breakdown: [
         `Impuesto Sociedades (15%): €${corporateTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
-        `Salario neto: €${netSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `Salario neto Administrador: €${netSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `Dividendos netos: €${netDividends.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
-        `Seguridad Social empresa: €${ssSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+        `Seguridad Social empresa: €${ssSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `Beneficio neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
+      detailedBreakdown: [
+        `Ingresos Brutos: €${grossIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(-) Gastos deducibles (${deductibleExpensesPercent}%): €${(grossIncome * deductibleExpensesPercent / 100).toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Beneficio Bruto: €${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Impuesto de Sociedades ---`,
+        `Beneficio Bruto × 15% = €${corporateTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `Remanente tras IS: €${afterTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Sueldo del Administrador ---`,
+        `Sueldo bruto asignado: €${salary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(-) IRPF del sueldo: €${irpfSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Sueldo neto Administrador: €${netSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Seguridad Social Societaria ---`,
+        `Sueldo (€${salary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}) × 30% = €${ssSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Dividendos ---`,
+        `Sobrante: €${afterTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })} - €${salary.toLocaleString('es-ES', { maximumFractionDigits: 0 })} - €${ssSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })} = €${grossDividends.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `A repartir (70%): €${dividends.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(-) Impuesto dividendos (19%): €${dividendTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Dividendos netos: €${netDividends.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Resultado ---`,
+        `Sueldo neto (€${netSalary.toLocaleString('es-ES', { maximumFractionDigits: 0 })}) + Dividendos netos (€${netDividends.toLocaleString('es-ES', { maximumFractionDigits: 0 })})`,
+        `= Beneficio Neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
       ],
       disadvantages: [
         'Modelos trimestrales obligatorios (IVA/IRPF)',
@@ -246,6 +307,29 @@ export default function CalculadoraClient() {
     const netIncome = netRevenue - socialSecurity - irpf;
     const effectiveRate = ((socialSecurity + irpf) / netRevenue) * 100;
 
+    // Desglose IRPF por tramos (para detailedBreakdown)
+    const irpfTramosLLC: string[] = [];
+    if (taxableIncome > 0) {
+      const t1 = Math.min(taxableIncome, 12450) * 0.19;
+      irpfTramosLLC.push(`Tramo 1 (hasta €12.450 al 19%): €${t1.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      if (taxableIncome > 12450) {
+        const t2 = Math.min(taxableIncome - 12450, 7750) * 0.24;
+        irpfTramosLLC.push(`Tramo 2 (€12.450–€20.200 al 24%): €${t2.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+      if (taxableIncome > 20200) {
+        const t3 = Math.min(taxableIncome - 20200, 15000) * 0.30;
+        irpfTramosLLC.push(`Tramo 3 (€20.200–€35.200 al 30%): €${t3.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+      if (taxableIncome > 35200) {
+        const t4 = Math.min(taxableIncome - 35200, 24800) * 0.37;
+        irpfTramosLLC.push(`Tramo 4 (€35.200–€60.000 al 37%): €${t4.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+      if (taxableIncome > 60000) {
+        const t5 = (taxableIncome - 60000) * 0.45;
+        irpfTramosLLC.push(`Tramo 5 (más de €60.000 al 45%): €${t5.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`);
+      }
+    }
+
     return {
       name: 'LLC + Residencia España',
       netIncome,
@@ -259,6 +343,24 @@ export default function CalculadoraClient() {
         `IRPF España: €${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
         `Sin impuestos USA (no residente)`,
         `Beneficio neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
+      detailedBreakdown: [
+        `Ingresos Brutos: €${grossIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(-) Gastos deducibles (${deductibleExpensesPercent}%): €${(grossIncome * deductibleExpensesPercent / 100).toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Beneficio Bruto Base: €${baseNetRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        ...(b2c ? [
+          `(+) Margen extra B2C (21% de €${grossIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}): €${extraMargin.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+          `(=) Beneficio Bruto LLC: €${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+        ] : []),
+        `(-) Cuota autónomos España: €${socialSecurity.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Base imponible IRPF: €${taxableIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `--- Desglose IRPF por tramos ---`,
+        ...irpfTramosLLC,
+        `(=) IRPF Total: €${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `Impuestos USA: €0 (entidad pass-through, no residente)`,
+        `--- Resultado ---`,
+        `Beneficio Bruto (€${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}) - SS (€${socialSecurity.toLocaleString('es-ES', { maximumFractionDigits: 0 })}) - IRPF (€${irpf.toLocaleString('es-ES', { maximumFractionDigits: 0 })})`,
+        `= Beneficio Neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
       ],
       advantages: [
         'Sin declaraciones trimestrales de IVA',
@@ -298,6 +400,24 @@ export default function CalculadoraClient() {
           : `Impuesto corporativo: €0 (exento hasta €102k)`,
         `Sin Seguridad Social`,
         `Beneficio neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+      ],
+      detailedBreakdown: [
+        `Ingresos Brutos: €${grossIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(-) Gastos deducibles (${deductibleExpensesPercent}%): €${(grossIncome * deductibleExpensesPercent / 100).toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        `(=) Beneficio Bruto Base: €${baseNetRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+        ...(b2c ? [
+          `(+) Margen extra B2C (21% de €${grossIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}): €${extraMargin.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`,
+          `(=) Beneficio Bruto LLC: €${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+        ] : []),
+        `--- Impuestos ---`,
+        `IRPF personal (Dubái): €0 (0%)`,
+        `Seguridad Social: €0`,
+        netRevenue > 102000
+          ? `Impuesto corporativo E.A.U. (9% sobre lo que exceda €102.000): (€${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })} - €102.000) × 9% = €${corporateTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
+          : `Impuesto corporativo E.A.U.: €0 (exento hasta €102.000)`,
+        `--- Resultado ---`,
+        `Beneficio Bruto (€${netRevenue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}) - Impuestos (€${corporateTax.toLocaleString('es-ES', { maximumFractionDigits: 0 })})`,
+        `= Beneficio Neto: €${netIncome.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`
       ],
       advantages: [
         'Sin declaraciones trimestrales de IVA',
@@ -543,6 +663,54 @@ export default function CalculadoraClient() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Botón desplegable: Detalle del cálculo */}
+                  {scenario.detailedBreakdown && (
+                    <div style={{ marginTop: '1rem' }}>
+                      <button
+                        onClick={() => setExpandedDetails(expandedDetails === index ? null : index)}
+                        style={{
+                          width: '100%',
+                          padding: '0.6rem 1rem',
+                          background: expandedDetails === index ? '#f0f9ff' : '#f8fafc',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: '0.82rem',
+                          fontWeight: 600,
+                          color: '#334155',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <span>🔍 ¿Cómo se obtienen estas cifras?</span>
+                        <span style={{ transform: expandedDetails === index ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
+                      </button>
+                      {expandedDetails === index && (
+                        <div style={{
+                          marginTop: '0.5rem',
+                          padding: '1rem',
+                          background: '#f8fafc',
+                          borderRadius: '8px',
+                          border: '1px solid #e2e8f0',
+                          fontSize: '0.8rem',
+                          lineHeight: '1.8',
+                          color: '#475569'
+                        }}>
+                          {scenario.detailedBreakdown.map((line, idx) => (
+                            <div key={idx} style={{
+                              ...(line.startsWith('---') ? { fontWeight: 700, color: '#1e40af', marginTop: '0.75rem', marginBottom: '0.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.25rem' } : {}),
+                              ...(line.startsWith('=') ? { fontWeight: 700, color: '#15803d', fontSize: '0.85rem', marginTop: '0.25rem' } : {})
+                            }}>
+                              {line.startsWith('---') ? line.replace(/---/g, '').trim() : line}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* ✅ NUEVO: Rango de variación */}
                   <div className={styles.variationRange}>

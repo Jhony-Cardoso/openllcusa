@@ -437,7 +437,7 @@ export default function CalculadoraClient() {
 
   const getCtaLink = () => {
     if (scrollPosition < 800) return '/hablar-con-carla';
-    if (scrollPosition < 2000) return '/agendar-cita';
+    if (scrollPosition < 2000) return '/contacto';
     return '/crear-llc';
   };
 

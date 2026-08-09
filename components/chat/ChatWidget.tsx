@@ -5,6 +5,7 @@ import { MessageCircle, X, Send, Sparkles, ArrowRight, ChevronDown, User, Phone 
 import Link from 'next/link'
 import Image from 'next/image'
 import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
 import { useUser } from '@clerk/nextjs'
 import './chat-widget.css'
 
@@ -116,9 +117,9 @@ export default function ChatWidget() {
   const { user, isSignedIn, isLoaded } = useUser()
 
   const { messages, sendMessage, status, setMessages } = useChat({
-    api: '/api/chat',
-    initialMessages: []
-  } as any)
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
+    messages: []
+  })
   const isLoading = status === 'streaming' || status === 'submitted'
 
   // Usuarios logueados: saltar directamente a IA
@@ -129,7 +130,7 @@ export default function ChatWidget() {
       setMessages([{
         id: 'welcome',
         role: 'assistant',
-        content: `¡Hola ${user.firstName}! 👋 Soy **Zara**. ¿En qué te puedo ayudar hoy con tu empresa?`,
+        parts: [{ type: 'text', text: `¡Hola ${user.firstName}! 👋 Soy Zara, la experta en LLCs de Open LLC USA.\n\nHe visto que ya tienes una cuenta con nosotros. ¿En qué te puedo ayudar hoy?` }]
       }] as any)
     }
   }, [isLoaded, isSignedIn, user?.firstName, setMessages, user?.primaryEmailAddress?.emailAddress])
@@ -180,7 +181,7 @@ export default function ChatWidget() {
       setMessages([{
         id: 'welcome-exploring',
         role: 'assistant',
-        content: '¡Claro, sin prisa! 😊 Cuéntame, ¿sobre qué aspecto de las LLC quieres aprender primero?',
+        parts: [{ type: 'text', text: '¡Claro, sin prisa! 😊 Cuéntame, ¿sobre qué aspecto de las LLC quieres aprender primero?' }]
       }] as any)
     } else {
       // ai_chat / pregunta concreta
@@ -188,7 +189,7 @@ export default function ChatWidget() {
       setMessages([{
         id: 'welcome-question',
         role: 'assistant',
-        content: '¡Por supuesto! 🤓 Puedo responderte al momento sobre costes, estados, impuestos, requisitos para extranjeros y mucho más. ¿Qué quieres saber?',
+        parts: [{ type: 'text', text: '¡Por supuesto! 🤓 Puedo responderte al momento sobre costes, estados, impuestos, requisitos para extranjeros y mucho más. ¿Qué quieres saber?' }]
       }] as any)
     }
   }
@@ -234,12 +235,12 @@ export default function ChatWidget() {
   const onSubmitChat = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!(input || '').trim()) return
-    sendMessage({ role: 'user', content: input } as any)
+    sendMessage({ role: 'user', parts: [{ type: 'text', text: input }] } as any)
     setInput('')
   }
 
   const handleSuggestionClick = (text: string) => {
-    sendMessage({ role: 'user', content: text } as any)
+    sendMessage({ role: 'user', parts: [{ type: 'text', text: text }] } as any)
   }
 
   // ── Otro ─────────────────────────────────────────────────
@@ -317,7 +318,7 @@ export default function ChatWidget() {
             <div className="chat-phase-buttons" style={{ marginTop: '12px' }}>
               <button className="chat-phase-btn" onClick={() => {
                 setPhase('ai_chat')
-                setMessages([{ id: 'post-lead', role: 'assistant', content: '¿Tienes alguna duda mientras tanto? ¡Pregúntame lo que quieras!' }] as any)
+                setMessages([{ id: 'post-lead', role: 'assistant', parts: [{ type: 'text', text: '¿Tienes alguna duda mientras tanto? ¡Pregúntame lo que quieras!' }] }] as any)
               }}>
                 <span className="chat-phase-btn__icon">💬</span>
                 <span>Tengo más preguntas para Zara</span>
@@ -385,7 +386,10 @@ export default function ChatWidget() {
             <div className="chat-phase-buttons" style={{ marginTop: '12px' }}>
               <button className="chat-phase-btn" onClick={() => {
                 setPhase('ai_chat')
-                setMessages([{ id: 'post-warm', role: 'assistant', content: '¡Claro! ¿Qué quieres saber sobre las LLC? Pregúntame sin compromiso 😊' }] as any)
+                setMessages([
+                    ...messages,
+                    { id: 'post-warm', role: 'assistant', parts: [{ type: 'text', text: '¡Claro! ¿Qué quieres saber sobre las LLC? Pregúntame sin compromiso 😊' }] }
+                ] as any)
               }}>
                 <span className="chat-phase-btn__icon">💬</span>
                 <span>Sí, hablar con Zara ahora</span>
@@ -432,7 +436,7 @@ export default function ChatWidget() {
     if (phase === 'ai_chat') {
       return (
         <>
-          {messages.map((msg) => (
+          {messages.map((msg: any) => (
             <div key={msg.id} className={`chat-message chat-message--${msg.role}`}>
               <div className="chat-message__avatar">
                 {msg.role === 'assistant' ? (
@@ -444,7 +448,7 @@ export default function ChatWidget() {
                 )}
               </div>
               <div className={`chat-message__bubble chat-bubble--${msg.role}`}>
-                <SimpleMarkdown text={(msg as any).content || msg.parts?.filter(p => p.type === 'text').map(p => p.text).join('') || ''} />
+                <SimpleMarkdown text={(msg as any).content || msg.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('') || ''} />
                 <span className="chat-message__time">
                   {new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </span>

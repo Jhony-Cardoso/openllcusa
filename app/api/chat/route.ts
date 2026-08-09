@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { streamText, embed } from 'ai';
+import { streamText, embed, convertToModelMessages } from 'ai';
 import { currentUser } from '@clerk/nextjs/server';
 import { PedidoModel } from '@/lib/models/pedido';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -15,7 +15,7 @@ REGLAS DE ORO:
 - Responde SIEMPRE en español.
 - Mantén un tono profesional, experto, amigable y muy claro.
 - Sé directa y concisa. Si la respuesta puede darse en un párrafo corto y una lista, es mejor que tres párrafos largos.
-- Si te preguntan algo que requiere asesoría legal o fiscal específica y compleja que no sepas, diles amablemente que un especialista de nuestro equipo puede ayudarles mejor si nos dejan su correo en el chat o nos contactan a info@openllcusa.com.
+- Si te preguntan algo complejo (como trading, criptomonedas, o impuestos específicos) o simplemente NO sabes la respuesta porque no tienes la información, NO te la inventes. Diles amablemente que un especialista de nuestro equipo puede ayudarles mejor y compárteles siempre este enlace para [agendar una llamada gratuita](/agendar).
 - Usa formato Markdown para resaltar cosas importantes con negritas (**texto**) y crear listas.
 - **REGLA ESTRICTA**: ES OBLIGATORIO que cuando menciones un servicio (como Formulario 5472, BOI Report, etc.) o uno de los planes (Starter, Professional, Business), incluyas INMEDIATAMENTE su enlace en formato Markdown. Por ejemplo: "[Formulario 5472](/servicios/form-5472-1120)" o "[Plan Starter](/paquetes/starter/onboarding)". ¡Nunca menciones un precio o un servicio sin añadir su enlace Markdown!
 
@@ -46,7 +46,17 @@ INSTRUCCIONES DE VENTAS:
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const rawBody = await req.json();
+    console.log("INCOMING CHAT PAYLOAD:", JSON.stringify(rawBody));
+    
+    // Si messages viene dentro de rawBody (como antes) o si todo el body es directamente un array
+    const messages = Array.isArray(rawBody) ? rawBody : rawBody.messages;
+    
+    if (!messages || !Array.isArray(messages)) {
+      throw new Error("Invalid messages payload");
+    }
+
+    const { verify_session } = rawBody;
 
     const user = await currentUser();
     let dynamicSystemPrompt = SYSTEM_PROMPT;
@@ -123,7 +133,7 @@ Ten en cuenta este historial para darle respuestas precisas y personalizadas sob
     const result = streamText({
       model: openai('gpt-4o-mini'),
       system: finalSystemPrompt,
-      messages,
+      messages: await convertToModelMessages(messages),
       temperature: 0.3,
     });
 

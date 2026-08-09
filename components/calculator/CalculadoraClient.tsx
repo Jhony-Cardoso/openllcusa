@@ -593,8 +593,8 @@ export default function CalculadoraClient() {
               id="b2c-accept"
             />
             <label htmlFor="b2c-accept" className={styles.checkboxLabel} style={{ color: '#0369a1', fontWeight: 500 }}>
-              Mis clientes son particulares (B2C) fuera de EE.UU. 
-              <br/>
+              Mis clientes son particulares (B2C) fuera de EE.UU.
+              <br />
               <small style={{ fontWeight: 400 }}>Aplica la exención del 21% de IVA como margen extra para la LLC.</small>
             </label>
           </div>
@@ -735,14 +735,14 @@ export default function CalculadoraClient() {
                   {(scenario.advantages || scenario.disadvantages) && (
                     <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0', fontSize: '0.85rem' }}>
                       <strong style={{ display: 'block', marginBottom: '0.75rem', color: '#334155' }}>⚡ Impacto Operativo (IVA / Flujo de caja)</strong>
-                      
+
                       {scenario.disadvantages?.map((dis, idx) => (
                         <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', color: '#b91c1c' }}>
                           <span style={{ flexShrink: 0 }}>❌</span>
                           <span>{dis}</span>
                         </div>
                       ))}
-                      
+
                       {scenario.advantages?.map((adv, idx) => (
                         <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', color: '#15803d' }}>
                           <span style={{ flexShrink: 0 }}>✅</span>
@@ -797,7 +797,7 @@ export default function CalculadoraClient() {
               <li>❌ <strong>NO</strong> garantiza resultados específicos ni exactitud absoluta</li>
               <li>❌ <strong>NO</strong> considera todas las variables de tu situación particular</li>
               <li>✅ Debes <strong>SIEMPRE consultar con un asesor fiscal certificado</strong> antes de decidir</li>
-              <li>✅ Los resultados pueden variar entre -8% y +85% según el escenario</li>
+              <li>✅ Los resultados pueden variar de forma ostensible según el escenario</li>
             </ul>
 
             <p className={styles.legalFooter}>

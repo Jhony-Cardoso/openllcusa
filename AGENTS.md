@@ -71,6 +71,13 @@ Combine verified technical facts with project priorities and safe operating rule
    - What the user must visually verify in the browser
 5. Never assume tests exist. Always remind the user to verify manually.
 
+## AI Assistant & RAG (Knowledge Base) Rules
+When updating the AI Assistant (`app/api/chat/route.ts`) or the Knowledge Base (`knowledge/*.md`), follow these best practices to ensure the LLM follows instructions and avoids "Lost in the middle" syndrome:
+1. **Embed Markdown Links Directly**: The AI often copies text verbatim from RAG chunks. Always include explicit Markdown links to our services (e.g., `[Formulario 5472](/servicios/form-5472-1120)`) directly within the `.md` knowledge files.
+2. **Re-ingest after Editing**: Whenever you modify files in the `knowledge/` folder, you MUST run `npx tsx scripts/ingest-knowledge.ts` to update the Supabase vector embeddings.
+3. **Prompt Structure (Lost in the middle)**: Critical instructions (like "always include links") must be placed at the VERY END of the final system prompt, after the RAG context has been injected.
+4. **Low Temperature**: Maintain `temperature: 0.3` (or similar) in the `streamText` configuration to enforce strict adherence to formatting rules.
+
 ## Mandatory Session Logging
 After completing an important task (or before the user ends the session), append a record to `chat_history.md` in the project root using this exact format:
 

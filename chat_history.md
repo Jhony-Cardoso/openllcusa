@@ -525,3 +525,331 @@ export default function ObtencionEinPage() {
   return <ServicioDetallePage params={Promise.resolve({ slug: SLUG })} />
 }
 `
+
+---
+### ?? Chat Session: 2026-08-03 20:23 CEST
+**Main objective:** Analisis estrategico de WhatsApp Business como canal de ventas + estrategia integral
+
+#### ?? User Request:
+> Evaluar si WhatsApp Business es recomendable para OpenLLC USA. Disenar estrategia integral de ventas y mega-prompt reutilizable.
+
+#### ?? Agent Solution:
+- **Summary:** Se analizo el negocio completo y se creo documento estrategico exhaustivo. Recomendacion: SI usar WhatsApp. Se detecto que el boton flotante redirige a /contacto en vez de abrir WhatsApp. Se diseno embudo de 5 fases con scripts, cambios tecnicos priorizados, metricas/KPIs, y mega-prompt reutilizable.
+- **Files created/modified:**
+  - Artifact: estrategia_whatsapp_ventas.md
+  - No se modifico codigo fuente
+
+#### ?? Key Code:
+```text
+Documento estrategico - sin cambios de codigo.
+Quick wins tecnicos identificados:
+1. FloatingButtons.tsx: cambiar href=/contacto por wa.me/NUMERO
+2. Footer.tsx: actualizar wa.me/XXXXXXXXXXX con numero real
+3. QuickContactSection.tsx: anadir boton alternativo WhatsApp
+```
+
+---
+### ðŸ“… Chat Session: 2026-08-07 14:50 CET
+**Main objective:** Crear widget de chat IA flotante estilo Lyro/Intercom para reemplazar Tidio
+
+#### ðŸ‘¤ User Request:
+> DiseÃ±ar y construir un componente de chat interactivo premium integrado en la web para captar leads y resolver dudas de visitantes, sin pagar suscripciÃ³n de Tidio.
+
+#### ðŸ¤– Agent Solution:
+- **Summary:** Se creÃ³ un widget de chat flotante completo con diseÃ±o premium (gradientes, animaciones, dark mode, responsive), base de conocimiento local con respuestas inteligentes sobre LLC/precios/EIN/estados, formulario de captura de leads integrado, y sugerencias rÃ¡pidas. Se integrÃ³ en el layout raÃ­z y se actualizaron los FloatingButtons para evitar colisiones.
+- **Files created/modified:**
+  - `components/chat/ChatWidget.tsx` (NUEVO)
+  - `components/chat/chat-widget.css` (NUEVO)
+  - `components/chat/index.ts` (NUEVO)
+  - `app/layout.tsx` (MODIFICADO)
+  - `components/FloatingButtons.tsx` (MODIFICADO)
+
+#### ðŸ’» Key Code:
+```tsx
+// ChatWidget.tsx - Componente principal del chat IA
+export default function ChatWidget() {
+  // Widget de chat flotante con:
+  // - Burbuja FAB animada con pulso
+  // - Ventana de chat con header gradiente
+  // - Knowledge base local con pattern matching
+  // - Formulario de captura de leads integrado
+  // - Sugerencias rÃ¡pidas (4 preguntas frecuentes)
+  // - Dark mode, responsive, animaciones premium
+}
+```
+
+---
+### ðŸ“… Chat Session: 2026-08-07 20:25 CET
+**Main objective:** Ejecutar Fase 2 (Supabase pgvector + Endpoint Leads) del Widget Chat IA
+
+#### ðŸ‘¤ User Request:
+> Mover el widget a la derecha, renombrar la IA a Zara y continuar con la Fase 2 (Conectar Supabase para conocimiento y leads).
+
+#### ðŸ¤– Agent Solution:
+- **Summary:** Se actualizÃ³ la posiciÃ³n del chat widget hacia la derecha y se renombrÃ³ la IA a 'Zara'. Se creÃ³ un script SQL de migraciÃ³n en Supabase habilitando pgvector, y estableciendo tablas chat_knowledge y chat_leads. AdemÃ¡s, se implementÃ³ el endpoint POST /api/chat/leads y se actualizÃ³ ChatWidget.tsx para enviar los datos reales a la base de datos en lugar de hacer console.log.
+- **Files created/modified:**
+  - components/chat/chat-widget.css (MODIFICADO - Cambiada posiciÃ³n)
+  - components/chat/ChatWidget.tsx (MODIFICADO - Nombre 'Zara' y fetch endpoint)
+  - supabase/migrations/20260807000000_chat_ai_schema.sql (NUEVO)
+  - pp/api/chat/leads/route.ts (NUEVO)
+
+#### ðŸ’» Key Code:
+```ts
+// app/api/chat/leads/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+
+export async function POST(request: NextRequest) {
+  try {
+    const data = await request.json();
+    const { nombre, email, telefono, pregunta_inicial } = data;
+    const supabase = await createClient();
+
+    const { error } = await supabase.from('chat_leads').insert([{
+        nombre, email, telefono: telefono || null, pregunta_inicial: pregunta_inicial || null, status: 'nuevo'
+    }]);
+
+    if (error) throw error;
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Error interno' }, { status: 500 });
+  }
+}
+```
+
+---
+### ?? Chat Session: 2026-08-08 00:30 CET
+**Main objective:** Fase 3: Integrar OpenAI con Vercel AI SDK para respuestas reales en el Chat Widget.
+
+#### ?? User Request:
+> Continuar con la Fase 3 para dotar de inteligencia real a la asistente usando OpenAI.
+
+#### ?? Agent Solution:
+- **Summary:** Se instalaron las dependencias del Vercel AI SDK, se creo una ruta de API de Next.js para gestionar el streaming con GPT-4o-mini, configurando un "System Prompt" robusto con reglas de negocio. Ademas, se refactorizo ChatWidget.tsx para utilizar el hook 'useChat', habilitando el streaming en tiempo real en la interfaz de usuario.
+- **Files created/modified:**
+  - `app/api/chat/route.ts`
+  - `components/chat/ChatWidget.tsx`
+  - `package.json`
+
+#### ?? Key Code:
+```typescript
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  const result = streamText({
+    model: openai('gpt-4o-mini'),
+    system: SYSTEM_PROMPT,
+    messages,
+    temperature: 0.7,
+  });
+  return result.toTextStreamResponse();
+}
+```
+
+---
+### ?? Chat Session: 2026-08-08 12:30 CET
+**Main objective:** Resolver el problema de streaming en el chat.
+
+#### ?? User Request:
+> En vez de ponerle saldo, he cambiado la API Key... he reiniciado el servidor con npm run dev pero sigue sin funcionar.
+
+#### ?? Agent Solution:
+- **Summary:** Se identificó que la versión más reciente del Vercel AI SDK (@ai-sdk/react v4) introdujo un nuevo formato de streaming exclusivo (`toUIMessageStreamResponse`), el cual `useChat` espera por defecto. El código anterior devolvía un texto plano (`toTextStreamResponse`) que no podía ser parseado por el frontend. Se actualizó la ruta de la API para devolver el formato correcto.
+- **Files created/modified:**
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-08 13:55 CET
+**Main objective:** Implementar Bonus (Integración Clerk + Historial de Pedidos).
+
+#### ?? User Request:
+> Respondiendo a tus preguntas, me gustaría que cuando Zara hable con un usuario ya registrado, SEPA si ese usuario ya compró servicios nuestros y cuáles fueron concretamente. Así, podría dialogar con conocimiento certero.
+
+#### ?? Agent Solution:
+- **Summary:** Se integró Clerk en `ChatWidget.tsx` para detectar el inicio de sesión, saludar al usuario por su nombre y desactivar la petición del correo (lead form). En el backend (`route.ts`), se importó `PedidoModel` para buscar todos los paquetes/servicios que haya comprado el usuario actual y se inyectaron directamente en el `SYSTEM_PROMPT` para que Zara responda con contexto personalizado.
+- **Files created/modified:**
+  - `components/chat/ChatWidget.tsx`
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-08 19:40 CET
+**Main objective:** Implementar Fase 4 (RAG con pgvector).
+
+#### ?? User Request:
+> Respecto a tu pregunta sobre qué tipo de archivos lea Zara, te autorizo a que sean archivos de texto en Markdown.
+> Dicho esto, PROCEDE con la implementación del Plan Rag.
+
+#### ?? Agent Solution:
+- **Summary:** Se creó un script de migración SQL para habilitar `pgvector`, crear la tabla `knowledge_base` y la función `match_knowledge`. Se creó el script `scripts/ingest-knowledge.ts` que lee archivos Markdown en la carpeta `knowledge`, los trocea, obtiene sus embeddings con OpenAI y los guarda en Supabase. Finalmente, se modificó `route.ts` para capturar el último mensaje del usuario, calcular su embedding, buscar información relevante en Supabase e inyectarla en el `SYSTEM_PROMPT`.
+- **Files created/modified:**
+  - `supabase/migrations/20260808000001_knowledge_base.sql`
+  - `knowledge/faq_impuestos.md`
+  - `scripts/ingest-knowledge.ts`
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-08 20:08 CET
+**Main objective:** Añadir enlaces a servicios en las respuestas de Zara.
+
+#### ?? User Request:
+> Por cierto, cuando el asistente haga mención a un servicio concreto, ofreciéndolo, ¿te parece oportuno colocar a continuación el link de la página de ese servicio concreto?
+
+#### ?? Agent Solution:
+- **Summary:** Se ha añadido una instrucción explícita ("REGLA DE ORO") en el `SYSTEM_PROMPT` del asistente (`route.ts`) para forzar a Zara a generar siempre un enlace (en formato Markdown) apuntando al servicio mencionado (ej. `/precios` o `/servicios/form-5472-1120`).
+- **Files created/modified:**
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-08 20:16 CET
+**Main objective:** Arreglar error de sintaxis (ReferenceError: precios is not defined) en route.ts.
+
+#### ?? User Request:
+> Ahora he probado de nuevo, con la misma pregunta, y la asistente no ha respondido. (ver captura de la terminal).
+
+#### ?? Agent Solution:
+- **Summary:** Al añadir la regla de los enlaces en el prompt, utilicé comillas invertidas (backticks) para la palabra `/precios`. Como el `SYSTEM_PROMPT` entero está envuelto en backticks, esto cerró el string prematuramente y el compilador interpretó la palabra `precios` como una variable de JavaScript. Se han eliminado las comillas invertidas para corregir el error de sintaxis en `app/api/chat/route.ts`.
+- **Files created/modified:**
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-08 20:21 CET
+**Main objective:** Resolver error de pánico de Turbopack.
+
+#### ?? User Request:
+> Ahora no me abre la interfaz del navegador. A ver qué le ocurre al Turbopack...
+
+#### ?? Agent Solution:
+- **Summary:** Los errores FATAL de pánico en Turbopack (Next.js 15+) suelen ocurrir por corrupción del caché en la carpeta `.next` durante recargas en caliente. Se instruyó al usuario para realizar un "Clean restart" borrando la carpeta `.next` tal como marca la regla del proyecto.
+- **Files created/modified:**
+  - N/A
+
+---
+### ?? Chat Session: 2026-08-08 20:58 CET
+**Main objective:** Ajustar el límite de RAM para Turbopack en modo desarrollo.
+
+#### ?? User Request:
+> Estoy desesperado con la memoria RAM porque me sale continuamente "out of memory", y no puedo ni hacer npm run dev ¿Puedes modificar el space-size?
+
+#### ?? Agent Solution:
+- **Summary:** Se aumentó el parámetro `--max-old-space-size` en el `package.json` de 8192 MB (8GB) a 10240 MB (10GB) para los scripts locales de desarrollo (`dev`, `dev:safe`, `dev:notrace`). Turbopack en proyectos grandes de Next.js es conocido por sus fugas de memoria, por lo que aumentar el límite suele evitar los cuelgues constantes.
+- **Files created/modified:**
+  - `package.json`
+
+---
+### ?? Chat Session: 2026-08-08 21:13 CET
+**Main objective:** Forzar a Zara a generar los links a servicios de forma consistente.
+
+#### ?? User Request:
+> Ahora he probado de nuevo, con la misma pregunta, y la asistente SÍ ha respondido pero no muestra el link del servicioal que alude.
+
+#### ?? Agent Solution:
+- **Summary:** Los LLM a veces ignoran las reglas del system prompt si están redactadas de forma suave o si la temperatura es alta. Se reescribió la instrucción de los links para hacerla una "REGLA ESTRICTA" explícita y se bajó la `temperature` de OpenAI en `route.ts` de `0.7` a `0.3` para forzar a la IA a ser mucho más predecible y obediente con las instrucciones de formato.
+- **Files created/modified:**
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-08 21:18 CET
+**Main objective:** Resolver el cuelgue continuo del servidor.
+
+#### ?? User Request:
+> No ha escupido NADA... No he podido tomar la captura porque el servidor se me cierra continuamente.
+
+#### ?? Agent Solution:
+- **Summary:** La razón por la que el asistente no escupió nada es precisamente porque el servidor se cerró abruptamente. Al aumentar la RAM a 10 GB (10240) anteriormente, es probable que en un PC de 16 GB el sistema operativo (Windows) se haya quedado sin memoria física para sí mismo y haya matado el proceso Node. Se ha revertido el límite a 8 GB (8192) en `package.json` para estabilizar el sistema.
+- **Files created/modified:**
+  - `package.json`
+
+---
+### ?? Chat Session: 2026-08-09 12:15 CET
+**Main objective:** Corregir errores de tipado en Supabase RPC en route.ts.
+
+#### ?? User Request:
+> IDE errors: No se puede asignar un argumento de tipo "match_knowledge"... La propiedad 'map' no existe en el tipo 'string'.
+
+#### ?? Agent Solution:
+- **Summary:** Al añadir la función SQL `match_knowledge` en la base de datos, los tipos TypeScript generados de Supabase (`database.types.ts`) no estaban al corriente de su existencia. Esto causaba que TypeScript rechazara la llamada a `.rpc('match_knowledge')` y, consecuentemente, asumiera que el resultado era un `string` o tipo no iterable, rompiendo `.map()`. Se ha forzado el tipado usando `(supabase.rpc as any)` y comprobando que `matchedChunks` es un array explícitamente.
+- **Files created/modified:**
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-09 12:17 CET
+**Main objective:** Garantizar que Zara añada los enlaces a los servicios superando la sobreescritura de RAG.
+
+#### ?? User Request:
+> Bueno, pues el chat sigue sin escupir el link del servicio al que alude. ¿Qué hacemos?
+
+#### ?? Agent Solution:
+- **Summary:** Cuando RAG inyectaba el contexto, la IA olvidaba la regla de los enlaces (fenómeno de "Lost in the middle" de los LLMs). Se aplicó una solución doble: 1) Se inyectaron los enlaces Markdown directamente en la fuente RAG (`faq_impuestos.md`) y se re-ejecutó el script de ingesta en segundo plano. 2) Se añadió un `RECORDATORIO CRÍTICO FINAL` en `route.ts` que se concatena *después* del texto RAG, asegurando que sea la ultimísima instrucción que lee el modelo antes de responder.
+- **Files created/modified:**
+  - `knowledge/faq_impuestos.md`
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-09 12:24 CET
+**Main objective:** Añadir directrices de RAG a AGENTS.md.
+
+#### ?? User Request:
+> Pienso que la respuesta que me acabas dar, con los 2 pasos, quizás debiera estar en agentes.md, porque tenemos que construir toda la base de conocimiento. ¿Qué te parece?
+
+#### ?? Agent Solution:
+- **Summary:** Se añadió una nueva sección a `AGENTS.md` ("AI Assistant & RAG Rules") documentando las 4 directrices críticas descubiertas durante la integración del chat: embeber Markdown links directamente en la base de datos, re-ingestar los embeddings siempre tras una modificación, inyectar reglas vitales al final del prompt para evitar el "lost in the middle", y mantener la temperatura baja (`0.3`). Esto servirá de guía para los futuros agentes que mantengan la base de conocimiento.
+- **Files created/modified:**
+  - `AGENTS.md`
+
+---
+### ?? Chat Session: 2026-08-09 13:13 CET
+**Main objective:** Implementar sistema RAG Dual-Source para automatizar el scraping de la web.
+
+#### ?? User Request:
+> Independientemente de los archivos que incluyamos en el RAG, ¿cómo podemos hacer para que Zara tenga toda la información de nuestro sitio web?
+
+#### ?? Agent Solution:
+- **Summary:** Se ha implementado un sistema RAG híbrido. Se creó un script Crawler (`scripts/scrape-website.ts`) que usa `cheerio` y `turndown` para leer el `sitemap.xml`, extraer el texto principal de todas las páginas de la web y convertirlas en Markdown (`knowledge/web/`). Adicionalmente, se modificó el script `ingest-knowledge.ts` para que lea archivos recursivamente de las carpetas `knowledge/web/` y `knowledge/custom/`. Se probó localmente con éxito, insertando 9 documentos vectorizados en Supabase.
+- **Files created/modified:**
+  - `app/sitemap.ts`
+  - `package.json`
+  - `scripts/scrape-website.ts`
+  - `scripts/ingest-knowledge.ts`
+  - `knowledge/web/*`
+
+---
+### ?? Chat Session: 2026-08-09 13:28 CET
+**Main objective:** Actualizar los paquetes antiguos por los nuevos en el prompt de Zara.
+
+#### ?? User Request:
+> Nuuestro website ha sufrido modificaciones importantes; antes disponíamos de 3 paquetes que tenián nombres y precios DIFERENTES a los actuales... Los planes actuales se llaman Starter, Professional y Business. Corrige eso.
+
+#### ?? Agent Solution:
+- **Summary:** Aunque el sistema RAG ya estaba extrayendo los paquetes correctos (Starter, Professional, Business) desde la web pública recién rastreada, Zara seguía mencionando los antiguos (Básico, Essential, Premium) porque estaban fuertemente incrustados en su `SYSTEM_PROMPT` interno (`route.ts`), el cual tiene prioridad absoluta. Se ha actualizado el código fuente de `route.ts` para reflejar la nueva estructura de planes, precios e indicaciones de enlaces.
+- **Files created/modified:**
+  - `app/api/chat/route.ts`
+
+---
+### ?? Chat Session: 2026-08-09 13:34 CET
+**Main objective:** Personalizar el icono de Zara con una imagen realista.
+
+#### ?? User Request:
+> El icono de Zara que sale en la ventana del chat lo podemos sustituir por la foto de una chica? (si lo ves positivo).
+
+#### ?? Agent Solution:
+- **Summary:** Se generó una foto profesional y realista de una asistente (Zara) mediante inteligencia artificial para aumentar la confianza y mejorar el CRO. Se sustituyeron los iconos genéricos (`<Bot />` y `<Sparkles />` de Lucide) por el componente `<Image />` de Next.js renderizando la nueva foto de perfil en la cabecera del chat y en cada mensaje del asistente.
+- **Files created/modified:**
+  - `public/images/zara-avatar.png`
+  - `components/chat/ChatWidget.tsx`
+
+---
+### ?? Chat Session: 2026-08-09 14:51 CET
+**Main objective:** Implementar chat híbrido (árbol de decisiones + IA).
+
+#### ?? User Request:
+> Adelante con el Plan de Implementación: Chat Híbrido (Empezar con botones y usar la IA solo para las dudas técnicas).
+
+#### ?? Agent Solution:
+- **Summary:** Se implementó un chat con máquina de estados: Atribución ? Intención ? 4 Ramas (Lead Caliente, Lead Tibio, IA Abierta, Otro). Se creó la página /guia-llc-extranjeros con la guía completa para extranjeros, la página /agendar con Calendly dedicado para mejor CRO, el email de guía gratuita (enviarGuiaGratis en email.service.ts) y la migración SQL para añadir attribution e intent a chat_leads. Los usuarios logueados saltan directamente a la IA.
+- **Files created/modified:**
+  - `components/chat/ChatWidget.tsx`
+  - `components/chat/chat-widget.css`
+  - `app/api/chat/leads/route.ts`
+  - `lib/services/email.service.ts`
+  - `app/guia-llc-extranjeros/page.tsx`
+  - `app/agendar/page.tsx`
+  - `supabase/migrations/20260809000001_chat_leads_attribution.sql`

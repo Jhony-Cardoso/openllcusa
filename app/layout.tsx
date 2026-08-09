@@ -5,6 +5,7 @@ import { esES } from '@clerk/localizations';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CookiesBanner from '@/components/shared/CookiesBanner';
+import ChatWidget from '@/components/chat/ChatWidget';
 import type { Metadata } from 'next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Script from 'next/script';
@@ -64,6 +65,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <ChatWidget />
           <CookiesBanner />
         </ClerkProvider>
 

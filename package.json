@@ -8,15 +8,21 @@
     "dev:notrace": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build --webpack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "scrape": "npx tsx scripts/scrape-website.ts",
+    "ingest": "npx tsx scripts/ingest-knowledge.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.35",
+    "@ai-sdk/react": "^4.0.60",
     "@clerk/localizations": "^3.37.3",
     "@clerk/nextjs": "^6.39.1",
     "@next/third-parties": "^16.2.4",
     "@stripe/stripe-js": "^8.6.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.87.1",
+    "ai": "^7.0.57",
+    "cheerio": "^1.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "jsonwebtoken": "^9.0.3",
@@ -39,7 +45,8 @@
     "remark-html": "^16.0.1",
     "resend": "^6.9.1",
     "stripe": "^20.2.0",
-    "svix": "^1.81.0"
+    "svix": "^1.81.0",
+    "turndown": "^7.2.4"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.28.5",
@@ -48,6 +55,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/turndown": "^5.0.6",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.21",
     "babel-loader": "^10.0.0",

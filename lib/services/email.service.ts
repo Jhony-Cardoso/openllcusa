@@ -34,6 +34,11 @@ export interface EmailEquipoParams {
   errorDetalle?: string
 }
 
+export interface EmailGuiaGratisParams {
+  to: string
+  nombre: string
+}
+
 export class EmailService {
   /**
    * Enviar email de confirmación de pago
@@ -964,6 +969,86 @@ export class EmailService {
       return { success: true, data }
     } catch (error) {
       console.error('❌ Error enviando notificación admin:', error)
+      return { success: false, error }
+    }
+  }
+
+  /**
+   * Enviar guía gratuita "Crea tu LLC en 7 días" al lead tibio
+   */
+  static async enviarGuiaGratis(params: EmailGuiaGratisParams) {
+    const { to, nombre } = params
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'
+    try {
+      const { data, error } = await resend.emails.send({
+        from: 'Zara · Open LLC USA <hola@updates.openllcusa.com>',
+        to: [to],
+        subject: '📘 Tu guía gratuita: Crea tu LLC en 7 días',
+        html: `
+          <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%); padding: 40px 32px; border-radius: 16px 16px 0 0; text-align: center;">
+              <p style="color: rgba(255,255,255,0.8); margin: 0 0 8px 0; font-size: 14px;">Open LLC USA</p>
+              <h1 style="color: white; margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3;">
+                📘 Tu guía gratuita está aquí, ${nombre}
+              </h1>
+              <p style="color: rgba(255,255,255,0.85); margin: 12px 0 0 0; font-size: 15px;">
+                Crea tu LLC en Estados Unidos en 7 días — paso a paso
+              </p>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 32px; background: #f8fafc; border: 1px solid #e2e8f0;">
+              <p style="color: #334155; font-size: 15px; line-height: 1.7; margin: 0 0 24px 0;">
+                Hola <strong>${nombre}</strong>, me alegra que hayas pedido la guía. La hemos preparado pensando exactamente en emprendedores como tú — sin jerga legal, sin letra pequeña.
+              </p>
+
+              <!-- CTA principal -->
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${baseUrl}/guia-llc-extranjeros" 
+                   style="display: inline-block; background: linear-gradient(135deg, #1D4ED8, #7C3AED); color: white; padding: 16px 36px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 16px; letter-spacing: 0.3px;">
+                  📖 Leer la guía completa →
+                </a>
+              </div>
+
+              <!-- Lo que encontrarás -->
+              <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin: 24px 0;">
+                <p style="color: #1e293b; font-weight: 700; margin: 0 0 16px 0; font-size: 15px;">Lo que encontrarás en la guía:</p>
+                <ul style="list-style: none; padding: 0; margin: 0; color: #334155; font-size: 14px; line-height: 1.8;">
+                  <li style="padding: 6px 0;">✅ Por qué los extranjeros pueden crear una LLC sin visa ni SSN</li>
+                  <li style="padding: 6px 0;">✅ Cuál es el mejor estado: Wyoming, Delaware o Nuevo México</li>
+                  <li style="padding: 6px 0;">✅ Qué documentos necesitas (spoiler: solo tu pasaporte)</li>
+                  <li style="padding: 6px 0;">✅ Cómo abrir una cuenta bancaria en EE.UU. desde tu país</li>
+                  <li style="padding: 6px 0;">✅ Los errores más comunes que debes evitar</li>
+                  <li style="padding: 6px 0;">✅ Costes reales y transparentes desglosados</li>
+                </ul>
+              </div>
+
+              <!-- CTA secundario -->
+              <div style="background: #eff6ff; border-left: 4px solid #1D4ED8; padding: 20px; border-radius: 0 12px 12px 0; margin: 24px 0;">
+                <p style="color: #1e293b; font-size: 14px; margin: 0 0 12px 0; font-weight: 600;">
+                  ¿Prefieres que un experto te lo explique en persona?
+                </p>
+                <a href="${baseUrl}/agendar" style="color: #1D4ED8; font-weight: 700; text-decoration: none; font-size: 14px;">
+                  📅 Reservar llamada gratuita de 30 min →
+                </a>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="padding: 24px 32px; text-align: center; background: #f8fafc; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+              <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                — Zara, asistente IA de Open LLC USA<br>
+                <a href="${baseUrl}" style="color: #1D4ED8;">openllcusa.com</a> · <a href="mailto:hola@openllcusa.com" style="color: #1D4ED8;">hola@openllcusa.com</a>
+              </p>
+            </div>
+          </div>
+        `
+      })
+      if (error) throw error
+      return { success: true, data }
+    } catch (error) {
+      console.error('❌ Error enviando guía gratis:', error)
       return { success: false, error }
     }
   }

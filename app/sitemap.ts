@@ -21,9 +21,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: route === '' ? 1 : 0.8,
     }))
 
-    // Páginas de servicios dinámicos
+    // Páginas de servicios dinámicos y paquetes
     const supabase = await createClient()
     const { data: servicios } = await supabase.from('servicios').select('slug')
+    const { data: paquetes } = await supabase.from('paquetes').select('slug')
 
     const servicePages = (servicios || []).map((servicio) => ({
         url: `${baseUrl}/servicios/${servicio.slug}`,
@@ -41,5 +42,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
     }))
 
-    return [...staticPages, ...servicePages, ...blogPages]
+    const paquetePages = (paquetes || []).map((paquete) => ({
+        url: `${baseUrl}/paquetes/${paquete.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.9,
+    }))
+
+    return [...staticPages, ...servicePages, ...paquetePages, ...blogPages]
 }

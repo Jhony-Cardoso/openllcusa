@@ -9,6 +9,13 @@ import { DefaultChatTransport } from 'ai'
 import { useUser } from '@clerk/nextjs'
 import './chat-widget.css'
 
+// ─── Analytics ────────────────────────────────────────────
+const trackGAEvent = (eventName: string, params?: any) => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', eventName, params)
+  }
+}
+
 // ─── Tipos ────────────────────────────────────────────────
 type LeadData = {
   nombre: string
@@ -64,7 +71,7 @@ function SimpleMarkdown({ text }: { text?: string }) {
           const boldMatch = part.match(/^\*\*(.+)\*\*$/)
           if (boldMatch) return <strong key={j}>{boldMatch[1]}</strong>
           const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
-          if (linkMatch) return <Link key={j} href={linkMatch[2]} className="chat-link">{linkMatch[1]}</Link>
+          if (linkMatch) return <Link key={j} href={linkMatch[2]} className="chat-link" onClick={() => trackGAEvent('chat_purchase', { url: linkMatch[2] })}>{linkMatch[1]}</Link>
           return <span key={j}>{part}</span>
         })
         const listMatch = line.match(/^(\s*)(•|-|[0-9]+️⃣|[0-9]+\.|✅|❌)\s*(.*)$/)
@@ -242,6 +249,7 @@ export default function ChatWidget() {
     await saveLead({ nombre: leadData.nombre, email: leadData.email, telefono: leadData.telefono, intent: 'hot_lead' })
     setLeadData(prev => ({ ...prev, capturado: true }))
     setHotLeadSubmitted(true)
+    trackGAEvent('lead_captured', { intent: 'hot_lead' })
   }
 
   // ── Lead Tibio ───────────────────────────────────────────
@@ -251,6 +259,7 @@ export default function ChatWidget() {
     await saveLead({ nombre: leadData.nombre || leadData.email, email: leadData.email, intent: 'warm_lead' })
     setLeadData(prev => ({ ...prev, capturado: true }))
     setWarmLeadSubmitted(true)
+    trackGAEvent('lead_captured', { intent: 'warm_lead' })
   }
 
   // ── Chat IA ──────────────────────────────────────────────
@@ -271,9 +280,16 @@ export default function ChatWidget() {
     if (!otherText.trim()) return
     await saveLead({ nombre: 'Anónimo', email: 'sin-email@openllcusa.com', intent: 'other' })
     setOtherSent(true)
+    trackGAEvent('lead_captured', { intent: 'other' })
   }
 
-  const toggleChat = () => setIsOpen(prev => !prev)
+  const toggleChat = () => {
+    setIsOpen(prev => {
+      const newState = !prev
+      if (newState) trackGAEvent('chat_opened')
+      return newState
+    })
+  }
 
   // ── Render fases del chat ────────────────────────────────
   const renderChatBody = () => {
@@ -332,7 +348,7 @@ export default function ChatWidget() {
               <div className="chat-message__avatar"><ZaraAvatar /></div>
               <div className="chat-message__bubble chat-bubble--assistant">
                 <SimpleMarkdown text={`✅ ¡Perfecto, ${leadData.nombre}! Ya tenemos tus datos.\n\nUn especialista te contactará en menos de 2 horas.\n\nMientras tanto, puedes reservar una llamada directamente aquí:`} />
-                <Link href="/agendar" className="chat-cta-btn" target="_blank">
+                <Link href="/agendar" className="chat-cta-btn" target="_blank" onClick={() => trackGAEvent('chat_purchase', { url: '/agendar' })}>
                   📅 Reservar llamada gratuita →
                 </Link>
               </div>

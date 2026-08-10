@@ -135,6 +135,28 @@ export default function ChatWidget() {
     }
   }, [isLoaded, isSignedIn, user?.firstName, setMessages, user?.primaryEmailAddress?.emailAddress])
 
+  // ── Cambio visual del título (Page Visibility API) ─────────
+  const originalTitle = useRef('')
+
+  useEffect(() => {
+    originalTitle.current = document.title
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        document.title = originalTitle.current
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1]
+    if (lastMessage?.role === 'assistant' && document.hidden) {
+      document.title = '(1) Zara te ha respondido - Open LLC USA'
+    }
+  }, [messages])
+  // ─────────────────────────────────────────────────────────
+
   const scrollToBottom = useCallback(() => {
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: 'smooth' })

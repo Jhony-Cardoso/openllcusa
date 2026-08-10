@@ -24,7 +24,7 @@ ENV NEXT_PUBLIC_GA_ID=G-LY8T63H5SZ
 
 # Asignar memoria al proceso Node durante el build.
 # VPS tiene 4GB RAM; dejamos margen para el OS, Dokploy y el contenedor en producción.
-ENV NODE_OPTIONS=--max-old-space-size=2048
+ENV NODE_OPTIONS=--max-old-space-size=1536
 
 # Build de Next.js (usa output: 'standalone')
 # Ejecutamos 'next build' directamente para que no lea el NODE_OPTIONS=8192 del package.json

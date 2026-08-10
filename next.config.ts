@@ -33,6 +33,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
+  eslint: {
+    // Evitar fallos por falta de memoria (OOM) en Dokploy
+    ignoreDuringBuilds: true,
+  },
+
 
   // Configuración de headers para CORS (Stripe, etc.)
   async headers() {

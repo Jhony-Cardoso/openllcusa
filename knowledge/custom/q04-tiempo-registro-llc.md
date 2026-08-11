@@ -7,9 +7,9 @@ Los plazos varían según el estado elegido:
 - **Nuevo México:** 1–5 días hábiles.
 
 Una vez registrada la LLC, el **EIN** (número de identificación fiscal federal) requiere un trámite adicional ante el IRS:
-- Por correo o fax: 1–4 semanas.
+- Para extranjeros sin SSN (vía Fax): **2 a 4 semanas**.
 - Si el propietario tiene SSN o ITIN: puede solicitarse online de forma instantánea.
 
-Open LLC USA gestiona el proceso completo de la forma más ágil posible, manteniéndote informado en cada paso.
+Open LLC USA gestiona el proceso completo de la forma más ágil posible, manteniéndote informado en cada paso. [Lee más sobre cómo tramitamos el EIN sin SSN](/ein-sin-ssn).
 
-[Empieza el registro de tu LLC hoy](/servicios) y ten tu empresa americana operativa en días.
+[Ver nuestros planes de formación de LLC](/precios) y ten tu empresa americana operativa en 5-7 días.

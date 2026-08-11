@@ -54,6 +54,62 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Schema JSON-LD: Organization + WebSite + SearchAction
+  const jsonLdOrganization = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://openllcusa.com/#organization',
+        name: 'Open LLC USA',
+        url: 'https://openllcusa.com',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://openllcusa.com/images/logo.png',
+          width: 300,
+          height: 60,
+        },
+        description: 'Servicio de formación de LLC en Estados Unidos para emprendedores hispanos no residentes. Proceso 100% online desde España y Latinoamérica.',
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'customer service',
+          availableLanguage: 'Spanish',
+          url: 'https://openllcusa.com/contacto',
+        },
+        sameAs: [
+          'https://www.instagram.com/openllcusa',
+          'https://www.linkedin.com/company/openllcusa',
+        ],
+        areaServed: [
+          { '@type': 'Country', name: 'España' },
+          { '@type': 'Country', name: 'México' },
+          { '@type': 'Country', name: 'Argentina' },
+          { '@type': 'Country', name: 'Colombia' },
+          { '@type': 'Country', name: 'Chile' },
+        ],
+        foundingDate: '2022',
+        priceRange: '$$$',
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://openllcusa.com/#website',
+        url: 'https://openllcusa.com',
+        name: 'Open LLC USA',
+        description: 'Forma tu LLC en EE.UU. desde España o Latam sin visa ni SSN.',
+        publisher: { '@id': 'https://openllcusa.com/#organization' },
+        inLanguage: 'es',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://openllcusa.com/faq?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
+  }
+
   return (
     <html lang="es" suppressHydrationWarning>
       <body suppressHydrationWarning>
@@ -68,6 +124,13 @@ export default function RootLayout({
           <ChatWidget />
           <CookiesBanner />
         </ClerkProvider>
+
+        {/* ==================== SCHEMA JSON-LD: Organization + WebSite ==================== */}
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
+        />
 
         {/* ==================== GOOGLE ANALYTICS 4 ==================== */}
         <GoogleAnalytics

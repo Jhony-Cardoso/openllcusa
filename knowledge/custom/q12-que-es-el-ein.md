@@ -12,8 +12,8 @@ El **EIN** (Employer Identification Number) es el número de identificación fis
 - **Abrir cuentas en brókers** americanos para inversión.
 
 ## ¿Cómo se obtiene?
-El EIN lo solicita el propietario de la LLC ante el IRS mediante el Formulario SS-4. Open LLC USA gestiona este trámite por ti, que puede tardar entre 1 y 4 semanas dependiendo del método de solicitud.
+El EIN lo solicita el propietario de la LLC ante el IRS mediante el Formulario SS-4. Open LLC USA gestiona este trámite por ti, enviando el formulario directamente al IRS por fax. Actualmente, debido a retrasos en el IRS, el trámite tarda **entre 2 y 4 semanas** en asignar el EIN para extranjeros.
 
 El EIN no caduca y va ligado permanentemente a tu empresa (incluso si cierras y vuelves a abrir la misma LLC).
 
-[Consulta nuestros planes](/servicios) que incluyen la gestión del EIN.
+[Descubre cómo tramitamos el EIN sin SSN](/ein-sin-ssn) o [Consulta nuestros planes](/precios) que incluyen la gestión 100% remota del EIN.

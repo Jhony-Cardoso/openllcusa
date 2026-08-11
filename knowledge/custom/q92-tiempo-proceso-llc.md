@@ -14,11 +14,10 @@ Los plazos dependen principalmente del estado elegido y de la velocidad de respu
 ### 2. Obtención del EIN del IRS
 | Método | Plazo |
 |--------|-------|
-| Por teléfono al IRS | Mismo día (EIN inmediato) |
-| Por fax al IRS | 4-7 días hábiles |
-| Por correo postal | 4-8 semanas |
+| Por fax al IRS (Extranjeros) | 2-4 semanas |
+| Por correo postal | 4-8 semanas (no recomendado) |
 
-Open LLC USA utiliza el método de fax o teléfono para maximizar la velocidad.
+Open LLC USA utiliza el método de fax directo a la línea internacional del IRS para maximizar la velocidad y seguridad. [Más información sobre el EIN sin SSN](/ein-sin-ssn).
 
 ### 3. Documentación completa lista para el cliente
 Una vez que el estado aprueba la LLC y el IRS confirma el EIN, Open LLC USA te entrega:
@@ -26,7 +25,7 @@ Una vez que el estado aprueba la LLC y el IRS confirma el EIN, Open LLC USA te e
 - EIN Confirmation Letter.
 - Operating Agreement.
 
-**Tiempo total estimado:** En la mayoría de casos, entre **7 y 15 días hábiles** desde que nos envías la información y el pago.
+**Tiempo total estimado:** En la mayoría de casos, entre **3 y 5 semanas** desde que nos envías la información y el pago (dependiendo de la velocidad del IRS).
 
 ## ¿Puedo empezar a operar mientras espero el EIN?
 La LLC queda registrada ante el estado al recibir la aprobación estatal. Sin embargo, para abrir cuentas bancarias y plataformas de pago como Stripe, necesitas el EIN. Espera a tener todos los documentos antes de iniciar estos trámites.
@@ -37,4 +36,4 @@ La LLC queda registrada ante el estado al recibir la aprobación estatal. Sin em
 - Copia de tu pasaporte o documento de identidad.
 - Dirección residencial.
 
-[Inicia el proceso de registro hoy mismo](/servicios) y en menos de dos semanas tendrás tu LLC americana operativa.
+[Inicia el proceso de registro hoy mismo](/precios) y deja que nuestros expertos gestionen tu LLC y EIN.

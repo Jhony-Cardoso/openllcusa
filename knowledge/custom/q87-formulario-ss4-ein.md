@@ -10,18 +10,18 @@ El **Formulario SS-4** es el formulario oficial del IRS para solicitar un **EIN 
 - Tendrás que responder preguntas sobre la LLC y te darán el EIN al momento.
 - Necesitas: nombre de la LLC, dirección, nombre y datos del propietario.
 
-### Opción 2: Por fax (la más usada para extranjeros que no hablan inglés con fluidez)
+### Opción 2: Por fax (la más usada y segura para extranjeros)
 - Rellenas el SS-4 y lo envías por fax al IRS al **+1-304-707-9471**.
-- El IRS procesa la solicitud y envía el EIN confirmation letter por fax en 4-7 días hábiles.
-- Es el método que Open LLC USA gestiona por ti.
+- Actualmente, por carga de trabajo del IRS, el procesamiento y devolución del EIN confirmation letter tarda **entre 2 y 4 semanas**.
+- Es el método que Open LLC USA gestiona íntegramente por ti. [Conoce más sobre cómo obtener el EIN sin SSN](/ein-sin-ssn).
 
-### Opción 3: Por correo postal (la más lenta)
+### Opción 3: Por correo postal (obsoleta y lenta)
 - Envías el SS-4 por correo internacional al IRS.
 - El proceso puede tardar **4 a 8 semanas**.
-- Solo se usa cuando los otros métodos no están disponibles.
+- No recomendamos este método por su excesiva lentitud y falta de trazabilidad.
 
 ### Opción online (no disponible para extranjeros)
 El formulario online del IRS solo permite solicitar el EIN a personas con SSN o ITIN. Los extranjeros sin estos deben usar los métodos anteriores.
 
 ## ¿Qué hace Open LLC USA?
-Open LLC USA gestiona la obtención del EIN por fax o teléfono como parte del proceso de registro de tu LLC. **No tienes que hacer nada tú**. [Ver nuestros planes con EIN incluido](/servicios).
+Open LLC USA gestiona la obtención del EIN por fax como parte del proceso de registro de tu LLC. **No tienes que hacer nada tú**. [Ver nuestros planes con EIN incluido](/precios).

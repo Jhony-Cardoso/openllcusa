@@ -901,3 +901,191 @@ const { data, error } = await resend.emails.send({
 `	ypescript
       messages: await convertToModelMessages(messages),
 `
+
+---
+### ?? Chat Session: 2026-08-11 13:47
+**Main objective:** Diseñar estrategia SEO completa con keyword research basado en análisis de competidores e implementar quick wins técnicos
+
+#### ?? User Request:
+> Construir una estrategia SEO completa para Open LLC USA: keyword research, análisis de 7 competidores (globalfy.com, openbiz.io, gcmasesores.io, ezfrontiers.com, circleclub.com, firmaway.us, americanprana.com) e implementar quick wins técnicos
+
+#### ?? Agent Solution:
+- **Summary:** Se analizaron 6 competidores hispanohablantes, se generó el Keyword Research Maestro con 80+ keywords clasificadas en 7 tiers, se identificaron 12 brechas (keywords que ningún competidor domina), y se implementaron 2 quick wins técnicos directamente en el código.
+- **Files created/modified:**
+  - pp/layout.tsx — Schema JSON-LD Organization + WebSite + SearchAction (Knowledge Panel)
+  - pp/sitemap.ts — Ampliado con /guia, /guias, /guia-llc-extranjeros, /proceso, /quiz, /testimonios, /agendar
+  - [artifact] keyword_research.md — Keyword Research Maestro completo
+  - [artifact] seo_plan.md — Plan SEO Estratégico actualizado
+
+#### ?? Key Code:
+\\\	ypescript
+// app/layout.tsx — Schema Organization + WebSite + SearchAction
+const jsonLdOrganization = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'Organization', '@id': 'https://openllcusa.com/#organization', name: 'Open LLC USA', ... },
+    { '@type': 'WebSite', potentialAction: { '@type': 'SearchAction', ... } }
+  ]
+}
+\\\
+
+#### ?? Brechas de Keywords Identificadas:
+1. "crear LLC desde España" — Nadie la domina en español
+2. "LLC vs SL España" — Vacío total en el mercado
+3. "EIN sin SSN extranjero" — Solo contenido débil existe
+4. "LLC para Amazon FBA no residente" — Sin competencia
+5. "cuenta bancaria LLC sin viajar" — Contenido incompleto en competidores
+
+---
+### ?? Chat Session: 2026-08-11 14:05
+**Main objective:** Crear página pillar /crear-llc-usa y artículo de blog "LLC vs SL en España"
+
+#### ?? User Request:
+> Implementar página pillar /crear-llc-usa y artículo de blog "LLC vs SL en España" (brecha de keyword total)
+
+#### ?? Agent Solution:
+- **Summary:** Se creó la página pillar SEO /crear-llc-usa con HowTo Schema + FAQPage Schema, y el artículo de blog con slug "llc-vs-sl-espana" con Article Schema. También se actualizó el sitemap para incluir la nueva página con prioridad 0.95.
+- **Files created/modified:**
+  - pp/crear-llc-usa/page.tsx — Página pillar completa (hero, estados, proceso, costes, impuestos, FAQ, CTA)
+  - lib/blog/posts.ts — Nuevo artículo "LLC vs SL en España" (15 min de lectura, 3000+ palabras)
+  - pp/sitemap.ts — /crear-llc-usa añadida con prioridad 0.95
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/crear-llc-usa (página pillar)
+- https://openllcusa.com/blog/llc-vs-sl-espana (artículo)
+
+---
+### ?? Chat Session: 2026-08-11 18:22
+**Main objective:** Crear landing page SEO /ein-sin-ssn (Brecha competitiva)
+
+#### ?? User Request:
+> Continuar con la creación de la página /ein-sin-ssn basada en la investigación de palabras clave.
+
+#### ?? Agent Solution:
+- **Summary:** Se creó la landing page /ein-sin-ssn diseñada para resolver el problema del 'EIN sin SSN' para extranjeros. Se incluyó un esquema FAQPage para ganar Featured Snippets y se optimizó para las palabras clave "EIN sin SSN extranjero" y "como obtener EIN sin SSN". Además, se añadió la ruta al sitemap con una prioridad alta de 0.9.
+- **Files created/modified:**
+  - pp/ein-sin-ssn/page.tsx — Nueva landing page con Hero, proceso SS-4, mitos y Schema FAQ.
+  - pp/sitemap.ts — Agregada la ruta /ein-sin-ssn con prioridad 0.9.
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/ein-sin-ssn
+
+---
+### ?? Chat Session: 2026-08-11 18:46
+**Main objective:** Crear landing page SEO /crear-llc-desde-espana (Brecha competitiva)
+
+#### ?? User Request:
+> Ok, adelante con la landing /crear-llc-desde-espana
+
+#### ?? Agent Solution:
+- **Summary:** Se creó la landing page geolocalizada /crear-llc-desde-espana abordando los puntos de dolor específicos del mercado español (Cuota de autónomos, Modelo 720, LLC vs SL, IRPF). Se optimizó para las keywords "crear LLC desde España" y se incluyó un Schema FAQPage especializado en tributación española. Se añadió al sitemap con prioridad 0.85.
+- **Files created/modified:**
+  - pp/crear-llc-desde-espana/page.tsx — Nueva landing con Hero geolocalizado, comparativa LLC/SL, y FAQ de Hacienda.
+  - pp/sitemap.ts — Agregada la ruta al sitemap.
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/crear-llc-desde-espana
+
+---
+### ?? Chat Session: 2026-08-11 19:19
+**Main objective:** Corregir tiempos de respuesta del EIN en la IA (Zara)
+
+#### ?? User Request:
+> Zara sigue insistiendo "entre 1 y 5 días hábiles"
+
+#### ?? Agent Solution:
+- **Summary:** Debido a problemas de OOM al intentar re-ingestar toda la base de conocimientos con ingest-knowledge.ts, se creó un script JS directo (ix-ein-time.mjs) que actualizó los campos de texto directamente en la tabla knowledge_base de Supabase, reemplazando "1 a 5 días" por "2 a 4 semanas" sin tener que recalcular vectores. Se actualizaron 4 fragmentos con éxito.
+- **Files created/modified:**
+  - scripts/fix-ein-time.mjs (nuevo script de rescate)
+
+---
+### ?? Chat Session: 2026-08-11 19:27
+**Main objective:** Crear landing page SEO para /llc-wyoming (Búsqueda transaccional estatal)
+
+#### ?? User Request:
+> Vemos ahora con la landing /llc-wyoming. ¿vamos a hacer una landing para cada estado?
+
+#### ?? Agent Solution:
+- **Summary:** Se creó la landing específica de Wyoming (/llc-wyoming), posicionándola como la opción #1 para no residentes por su privacidad y costo de . Incluye una comparativa visual contra Delaware y New Mexico, y un Schema JSON-LD de FAQPage específico de la tributación del estado.
+- **Files created/modified:**
+  - pp/llc-wyoming/page.tsx — Nueva landing SEO de estado (esmeralda/naturaleza)
+  - pp/sitemap.ts — Agregada la ruta.
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/llc-wyoming
+
+---
+### ?? Chat Session: 2026-08-11 19:33
+**Main objective:** Crear landing page SEO para /llc-delaware (Búsqueda transaccional estatal corporativa)
+
+#### ?? User Request:
+> Adelante con la landing de Delaware!!
+
+#### ?? Agent Solution:
+- **Summary:** Se construyó la landing específica de Delaware (/llc-delaware), posicionándola para Startups, Venture Capital e inversores institucionales, con una paleta de colores azul corporativa/premium. Se incluyó un bloque de honestidad sobre el coste del Franchise Tax () y por qué los e-commerces deberían evitarlo. Se incluyó el Schema JSON-LD y se añadió al sitemap con prioridad 0.85.
+- **Files created/modified:**
+  - pp/llc-delaware/page.tsx — Nueva landing SEO de Delaware.
+  - pp/sitemap.ts — Agregada la ruta.
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/llc-delaware
+
+---
+### ?? Chat Session: 2026-08-11 19:40
+**Main objective:** Crear landing page SEO para /llc-new-mexico (Búsqueda transaccional estatal)
+
+#### ?? User Request:
+> Adelante con la landing de New Mexico. Dime qué es mejor de cara al SEO, "New Mexico" o "Nuevo México". Dime también si es recomendable hacer una landing dedicada a Florida.
+
+#### ?? Agent Solution:
+- **Summary:** Se explicó la estrategia SEO mixta (URL en inglés, título bilingüe) y se validó la creación futura de Florida. Se construyó la landing de New Mexico (/llc-new-mexico) orientada al costo cero y anonimato, con un diseño cálido (terracota) y una comparativa directa con Wyoming. Se añadió al sitemap.
+- **Files created/modified:**
+  - pp/llc-new-mexico/page.tsx — Nueva landing SEO de New Mexico.
+  - pp/sitemap.ts — Agregada la ruta.
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/llc-new-mexico
+
+---
+### ?? Chat Session: 2026-08-11 19:43
+**Main objective:** Crear landing page SEO para /llc-florida (Búsqueda transaccional estatal)
+
+#### ?? User Request:
+> SÍ!!! Adelante con landing de Florida ??
+
+#### ?? Agent Solution:
+- **Summary:** Se construyó la landing específica de Florida (/llc-florida), muy orientada al mercado hispanohablante/LATAM, Real Estate e importadores. Se usó un diseño costero vibrante (Cyan/Naranja). Incluye un aviso transparente sobre el registro público de Sunbiz (falta de privacidad) y la tasa anual de .75 para curarnos en salud. Se añadió al sitemap.
+- **Files created/modified:**
+  - pp/llc-florida/page.tsx — Nueva landing SEO de Florida.
+  - pp/sitemap.ts — Agregada la ruta.
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/llc-florida
+
+---
+### ?? Chat Session: 2026-08-11 20:06
+**Main objective:** Crear landing page pilar para /llc-para-no-residentes (Búsqueda global internacional)
+
+#### ?? User Request:
+> Vamos ahora con la landing /llc-para-no-residentes
+
+#### ?? Agent Solution:
+- **Summary:** Se creó la landing estratégica para "No Residentes" (/llc-para-no-residentes). Se utilizó un diseño Fintech (Índigo/Púrpura profundo) orientado a Nómadas Digitales. El contenido desmitifica los impuestos (0% US Tax) explicando el concepto de "Disregarded Entity" y la falta de Presencia Física (ETBUS). Se corrigieron preventivamente los problemas de mimetización de color en los H2. Se asignó prioridad 0.95 en el sitemap por ser una página pilar de alto tráfico.
+- **Files created/modified:**
+  - pp/llc-para-no-residentes/page.tsx — Nueva landing SEO internacional.
+  - pp/sitemap.ts — Agregada la ruta.
+
+#### ?? Key URLs nuevas:
+- https://openllcusa.com/llc-para-no-residentes
+
+---
+### Ã°Å¸â€œâ€¦ Chat Session: 2026-08-11 21:07
+**Main objective:** Resolver cuelgue por OOM de Next.js y verificaciÃƒÂ³n del build
+
+#### Ã°Å¸â€˜Â¤ User Request:
+> Ha colapsado todo. Mi pc, la plataforma.... Creo que ha sido por un problema de memoria al ejecutar npm run build. Se ha perdido la conversaciÃƒÂ³n.
+
+#### Ã°Å¸Â¤â€“ Agent Solution:
+- **Summary:** Se verificÃƒÂ³ que todo el trabajo previo de las 8 landings SEO estaba intacto en el cÃƒÂ³digo. Para evitar nuevos cuelgues del PC, se redujo el lÃƒÂ­mite de memoria del comando build de 8 GB a 4 GB. Se verificÃƒÂ³ que el build estÃƒÂ¡tico se generÃƒÂ³ correctamente al 100%. Se agendÃƒÂ³ para la prÃƒÂ³xima sesiÃƒÂ³n: /llc-para-trading-con-cuentas-de-fondeo.
+- **Files created/modified:**
+  - `package.json`

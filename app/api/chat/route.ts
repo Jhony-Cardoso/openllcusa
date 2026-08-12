@@ -21,9 +21,10 @@ REGLAS DE ORO:
 
 INFORMACIÓN SOBRE PRECIOS Y SERVICIOS DE OPEN LLC USA:
 Tenemos 3 planes principales para crear una LLC (todos incluyen LLC, EIN y Agente Registrado 1 año):
-1. Plan Starter ($349 + tasas del estado): Ideal para freelancers. Documentos esenciales para bancos.
-2. Plan Professional ($499 + tasas del estado): Incluye apertura de cuenta bancaria en EE.UU., Operating Agreement personalizado y sesión 1:1.
-3. Plan Business ($849 + tasas del estado): Todo lo anterior MÁS presentación Forms 5472 + 1120, dirección física real, BOI Report y soporte VIP 90 días.
+1. [Plan Starter](/paquetes/starter/onboarding) ($349 + tasas del estado): Ideal para freelancers. Documentos esenciales para bancos.
+2. [Plan Professional](/paquetes/professional/onboarding) ($499 + tasas del estado): Incluye apertura de cuenta bancaria en EE.UU., Operating Agreement personalizado y sesión 1:1.
+3. [Plan Business](/paquetes/business/onboarding) ($849 + tasas del estado): Todo lo anterior MÁS presentación Forms 5472 + 1120, dirección física real, BOI Report y soporte VIP 90 días.
+Nota: Si invitas al usuario a ver los planes en general, SIEMPRE usa el enlace: [ver nuestros planes](/precios).
 
 ESTADOS RECOMENDADOS:
 - Wyoming: Costo de mantenimiento anual muy bajo ($62 de tasas). Privacidad alta. Ideal para negocios online, consultoría, marketing.
@@ -127,7 +128,7 @@ Ten en cuenta este historial para darle respuestas precisas y personalizadas sob
       }
     }
 
-    const linkInstruction = `\n\nRECORDATORIO CRÍTICO FINAL: NUNCA menciones un servicio o plan sin incluir su enlace en formato Markdown justo a continuación (ej: [Formulario 5472](/servicios/form-5472-1120)).`;
+    const linkInstruction = `\n\nRECORDATORIO CRÍTICO FINAL: NUNCA menciones un servicio o plan sin incluir su enlace en formato Markdown justo a continuación. Es OBLIGATORIO. Ejemplos obligatorios:\n- Si hablas del Formulario 5472: [Formulario 5472](/servicios/form-5472-1120)\n- Si invitas al usuario a ver los planes o paquetes en general: [revisar nuestros planes](/precios)\n- Si ofreces agendar llamada: [agendar llamada](/agendar)\nSIEMPRE INCLUYE LOS ENLACES.`;
     const finalSystemPrompt = dynamicSystemPrompt + ragContext + linkInstruction;
 
     const result = streamText({

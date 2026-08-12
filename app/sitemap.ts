@@ -10,12 +10,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '',
         '/crear-llc-usa',      // Página pillar principal — prioridad máxima después de home
         '/llc-para-no-residentes', // Landing pilar internacional
+        '/llc-para-ecommerce', // Landing e-commerce y Amazon FBA
+        '/costo-crear-llc',    // Landing costo y transparencia
+        '/abrir-cuenta-bancaria-usa', // Landing bancos Fintech
+        '/llc-trading-con-cuentas-de-fondeo', // Landing Prop Trading
         '/ein-sin-ssn',        // Landing transaccional importante
         '/crear-llc-desde-espana', // Landing geolocalizada importante
         '/llc-wyoming',        // Landing por estado importante
         '/llc-delaware',       // Landing por estado importante
         '/llc-new-mexico',     // Landing por estado importante
         '/llc-florida',        // Landing por estado importante
+        '/llc-texas',          // Landing por estado (educativa)
         '/precios',
         '/calculadora-fiscal',
         '/contacto',

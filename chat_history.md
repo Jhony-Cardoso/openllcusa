@@ -1118,3 +1118,114 @@ const jsonLdOrganization = {
 '/llc-trading-con-cuentas-de-fondeo',
 '/llc-texas',
 ```
+
+---
+### ?? Chat Session: 13-08-2026
+**Main objective:** Implementar la Fase 3 de SEO Técnico, añadiendo metadata y JSON-LD Schema.
+
+#### ?? User Request:
+> Revisa el documento seo_plan para seguir con el plan de implementación del SEO.
+
+#### ?? Agent Solution:
+- **Summary:** Se verificó que las páginas pillar ya existían. Se procedió a añadir/corregir metadatos y enlaces canónicos en las rutas principales. Se inyectó JSON-LD Schema (Organization, WebSite, Service, Offer, Product, Article, HowTo) y se resolvió un fallo de Out of Memory eliminando la configuración de eslint de next.config.ts y aumentando la RAM de build en package.json.
+- **Files created/modified:**
+  - \pp/page.tsx\
+  - \pp/calculadora-fiscal/page.tsx\
+  - \pp/recursos/page.tsx\
+  - \pp/servicios/[slug]/page.tsx\
+  - \pp/guia-llc-extranjeros/page.tsx\
+  - \pp/precios/page.tsx\
+  - \pp/blog/[slug]/page.tsx\
+  - \pp/proceso/page.tsx\ (Creada)
+  - \package.json\
+  - \
+ext.config.ts\
+
+#### ?? Key Code:
+\\\	sx
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug: rawSlug } = await params
+  const slug = rawSlug.replace(/^impuestos-/, 'impuestos/')
+  const { data: s } = await supabaseAdmin.from('servicios').select('nombre, descripcion').eq('slug', slug).single() as { data: Partial<Servicio> | null }
+
+  if (!s) return { title: 'Servicio no encontrado' }
+  return {
+    title: \\ | Open LLC USA\,
+    description: s.descripcion?.slice(0, 160) || \Contrata el servicio online.\,
+    alternates: { canonical: \https://openllcusa.com/servicios/\\ },
+    openGraph: { title: \\ | Open LLC USA\, url: \https://openllcusa.com/servicios/\\ }
+  }
+}
+\\\
+
+
+---
+### ?? Chat Session: 13-08-2026
+**Main objective:** Implementar la Fase 4 de SEO de Contenidos, inyectando posts en el blog y optimizando Precios y FAQs.
+
+#### ?? User Request:
+> Respondiendo a Open Questions: Puedes elaborar los 3 nuevos artículos del blog y, a continuación, atacar las mejoras de conversión en la página de Precios y FAQs. PROCEDE con la Fase 4.
+
+#### ?? Agent Solution:
+- **Summary:** Se redactaron e inyectaron en el sistema 3 artículos extensos y semánticos ('Formulario 5472', 'Wyoming vs Delaware', y 'Cuenta bancaria sin viajar'). Además, se añadió una tabla comparativa de estados en la página de Precios y se añadieron 10 preguntas semánticas nuevas en la página de FAQs. Se completó el build exitosamente validando todas las nuevas rutas estáticas.
+- **Files created/modified:**
+  - \lib/blog/posts.ts\
+  - \pp/precios/page.tsx\
+  - \pp/faq/page.tsx\
+
+#### ?? Key Code:
+\\\	sx
+// lib/blog/posts.ts
+  {
+    slug: 'formulario-5472-llc',
+    title: 'Formulario 5472 y 1120: Qué es y cuándo lo necesita tu LLC en 2026',
+    excerpt: 'Si eres extranjero y tienes una LLC en EE.UU., el IRS exige que presentes el Formulario 5472 y 1120 cada año...',
+    schema: { '@type': 'Article' },
+    content: \## Introducción... \
+  }
+\\\
+
+
+---
+### ðŸ“… Chat Session: 13-08-2026
+**Main objective:** Implementar enlazado interno estratÃ©gico SEO.
+
+#### ðŸ‘¤ User Request:
+> Pues vamos con el Enlazado Interno ðŸŽ¯
+
+#### ðŸ¤– Agent Solution:
+- **Summary:** Se ha inyectado cÃ³digo JSX con el componente <Link> en pÃ¡ginas clave para transmitir PageRank a los nuevos artÃ­culos del blog sin romper esquemas JSON-LD.
+- **Files created/modified:**
+  - app/page.tsx
+  - app/precios/page.tsx
+  - app/servicios/[slug]/page.tsx
+
+#### ðŸ’» Key Code:
+```tsx
+// Ejemplo en app/page.tsx
+desc: (
+  <>
+    Crea tu empresa en <Link href="/blog/wyoming-vs-delaware-llc" className="text-blue-600 hover:underline">Wyoming o Delaware</Link> en solo 72 horas.
+  </>
+)
+```
+
+---
+### ðŸ“… Chat Session: 13-08-2026 (Parte 2)
+**Main objective:** Planificar Fase 5 (Off-Page y Redes) y resolver OOM del build local.
+
+#### ðŸ‘¤ User Request:
+> Ajusta el consumo de RAM, hablemos sobre redes sociales y automatizaciÃ³n de videos cortos. Vamos a subir los cambios y terminar por hoy.
+
+#### ðŸ¤– Agent Solution:
+- **Summary:** Se redujo el NODE_OPTIONS a 4096MB en package.json y AGENTS.md para evitar OOM con el compilador. Se propuso estrategia para redes sociales (X, LinkedIn, TikTok/Reels) usando Metricool/Make y reciclando el RAG. Los cambios se subieron al repositorio.
+- **Files created/modified:**
+  - package.json
+  - AGENTS.md
+
+#### ðŸ’» Key Code:
+```json
+"scripts": {
+  "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build --webpack"
+}
+```

@@ -4,8 +4,8 @@ import { InlineWidget } from 'react-calendly'
 import { Mail, Clock, Shield, Calendar, Mic } from 'lucide-react'
 
 export default function ContactoPage() {
-  const handleCarlaClick = () => {
-    alert('¡Hola! Soy Carla, tu asistente virtual. Pronto estaré disponible para ayudarte 24/7.')
+  const handleZaraClick = () => {
+    alert('¡Hola! Soy Zara, tu asistente virtual. Pronto estaré disponible para ayudarte 24/7.')
   }
 
   return (
@@ -178,14 +178,14 @@ export default function ContactoPage() {
         </div>
       </section>
 
-      {/* Sección de contacto alternativo con Carla */}
+      {/* Sección de contacto alternativo con Zara */}
       <section className="bg-gray-100 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4 text-gray-900">
             ¿Prefieres contactarnos de otra forma?
           </h2>
           <p className="text-gray-600 mb-8">
-            También puedes escribirnos un email o hablar con Carla ahora mismo
+            También puedes escribirnos un email o hablar con Zara ahora mismo
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -205,15 +205,15 @@ export default function ContactoPage() {
 
             <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
               <Mic className="text-purple-600 mx-auto mb-4" size={48} />
-              <h3 className="text-xl font-semibold mb-2">Habla con Carla</h3>
+              <h3 className="text-xl font-semibold mb-2">Habla con Zara</h3>
               <p className="text-gray-600 mb-4 text-sm">
-                Si no quieres esperar, habla <strong>AHORA</strong> con Carla.<br />Está disponible 24/7
+                Si no quieres esperar, habla <strong>AHORA</strong> con Zara.<br />Está disponible 24/7
               </p>
               <button 
-                onClick={handleCarlaClick}
+                onClick={handleZaraClick}
                 className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors cursor-pointer"
               >
-                🎙️ Hablar con Carla
+                🎙️ Hablar con Zara
               </button>
             </div>
           </div>

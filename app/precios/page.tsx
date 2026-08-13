@@ -65,12 +65,12 @@ const jsonLd = {
     '@type': 'OfferCatalog',
     name: 'Planes para tu LLC en EE. UU.',
     itemListElement: [
-      { '@type': 'Offer', name: 'Starter', price: '349', priceCurrency: 'USD', category: 'Formar' },
-      { '@type': 'Offer', name: 'Professional', price: '499', priceCurrency: 'USD', category: 'Formar' },
-      { '@type': 'Offer', name: 'Business', price: '849', priceCurrency: 'USD', category: 'Formar' },
-      { '@type': 'Offer', name: 'Plan Compliance Básico', price: '49', priceCurrency: 'USD', category: 'Mantener' },
-      { '@type': 'Offer', name: 'Plan Crecimiento', price: '129', priceCurrency: 'USD', category: 'Mantener' },
-      { '@type': 'Offer', name: 'Pack Optimización', price: '397', priceCurrency: 'USD', category: 'Optimizar' },
+      { '@type': 'Offer', name: 'Starter', priceSpecification: { '@type': 'PriceSpecification', price: 349, priceCurrency: 'USD' }, category: 'Formar' },
+      { '@type': 'Offer', name: 'Professional', priceSpecification: { '@type': 'PriceSpecification', price: 499, priceCurrency: 'USD' }, category: 'Formar' },
+      { '@type': 'Offer', name: 'Business', priceSpecification: { '@type': 'PriceSpecification', price: 849, priceCurrency: 'USD' }, category: 'Formar' },
+      { '@type': 'Offer', name: 'Plan Compliance Básico', priceSpecification: { '@type': 'PriceSpecification', price: 49, priceCurrency: 'USD' }, category: 'Mantener' },
+      { '@type': 'Offer', name: 'Plan Crecimiento', priceSpecification: { '@type': 'PriceSpecification', price: 129, priceCurrency: 'USD' }, category: 'Mantener' },
+      { '@type': 'Offer', name: 'Pack Optimización', priceSpecification: { '@type': 'PriceSpecification', price: 397, priceCurrency: 'USD' }, category: 'Optimizar' },
     ],
   },
 }
@@ -676,6 +676,54 @@ export default function PricingPage() {
             <p className="hp-fu text-xs text-center mt-5" style={{ color: T.tm }}>
               Precios aproximados basados en información pública de cada proveedor en julio 2026. No vendemos &ldquo;ser los más baratos&rdquo;, sino darte claridad en cada etapa.
             </p>
+          </div>
+        </section>
+        {/* ═══ COMPARATIVA DE ESTADOS ═══════════════════════════════════════════ */}
+        <section style={{ padding: '80px 24px', background: T.sf, borderTop: `1px solid ${T.br}` }}>
+          <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+            <div className="text-center mb-12 hp-fu">
+              <Eyebrow text="Wyoming vs Delaware" />
+              <h2 className="font-extrabold mt-4 mb-4 text-3xl text-gray-900">
+                ¿Qué estado elegir para tu LLC?
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                No importa qué plan elijas, en Open LLC USA te formamos la empresa en el estado que mejor se adapte a tu perfil. Estos son los dos más populares para no residentes (lee nuestro <Link href="/blog/wyoming-vs-delaware-llc" className="text-blue-600 hover:underline font-medium">análisis profundo de Wyoming vs Delaware</Link>):
+              </p>
+            </div>
+            
+            <div className="hp-fu bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr style={{ background: T.bd, color: T.wh }}>
+                      <th style={{ padding: '16px 24px', fontWeight: 700, width: '33%' }}>Característica</th>
+                      <th style={{ padding: '16px 24px', fontWeight: 700, width: '33%', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>Wyoming 🤠</th>
+                      <th style={{ padding: '16px 24px', fontWeight: 700, width: '33%', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>Delaware 🏛️</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { f: 'Perfil ideal', w: 'Negocios digitales, e-commerce, consultores', d: 'Startups tecnológicas, empresas que buscan inversión (Venture Capital)' },
+                      { f: 'Costo de mantenimiento anual (Estado)', w: '~$62 USD', d: '$300 USD fijos (Franchise Tax)' },
+                      { f: 'Privacidad', w: 'Excelente (Dueños no figuran en registros públicos)', d: 'Excelente (Dueños no figuran en registros públicos)' },
+                      { f: 'Protección patrimonial', w: 'Excepcional (Charging Order Protection)', d: 'Excepcional (Court of Chancery)' },
+                      { f: 'Prestigio Corporativo', w: 'Normal', d: 'Alto (El estándar de Fortune 500)' },
+                    ].map((row, i) => (
+                      <tr key={i} style={{ borderBottom: `1px solid ${T.br}`, background: i % 2 === 0 ? T.wh : T.sf }}>
+                        <td style={{ padding: '16px 24px', fontWeight: 600, color: T.tx }}>{row.f}</td>
+                        <td style={{ padding: '16px 24px', color: T.ts, borderLeft: `1px solid ${T.br}` }}>{row.w}</td>
+                        <td style={{ padding: '16px 24px', color: T.ts, borderLeft: `1px solid ${T.br}` }}>{row.d}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="text-center mt-8 hp-fu">
+              <p className="text-sm text-gray-500">
+                ¿Aún tienes dudas? Incluimos asesoría para elegir el estado correcto en nuestro <Link href="/paquetes/professional/onboarding" className="text-blue-600 font-bold hover:underline">Plan Professional</Link>.
+              </p>
+            </div>
           </div>
         </section>
 

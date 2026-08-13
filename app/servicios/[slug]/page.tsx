@@ -1,3 +1,4 @@
+import React from 'react'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -49,23 +50,28 @@ interface Servicio {
   tipo?: string
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug: rawSlug } = await params
+  const slug = rawSlug.replace(/^impuestos-/, 'impuestos/')
   const { data: s } = await supabaseAdmin
     .from('servicios')
     .select('nombre, descripcion')
     .eq('slug', slug)
     .single() as { data: Partial<Servicio> | null }
 
-  if (!s) return {}
+  if (!s) return { title: 'Servicio no encontrado' }
   return {
     title: `${s.nombre} | Open LLC USA`,
-    description: s.descripcion?.slice(0, 160) ?? '',
-    openGraph: { title: `${s.nombre} | Open LLC USA`, description: s.descripcion?.slice(0, 160) ?? '' }
+    description: s.descripcion?.slice(0, 160) || `Contrata el servicio de ${s.nombre} online y gestiona tu LLC desde cualquier país.`,
+    alternates: {
+      canonical: `https://openllcusa.com/servicios/${rawSlug}`,
+    },
+    openGraph: { 
+      title: `${s.nombre} | Open LLC USA`, 
+      description: s.descripcion?.slice(0, 160) || `Contrata el servicio de ${s.nombre} online y gestiona tu LLC desde cualquier país.`,
+      url: `https://openllcusa.com/servicios/${rawSlug}`,
+      images: [{ url: 'https://openllcusa.com/images/hero.webp', width: 1200, height: 630 }]
+    }
   }
 }
 
@@ -175,7 +181,7 @@ function getFAQsForSlug(slug: string) {
 
   if (isTaxFilingSlug(slug)) {
     return [
-      { q: '¿Qué pasa si no presento estos formularios?', a: 'El IRS impone multas desde $25,000 USD por Form 5472 no presentado o presentado incompleto.' },
+      { q: '¿Qué pasa si no presento estos formularios?', a: <React.Fragment>El IRS impone multas desde $25,000 USD por <Link href="/blog/formulario-5472-llc" className="text-blue-600 hover:underline">Formulario 5472</Link> no presentado o presentado incompleto.</React.Fragment> },
       { q: '¿Cuándo es la fecha límite?', a: 'Generalmente el 15 de abril de cada año, para las operaciones del año anterior. Se puede pedir prórroga si se necesita más tiempo.' },
       { q: '¿Necesito pagar impuestos en EE.UU.?', a: 'Si eres extranjero no residente, operas desde fuera de EE.UU. y no tienes presencia física (ETBUS), normalmente no pagas Income Tax, pero sí debes presentar estos formularios de forma informativa.' },
     ]
@@ -227,10 +233,12 @@ function getFAQsForSlug(slug: string) {
   ]
 }
 
+
 export default async function ServicioDetallePage({
   params,
 }: {
   params: Promise<{ slug: string }>
+
 }) {
   const { slug: rawSlug } = await params
   const slug = rawSlug.replace(/^impuestos-/, 'impuestos/')
@@ -262,8 +270,30 @@ const ctaHref = isEIN(slug)
       ? `/paquetes/${slug}/onboarding`
       : `/servicios/${slug}/onboarding`
 
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": servicio.nombre,
+    "description": servicio.descripcion || "",
+    "provider": {
+      "@type": "Organization",
+      "name": "Open LLC USA",
+      "url": "https://openllcusa.com"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": servicio.precio,
+      "priceCurrency": "USD",
+      "url": `https://openllcusa.com/servicios/${rawSlug}`
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#111827]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+      />
       {/* Breadcrumbs premium */}
       <div className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6">

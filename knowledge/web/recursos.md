@@ -18,11 +18,11 @@ Responde 5–7 preguntas y recibe una recomendación de plan.
 
 [Empezar quiz](/quiz)
 
-## Asesoría con Carla
+## Asesoría con Zara
 
 Asesoría gratis 24/7 por voz con transcripción (modo demo por ahora).
 
-[Abrir Carla](/carla)
+[Abrir Zara](/Zara)
 
 ## Blog
 

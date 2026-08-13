@@ -5,21 +5,27 @@ const SITEURL = 'https://openllcusa.com' // TODO cambia por tu dominio real [fil
 const BRANDNAME = 'Open LLC USA' // TODO cambia por tu marca [file:2]
 
 export const metadata: Metadata = {
-  title: `Herramientas | ${BRANDNAME}`,
-  description:
-    'Herramientas gratuitas para elegir el servicio correcto: calculadora, quiz y asesoría gratis 24/7 con Carla.',
+  title: 'Recursos y Herramientas Gratuitas para Emprendedores | Open LLC USA',
+  description: 'Calculadora fiscal, test de estado ideal (Wyoming vs Delaware) y asesoría gratuita 24/7 con nuestra IA especializada en LLCs para no residentes.',
   alternates: { canonical: `${SITEURL}/recursos` },
   openGraph: {
     type: 'website',
     url: `${SITEURL}/recursos`,
-    title: `Herramientas | ${BRANDNAME}`,
-    description:
-      'Calculadora, quiz y asesoría gratuita 24/7 con Carla para tomar mejores decisiones sobre tu LLC en EE. UU.'
+    title: 'Recursos y Herramientas Gratuitas para Emprendedores | Open LLC USA',
+    description: 'Calculadora fiscal, test de estado ideal (Wyoming vs Delaware) y asesoría gratuita 24/7 con nuestra IA especializada en LLCs para no residentes.',
+    images: [
+      {
+        url: `${SITEURL}/images/recursos-og.webp`,
+        width: 1200,
+        height: 630,
+        alt: 'Herramientas y Recursos - Open LLC USA',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `Herramientas | ${BRANDNAME}`,
-    description: 'Calculadora, quiz y asesoría gratuita 24/7 con Carla.'
+    title: 'Recursos Gratuitas para Emprendedores | Open LLC USA',
+    description: 'Calculadora fiscal, test de estado ideal y asesoría 24/7.',
   },
   robots: { index: true, follow: true }
 }
@@ -29,7 +35,7 @@ const jsonLd = {
   '@type': 'CollectionPage',
   name: `Herramientas | ${BRANDNAME}`,
   url: `${SITEURL}/recursos`,
-  description: 'Colección de herramientas gratuitas: calculadora, quiz y asesoría 24/7 con Carla.',
+  description: 'Colección de herramientas gratuitas: calculadora, quiz y asesoría 24/7 con Zara.',
   isPartOf: { '@type': 'WebSite', name: BRANDNAME, url: SITEURL }
 }
 
@@ -131,13 +137,13 @@ export default function HerramientasPage() {
                   gap: 10
                 }}
               >
-                <h2 style={{ fontSize: 20, fontWeight: 800 }}>Asesoría con Carla</h2>
+                <h2 style={{ fontSize: 20, fontWeight: 800 }}>Asesoría con Zara</h2>
                 <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
                   Asesoría gratis 24/7 por voz con transcripción (modo demo por ahora).
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 'auto' }}>
-                  <Link className="btn btn-primary" href="/carla">
-                    Abrir Carla
+                  <Link className="btn btn-primary" href="/zara">
+                    Abrir Zara
                   </Link>
                 </div>
               </article>

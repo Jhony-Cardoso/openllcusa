@@ -430,13 +430,13 @@ export default function CalculadoraClient() {
   const scenarios = showResults ? calculateScenarios() : [];
 
   const getCtaText = () => {
-    if (scrollPosition < 800) return '🎙️ Hablar con Carla';
+    if (scrollPosition < 800) return '🎙️ Hablar con Zara';
     if (scrollPosition < 2000) return '📅 Agendar Cita';
     return '🚀 Crear mi LLC';
   };
 
   const getCtaLink = () => {
-    if (scrollPosition < 800) return '/hablar-con-carla';
+    if (scrollPosition < 800) return '/hablar-con-zara';
     if (scrollPosition < 2000) return '/contacto';
     return '/crear-llc';
   };

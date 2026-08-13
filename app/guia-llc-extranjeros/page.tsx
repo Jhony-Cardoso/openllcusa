@@ -4,6 +4,22 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Guía Gratuita: Crea tu LLC en EE.UU. en 7 Días | Open LLC USA',
   description: 'Guía completa paso a paso para crear tu LLC en Estados Unidos siendo extranjero. Sin SSN, sin visa, desde cualquier país hispanohablante.',
+  alternates: {
+    canonical: 'https://openllcusa.com/guia-llc-extranjeros',
+  },
+  openGraph: {
+    title: 'Guía Gratuita: Crea tu LLC en EE.UU. en 7 Días',
+    description: 'Guía completa paso a paso para crear tu LLC en Estados Unidos siendo extranjero. Sin SSN, sin visa, desde cualquier país hispanohablante.',
+    url: 'https://openllcusa.com/guia-llc-extranjeros',
+    images: [
+      {
+        url: 'https://openllcusa.com/images/guia-og.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Guía para Extranjeros - Open LLC USA',
+      },
+    ],
+  },
 }
 
 export default function GuiaLlcExtranjeros() {

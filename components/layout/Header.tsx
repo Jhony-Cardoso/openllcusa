@@ -33,7 +33,7 @@ const LogoEdificio = () => (
   </svg>
 )
 
-type CarlaStatus =
+type ZaraStatus =
   | 'idle'
   | 'request_permission'
   | 'permission_denied'
@@ -46,7 +46,7 @@ type CarlaStatus =
 
 type ChatMsg = { role: 'user' | 'assistant'; text: string }
 
-function CarlaModal({
+function ZaraModal({
   open,
   onClose
 }: {
@@ -56,7 +56,7 @@ function CarlaModal({
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
-  const [status, setStatus] = useState<CarlaStatus>('idle')
+  const [status, setStatus] = useState<ZaraStatus>('idle')
   const [messages, setMessages] = useState<ChatMsg[]>([])
   const [draftUserText, setDraftUserText] = useState<string>('')
   const [assistantStreamingText, setAssistantStreamingText] = useState<string>('')
@@ -236,13 +236,13 @@ function CarlaModal({
       case 'permission_denied':
         return 'Micrófono bloqueado'
       case 'connecting':
-        return 'Conectando con Carla…'
+        return 'Conectando con Zara…'
       case 'listening':
         return 'Escuchando…'
       case 'processing':
         return 'Procesando…'
       case 'speaking':
-        return 'Carla está respondiendo…'
+        return 'Zara está respondiendo…'
       case 'ended':
         return 'Conversación finalizada'
       case 'error':
@@ -255,54 +255,54 @@ function CarlaModal({
   if (!open) return null
 
   return (
-    <div className="carla-overlay" aria-hidden={false}>
+    <div className="zara-overlay" aria-hidden={false}>
       <div
-        className="carla-dialog"
+        className="zara-dialog"
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="carla-title"
+        aria-labelledby="zara-title"
         onKeyDown={trapFocusOnKeyDown}
       >
-        <div className="carla-header">
-          <div className="carla-titlewrap">
-            <div id="carla-title" className="carla-title">
-              Asesoría con Carla
+        <div className="zara-header">
+          <div className="zara-titlewrap">
+            <div id="zara-title" className="zara-title">
+              Asesoría con Zara
             </div>
-            <div className="carla-subtitle">Gratis, 24/7 · Voz + transcripción</div>
+            <div className="zara-subtitle">Gratis, 24/7 · Voz + transcripción</div>
           </div>
 
-          <button className="carla-close" onClick={handleClose} aria-label="Cerrar">
+          <button className="zara-close" onClick={handleClose} aria-label="Cerrar">
             <X size={18} />
           </button>
         </div>
 
-        <div className="carla-status" role="status" aria-live="polite">
+        <div className="zara-status" role="status" aria-live="polite">
           {statusLabel}
-          <span className="carla-status-badge">DEMO (voz desactivada)</span>
+          <span className="zara-status-badge">DEMO (voz desactivada)</span>
         </div>
 
-        <div className="carla-body">
+        <div className="zara-body">
           {status === 'idle' && (
-            <div className="carla-intro">
-              <p className="carla-intro-text">
+            <div className="zara-intro">
+              <p className="zara-intro-text">
                 Pregunta lo que quieras sobre servicios, precios y el proceso. Esta interfaz ya está lista; la voz
                 real se conectará cuando el sitio esté finalizado.
               </p>
-              <ul className="carla-intro-list">
+              <ul className="zara-intro-list">
                 <li>Te ayuda a elegir plan sin perderte.</li>
                 <li>Resuelve dudas frecuentes (EIN, estado, pasos, tiempos).</li>
                 <li>Te guía a Precios y Servicios con enlaces directos.</li>
               </ul>
 
-              <div className="carla-actions">
-                <button className="carla-primary" onClick={startDemoFlow}>
+              <div className="zara-actions">
+                <button className="zara-primary" onClick={startDemoFlow}>
                   Iniciar asesoría por voz
                 </button>
-                <Link className="carla-secondary" href="/carla" onClick={handleClose}>
+                <Link className="zara-secondary" href="/zara" onClick={handleClose}>
                   Abrir en pantalla completa
                 </Link>
-                <button className="carla-tertiary" onClick={handleClose}>
+                <button className="zara-tertiary" onClick={handleClose}>
                   Cerrar
                 </button>
               </div>
@@ -311,49 +311,49 @@ function CarlaModal({
 
           {status !== 'idle' && (
             <>
-              <div className="carla-chat" aria-label="Transcripción">
+              <div className="zara-chat" aria-label="Transcripción">
                 {messages.map((m, idx) => (
                   <div
                     key={idx}
-                    className={`carla-msg ${m.role === 'user' ? 'carla-msg-user' : 'carla-msg-assistant'}`}
+                    className={`zara-msg ${m.role === 'user' ? 'zara-msg-user' : 'zara-msg-assistant'}`}
                   >
-                    <div className="carla-msg-meta">{m.role === 'user' ? 'Tú' : 'Carla'}</div>
-                    <div className="carla-msg-text">{m.text || (m.role === 'assistant' ? assistantStreamingText : '')}</div>
+                    <div className="zara-msg-meta">{m.role === 'user' ? 'Tú' : 'Zara'}</div>
+                    <div className="zara-msg-text">{m.text || (m.role === 'assistant' ? assistantStreamingText : '')}</div>
                   </div>
                 ))}
 
                 {status === 'listening' && (
-                  <div className="carla-msg carla-msg-user carla-msg-draft">
-                    <div className="carla-msg-meta">Tú (borrador)</div>
-                    <div className="carla-msg-text">{draftUserText}</div>
+                  <div className="zara-msg zara-msg-user zara-msg-draft">
+                    <div className="zara-msg-meta">Tú (borrador)</div>
+                    <div className="zara-msg-text">{draftUserText}</div>
                   </div>
                 )}
 
                 {status === 'error' && (
-                  <div className="carla-error">
-                    <div className="carla-error-title">Error</div>
-                    <div className="carla-error-text">{errorMsg || 'No se ha podido iniciar la demo.'}</div>
+                  <div className="zara-error">
+                    <div className="zara-error-title">Error</div>
+                    <div className="zara-error-text">{errorMsg || 'No se ha podido iniciar la demo.'}</div>
                   </div>
                 )}
               </div>
 
-              <div className="carla-footer">
-                <div className="carla-footer-links">
+              <div className="zara-footer">
+                <div className="zara-footer-links">
                   <Link href="/precios" onClick={handleClose}>
                     Ir a Precios
                   </Link>
                   <Link href="/servicios" onClick={handleClose}>
                     Ir a Servicios
                   </Link>
-                  <Link href="/carla" onClick={handleClose}>
-                    Abrir /carla
+                  <Link href="/zara" onClick={handleClose}>
+                    Abrir /zara
                   </Link>
                 </div>
 
-                <div className="carla-footer-actions">
+                <div className="zara-footer-actions">
                   {status !== 'ended' && (
                     <button
-                      className="carla-secondary-btn"
+                      className="zara-secondary-btn"
                       onClick={() => {
                         clearTimers()
                         setStatus('ended')
@@ -364,12 +364,12 @@ function CarlaModal({
                   )}
 
                   {status === 'ended' && (
-                    <button className="carla-primary-btn" onClick={startDemoFlow}>
+                    <button className="zara-primary-btn" onClick={startDemoFlow}>
                       Volver a empezar
                     </button>
                   )}
 
-                  <button className="carla-tertiary-btn" onClick={handleClose}>
+                  <button className="zara-tertiary-btn" onClick={handleClose}>
                     Cerrar
                   </button>
                 </div>
@@ -386,7 +386,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isServiciosOpen, setIsServiciosOpen] = useState(false)
   const [isHerramientasOpen, setIsHerramientasOpen] = useState(false)
-  const [isCarlaOpen, setIsCarlaOpen] = useState(false)
+  const [isZaraOpen, setIsZaraOpen] = useState(false)
 
   const closeMobileMenu = () => {
     setIsMenuOpen(false)
@@ -499,10 +499,10 @@ export default function Header() {
 
           <div className="site-header__right" style={{ alignItems: 'center' }}>
             <button
-              className="header-auth-button header-auth-button-signin header-carla-btn-desktop"
-              onClick={() => setIsCarlaOpen(true)}
+              className="header-auth-button header-auth-button-signin header-zara-btn-desktop"
+              onClick={() => setIsZaraOpen(true)}
             >
-              Asesoría con Carla
+              Asesoría con Zara
             </button>
 
             {/* Desktop Auth Buttons */}
@@ -677,14 +677,14 @@ export default function Header() {
             </div>
 
             <button
-              className="mobile-carla-btn"
+              className="mobile-zara-btn"
               onClick={() => {
-                setIsCarlaOpen(true)
+                setIsZaraOpen(true)
                 closeMobileMenu()
               }}
               style={{ background: 'transparent', border: '1px solid white', color: 'white' }}
             >
-              Asesoría con Carla
+              Asesoría con Zara
             </button>
 
             {/* Auth Buttons Mobile */}
@@ -719,8 +719,8 @@ export default function Header() {
         )}
       </header>
 
-      {/* Modal Carla */}
-      <CarlaModal open={isCarlaOpen} onClose={() => setIsCarlaOpen(false)} />
+      {/* Modal Zara */}
+      <ZaraModal open={isZaraOpen} onClose={() => setIsZaraOpen(false)} />
     </>
   )
 }

@@ -1,13 +1,31 @@
 
 import { Metadata } from 'next'
+import Link from 'next/link'
 import TrackedLink from '@/components/home/TrackedLink'
 import ScrollObserver from '@/components/home/ScrollObserver'
 import MobileStickyCTA from '@/components/home/MobileStickyCTA'
 import QuickContactSection from '@/components/home/QuickContactSection'
 
 export const metadata: Metadata = {
+  title: 'Crea tu LLC en Estados Unidos: Rápido, Online y Garantizado | Open LLC USA',
+  description: 'Forma tu LLC en EE.UU. desde España o Latam sin visa ni SSN. Planes transparentes desde $349. Accede a Stripe y cuentas bancarias en dólares en días.',
   alternates: {
     canonical: 'https://openllcusa.com',
+  },
+  openGraph: {
+    title: 'Crea tu LLC en EE.UU. con Open LLC USA',
+    description: 'La forma más rápida y segura para emprendedores digitales de crear una empresa en EE.UU. sin pisar el país.',
+    url: 'https://openllcusa.com',
+    siteName: 'Open LLC USA',
+    images: [
+      {
+        url: 'https://openllcusa.com/images/hero.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Open LLC USA - Crea tu LLC en Estados Unidos',
+      },
+    ],
+    type: 'website',
   },
 }
 
@@ -348,7 +366,11 @@ const SERVICES = [
   {
     title: 'Registro de LLC',
     price: 'Desde $349',
-    desc: 'Crea tu empresa en Wyoming, Delaware o Florida en solo 72 horas. Incluye EIN y documentos oficiales.',
+    desc: (
+      <>
+        Crea tu empresa en <Link href="/blog/wyoming-vs-delaware-llc" className="text-blue-600 hover:underline">Wyoming o Delaware</Link> en solo 72 horas. Incluye EIN y documentos oficiales.
+      </>
+    ),
     features: [
       '✅ Dirección física real incluida',
       '✅ EIN (Tax ID)',
@@ -385,7 +407,11 @@ const SERVICES = [
   {
     title: 'Cuenta Bancaria Empresarial',
     price: '',
-    desc: 'Abre cuenta en Mercury, Relay o Wise Business y cobra en dólares desde cualquier país.',
+    desc: (
+      <>
+        Abre cuenta en <Link href="/blog/cuenta-bancaria-llc-no-residente" className="text-blue-600 hover:underline">Mercury, Relay o Wise</Link> y cobra en dólares desde cualquier país.
+      </>
+    ),
     features: [
       '✅ Compatible con LLC de no residentes',
       '✅ Usamos dirección del Agente Registrado'

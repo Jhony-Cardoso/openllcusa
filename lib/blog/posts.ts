@@ -506,6 +506,315 @@ Lo más importante: **habla con un experto** antes de decidir. Cada situación e
 Si quieres explorar si una LLC es la opción correcta para ti, en Open LLC USA ofrecemos una [consulta inicial gratuita](/agendar) donde analizamos tu caso concreto sin compromiso.
     `,
   },
+  {
+    slug: 'formulario-5472-llc',
+    title: 'Formulario 5472 y 1120: Qué es y cuándo lo necesita tu LLC en 2026',
+    excerpt: 'Si eres extranjero y tienes una LLC en EE.UU., el IRS exige que presentes el Formulario 5472 y 1120 cada año. Descubre qué son, plazos y cómo evitar multas de $25,000.',
+    author: 'Open LLC USA',
+    date: '2026-08-13',
+    readTime: '8 min',
+    category: 'Impuestos',
+    tags: ['Formulario 5472', 'IRS', 'LLC', 'Extranjeros', 'Multas'],
+    image: '/images/hero.webp',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://openllcusa.com/blog/formulario-5472-llc' },
+      headline: 'Formulario 5472 y 1120: Qué es y cuándo lo necesita tu LLC en 2026',
+      description: 'Descubre qué es el Formulario 5472 y 1120, quién debe presentarlo y cómo evitar la multa de $25,000 del IRS para tu LLC extranjera.',
+      author: { '@type': 'Organization', name: 'Open LLC USA' },
+      publisher: { '@type': 'Organization', name: 'Open LLC USA', logo: { '@type': 'ImageObject', url: 'https://openllcusa.com/logo.png' } },
+      datePublished: '2026-08-13',
+      dateModified: '2026-08-13',
+    },
+    content: `
+## Introducción: El trámite más crítico para tu LLC
+
+Si eres un **no residente** y acabas de formar una LLC en Estados Unidos, es posible que hayas escuchado que "no pagas impuestos en EE.UU.". Y aunque esto suele ser cierto a nivel de *Income Tax* si no tienes presencia física (ETBUS), el IRS sí exige algo obligatorio: **Información**.
+
+Aquí es donde entran en juego los infames **Formularios 5472 y 1120 pro-forma**. No presentarlos a tiempo puede resultar en una multa automática de **$25,000 USD**. 
+
+En esta guía te explicaremos todo lo que necesitas saber de forma clara y sin lenguaje contable complejo.
+
+---
+
+## ¿Qué es el Formulario 5472?
+
+El **Formulario 5472** ("Information Return of a 25% Foreign-Owned U.S. Corporation or a Foreign Corporation Engaged in a U.S. Trade or Business") es un documento informativo que el IRS (Internal Revenue Service) utiliza para evitar el lavado de dinero y la evasión fiscal.
+
+Básicamente, el gobierno de EE.UU. quiere saber:
+1. Quién es el dueño extranjero real de la LLC.
+2. Qué transacciones (movimientos de dinero) ocurrieron entre la LLC y su dueño durante el año fiscal.
+
+### ¿A quién aplica?
+
+Si tu LLC cumple estas dos condiciones, **estás obligado** a presentar el Formulario 5472:
+- Es una **Single-Member LLC** (un solo dueño) o una Multi-Member LLC que eligió tributar como corporación.
+- El dueño (miembro) es un extranjero **no residente** en Estados Unidos con al menos el 25% de propiedad (lo cual siempre se cumple si eres dueño al 100%).
+
+> ⚠️ **Nota importante**: Las Single-Member LLCs de extranjeros son tratadas como *Disregarded Entities* (entidades descartadas) a efectos fiscales. Sin embargo, en 2017 el IRS introdujo una norma que las obliga a presentar el 5472 como si fueran corporaciones.
+
+---
+
+## ¿Qué transacciones se deben reportar (Reportable Transactions)?
+
+El Formulario 5472 te pide declarar el total de las transacciones entre la LLC y su dueño (o entidades relacionadas con el dueño). Las más comunes son:
+
+- **Aportaciones de capital**: Dinero que pusiste de tu bolsillo para abrir la cuenta bancaria de la LLC o pagar sus primeros gastos.
+- **Distribuciones (Retiros)**: Dinero que sacaste de la cuenta de la LLC a tu cuenta bancaria personal en tu país (ej. tus ganancias).
+- **Préstamos**: Dinero prestado a o desde la LLC.
+- **Pago por servicios**: Si la LLC te pagó directamente por algún concepto.
+
+**¿Qué pasa si la LLC tuvo $0 ingresos en el año?**
+Si no hubo *absolutamente ninguna* transacción entre la LLC y tú, técnicamente no habría transacciones reportables. Sin embargo, la mayoría de contadores recomiendan **presentarlo de todos modos** (poniendo todo a cero) para curarse en salud y evitar que el IRS asuma que simplemente se te olvidó enviarlo. Además, tan solo el pago al Agente Registrado con fondos del dueño ya cuenta como transacción reportable.
+
+---
+
+## El Formulario 1120 "Pro-Forma"
+
+El Formulario 5472 **nunca viaja solo**. El IRS requiere que se adjunte a un **Formulario 1120 pro-forma** (U.S. Corporation Income Tax Return).
+
+Al ser "pro-forma", no tienes que llenar todo el 1120 (ya que tu LLC no es realmente una corporación a nivel fiscal). Solo se llenan los datos básicos de identificación (Nombre, Dirección, EIN) y se especifica que es exclusivo para adjuntar el Formulario 5472.
+
+---
+
+## Plazos y Fechas Límite (Deadlines)
+
+La fecha límite es la misma que para las corporaciones estadounidenses: **El 15 de abril del año siguiente**.
+
+- Si abriste tu LLC en **2025**, debes presentar el 5472 y 1120 antes del **15 de abril de 2026**.
+- Si necesitas más tiempo, puedes solicitar una **prórroga** (Formulario 7004) antes del 15 de abril, lo que te dará tiempo extra hasta el **15 de octubre**.
+
+---
+
+## Las Penalizaciones: La Multa de $25,000
+
+El IRS no perdona la ignorancia. Si presentas el Formulario 5472 tarde, incompleto, o simplemente no lo presentas, la multa estándar es de **$25,000 USD** iniciales.
+
+Si el IRS te notifica del fallo y no lo corriges en 90 días, te cobrarán **otros $25,000 USD** por cada 30 días adicionales de retraso. 
+
+Esta es la razón principal por la que los no residentes deben tomarse en serio el mantenimiento de su LLC.
+
+---
+
+## ¿Cómo y dónde se presenta?
+
+Actualmente, para las Disregarded Entities extranjeras, el Formulario 5472 y el 1120 **solo pueden enviarse por fax o por correo postal** al IRS. A diferencia de otros formularios fiscales, estos no pueden enviarse electrónicamente de forma directa (salvo excepciones muy complejas por medio de software especializado de CPA).
+
+El número de fax oficial del IRS para esto suele estar saturado cerca de abril, lo que causa mucha ansiedad a quienes lo hacen por su cuenta.
+
+## Conclusión y Solución
+
+No dejes que el Formulario 5472 te quite el sueño ni te arriesgues a la multa de $25,000. La presentación debe hacerse de manera precisa, con el EIN activo y rellenando los campos de transacciones correctamente.
+
+En **Open LLC USA**, contamos con expertos fiscales que preparan y presentan el 5472 y el 1120 por ti. Si tu LLC ya tiene más de un año de antigüedad, o si estamos a principios de año, te recomendamos delegar este trámite.
+
+[👉 Conoce nuestro servicio de Declaración Anual y 5472 aquí](/servicios/impuestos/declaracion-anual-llc) y duerme tranquilo sabiendo que tu empresa cumple con el IRS al 100%.
+    `
+  },
+  {
+    slug: 'wyoming-vs-delaware-llc',
+    title: 'Wyoming vs Delaware: ¿Cuál es el mejor estado para tu LLC en 2026?',
+    excerpt: 'Comparamos los dos estados más populares para crear una LLC como no residente: costos, privacidad, protección patrimonial y cuándo elegir cada uno.',
+    author: 'Open LLC USA',
+    date: '2026-08-13',
+    readTime: '6 min',
+    category: 'Guías',
+    tags: ['Wyoming', 'Delaware', 'Comparativa', 'Costos', 'Privacidad'],
+    image: '/images/hero.webp',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://openllcusa.com/blog/wyoming-vs-delaware-llc' },
+      headline: 'Wyoming vs Delaware: ¿Cuál es el mejor estado para tu LLC en 2026?',
+      description: '¿No sabes si elegir Wyoming o Delaware para tu LLC en EE.UU.? Descubre en esta comparativa completa de 2026 cuál estado te conviene más.',
+      author: { '@type': 'Organization', name: 'Open LLC USA' },
+      publisher: { '@type': 'Organization', name: 'Open LLC USA', logo: { '@type': 'ImageObject', url: 'https://openllcusa.com/logo.png' } },
+      datePublished: '2026-08-13',
+      dateModified: '2026-08-13',
+    },
+    content: `
+## El gran dilema del emprendedor: ¿Wyoming o Delaware?
+
+Si vas a crear una LLC en Estados Unidos siendo extranjero, lo primero que notarás es que no tienes que registrarla en ningún estado en particular. Tienes 50 opciones.
+
+Sin embargo, el 90% de los emprendedores no residentes terminan eligiendo entre dos gigantes: **Wyoming y Delaware**. Ambos son excelentes, pero tienen enfoques, costos y perfiles muy diferentes.
+
+En esta guía directa vamos a comparar Wyoming y Delaware punto por punto para que puedas tomar una decisión informada.
+
+---
+
+## 1. Costos de Formación y Mantenimiento Anual
+
+La diferencia más notable para negocios digitales, agencias, e-commerce y freelancers es **cuánto cuesta mantener la empresa viva cada año**.
+
+### Delaware
+- **Costo Estatal de Formación**: \~$110 USD.
+- **Franchise Tax Anual**: **$300 USD** fijos. Se paga cada año antes del 1 de junio, independientemente de si tu LLC ganó 1 millón de dólares o 0 dólares.
+
+### Wyoming
+- **Costo Estatal de Formación**: \~$100 USD.
+- **Reporte Anual (Annual Report)**: **$62 USD** fijos (si tus activos en Wyoming son menores a $250,000, lo cual es casi siempre el caso para negocios digitales). Se paga en el aniversario de formación de tu empresa.
+
+🏆 **Ganador en Costos:** **Wyoming**. Te ahorras más de $200 USD anuales en tasas del estado.
+
+---
+
+## 2. Privacidad y Anonimato
+
+Muchos fundadores prefieren no tener su nombre y dirección personal exhibidos en bases de datos públicas accesibles en Google.
+
+### Wyoming
+Es mundialmente famoso por ser un "estado de privacidad". Cuando formas tu LLC aquí usando un Agente Registrado, tu nombre no entra en la base de datos pública del Secretario de Estado. 
+
+### Delaware
+También ofrece excelente privacidad. Al igual que Wyoming, los nombres de los miembros/dueños de la LLC no tienen que figurar en los *Articles of Organization* públicos (se pone el nombre del Formador Autorizado o Agente Registrado).
+
+🏆 **Ganador en Privacidad:** **Empate**. Ambos estados protegen la identidad de los miembros de las LLC en los registros públicos.
+
+---
+
+## 3. Protección Patrimonial y Leyes
+
+La función principal de una LLC es proteger tu patrimonio personal (casa, coche, ahorros) si la empresa es demandada.
+
+### Delaware
+Es la meca legal. Tiene la **Court of Chancery**, una corte especializada única en EE.UU. conformada por jueces expertos en negocios (sin jurados impredecibles). Además, la jurisprudencia de Delaware sobre empresas es la más desarrollada del mundo. Por eso los inversores y las empresas Fortune 500 aman Delaware.
+
+### Wyoming
+Inventó el concepto de LLC en 1977. Ofrece una protección estelar llamada **Charging Order Protection** incluso para LLCs de un solo miembro (Single-Member LLCs). Esto hace que sea extremadamente difícil para un acreedor personal embargar los activos de tu empresa. 
+
+🏆 **Ganador Legal:** **Delaware** si planeas atraer inversores ángeles o capital de riesgo. **Wyoming** si buscas proteger tu propio negocio individual de demandas de forma contundente.
+
+---
+
+## 4. Inversores y Financiamiento (Venture Capital)
+
+¿Estás creando la próxima gran Startup de Silicon Valley y planeas buscar millones de dólares en rondas de financiación semilla?
+
+### Delaware
+Es el rey indiscutible. El 99% de los fondos de capital riesgo y ángeles inversores americanos exigen que tu empresa esté en Delaware (normalmente como C-Corp, pero a veces aceptan LLCs como holding). A los abogados de los inversores no les gusta perder tiempo analizando leyes de otros estados; conocen Delaware de memoria.
+
+### Wyoming
+Es ideal para negocios que "arrancan con su propio dinero" (*Bootstrapped*) y que generan caja (SaaS, E-commerce, Agencias, Consultores, Trading). A los inversores tradicionales no les apasiona estructurar inversiones en Wyoming.
+
+🏆 **Ganador en Inversión:** **Delaware**.
+
+---
+
+## Resumen: ¿Cuál debes elegir?
+
+### Elige Wyoming si:
+- Eres consultor, freelancer, agencia o tienes un e-commerce.
+- Haces Dropshipping, Amazon FBA o vendes software (SaaS).
+- Tu objetivo es **minimizar gastos fijos anuales** y maximizar el flujo de caja.
+- No planeas buscar rondas de inversión millonarias pronto.
+- Quieres máxima privacidad y gran protección patrimonial.
+
+### Elige Delaware si:
+- Tienes una Startup tecnológica (proptech, fintech, biotech, etc.).
+- Planeas ceder acciones a empleados, levantar capital de inversores ángeles o fondos (Venture Capital).
+- Tienes intenciones de ir a la Bolsa (IPO) a largo plazo.
+- Quieres el prestigio de la "marca Delaware" frente a grandes clientes corporativos B2B en EE.UU.
+
+**¿Estás listo para dar el paso?** En Open LLC USA te formamos la LLC tanto en Wyoming como en Delaware, y además nos encargamos del EIN, el Agente Registrado y de orientarte con la cuenta bancaria. 
+
+[👉 Ver paquetes de formación aquí](/precios)
+    `
+  },
+  {
+    slug: 'cuenta-bancaria-llc-no-residente',
+    title: 'Cómo abrir una cuenta bancaria para tu LLC sin viajar a EE.UU. (2026)',
+    excerpt: '¿Tienes una LLC pero no puedes viajar a USA? Descubre qué bancos aceptan no residentes, qué documentos necesitas (como el EIN) y alternativas Fintech.',
+    author: 'Open LLC USA',
+    date: '2026-08-13',
+    readTime: '7 min',
+    category: 'Banca',
+    tags: ['Banca', 'Mercury', 'Relay', 'EIN', 'Cuentas en Dólares'],
+    image: '/images/hero.webp',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://openllcusa.com/blog/cuenta-bancaria-llc-no-residente' },
+      headline: 'Cómo abrir una cuenta bancaria para tu LLC sin viajar a EE.UU. (2026)',
+      description: 'Guía paso a paso para abrir una cuenta bancaria comercial en Estados Unidos para tu LLC sin salir de tu país de origen. Mejores bancos y requisitos.',
+      author: { '@type': 'Organization', name: 'Open LLC USA' },
+      publisher: { '@type': 'Organization', name: 'Open LLC USA', logo: { '@type': 'ImageObject', url: 'https://openllcusa.com/logo.png' } },
+      datePublished: '2026-08-13',
+      dateModified: '2026-08-13',
+    },
+    content: `
+## El Santo Grial del emprendedor internacional
+
+Has creado tu LLC. Tienes tus documentos del estado y te acaba de llegar tu flamante número EIN del IRS. Estás listo para cobrar en dólares. 
+
+Pero, ¿cómo abres la cuenta bancaria? ¿Acaso no exigen ir en persona a una sucursal en Miami o Nueva York?
+
+La buena noticia es que **en 2026 ya no necesitas viajar a Estados Unidos** para abrir una cuenta bancaria comercial (*Business Bank Account*). La explosión del ecosistema Fintech americano ha hecho que sea 100% posible para un extranjero no residente gestionar sus finanzas desde el sofá de su casa en España, Argentina, México o Colombia.
+
+En este artículo, desglosaremos las mejores opciones y los requisitos exactos.
+
+---
+
+## El problema con la banca tradicional
+
+Bancos como **Chase, Bank of America o Wells Fargo** son excelentes instituciones. Sin embargo, por ley federal y protocolos KYC (Conoce a tu Cliente) estrictos, requieren:
+1. Tu presencia física en la sucursal para firmar.
+2. Comprobantes de domicilio de EE.UU. (Utility bills).
+3. En muchos casos, un número de seguro social americano (SSN).
+
+Si eres un fundador extranjero (*Non-Resident Alien*), esto te deja fuera del juego tradicional. Aquí es donde entran las **Fintechs reguladas** y los bancos digitales enfocados en Startups e e-commerce.
+
+---
+
+## Las Mejores Opciones de Banca para No Residentes en 2026
+
+Estas plataformas operan de forma 100% remota y están diseñadas para aceptar LLCs fundadas por extranjeros.
+
+### 1. Mercury (La más popular)
+Mercury no es técnicamente un banco, sino una compañía tecnológica financiera cuyos servicios bancarios son provistos por Choice Financial Group y Evolve Bank & Trust (miembros de la FDIC, asegurando fondos hasta $5M).
+- **Ventajas**: Sin comisiones mensuales. Interfaz hermosa y moderna. Tarjetas de débito virtuales y físicas (se envían internacionalmente). Permite transferencias Wire y ACH gratis o muy baratas. Es el estándar de oro para startups.
+- **Desventajas**: Su proceso de validación es algo estricto. A veces rechazan negocios basados en industrias de "alto riesgo" (cripto, dropshipping dudoso, apuestas). No permiten operar desde algunos países sancionados.
+
+### 2. Relay (Relay Financial)
+Relay compite directamente con Mercury. Sus servicios bancarios los provee Thread Bank.
+- **Ventajas**: Extraordinaria atención al cliente. Permite abrir hasta 20 cuentas corrientes gratuitas (ideal si usas el método de *Profit First*). Sin cuotas mensuales. Muy amigable con dueños internacionales de LLC. Tarjetas físicas enviadas a todo el mundo.
+- **Desventajas**: Sus transferencias Wire internacionales pueden tener algún costo pequeño comparado con Mercury (varía según el plan).
+
+### 3. Wise Business
+Anteriormente TransferWise, esta plataforma es un híbrido entre cuenta bancaria y plataforma de cambio de divisas.
+- **Ventajas**: Te dan datos bancarios reales en EE.UU. (Routing Number y Account Number) y también en Europa (IBAN). Los tipos de cambio para enviar dinero a tu cuenta personal en España, México o Colombia son los más justos del mercado.
+- **Desventajas**: Cobran una tarifa única pequeña para abrir los detalles bancarios. En los últimos meses han pausado el alta de nuevas LLCs de ciertos países por exceso de demanda (siempre verifica si la lista de espera está activa en tu región).
+
+---
+
+## ¿Qué documentos necesitas para abrir la cuenta?
+
+Sea Mercury o Relay, te van a pedir casi exactamente lo mismo. Preparar este "Kit" es la clave de todo:
+
+1. **Articles of Organization (Certificate of Formation)**: El documento sellado por el estado que aprueba la creación de tu LLC.
+2. **Operating Agreement**: El acuerdo operativo interno firmado por ti, que demuestra que eres el dueño o mánager.
+3. **Carta de Asignación del EIN (CP575 o 147C)**: El documento OFICIAL emitido por el IRS que te otorga tu Employer Identification Number. **(Sin esto, ningún banco te abrirá cuenta)**.
+4. **Pasaporte Válido**: Una foto clara y nítida de tu pasaporte de tu país de origen. (El DNI de España o la Cédula latinoamericana a veces funcionan, pero el pasaporte es un éxito garantizado 100%).
+5. **Presencia web verificable**: Un enlace a tu página web, tu perfil de Upwork, tu tienda Shopify o tu LinkedIn. El banco quiere comprobar que hay un negocio real y lícito detrás.
+
+---
+
+## Pasos para la Apertura
+
+1. **Constituye tu LLC**: Consigue tus documentos en Wyoming o Delaware.
+2. **Obtén tu EIN**: Esto tarda de 8 a 15 días hábiles.
+3. **Aplica Online**: Entra a Mercury o Relay, sube tus 4 documentos y llena el formulario explicando a qué se dedica tu negocio.
+4. **Espera la revisión**: El equipo de *Compliance* revisará tu aplicación en 3-6 días hábiles. Es posible que te pidan facturas de proveedores o más detalles sobre tus clientes.
+5. **¡Cuenta activa!**: Conecta tu cuenta a Stripe, PayPal o Amazon FBA y comienza a operar.
+
+## ¿Demasiado complicado? Te ayudamos.
+
+Si todo esto te abruma, no te preocupes. En **Open LLC USA**, nuestros planes de formación no solo incluyen la creación de la LLC y el EIN, sino que **preparamos el terreno documental para que la apertura de tu cuenta en Mercury o Relay sea lo más fluida posible**. 
+
+Conoce nuestros [paquetes de formación de LLC](/precios) y lanza tu empresa en EE.UU. sin salir de casa.
+    `
+  }
 ];
 
 // Funciones de utilidad

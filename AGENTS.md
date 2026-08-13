@@ -15,7 +15,7 @@ Combine verified technical facts with project priorities and safe operating rule
 - Write new code comments in Spanish when it feels natural and does not break existing style.
 
 ## Infrastructure
-- **Dev PC (local)**: 16 GB RAM → `NODE_OPTIONS=--max-old-space-size=8192` en `package.json`
+- **Dev PC (local)**: 16 GB RAM → `NODE_OPTIONS=--max-old-space-size=4096` en `package.json` (rebajado para evitar OOM con webpackBuildWorker)
 - **VPS Dokploy (producción)**: 4 GB RAM total → `NODE_OPTIONS=--max-old-space-size=2048` en `Dockerfile`
 - Regla: el builder usa 2 GB para dejar margen al OS (~300 MB), Dokploy (~500 MB) y el contenedor de producción activo (~300 MB).
 - El `Dockerfile` también tiene `eslint.ignoreDuringBuilds: true` en `next.config.ts` para evitar fallos de OOM durante el lint.

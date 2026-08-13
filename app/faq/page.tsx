@@ -107,6 +107,66 @@ const faqs: FAQItem[] = [
     answer:
       'Una LLC puede tener uno o varios socios, y todos pueden ser no residentes siempre que se indiquen correctamente los porcentajes de participación y se reflejen en el Operating Agreement.' +
       ' Cada socio deberá analizar cómo tributa en su país de residencia la parte de beneficios que reciba de la LLC.'
+  },
+  {
+    category: 'general',
+    question: '¿Cuál es la diferencia entre Wyoming y Delaware para un extranjero?',
+    answer:
+      'Wyoming destaca por ser muy económico de mantener (costo anual de $62) y ofrecer gran privacidad. Delaware es ideal si buscas inversionistas (Venture Capital) o quieres llevar la empresa a la bolsa, pero su costo anual es mayor ($300 de Franchise Tax). Para negocios digitales puros, Wyoming suele ser la opción más inteligente.'
+  },
+  {
+    category: 'general',
+    question: '¿Qué es el Operating Agreement y por qué lo necesito?',
+    answer:
+      'Es el acuerdo operativo interno de tu LLC. Demuestra quién es el dueño (tú) y qué porcentaje de la empresa posee cada socio. Aunque el Estado no te exige presentarlo públicamente, los bancos y procesadores de pago como Stripe o Mercury te lo exigirán obligatoriamente para abrir tu cuenta.'
+  },
+  {
+    category: 'fiscal',
+    question: '¿Qué significa ETBUS y cómo afecta a mi LLC?',
+    answer:
+      'ETBUS significa "Engaged in a Trade or Business in the United States". Si tu LLC tiene empleados, oficinas, o almacenes físicos en EE. UU., serás considerado ETBUS y tendrás que pagar impuestos sobre la renta (Income Tax) allí. Si solo vendes software, servicios o haces dropshipping remoto sin presencia física, generalmente no eres ETBUS.'
+  },
+  {
+    category: 'fiscal',
+    question: '¿Debería elegir una LLC o una C-Corporation?',
+    answer:
+      'Si buscas simplicidad y no pagar doble impuesto corporativo, la LLC es la reina. Las C-Corps pagan un impuesto corporativo fijo del 21% sobre ganancias antes de distribuir dividendos, lo cual puede ser ineficiente fiscalmente. Solo elige C-Corp si vas a buscar inversión de capital riesgo en Silicon Valley.'
+  },
+  {
+    category: 'fiscal',
+    question: '¿Qué pasa si olvido presentar el Formulario 5472?',
+    answer:
+      'El IRS es muy estricto con la transparencia internacional. No presentar el Formulario 5472 (y el 1120 pro-forma) a tiempo conlleva una multa automática inicial de $25,000 USD. Es fundamental delegar este trámite en profesionales si no conoces el proceso.'
+  },
+  {
+    category: 'bancaria',
+    question: '¿Puedo usar Stripe y PayPal con mi LLC desde España o Latinoamérica?',
+    answer:
+      'Totalmente. Al tener tu LLC registrada y tu EIN aprobado, puedes crear cuentas comerciales (Business) en Stripe EE. UU. y PayPal EE. UU. El dinero recaudado irá directamente a la cuenta bancaria de tu LLC (ej. Mercury o Relay) en dólares.'
+  },
+  {
+    category: 'bancaria',
+    question: '¿Cuáles son los mejores bancos Fintech para no residentes en 2026?',
+    answer:
+      'Actualmente, Mercury y Relay Financial son los líderes indiscutibles. No exigen viaje físico a EE. UU., no tienen comisiones de mantenimiento mensual, y ofrecen tarjetas de débito físicas y virtuales que puedes usar en todo el mundo.'
+  },
+  {
+    category: 'operativa',
+    question: '¿Qué es un Agente Registrado (Registered Agent)?',
+    answer:
+      'Es una persona o empresa obligatoria por ley estatal que debe tener una dirección física en el estado donde se forma tu LLC. Su única función es recibir notificaciones legales oficiales (demandas, avisos del gobierno) en horario comercial y reenviártelos.'
+  },
+  {
+    category: 'operativa',
+    question: '¿Puedo vender en Amazon FBA desde mi país con una LLC?',
+    answer:
+      'Sí, es el método más recomendado. Al usar tu LLC, Amazon te tratará como una empresa estadounidense. Esto facilita la aprobación de tu cuenta de vendedor, centraliza tus cobros en dólares y te permite deducir los gastos de tus operaciones.'
+  },
+  {
+    category: 'operativa',
+    question: '¿Cuánto tiempo tarda en estar lista la LLC y el EIN?',
+    answer:
+      'La formación en el estado (ej. Wyoming) suele demorar de 24 a 48 horas. Sin embargo, obtener el EIN para un no residente sin SSN toma actualmente entre 8 y 15 días hábiles, ya que el trámite debe procesarse por fax manual ante el IRS.'
   }
 ]
 

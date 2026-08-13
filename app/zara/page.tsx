@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
-type CarlaStatus = 'idle' | 'connecting' | 'listening' | 'processing' | 'speaking' | 'ended' | 'error'
+type ZaraStatus = 'idle' | 'connecting' | 'listening' | 'processing' | 'speaking' | 'ended' | 'error'
 type ChatMsg = { role: 'user' | 'assistant'; text: string }
 
-export default function CarlaClient() {
-  const [status, setStatus] = useState<CarlaStatus>('idle')
+export default function ZaraClient() {
+  const [status, setStatus] = useState<ZaraStatus>('idle')
   const [messages, setMessages] = useState<ChatMsg[]>([])
   const [draftUserText, setDraftUserText] = useState('')
   const [assistantStreamingText, setAssistantStreamingText] = useState('')
@@ -106,7 +106,7 @@ export default function CarlaClient() {
       : status === 'processing'
       ? 'Procesando…'
       : status === 'speaking'
-      ? 'Carla está respondiendo…'
+      ? 'Zara está respondiendo…'
       : status === 'ended'
       ? 'Conversación finalizada'
       : 'Error'
@@ -133,7 +133,7 @@ export default function CarlaClient() {
         }}
       >
         <div>
-          <div style={{ fontSize: 18, fontWeight: 800 }}>Carla (demo)</div>
+          <div style={{ fontSize: 18, fontWeight: 800 }}>Zara (demo)</div>
           <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>
             Transcripción en tiempo real (simulada)
           </div>
@@ -191,7 +191,7 @@ export default function CarlaClient() {
             }}
           >
             <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--color-text-secondary)', letterSpacing: '0.06em', marginBottom: 6, textTransform: 'uppercase' }}>
-              {m.role === 'user' ? 'Tú' : 'Carla'}
+              {m.role === 'user' ? 'Tú' : 'Zara'}
             </div>
             <div style={{ lineHeight: 1.55 }}>
               {m.text || (m.role === 'assistant' ? assistantStreamingText : '')}

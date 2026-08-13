@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
-    "dev:safe": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
-    "dev:notrace": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
+    "dev:safe": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
+    "dev:notrace": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build --webpack",
     "start": "next start",
     "lint": "next lint",
     "scrape": "npx tsx scripts/scrape-website.ts",
-    "ingest": "cross-env NODE_OPTIONS=--max-old-space-size=8192 npx tsx scripts/ingest-knowledge.ts"
+    "ingest": "cross-env NODE_OPTIONS=--max-old-space-size=4096 npx tsx scripts/ingest-knowledge.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.35",

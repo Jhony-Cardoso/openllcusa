@@ -69,8 +69,28 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   const tags = post.tags || [];
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://openllcusa.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://openllcusa.com/blog" },
+      { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://openllcusa.com/blog/${slug}` }
+    ]
+  };
+
   return (
     <main className="blog-page">
+      {post.schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(post.schema) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <div className="blog-container">
         <article className="blog-article">
           <div className="blog-inner">

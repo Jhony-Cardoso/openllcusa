@@ -42,7 +42,7 @@ Elige el momento que mejor te convenga para hablar con nosotros
 
 ## ¿Prefieres contactarnos de otra forma?
 
-También puedes escribirnos un email o hablar con Carla ahora mismo
+También puedes escribirnos un email o hablar con Zara ahora mismo
 
 ### Envíanos un email
 
@@ -50,12 +50,12 @@ Responderemos en menos de 24 horas
 
 [info@openllcusa.com](mailto:info@openllcusa.com)
 
-### Habla con Carla
+### Habla con Zara
 
-Si no quieres esperar, habla **AHORA** con Carla.  
+Si no quieres esperar, habla **AHORA** con Zara.  
 Está disponible 24/7
 
-🎙️ Hablar con Carla
+🎙️ Hablar con Zara
 
 ## Preguntas frecuentes sobre la consulta
 

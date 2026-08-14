@@ -34,6 +34,7 @@ export default function CompletadoPage() {
 
   const sessionId = searchParams.get('session_id');
   const pedidoId = searchParams.get('pedido');
+  const method = searchParams.get('method');
 
   // ============================================
   // Verificar el pago y cargar el pedido
@@ -48,7 +49,28 @@ export default function CompletadoPage() {
           return;
         }
 
-        if (!sessionId || !pedidoId) {
+        if (!pedidoId) {
+          setError('Falta información del pedido.');
+          setVerificando(false);
+          return;
+        }
+
+        if (method === 'crypto_manual') {
+          // Bypass Stripe verification para pago manual
+          const resPedido = await fetch(`/api/pedidos/completo?id=${pedidoId}`);
+          const dataPedido = await resPedido.json();
+
+          if (resPedido.ok && dataPedido.pedido) {
+            setPedido(dataPedido.pedido);
+            setPagoVerificado(true);
+          } else {
+            setError('No se pudo encontrar el pedido.');
+          }
+          setVerificando(false);
+          return;
+        }
+
+        if (!sessionId) {
           setError('Falta información de la sesión de pago.');
           setVerificando(false);
           return;
@@ -151,11 +173,15 @@ export default function CompletadoPage() {
           <CheckCircle2 className="h-12 w-12 text-green-600" />
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
-          ¡Pago completado con éxito!
+          {method === 'crypto_manual' 
+            ? 'Transacción recibida (Verificando...)' 
+            : '¡Pago completado con éxito!'}
         </h1>
         <p className="text-lg text-gray-600">
           Tu pedido <span className="font-semibold">#{pedido?.numero_pedido}</span> ha sido
-          procesado correctamente.
+          {method === 'crypto_manual'
+            ? ' registrado correctamente. En cuanto nuestro equipo verifique la transferencia en la blockchain, activaremos tu pedido.'
+            : ' procesado correctamente.'}
         </p>
       </div>
 
@@ -192,9 +218,9 @@ export default function CompletadoPage() {
 
           {/* Total pagado */}
           <div className="flex justify-between items-center pt-2">
-            <p className="text-lg font-bold text-gray-900">Total pagado:</p>
+            <p className="text-lg font-bold text-gray-900">Total a pagar:</p>
             <p className="text-2xl font-bold text-green-600">
-              ${pedido?.total_pagado || 0}
+              ${(pedido?.paquete?.precio || 0) + (pedido?.estado_usa?.filing_inicial || 0)}
             </p>
           </div>
         </div>

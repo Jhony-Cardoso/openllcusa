@@ -1229,3 +1229,54 @@ desc: (
   "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build --webpack"
 }
 ```
+
+---
+### 📅 Chat Session: 2026-08-14 13:48
+**Main objective:** Implementar NOWPayments como método de pago alternativo a Stripe.
+
+#### 👤 User Request:
+> El plan de implementación me parece muy correcto. Aún NO tengo la API KEY ni el IPN Secret de NOWPayments. Si, a pesar de ello, puedes PROCEDER a implementar el plan, HAZLO.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se añadieron las variables de entorno para NOWPayments, se crearon los endpoints de creación de invoice y webhook de IPN, se actualizó la UI del Checkout para permitir selección entre Stripe y Criptomonedas, y se actualizaron secciones clave de la web (TrustBar, Precios, Footer) para destacar la nueva ventaja competitiva.
+- **Files created/modified:**
+  - .env y .env.local
+  - pp/api/nowpayments/create-invoice/route.ts
+  - pp/api/nowpayments/webhook/route.ts
+  - pp/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx
+  - pp/page.tsx
+  - pp/precios/page.tsx
+  - components/layout/Footer.tsx
+
+#### 💻 Key Code:
+`	ypescript
+const endpoint = paymentMethod === 'stripe' 
+  ? '/api/stripe/create-checkout-session' 
+  : '/api/nowpayments/create-invoice';
+`
+
+---
+### 📅 Chat Session: 2026-08-14 21:55
+**Main objective:** Implementar Cobro Manual en Criptomonedas (Cero KYC) sustituyendo a NOWPayments.
+
+#### 👤 User Request:
+> Procede a deshacer todo el código de NOWPayments primero y elabora una versión con Pasarelas Web3 Descentralizadas. [...] Procede con el Plan de Implementación de Cobro Manual Criptomonedas.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se revirtió el código de NOWPayments, se actualizó el informe de valoración crypto y se implementó un flujo manual nativo. El cliente ahora puede elegir Criptomonedas, ver las direcciones de wallet (USDT TRC-20, USDC Polygon, BTC) e introducir el TXID. El pedido queda en estado pendiente_pago en Supabase y notifica al administrador.
+- **Files created/modified:**
+  - pp/api/crypto/manual-checkout/route.ts
+  - pp/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx
+  - pp/paquetes/[paqueteSlug]/onboarding/completado/page.tsx
+
+#### 💻 Key Code:
+`	ypescript
+    const { error: updateError } = await supabaseAdmin
+      .from('pedidos')
+      .update({
+        estado_pedido: 'pendiente_pago',
+        metadata: { ...currentMetadata, crypto_txid: txid, metodo_pago: 'crypto_manual' },
+        paso_actual: 6
+      })
+      .eq('id', pedidoId);
+`

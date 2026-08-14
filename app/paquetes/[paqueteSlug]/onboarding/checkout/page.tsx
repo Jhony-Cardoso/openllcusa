@@ -8,7 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { Loader2, AlertCircle, Lock, CreditCard } from 'lucide-react';
+import { Loader2, AlertCircle, Lock, CreditCard, Bitcoin } from 'lucide-react';
 
 // Tipo para el pedido completo
 type PedidoCompleto = {
@@ -49,6 +49,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [error, setError] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'crypto_manual'>('stripe');
+  const [txid, setTxid] = useState('');
 
   const paqueteSlug = params.paqueteSlug as string;
   const pedidoIdFromUrl = searchParams.get('pedido');
@@ -129,37 +131,66 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (paymentMethod === 'crypto_manual' && !txid.trim()) {
+      setError('Por favor, introduce el Hash de la Transacción (TXID).');
+      return;
+    }
+
     setProcessingPayment(true);
     setError('');
 
     try {
-      // Llamar a la API route que crea la sesión de Stripe
-      const response = await fetch('/api/stripe/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          pedidoId: pedido.id,
-          userId: user?.id,
-          slug: paqueteSlug,
-        }),
-      });
+      if (paymentMethod === 'stripe') {
+        // Llamar a la API route que crea la sesión de Stripe
+        const response = await fetch('/api/stripe/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            pedidoId: pedido.id,
+            userId: user?.id,
+            slug: paqueteSlug,
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al crear la sesión de pago');
-      }
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al crear la sesión de pago');
+        }
 
-      // Redirigir a Stripe Checkout
-      if (data.url) {
-        window.location.href = data.url;
+        // Redirigir a Stripe Checkout
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error('No se recibió la URL de pago');
+        }
       } else {
-        throw new Error('No se recibió la URL de pago');
+        // Pago manual Crypto
+        const response = await fetch('/api/crypto/manual-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            pedidoId: pedido.id,
+            userId: user?.id,
+            txid: txid.trim(),
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al procesar el pago manual');
+        }
+
+        // Redirigir a la página de éxito
+        router.push(`/paquetes/${paqueteSlug}/onboarding/completado?pedido=${pedido.id}&method=crypto_manual`);
       }
     } catch (err: any) {
-      console.error('Error creando sesión de Stripe:', err);
+      console.error('Error procesando pago:', err);
       setError(err.message || 'Error al procesar el pago. Inténtalo de nuevo.');
       setProcessingPayment(false);
     }
@@ -328,6 +359,81 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {/* Selector de método de pago */}
+            <div className="mb-6 space-y-3">
+              <p className="font-semibold text-gray-900 text-sm">Método de pago:</p>
+              
+              <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'stripe' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'}`}>
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  value="stripe" 
+                  checked={paymentMethod === 'stripe'} 
+                  onChange={() => setPaymentMethod('stripe')}
+                  className="mr-3"
+                />
+                <CreditCard className="h-5 w-5 text-gray-600 mr-2" />
+                <span className="font-medium text-gray-900">Tarjeta de Crédito</span>
+              </label>
+
+              <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'crypto_manual' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'}`}>
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  value="crypto_manual" 
+                  checked={paymentMethod === 'crypto_manual'} 
+                  onChange={() => setPaymentMethod('crypto_manual')}
+                  className="mr-3"
+                />
+                <Bitcoin className="h-5 w-5 text-gray-600 mr-2" />
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-900">Criptomonedas (Sin comisiones)</span>
+                  <span className="text-xs text-gray-500">Transfiere USDT, USDC o BTC y verifica</span>
+                </div>
+              </label>
+            </div>
+
+            {/* Panel Info Crypto Manual */}
+            {paymentMethod === 'crypto_manual' && (
+              <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+                <p className="text-sm text-blue-900 font-medium">1. Transfiere el importe exacto a una de nuestras billeteras:</p>
+                
+                <div className="space-y-3 text-sm">
+                  <div className="bg-white p-3 rounded border border-gray-200">
+                    <p className="font-semibold text-gray-700 text-xs mb-1">USDT (Red TRON / TRC-20)</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 break-all select-all font-mono text-xs">TU_BILLETERA_USDT_AQUI</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-3 rounded border border-gray-200">
+                    <p className="font-semibold text-gray-700 text-xs mb-1">USDC (Red Base o Polygon)</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 break-all select-all font-mono text-xs">TU_BILLETERA_USDC_AQUI</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-3 rounded border border-gray-200">
+                    <p className="font-semibold text-gray-700 text-xs mb-1">BTC (Bitcoin Network)</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 break-all select-all font-mono text-xs">TU_BILLETERA_BTC_AQUI</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-blue-200">
+                  <p className="text-sm text-blue-900 font-medium mb-2">2. Pega el Hash (TXID) de la transacción:</p>
+                  <input
+                    type="text"
+                    value={txid}
+                    onChange={(e) => setTxid(e.target.value)}
+                    placeholder="Ej. 0x123abc..."
+                    className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Botón de pago */}
             <button
               onClick={handleProcederAlPago}
@@ -349,15 +455,16 @@ export default function CheckoutPage() {
               ) : (
                 <>
                   <Lock className="h-5 w-5" />
-                  Pagar ${total}
+                  {paymentMethod === 'stripe' ? `Pagar $${total}` : `Confirmar Transferencia de $${total}`}
                 </>
               )}
             </button>
 
             {/* Nota informativa */}
             <p className="text-xs text-gray-500 text-center mt-4">
-              Al hacer clic en "Pagar", serás redirigido a Stripe para completar el
-              pago de forma segura.
+              {paymentMethod === 'stripe' 
+                ? 'Al hacer clic en "Pagar", serás redirigido a Stripe para completar el pago de forma segura.'
+                : 'Al hacer clic en "Confirmar", revisaremos el TXID en la blockchain y activaremos tu pedido.'}
             </p>
 
             {/* Logos de pago */}
@@ -368,7 +475,7 @@ export default function CheckoutPage() {
               <div className="flex justify-center gap-3 opacity-60">
                 <div className="text-2xl">💳</div>
                 <div className="text-2xl">🏦</div>
-                <div className="text-2xl">📱</div>
+                <div className="text-2xl" title="USDT, USDC, BTC">🪙</div>
               </div>
             </div>
           </div>

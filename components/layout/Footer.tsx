@@ -69,6 +69,9 @@ export default function Footer() {
               <li className="pt-2 text-xs text-slate-500">
                 Soporte en español<br />Respuesta en menos de 12h
               </li>
+              <li className="pt-3 flex items-center gap-2 text-sm text-slate-400">
+                <span className="text-lg">🪙</span> Aceptamos Crypto
+              </li>
             </ul>
           </div>
         </div>

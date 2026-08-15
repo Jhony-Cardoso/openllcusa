@@ -233,7 +233,7 @@ function HeroSection() {
 const TRUST_ITEMS = [
   { icon: '🌐', label: '100% en línea — Sin viajar' },
   { icon: '🪪', label: 'EIN incluido sin SSN' },
-  { icon: '🏢', label: 'Agente Registrado gratis 1er año' },
+  { icon: '🪙', label: 'Aceptamos Criptomonedas' },
   { icon: '💬', label: 'Soporte en español ‹12h' },
   { icon: '✅', label: '+500 LLCs registradas' },
   { icon: '🔒', label: 'Pago 100% seguro' },

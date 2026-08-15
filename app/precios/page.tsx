@@ -356,17 +356,32 @@ export default function PricingPage() {
               ✅ Precio cerrado + tasa estatal según el estado elegido &nbsp;•&nbsp; Sin sorpresas &nbsp;•&nbsp; Garantía de devolución 100%
             </p>
 
-            {/* Banner pago fraccionado */}
-            <div
-              className="hp-fu flex items-center gap-5 rounded-2xl mt-10 p-6"
-              style={{ background: T.b0, border: `1.5px solid ${T.b1}` }}
-            >
-              <span className="text-3xl flex-shrink-0">💳</span>
-              <div>
-                <p className="font-bold text-sm mb-0.5" style={{ color: T.b9 }}>Facilidades de pago</p>
-                <p className="text-sm" style={{ color: T.ts }}>
-                  Al pagar con Stripe, podrás fraccionar el importe en cuotas mensuales según disponibilidad en tu país y método de pago.
-                </p>
+            {/* Banner pago fraccionado y crypto */}
+            <div className="hp-fu grid md:grid-cols-2 gap-4 mt-10">
+              <div
+                className="flex items-center gap-5 rounded-2xl p-6"
+                style={{ background: T.b0, border: `1.5px solid ${T.b1}` }}
+              >
+                <span className="text-3xl flex-shrink-0">💳</span>
+                <div>
+                  <p className="font-bold text-sm mb-0.5" style={{ color: T.b9 }}>Facilidades de pago</p>
+                  <p className="text-sm" style={{ color: T.ts }}>
+                    Al pagar con Stripe, podrás fraccionar el importe en cuotas mensuales según disponibilidad en tu país.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                className="flex items-center gap-5 rounded-2xl p-6"
+                style={{ background: T.gl, border: `1.5px solid rgba(16,185,129,.28)` }}
+              >
+                <span className="text-3xl flex-shrink-0">🪙</span>
+                <div>
+                  <p className="font-bold text-sm mb-0.5" style={{ color: T.gd }}>Aceptamos Criptomonedas</p>
+                  <p className="text-sm" style={{ color: T.ts }}>
+                    Paga de forma nativa con USDT, USDC o Bitcoin sin intermediarios ni comisiones extra.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

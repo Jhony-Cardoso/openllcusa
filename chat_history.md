@@ -1280,3 +1280,29 @@ const endpoint = paymentMethod === 'stripe'
       })
       .eq('id', pedidoId);
 `
+
+---
+### 📅 Chat Session: 2026-08-16
+**Main objective:** Sistematizar el diseño visual de los artículos del blog y reparar errores 404.
+
+#### 👤 User Request:
+> El usuario solicitó reparar rutas 404 de los paquetes, hacer que el diseño visual del blog fuera más atractivo usando hero images y componentes visuales para SEO/CRO, añadir navegación de regreso al blog, y hacer clicable y destacado el Call To Action al final de los posts. Por último, solicitó dejar documentada la regla de formato del blog en AGENTS.md.
+
+#### 🤖 Agent Solution:
+- **Summary:** Añadidas redirecciones 301 permanentes en next.config.ts para las rutas /paquetes. Actualizado el layout del blog con botón de regreso y un banner CTA full-width. Generadas con IA 4 imágenes personalizadas de cabecera para los posts existentes y aplicadas junto a bloques de advertencia (blockquotes). Añadida la regla de estilo del blog a AGENTS.md.
+- **Files created/modified:**
+  - `next.config.ts`
+  - `app/blog/[slug]/page.tsx`
+  - `lib/blog/posts.ts`
+  - `AGENTS.md`
+  - `public/blog/*` (imágenes de cabecera)
+
+#### 💻 Key Code:
+```typescript
+// AGENTS.md - Regla añadida
+## Blog & Content Formatting Rules
+When creating or editing blog posts (lib/blog/posts.ts):
+1. **Hero Images**: Every post MUST have a custom generated hero image in the image field.
+2. **Visual Blocks (Callouts)**: Never write long walls of text. Break them up by injecting visual blockquotes.
+3. **Internal Linking**: Always include an explicit Next.js <Link> or CTA.
+```

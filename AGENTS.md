@@ -78,6 +78,12 @@ When updating the AI Assistant (`app/api/chat/route.ts`) or the Knowledge Base (
 3. **Prompt Structure (Lost in the middle)**: Critical instructions (like "always include links") must be placed at the VERY END of the final system prompt, after the RAG context has been injected.
 4. **Low Temperature**: Maintain `temperature: 0.3` (or similar) in the `streamText` configuration to enforce strict adherence to formatting rules.
 
+## Blog & Content Formatting Rules
+When creating or editing blog posts (`lib/blog/posts.ts`):
+1. **Hero Images**: Every post MUST have a custom generated hero image in the `image` field (e.g., `/blog/blog_hero_topic.jpg`). Generate these images with a prompt style: *"A high quality, modern, flat vector illustration on a dark blue background... Corporate premium aesthetic, no text."*
+2. **Visual Blocks (Callouts)**: Never write long walls of text. Break them up by injecting visual blockquotes for critical info using emojis, e.g.: `> 💡 **Consejo Experto**: ...` or `> 🚨 **Importante**: ...`. 
+3. **Internal Linking**: Always include an explicit Next.js `<Link>` or standard markdown link CTA towards the end of the content pointing to `/agendar` or relevant services.
+
 ## Mandatory Session Logging
 After completing an important task (or before the user ends the session), append a record to `chat_history.md` in the project root using this exact format:
 

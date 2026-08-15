@@ -95,6 +95,19 @@ export default async function BlogPostPage({ params }: PageProps) {
       <div className="blog-container">
         <article className="blog-article">
           <div className="blog-inner">
+            {/* Navegación Back */}
+            <div className="mb-6">
+              <a 
+                href="/blog" 
+                className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver a todos los artículos
+              </a>
+            </div>
+
             {/* Encabezado del artículo */}
             <header>
               <div className="blog-kicker">
@@ -146,16 +159,23 @@ export default async function BlogPostPage({ params }: PageProps) {
             </section>
 
             {/* CTA final destacado */}
-            <section className="mt-8 rounded-2xl bg-[color:var(--color-bg-8)] px-6 py-6">
-              <h2 className="mb-1 text-xl font-semibold text-[color:var(--color-text)]">
-                ¿Te ayudamos a crear tu LLC?
-              </h2>
-              <p className="text-sm text-[color:var(--color-text-secondary)]">
-                Proceso completo en 72 horas, sin complicaciones. Agenda una llamada o
-                contáctanos y te guiamos paso a paso según tu situación en Argentina
-                y tus objetivos con el negocio.
-              </p>
-              {/* Aquí puedes añadir un botón/enlace a tu formulario de contacto */}
+            <section className="mt-12 rounded-2xl bg-blue-50/50 border border-blue-100 px-8 py-8 text-center sm:text-left sm:flex sm:items-center sm:justify-between">
+              <div className="sm:max-w-2xl">
+                <h2 className="mb-2 text-2xl font-bold text-slate-900">
+                  ¿Te ayudamos a crear tu LLC?
+                </h2>
+                <p className="text-slate-600 mb-6 sm:mb-0">
+                  Proceso completo en 72 horas, sin complicaciones. Te guiamos paso a paso según tu situación y los objetivos de tu negocio.
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <a 
+                  href="/agendar" 
+                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md transition-all whitespace-nowrap"
+                >
+                  Agendar llamada gratuita
+                </a>
+              </div>
             </section>
 
             {/* Pie del artículo: autor + CTA a contacto */}

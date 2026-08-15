@@ -125,13 +125,13 @@ export default async function BlogPostPage({ params }: PageProps) {
               )}
 
               {post.image && (
-                <div className="w-full mb-12 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(12,32,71,0.12)] border border-slate-100">
+                <div className="w-full max-h-96 mb-12 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(12,32,71,0.12)] border border-slate-100 flex items-center justify-center bg-slate-50">
                   <Image 
                     src={post.image} 
                     alt={post.title} 
                     width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover"
+                    height={500} 
+                    className="w-full h-full object-cover"
                     priority
                   />
                 </div>

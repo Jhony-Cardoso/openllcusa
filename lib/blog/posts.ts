@@ -25,7 +25,7 @@ export const blogPosts: BlogPost[] = [
     readTime: '12 min',
     category: 'Guías',
     tags: ['LLC', 'Argentina', 'Fiscalidad Internacional', 'EIN', 'Wyoming'],
-    image: '/blog/llc-argentina.jpg',
+    image: '/blog/blog_hero_argentina_usa.jpg',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -171,9 +171,7 @@ Opciones populares para no residentes:
 
 ## Obligaciones fiscales en Argentina
 
-> ⚠️ Importante: Tener una LLC en EE.UU. **no te exime** de obligaciones fiscales en Argentina si eres residente fiscal argentino.
->
-> La idea no es asustarte, sino que sepas desde el principio qué implica para que puedas decidir con información completa.
+> ⚠️ **Cuidado con la AFIP**: Tener una LLC en EE.UU. **no te exime** de obligaciones fiscales en Argentina si eres residente fiscal argentino. La idea no es asustarte, sino que operes con seguridad, conocimiento y dentro del marco legal para dormir tranquilo.
 
 ### ¿Qué debes considerar?
 
@@ -242,7 +240,7 @@ Si después de leer todo esto ves que una LLC puede ser una buena herramienta pa
     readTime: '15 min',
     category: 'Guías',
     tags: ['LLC', 'España', 'SL', 'Comparativa', 'Fiscalidad Internacional', 'Emprendedores'],
-    image: '/blog/llc-vs-sl-espana.jpg',
+    image: '/blog/blog_hero_spain_usa_scale.jpg',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -623,7 +621,7 @@ En **Open LLC USA**, contamos con expertos fiscales que preparan y presentan el 
     readTime: '6 min',
     category: 'Guías',
     tags: ['Wyoming', 'Delaware', 'Comparativa', 'Costos', 'Privacidad'],
-    image: '/images/hero.webp',
+    image: '/blog/blog_hero_wyoming_delaware.jpg',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -686,6 +684,8 @@ Es la meca legal. Tiene la **Court of Chancery**, una corte especializada única
 ### Wyoming
 Inventó el concepto de LLC en 1977. Ofrece una protección estelar llamada **Charging Order Protection** incluso para LLCs de un solo miembro (Single-Member LLCs). Esto hace que sea extremadamente difícil para un acreedor personal embargar los activos de tu empresa. 
 
+> 🛡️ **Escudo de Hierro**: La "Charging Order Protection" de Wyoming significa que si alguien te demanda personalmente por un accidente en tu país o una deuda personal, un juez no puede obligarte a liquidar los fondos ni activos que tengas dentro de tu LLC en Wyoming para pagar la deuda.
+
 🏆 **Ganador Legal:** **Delaware** si planeas atraer inversores ángeles o capital de riesgo. **Wyoming** si buscas proteger tu propio negocio individual de demandas de forma contundente.
 
 ---
@@ -733,7 +733,7 @@ Es ideal para negocios que "arrancan con su propio dinero" (*Bootstrapped*) y qu
     readTime: '7 min',
     category: 'Banca',
     tags: ['Banca', 'Mercury', 'Relay', 'EIN', 'Cuentas en Dólares'],
-    image: '/images/hero.webp',
+    image: '/blog/blog_hero_fintech_banking.jpg',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -796,7 +796,10 @@ Sea Mercury o Relay, te van a pedir casi exactamente lo mismo. Preparar este "Ki
 
 1. **Articles of Organization (Certificate of Formation)**: El documento sellado por el estado que aprueba la creación de tu LLC.
 2. **Operating Agreement**: El acuerdo operativo interno firmado por ti, que demuestra que eres el dueño o mánager.
-3. **Carta de Asignación del EIN (CP575 o 147C)**: El documento OFICIAL emitido por el IRS que te otorga tu Employer Identification Number. **(Sin esto, ningún banco te abrirá cuenta)**.
+3. **Carta de Asignación del EIN (CP575 o 147C)**: El documento OFICIAL emitido por el IRS que te otorga tu Employer Identification Number.
+
+> 🚨 **Requisito Indispensable**: Nunca intentes abrir una cuenta bancaria comercial en EE.UU. sin tener primero la Carta de Asignación del EIN oficial (CP575 o 147C) en tus manos. Sin este documento de respaldo, tu solicitud bancaria será rechazada automáticamente.
+
 4. **Pasaporte Válido**: Una foto clara y nítida de tu pasaporte de tu país de origen. (El DNI de España o la Cédula latinoamericana a veces funcionan, pero el pasaporte es un éxito garantizado 100%).
 5. **Presencia web verificable**: Un enlace a tu página web, tu perfil de Upwork, tu tienda Shopify o tu LinkedIn. El banco quiere comprobar que hay un negocio real y lícito detrás.
 

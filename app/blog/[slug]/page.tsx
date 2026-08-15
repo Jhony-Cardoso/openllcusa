@@ -2,6 +2,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
@@ -114,12 +115,25 @@ export default async function BlogPostPage({ params }: PageProps) {
               </div>
 
               {tags.length > 0 && (
-                <div className="blog-tags">
+                <div className="blog-tags mb-8">
                   {tags.map((tag: string) => (
                     <span key={tag} className="blog-tag">
                       #{tag}
                     </span>
                   ))}
+                </div>
+              )}
+
+              {post.image && (
+                <div className="w-full mb-12 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(12,32,71,0.12)] border border-slate-100">
+                  <Image 
+                    src={post.image} 
+                    alt={post.title} 
+                    width={1200} 
+                    height={630} 
+                    className="w-full h-auto object-cover"
+                    priority
+                  />
                 </div>
               )}
             </header>

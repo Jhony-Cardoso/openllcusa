@@ -515,7 +515,7 @@ Si quieres explorar si una LLC es la opción correcta para ti, en Open LLC USA o
     readTime: '8 min',
     category: 'Impuestos',
     tags: ['Formulario 5472', 'IRS', 'LLC', 'Extranjeros', 'Multas'],
-    image: '/images/hero.webp',
+    image: '/blog/tax-form-5472.jpg',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -592,6 +592,8 @@ La fecha límite es la misma que para las corporaciones estadounidenses: **El 15
 El IRS no perdona la ignorancia. Si presentas el Formulario 5472 tarde, incompleto, o simplemente no lo presentas, la multa estándar es de **$25,000 USD** iniciales.
 
 Si el IRS te notifica del fallo y no lo corriges en 90 días, te cobrarán **otros $25,000 USD** por cada 30 días adicionales de retraso. 
+
+> 💡 **Dato Crítico**: La multa aplica por **cada** LLC. Si tienes 2 LLCs y olvidas enviar los formularios de ambas, la multa inicial será de $50,000 USD. No hay excusas de "no lo sabía" válidas para el IRS.
 
 Esta es la razón principal por la que los no residentes deben tomarse en serio el mantenimiento de su LLC.
 

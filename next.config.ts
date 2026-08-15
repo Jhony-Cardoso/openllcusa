@@ -83,6 +83,16 @@ const nextConfig: NextConfig = {
         destination: '/servicios/impuestos/obtencion-ein',
         permanent: true,
       },
+      {
+        source: '/paquetes',
+        destination: '/precios',
+        permanent: true,
+      },
+      {
+        source: '/paquetes/:slug',
+        destination: '/paquetes/:slug/onboarding',
+        permanent: true,
+      },
     ];
   },
 

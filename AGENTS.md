@@ -83,6 +83,7 @@ When creating or editing blog posts (`lib/blog/posts.ts`):
 1. **Hero Images**: Every post MUST have a custom generated hero image in the `image` field (e.g., `/blog/blog_hero_topic.jpg`). Generate these images with a prompt style: *"A high quality, modern, flat vector illustration on a dark blue background... Corporate premium aesthetic, no text."*
 2. **Visual Blocks (Callouts)**: Never write long walls of text. Break them up by injecting visual blockquotes for critical info using emojis, e.g.: `> 💡 **Consejo Experto**: ...` or `> 🚨 **Importante**: ...`. 
 3. **Internal Linking**: Always include an explicit Next.js `<Link>` or standard markdown link CTA towards the end of the content pointing to `/agendar` or relevant services.
+4. **Humanized Tone**: The text of the blog articles must be highly humanized, conversational, and natural to avoid AI-detection by Google (SEO). Avoid robotic transition phrases (e.g., 'En conclusión', 'Es importante destacar'), use varied sentence structures, idiomatic expressions where appropriate, and write as if a real human expert is speaking directly to the reader.
 
 ## Mandatory Session Logging
 After completing an important task (or before the user ends the session), append a record to `chat_history.md` in the project root using this exact format:

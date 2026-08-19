@@ -1306,3 +1306,123 @@ When creating or editing blog posts (lib/blog/posts.ts):
 2. **Visual Blocks (Callouts)**: Never write long walls of text. Break them up by injecting visual blockquotes.
 3. **Internal Linking**: Always include an explicit Next.js <Link> or CTA.
 ```
+
+---
+### 📅 Chat Session: 2026-08-16 12:55:00
+**Main objective:** Generar el siguiente pack de 50 preguntas (Q151 a Q200) para el RAG de Zara sobre errores comunes al operar una LLC.
+
+#### 👤 User Request:
+> Vamos a por el siguiente pack de 50 preguntas (Q151 hasta la Q200) sobre lo que no debes hacer si tienes una LLC en EE.UU., tipo non regarded entity, y resides en otro país (ej. España).
+
+#### 🤖 Agent Solution:
+- **Summary:** Se creó un script en Node.js para generar programáticamente 50 archivos Markdown con preguntas y respuestas detalladas sobre las peores prácticas, errores fiscales (Modelo 720, Formulario 5472, nexus, contrataciones) y legales al tener una LLC desde el extranjero. Se ejecutó la ingesta de Supabase para actualizar el RAG.
+- **Files created/modified:**
+  - `scripts/generate_q151_q200.js`
+  - `knowledge/custom/q151-*.md` a `q200-*.md` (50 nuevos archivos)
+
+#### 💻 Key Code:
+```markdown
+# ¿Por qué no debes mezclar gastos personales y de la LLC (Piercing the Corporate Veil)?
+
+Uno de los mayores errores al tener una LLC es usar su cuenta bancaria como si fuera tu monedero personal. Pagar la compra del supermercado en España, tu alquiler personal o el colegio de tus hijos con la tarjeta de la LLC rompe la separación legal entre tú y la empresa. Esto se conoce en EE.UU. como "Piercing the Corporate Veil" (Levantar el velo corporativo). Si hay una demanda o el IRS/Hacienda auditan la cuenta, pueden determinar que la LLC es una farsa y hacerte responsable personalmente de las deudas y problemas de la empresa, perdiendo la protección de responsabilidad limitada.
+```
+
+
+---
+### 📅 Chat Session: 2026-08-16 13:28:00
+**Main objective:** Generar el bloque de preguntas Q201 a Q250 sobre Operaciones Avanzadas y crear su respectivo artefacto.
+
+#### 👤 User Request:
+> Vistazo a algunas de las preguntas generadas y planificar el siguiente bloque de 50 (Q201 a Q250). Preparar el script para generar las preguntas y respuestas, realizar la ingesta a Supabase y crear su artefacto de resumen.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se propuso un plan enfocado en Traspasos, Herencias, Fiscalidad Avanzada (IRS, Holdings), Propiedad Intelectual, Resolución de Conflictos y Cierre de la LLC. Tras la aprobación, se ejecutó un script en Node.js para generar las 50 preguntas. Se ingirieron a Supabase para actualizar el RAG de Zara y se generó un artefacto de resumen listando todas las preguntas y respuestas completas, tal y como solicitó el usuario.
+- **Files created/modified:**
+  - `scripts/generate_q201_q250.js`
+  - `knowledge/custom/q201-*.md` a `q250-*.md` (50 nuevos archivos)
+  - Artefacto `q201_q250_resumen.md` en el directorio brain de la sesión.
+
+#### 💻 Key Code:
+```javascript
+// Estructura de extracción para los artefactos de resumen:
+files.forEach(file => {
+  const content = fs.readFileSync(path.join(dir, file), 'utf8');
+  const lines = content.split('\n');
+  const titleLine = lines.find(l => l.startsWith('# '));
+  const title = titleLine ? titleLine.replace('# ', '') : 'Sin título';
+  const answer = lines.filter(l => !l.startsWith('# ')).join('\n').trim();
+  
+  section1 += '- **Q' + qNum + '**: ' + title + '\n';
+  section2 += '### Q' + qNum + ': ' + title + '\n\n' + answer + '\n\n---\n\n';
+});
+```
+
+
+---
+### 📅 Chat Session: 2026-08-16 13:55:00
+**Main objective:** Generar el último bloque del día, Q251 a Q300, sobre Operaciones Diarias, Estados (Wyoming, Delaware, California, etc.), E-commerce y Casos Especiales.
+
+#### 👤 User Request:
+> Perfecto, vamos muy bien. Vamos con el siguiente bloque (Q251 - Q300), último por hoy. Acuérdate del artefacto 😉
+
+#### 🤖 Agent Solution:
+- **Summary:** Se generaron programáticamente las 50 preguntas finales (Q251 - Q300) cubriendo temas clave como Virtual Mailboxes, diferencias entre Member/Manager-Managed, franquicias (Franchise Tax) en estados problemáticos (California, Delaware), normativas de "Marketplace Facilitator", contabilidad (nómina vs owner's draw), y casos de uso especiales (Youtubers, indie devs). Se ingirieron los datos en Supabase y se generó el artefacto resumen correspondiente.
+- **Files created/modified:**
+  - `scripts/generate_q251_q300.js`
+  - `knowledge/custom/q251-*.md` a `q300-*.md` (50 nuevos archivos)
+  - Artefacto `q251_q300_resumen.md` en el directorio brain de la sesión.
+
+#### 💻 Key Code:
+```javascript
+// Temática de estados y jurisdicciones
+  {
+    id: 261,
+    slug: 'por-que-nuevo-mexico-es-privado',
+    title: '¿Por qué Nuevo México es tan popular para LLCs de privacidad?',
+    content: 'Nuevo México (New Mexico) es el único estado, junto con Wyoming, que ofrece anonimato real en el registro público... no tiene cuota de reporte anual (Annual Report Fee $0), por lo que mantener la LLC cuesta solo lo que te cobre el Registered Agent.'
+  }
+```
+
+
+---
+### 📅 Chat Session: 2026-08-16 14:21:00
+**Main objective:** Revisión y actualización de las rutas en el Sitemap para SEO.
+
+#### 👤 User Request:
+> Necesito que revises si todas las URLs que componen actualmente el sitio openllcusa.com figuran en el sitemap, hacer build y subir cambios a Github.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se verificaron las rutas del proyecto frente al archivo `app/sitemap.ts`. Se añadieron 6 rutas estáticas importantes que faltaban (legal, faq-calculadora, zara). Se intentó un ping a Google (que ya está deprecado) y se orientó al usuario a enviar el sitemap vía Google Search Console. Finalmente, se ejecutó `npm run build` para asegurar que el proyecto compila, y se subieron los cambios a GitHub listos para el deploy.
+- **Files created/modified:**
+  - `app/sitemap.ts`
+
+
+---
+### 📅 Chat Session: 2026-08-19
+**Main objective:** Estrategia de Redes Sociales, Privacidad y Branding
+
+#### 👤 User Request:
+> El usuario solicitó adaptar los banners a redes sociales, asesoría sobre privacidad (VPN vs Perfiles en incógnito) para evitar vinculación personal, manuales paso a paso para crear cuentas corporativas de forma anónima y la actualización del Favicon y el Logo oficial en la web.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se generaron versiones recortadas al milímetro de los banners para Twitter, Facebook, LinkedIn y YouTube. Se elaboraron 3 manuales (Artefactos Markdown) documentando las mejores prácticas de privacidad (incluyendo la táctica de perfiles 'Keyholder' para LinkedIn). Finalmente, se inyectó el nuevo monograma de la 'O' como Favicon de la web y como logo principal en el Header de Next.js.
+- **Files created/modified:**
+  - `public/images/logo.png`
+  - `app/icon.jpg`
+  - `app/apple-icon.jpg`
+  - `components/layout/Header.tsx`
+  - `scripts/crop-banners.cjs`
+  - `tutorial_facebook_page.md` (Artefacto)
+  - `tutorial_instagram_page.md` (Artefacto)
+  - `tutorial_linkedin_page.md` (Artefacto)
+
+#### 💻 Key Code:
+```tsx
+// components/layout/Header.tsx
+import Image from 'next/image'
+
+<Link href="/" className="header-logo" onClick={closeMobileMenu}>
+  <Image src="/images/logo.png" alt="Open LLC USA Logo" width={40} height={40} className="rounded-xl shadow-sm" />
+  <span>Open LLC USA</span>
+</Link>
+```

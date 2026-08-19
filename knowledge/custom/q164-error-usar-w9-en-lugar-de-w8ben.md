@@ -1,0 +1,3 @@
+# ¿Qué pasa si entrego un formulario W-9 a mis clientes en lugar de un W-8BEN?
+
+El formulario W-9 es exclusivo para personas estadounidenses (US Persons) o entidades sujetas a impuestos en EE.UU. Como extranjero no residente con una Single-Member LLC, a efectos fiscales eres tú quien provee el servicio. Debes entregar un formulario **W-8BEN** (o W-8BEN-E si aplica) para certificar que eres extranjero y evitar que tus clientes americanos te retengan el 30% de tus pagos por orden del IRS. Mentir y firmar un W-9 comete perjurio fiscal y te obligará a presentar declaraciones de impuestos como residente.

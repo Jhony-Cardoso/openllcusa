@@ -1,0 +1,3 @@
+# ¿Puedo usar la cuenta de la LLC para enviarle dinero a familiares o amigos en mi país?
+
+No debes hacerlo. Las transferencias internacionales desde la cuenta bancaria de tu negocio hacia individuos que no son empleados, contratistas (con facturas justificativas) o socios de la LLC levantan alarmas inmediatas de lavado de dinero (AML) en bancos como Mercury, Relay o Wise. Te arriesgas a que bloqueen tu cuenta y te pidan explicaciones legales. Si quieres regalar dinero a tu familia, primero transfiere los beneficios (Owner's Draw) a tu cuenta personal, y desde tu cuenta personal haz lo que quieras.

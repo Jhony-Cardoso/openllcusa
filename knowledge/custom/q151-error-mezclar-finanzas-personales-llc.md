@@ -1,0 +1,3 @@
+# ¿Por qué no debes mezclar gastos personales y de la LLC (Piercing the Corporate Veil)?
+
+Uno de los mayores errores al tener una LLC es usar su cuenta bancaria como si fuera tu monedero personal. Pagar la compra del supermercado en España, tu alquiler personal o el colegio de tus hijos con la tarjeta de la LLC rompe la separación legal entre tú y la empresa. Esto se conoce en EE.UU. como "Piercing the Corporate Veil" (Levantar el velo corporativo). Si hay una demanda o el IRS/Hacienda auditan la cuenta, pueden determinar que la LLC es una farsa y hacerte responsable personalmente de las deudas y problemas de la empresa, perdiendo la protección de responsabilidad limitada.

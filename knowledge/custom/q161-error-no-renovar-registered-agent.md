@@ -1,0 +1,3 @@
+# ¿Qué ocurre si dejo de pagar la cuota de mi Registered Agent en EE.UU.?
+
+El Registered Agent (Agente Registrado) es un requisito legal continuo en todos los estados. Si dejas de pagar a tu proveedor y este renuncia a representarte, tu LLC se quedará sin una dirección legal para recibir notificaciones del estado y del gobierno. Al poco tiempo (usualmente de 30 a 60 días), el estado revocará tu LLC administrativamente (Administratively Dissolved). Perderás la protección de responsabilidad limitada, no podrás operar y el banco cerrará tus cuentas. Reactivarla te costará multas altas y mucho papeleo.

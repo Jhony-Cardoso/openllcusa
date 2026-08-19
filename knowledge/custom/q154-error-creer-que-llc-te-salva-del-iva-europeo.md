@@ -1,0 +1,3 @@
+# ¿Es cierto que con una LLC me ahorro cobrar el IVA a clientes en Europa?
+
+Falso. Este es un mito peligroso. Las reglas del IVA dependen de dónde está tu cliente y del tipo de servicio, no de dónde esté registrada tu empresa. Si vendes servicios digitales (software, cursos, e-books) B2C (a consumidores finales) en la Unión Europea, estás obligado a recaudar y liquidar el IVA del país de residencia de tu cliente, sin importar que operes a través de una LLC americana. Para ello, existe el sistema OSS (One Stop Shop - Non-Union scheme). Ignorar esto puede causarte problemas serios con las autoridades fiscales europeas.

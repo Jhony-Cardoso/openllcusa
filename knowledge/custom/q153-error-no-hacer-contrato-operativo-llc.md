@@ -1,0 +1,3 @@
+# ¿Por qué no debes operar sin un Operating Agreement escrito?
+
+Aunque algunos estados no obligan legalmente a presentar un Operating Agreement (Acuerdo Operativo) al crear la LLC, operar sin uno es un gran riesgo. El Operating Agreement es el documento interno que dicta cómo funciona la LLC, su estructura de propiedad, cómo se reparten los beneficios y qué pasa en caso de disolución. Sin este documento, tu LLC se rige por las leyes por defecto del estado, que pueden no ser favorables. Además, casi todos los bancos serios (como Mercury, Relay) y plataformas como Stripe te exigirán este documento para abrir una cuenta o verificar el negocio.

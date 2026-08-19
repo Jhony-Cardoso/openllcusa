@@ -1,0 +1,3 @@
+# ¿Qué pasa si ignoro una demanda judicial en EE.UU. creyendo que al vivir lejos no me afecta?
+
+Si no respondes en plazo, el juez emitirá una sentencia en rebeldía ("Default Judgment") dándole la razón absoluta al demandante. Esto significa que la LLC le deberá la cantidad máxima solicitada. El demandante podrá entonces congelar las cuentas bancarias estadounidenses de la LLC (Mercury, Stripe) y embargar sus activos. En el peor de los casos, a través de tratados internacionales (Convenio de La Haya), podrían intentar homologar la sentencia en tu país, aunque esto es raro para LLCs sin activos.

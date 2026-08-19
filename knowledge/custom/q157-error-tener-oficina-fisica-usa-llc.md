@@ -1,0 +1,3 @@
+# ¿Por qué no debes alquilar una oficina o almacén físico en EE.UU.?
+
+Al igual que con los empleados, tener una instalación física fija (oficina, almacén, servidores de tu propiedad gestionados por ti) en Estados Unidos crea lo que el IRS llama un "Establecimiento Permanente" o un nexo físico. Esto destruye tu condición de extranjero no residente exento de impuestos sobre ingresos. Si creas este nexo, los beneficios de tu LLC se considerarán ingresos efectivamente conectados con EE.UU. (ECI) y tendrás que pagar impuestos federales y estatales (Income Tax) sobre las ganancias de la empresa. Usa siempre la dirección virtual de tu Registered Agent.

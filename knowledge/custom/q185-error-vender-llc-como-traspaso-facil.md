@@ -1,0 +1,3 @@
+# ¿Puedo simplemente "vender" o traspasar mi LLC cediendo las contraseñas?
+
+Transferir la propiedad de una LLC no es como dar la contraseña de una cuenta de Netflix. Requiere actualizar el Operating Agreement, registrar el cambio de propiedad (si el estado lo exige), notificar al IRS para que actualice el "Responsible Party" asociado al EIN (Formulario 8822-B), presentar un nuevo reporte BOI a la FinCEN en menos de 30 días, y realizar un nuevo KYC en los bancos (los cuales probablemente cerrarán la cuenta y pedirán que el nuevo dueño aplique de nuevo). Hacerlo informalmente es un desastre legal.

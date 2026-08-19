@@ -1,0 +1,3 @@
+# ¿Qué pasa si inyecto dinero en la LLC desde mi cuenta personal y no lo documento?
+
+Cuando la LLC necesita liquidez inicial (por ejemplo, para pagar inventario o publicidad), es normal aportarle capital. Sin embargo, no debes simplemente enviar el dinero y ya. Debes documentarlo en la contabilidad como una "Aportación de Capital" (Capital Contribution) o realizar un documento de préstamo entre tú y tu LLC (Promissory Note). De lo contrario, en una auditoría, tu país podría considerar al devolverte el dinero que son ingresos gravables (dividendos), o EE.UU. podría verlo como una transacción dudosa. Además, inyectar capital genera obligación de presentar el Formulario 5472.

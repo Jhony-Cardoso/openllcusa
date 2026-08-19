@@ -1,0 +1,3 @@
+# ¿Qué pasa si no guardo recibos ni genero facturas (invoices) por las operaciones de la LLC?
+
+Aunque en EE.UU. no haya un formato oficial y rígido de "factura" como en España, la contabilidad requiere justificantes. Si recibes depósitos en tu cuenta bancaria y no tienes contratos o Invoices que justifiquen de dónde viene el dinero, en caso de una revisión del banco por AML (Anti-Money Laundering) te cerrarán la cuenta. Además, a la hora de pagar impuestos en tu país (donde resides fiscalmente), Hacienda te exigirá pruebas de todos los gastos que te has deducido en la LLC. Sin facturas, la contabilidad no tiene validez legal.

@@ -1,0 +1,3 @@
+# ¿Por qué no debes simplemente "abandonar" la LLC si ya no la usas?
+
+Muchos cometen el error de dejar de pagar los reportes anuales (Annual Reports) pensando que la LLC "se cierra sola". Aunque el estado la disolverá administrativamente, seguirás acumulando multas, penalidades por retraso y daños a tu historial comercial. Peor aún, el IRS no sabrá que cerraste y esperará que sigas presentando el Formulario 5472 cada año. Si no lo presentas, te arriesgas a la multa de $25,000. Siempre debes cerrar la LLC formalmente presentando los Artículos de Disolución en el estado y avisando al IRS para cancelar el EIN.

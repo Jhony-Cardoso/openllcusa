@@ -1,0 +1,3 @@
+# ¿Por qué es un error fatal no presentar el reporte BOI (Beneficial Ownership Information)?
+
+Desde el 1 de enero de 2024, la Corporate Transparency Act obliga a casi todas las LLCs a presentar un reporte BOI a la FinCEN (Financial Crimes Enforcement Network) detallando quiénes son los beneficiarios finales de la empresa. Si creaste tu LLC antes de 2024 tenías un año de plazo; si la creas ahora, tienes solo 90 o 30 días para hacerlo. No presentar el reporte BOI a tiempo no es una simple falta administrativa: conlleva multas de **$591 por día** de retraso e incluso penas criminales de hasta 2 años de prisión. Nunca debes olvidar este paso.

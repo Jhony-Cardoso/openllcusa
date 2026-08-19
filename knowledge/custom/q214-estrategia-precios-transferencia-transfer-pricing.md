@@ -1,0 +1,3 @@
+# ¿Qué es el "Transfer Pricing" si mi empresa en España y mi LLC en EE.UU. hacen negocios juntas?
+
+Si eres dueño de una SL en España y una LLC en USA, y ambas se facturan servicios entre sí (por ejemplo, la SL le cobra a la LLC por desarrollo de software), estás sujeto a las leyes de Precios de Transferencia (Transfer Pricing). Las leyes internacionales exigen que las transacciones entre partes vinculadas se hagan a "valor de mercado" (Arm's Length Principle). No puedes facturarle a tu propia LLC 100.000€ por un servicio de 1.000€ solo para mover dinero; esto se considera evasión y serás auditado fuertemente.

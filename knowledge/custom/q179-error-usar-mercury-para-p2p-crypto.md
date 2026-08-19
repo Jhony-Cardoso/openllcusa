@@ -1,0 +1,3 @@
+# ¿Por qué es un error usar bancos como Mercury o Relay para hacer trading P2P de Criptomonedas?
+
+Bancos fintech estadounidenses como Mercury o Relay tienen políticas de cumplimiento (Compliance) extremadamente estrictas respecto a las criptomonedas debido al riesgo de lavado de dinero. Si usas la cuenta de la LLC para hacer operaciones P2P (Peer-to-Peer) en plataformas como Binance, KuCoin o Paxful, tu cuenta será cerrada de inmediato y sin previo aviso, congelando tus fondos durante meses mientras investigan el origen del dinero. Las LLCs de EE.UU. no son aptas para usar en ecosistemas crypto no regulados.

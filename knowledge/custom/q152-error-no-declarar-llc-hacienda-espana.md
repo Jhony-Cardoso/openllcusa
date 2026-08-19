@@ -1,0 +1,3 @@
+# ¿Qué pasa si no declaro mi LLC a Hacienda en mi país (ej. España)?
+
+Un error muy grave (y común) es pensar que al ser una LLC en EE.UU. y "libre de impuestos" allí, no tienes que declararla en tu país de residencia. Si resides fiscalmente en España u otro país, estás obligado a declarar tus ingresos mundiales. Al ser una Disregarded Entity, los beneficios de la LLC fluyen hacia ti y debes declararlos en tu IRPF. Además, en España debes presentar el **Modelo 720** (si tienes más de 50.000€ en cuentas en el extranjero) y el **Modelo D6 o D1A** para Inversiones en el Exterior. No hacerlo conlleva multas masivas por ocultación de patrimonio e ingresos.

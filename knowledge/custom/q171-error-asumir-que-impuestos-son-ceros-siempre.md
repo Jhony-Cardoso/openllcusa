@@ -1,0 +1,3 @@
+# ¿Por qué no debes asumir que siempre pagarás "cero impuestos" con una LLC?
+
+El marketing de internet vende la LLC como libre de impuestos, pero eso tiene asteriscos. La LLC no paga impuestos en EE.UU. (a nivel federal) SI y SOLO SI eres un extranjero no residente (NRA), no tienes nexo físico en EE.UU., y es una Single-Member (o partnership de extranjeros). Pero **SÍ** debes pagar impuestos sobre esos beneficios en tu país de residencia fiscal (ej. el IRPF en España). La riqueza siempre tributa en algún lado; la LLC simplemente evita que tributes en dos países a la vez (evita la doble imposición).

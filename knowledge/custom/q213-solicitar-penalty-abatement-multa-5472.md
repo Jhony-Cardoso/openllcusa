@@ -1,0 +1,3 @@
+# ¿Cómo solicitar una "Penalty Abatement" (perdón de multas) si olvidé presentar el 5472?
+
+Si te llega una multa de $25,000 por presentar tarde el Formulario 5472, no todo está perdido. El IRS ofrece un mecanismo llamado "Penalty Abatement" (Reducción o Perdón de Multa). Puedes argumentar "Causa Razonable" (Reasonable Cause) si hubo un motivo de peso (desastre natural, enfermedad grave del contable, desconocimiento razonable en el primer año). Un abogado fiscal puede redactar esta petición, que muchas veces resulta en el perdón total de la multa si es tu primera infracción (First-Time Abatement).

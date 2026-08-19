@@ -1,0 +1,3 @@
+# ¿Qué pasa si vendo productos físicos en EE.UU. y no recaudo Sales Tax?
+
+Si haces e-commerce (como Amazon FBA, Shopify o Dropshipping) y vendes a clientes dentro de Estados Unidos, puedes generar "Nexo Económico" (Economic Nexus) si superas cierto umbral de ventas (usualmente $100,000 en ventas o 200 transacciones) en un estado específico. Si esto pasa, estás legalmente obligado a registrarte en ese estado y recaudar el Sales Tax (impuesto sobre las ventas) de tus clientes para luego remitirlo al estado. Ignorar el Sales Tax resultará en auditorías estatales y te cobrarán el impuesto de tu propio bolsillo más multas e intereses.

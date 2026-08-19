@@ -1,0 +1,3 @@
+# ¿Qué pasa si trato a freelancers internacionales como empleados a tiempo completo?
+
+Si contratas a freelancers en Latam o Europa para tu LLC, debes tratarlos como Contratistas Independientes (Independent Contractors). Si empiezas a dictar sus horarios estrictos, proveerles equipos, exigir exclusividad, e integrarlos de forma dependiente en la estructura, puedes caer en "Employee Misclassification". Aunque estén en otro país, te arriesgas a demandas laborales en sus países de origen, y si son americanos, el IRS te castigará con multas retroactivas por no pagar impuestos de nómina (Payroll taxes).

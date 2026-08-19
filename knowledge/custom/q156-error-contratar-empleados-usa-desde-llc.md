@@ -1,0 +1,3 @@
+# ¿Por qué no debes contratar empleados físicos en EE.UU. desde tu LLC extranjera?
+
+Si tu objetivo es mantener la LLC como una Disregarded Entity sin nexo físico ("No ETB" - Engaged in Trade or Business in the US) para no pagar impuestos federales, no debes tener empleados dependientes físicos en Estados Unidos (W-2 employees). Tener un empleado trabajando en territorio estadounidense genera un nexo físico automático ("Physical Presence Nexus"). Esto convertirá a tu LLC en sujeto de impuestos corporativos en EE.UU. (ECI - Effectively Connected Income) y te obligará a presentar declaraciones de impuestos mucho más complejas (1040-NR), además de lidiar con leyes laborales y retenciones estatales.

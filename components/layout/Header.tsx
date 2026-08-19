@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ChevronDown,
   Menu,
@@ -22,16 +23,7 @@ import {
   UserButton
 } from '@clerk/nextjs'
 
-const LogoEdificio = () => (
-  <svg width="36" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="14" y="14" width="2" height="14" fill="white" />
-    <rect x="19" y="14" width="2" height="14" fill="white" />
-    <rect x="24" y="14" width="2" height="14" fill="white" />
-    <rect x="12" y="13" width="16" height="3" fill="white" />
-    <rect x="12" y="28" width="16" height="2" fill="white" />
-    <path d="M20 9L24 12H16L20 9Z" fill="#FBBF24" />
-  </svg>
-)
+
 
 type ZaraStatus =
   | 'idle'
@@ -445,7 +437,7 @@ export default function Header() {
         <div className="site-header__container">
           <div className="site-header__left">
             <Link href="/" className="header-logo" onClick={closeMobileMenu}>
-              <LogoEdificio />
+              <Image src="/images/logo.png" alt="Open LLC USA Logo" width={40} height={40} className="rounded-xl shadow-sm" />
               <span>Open LLC USA</span>
             </Link>
 

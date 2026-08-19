@@ -435,7 +435,7 @@ export default function Header() {
         <div className="site-header__container">
           <div className="site-header__left">
             <Link href="/" className="header-logo" onClick={closeMobileMenu}>
-              <Image src="/images/logo.png" alt="Open LLC USA Logo" width={40} height={40} className="drop-shadow-sm" />
+              <Image src="/images/logo.png" alt="Open LLC USA Logo" width={32} height={32} className="drop-shadow-sm" />
               <span>Open LLC USA</span>
             </Link>
 

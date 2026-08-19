@@ -23,22 +23,6 @@ import {
   UserButton
 } from '@clerk/nextjs'
 
-const LogoMonograma = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Media luna blanca */}
-    <path d="M 22 4 A 16 16 0 0 0 22 36 A 12 16 0 0 1 22 4 Z" fill="white" />
-    {/* Franjas naranjas */}
-    <path d="M 24 4 A 16 16 0 0 1 35.7 15 L 26 15 A 12 16 0 0 0 24 7 Z" fill="#ea580c" />
-    <path d="M 36 18 A 16 16 0 0 1 36 22 L 24.5 22 A 12 16 0 0 0 24.5 18 Z" fill="#ea580c" />
-    <path d="M 35.7 25 A 16 16 0 0 1 24 36 L 24 33 A 12 16 0 0 0 26 25 Z" fill="#ea580c" />
-    {/* Estrellas */}
-    <circle cx="15" cy="11" r="1.5" fill="white" />
-    <circle cx="11" cy="16" r="1.5" fill="white" />
-    <circle cx="19" cy="16" r="1.5" fill="white" />
-    <circle cx="15" cy="21" r="1.5" fill="white" />
-  </svg>
-)
-
 type ZaraStatus =
   | 'idle'
   | 'request_permission'
@@ -451,7 +435,7 @@ export default function Header() {
         <div className="site-header__container">
           <div className="site-header__left">
             <Link href="/" className="header-logo" onClick={closeMobileMenu}>
-              <LogoMonograma />
+              <Image src="/images/logo.png" alt="Open LLC USA Logo" width={40} height={40} className="drop-shadow-sm" />
               <span>Open LLC USA</span>
             </Link>
 

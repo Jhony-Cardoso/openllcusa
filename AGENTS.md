@@ -16,9 +16,13 @@ Combine verified technical facts with project priorities and safe operating rule
 
 ## Infrastructure
 - **Dev PC (local)**: 16 GB RAM → `NODE_OPTIONS=--max-old-space-size=4096` en `package.json` (rebajado para evitar OOM con webpackBuildWorker)
-- **VPS Dokploy (producción)**: 4 GB RAM total → `NODE_OPTIONS=--max-old-space-size=2048` en `Dockerfile`
-- Regla: el builder usa 2 GB para dejar margen al OS (~300 MB), Dokploy (~500 MB) y el contenedor de producción activo (~300 MB).
-- El `Dockerfile` también tiene `eslint.ignoreDuringBuilds: true` en `next.config.ts` para evitar fallos de OOM durante el lint.
+- **VPS Dokploy (producción)**: 4 GB RAM total → `NODE_OPTIONS=--max-old-space-size=768` en `Dockerfile` (muy bajo intencionalmente para forzar al Garbage Collector de Node y evitar que el OS mate el proceso).
+- **Configuración estricta de Build en VPS**: Para evitar fallos "Cancelled" por OOM Killer en `next build`:
+  1. `Dockerfile`: usar `--max-old-space-size=768` y `ENV NEXT_TELEMETRY_DISABLED=1` en la fase de build.
+  2. `next.config.ts`: 
+     - Desactivar completamente la caché de Webpack: `webpack: (config) => { config.cache = false; return config; }`
+     - Forzar 1 solo hilo: `experimental: { webpackBuildWorker: false, cpus: 1, workerThreads: false }`
+     - Evitar linting: `eslint: { ignoreDuringBuilds: true }`
 
 ## Commands
 - `npm run dev` — starts with `cross-env NODE_OPTIONS=--max-old-space-size=8192` (local 16 GB). Variants: `dev:safe`, `dev:notrace`

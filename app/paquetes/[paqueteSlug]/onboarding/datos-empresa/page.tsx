@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { Loader2, AlertCircle } from 'lucide-react'
+import Flag from '@/components/Flag'
 
 type DatosEmpresaForm = {
   nombre_empresa: string
@@ -70,6 +71,7 @@ export default function DatosEmpresaPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [isPhonePrefixOpen, setIsPhonePrefixOpen] = useState(false)
 
   useEffect(() => {
     async function cargar() {
@@ -352,19 +354,50 @@ export default function DatosEmpresaPage() {
             Teléfono <span className="text-red-500">*</span>
           </label>
           <div className="flex gap-2">
-            <select
-              name="codigo_pais"
-              value={form.codigo_pais}
-              onChange={handleChange}
-              required
-              className="w-32 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {CODIGOS_PAIS.map((pais) => (
-                <option key={pais.country} value={pais.code}>
-                  {pais.flag} {pais.code}
-                </option>
-              ))}
-            </select>
+            <div className="relative w-[130px]">
+              <button
+                type="button"
+                onClick={() => setIsPhonePrefixOpen(!isPhonePrefixOpen)}
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg outline-none transition-all font-medium text-sm flex items-center justify-between hover:border-blue-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <div className="flex items-center gap-2">
+                  <Flag
+                    countryCode={CODIGOS_PAIS.find(p => p.code === form.codigo_pais)?.country || 'ES'}
+                    size="sm"
+                  />
+                  <span>{form.codigo_pais}</span>
+                </div>
+                <span className="text-slate-400 text-[10px]">▼</span>
+              </button>
+              
+              {isPhonePrefixOpen && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setIsPhonePrefixOpen(false)}
+                  />
+                  <div className="absolute z-50 mt-2 w-[220px] max-h-[250px] overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg p-2 flex flex-col gap-1">
+                    {CODIGOS_PAIS.map((pais, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setForm(prev => ({ ...prev, codigo_pais: pais.code }))
+                          setIsPhonePrefixOpen(false)
+                        }}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left transition-colors hover:bg-slate-50 ${
+                          form.codigo_pais === pais.code ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-700'
+                        }`}
+                      >
+                        <Flag countryCode={pais.country} size="sm" />
+                        <span>{pais.name}</span>
+                        <span className="ml-auto text-slate-400 text-xs">{pais.code}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             <input
               name="telefono_empresa"
               type="tel"

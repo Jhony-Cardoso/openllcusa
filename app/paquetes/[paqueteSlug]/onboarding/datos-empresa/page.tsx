@@ -35,16 +35,25 @@ const SECTORES = [
 
 // Códigos de país con banderas
 const CODIGOS_PAIS = [
-  { code: '+34', country: 'ES', flag: '🇪🇸', name: 'España' },
-  { code: '+1', country: 'US', flag: '🇺🇸', name: 'Estados Unidos' },
-  { code: '+52', country: 'MX', flag: '🇲🇽', name: 'México' },
-  { code: '+54', country: 'AR', flag: '🇦🇷', name: 'Argentina' },
-  { code: '+56', country: 'CL', flag: '🇨🇱', name: 'Chile' },
-  { code: '+57', country: 'CO', flag: '🇨🇴', name: 'Colombia' },
-  { code: '+51', country: 'PE', flag: '🇵🇪', name: 'Perú' },
-  { code: '+58', country: 'VE', flag: '🇻🇪', name: 'Venezuela' },
-  { code: '+593', country: 'EC', flag: '🇪🇨', name: 'Ecuador' },
-  { code: '+55', country: 'BR', flag: '🇧🇷', name: 'Brasil' },
+  { code: '+1', country: 'US', name: 'USA / Canadá' },
+  { code: '+34', country: 'ES', name: 'España' },
+  { code: '+52', country: 'MX', name: 'México' },
+  { code: '+54', country: 'AR', name: 'Argentina' },
+  { code: '+57', country: 'CO', name: 'Colombia' },
+  { code: '+56', country: 'CL', name: 'Chile' },
+  { code: '+51', country: 'PE', name: 'Perú' },
+  { code: '+58', country: 'VE', name: 'Venezuela' },
+  { code: '+593', country: 'EC', name: 'Ecuador' },
+  { code: '+502', country: 'GT', name: 'Guatemala' },
+  { code: '+53', country: 'CU', name: 'Cuba' },
+  { code: '+591', country: 'BO', name: 'Bolivia' },
+  { code: '+504', country: 'HN', name: 'Honduras' },
+  { code: '+503', country: 'SV', name: 'El Salvador' },
+  { code: '+595', country: 'PY', name: 'Paraguay' },
+  { code: '+505', country: 'NI', name: 'Nicaragua' },
+  { code: '+506', country: 'CR', name: 'Costa Rica' },
+  { code: '+507', country: 'PA', name: 'Panamá' },
+  { code: '+598', country: 'UY', name: 'Uruguay' },
 ]
 
 const INICIAL: DatosEmpresaForm = {

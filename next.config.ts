@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   experimental: {
     // Desactiva la caché persistente en disco durante el build cuando sea necesario
     webpackBuildWorker: false,
+    // Limitar workers para evitar picos de memoria y OOM Killer en la VPS de 4GB
+    cpus: 1,
+    memoryBasedWorkersCount: true,
   },
   
   // Permite acceso a recursos dev desde el móvil

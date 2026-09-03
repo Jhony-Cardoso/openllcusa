@@ -22,9 +22,12 @@ ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51StqGUJEd1MIEnRaKvUk1rhStNGHHrbn
 ENV NEXT_PUBLIC_BASE_URL=https://openllcusa.com
 ENV NEXT_PUBLIC_GA_ID=G-LY8T63H5SZ
 
+# Desactivar telemetría en build
+ENV NEXT_TELEMETRY_DISABLED=1
+
 # Asignar memoria al proceso Node durante el build.
-# VPS tiene 4GB RAM; dejamos margen para el OS, Dokploy y el contenedor en producción.
-ENV NODE_OPTIONS=--max-old-space-size=2048
+# VPS tiene 4GB RAM; probamos con 768MB por si Dokploy aplica un límite estricto de 1GB al contenedor.
+ENV NODE_OPTIONS=--max-old-space-size=768
 
 # Build de Next.js (usa output: 'standalone')
 # Ejecutamos 'next build' directamente para que no lea el NODE_OPTIONS=8192 del package.json

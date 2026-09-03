@@ -9,11 +9,11 @@ const nextConfig: NextConfig = {
   // ==================== SOLUCIÓN PARA EL ERROR EACCES EN .next/cache ====================
   // Esto es clave para entornos Docker como Dokploy
   experimental: {
-    // Desactiva la caché persistente en disco durante el build cuando sea necesario
+    // Desactiva la caché persistente en disco durante el build
     webpackBuildWorker: false,
-    // Limitar workers para evitar picos de memoria y OOM Killer en la VPS de 4GB
+    // Forzamos estrictamente 1 hilo y desactivamos workers paralelos
     cpus: 1,
-    memoryBasedWorkersCount: true,
+    workerThreads: false,
   },
   
   // Permite acceso a recursos dev desde el móvil

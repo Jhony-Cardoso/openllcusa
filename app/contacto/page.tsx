@@ -148,7 +148,7 @@ export default function ContactoPage() {
                 <div className="p-6 bg-gray-50">
                   <div className="bg-white rounded-lg overflow-hidden shadow-sm" style={{ minHeight: '700px' }}>
                     <InlineWidget 
-                      url="https://calendly.com/atlaslegal7/30min"
+                      url="https://calendly.com/openllcusa/30min"
                       styles={{
                         height: '700px',
                       }}

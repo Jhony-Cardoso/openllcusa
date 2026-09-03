@@ -212,18 +212,32 @@ export default function EstadoPage() {
               <div className="text-sm text-gray-500">{estado.codigo}</div>
               <div className="mt-4 text-sm space-y-1">
                 <div className="flex justify-between">
-                  <span>Filing inicial</span>
-                  <span>${estado.filing_inicial ?? 0}</span>
+                  <span className="text-gray-600">Constitución</span>
+                  <span className="font-medium">${estado.filing_inicial ?? 0}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Filing anual</span>
-                  <span>${estado.filing_anual ?? 0}/año</span>
+                  <span className="text-gray-600">Annual Report</span>
+                  <span className="font-medium">
+                    {estado.filing_anual === 0
+                      ? <span className="text-green-600 font-semibold">Gratis</span>
+                      : `$${estado.filing_anual}/año`
+                    }
+                  </span>
                 </div>
               </div>
             </button>
           )
         })}
       </div>
+
+      {/* Nota informativa para estados con Annual Report gratuito */}
+      {estadoSeleccionado && estadoSeleccionado.filing_anual === 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 text-sm text-green-800">
+          💡 <strong>{estadoSeleccionado.nombre}</strong> no exige Annual Report anual para LLCs.
+          {estadoSeleccionado.codigo === 'NM' && ' Es uno de los estados con menores costes de mantenimiento de EE.UU.'}
+          {estadoSeleccionado.codigo === 'TX' && ' El Franchise Tax es $0 para negocios con ingresos inferiores a $2.47M (2025). Solo se presenta un Public Information Report (PIR) sin coste.'}
+        </div>
+      )}
 
       <button
         type="button"

@@ -118,6 +118,9 @@ export default async function PedidoDetallePage({
   const showWizard = isPaid && !esTaxFiling && !esReporteAnual && (pedidoFull.paso_actual ?? 0) < 7
 
   if (showWizard) {
+    // Obtener el código del estado para pasar al wizard (ej: 'WY', 'DE', etc.)
+    const estadoCodigo = (pedidoFull as any).estado_usa?.codigo || null
+
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Link
@@ -131,6 +134,7 @@ export default async function PedidoDetallePage({
           pedidoId={pedidoFull.id}
           nombreUsuario={user?.firstName || 'emprendedor'}
           esEIN={esEIN}
+          estadoCodigo={estadoCodigo}
         />
       </div>
     )

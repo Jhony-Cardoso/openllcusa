@@ -20,7 +20,7 @@ export default function DocumentosPage() {
   const { user, isLoaded: isUserLoaded } = useUser()
 
   const paqueteSlug = (params?.paqueteSlug as string) || ''
-  const pedidoId = searchParams.get('pedido')
+  const pedidoIdFromUrl = searchParams.get('pedido')
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -30,6 +30,7 @@ export default function DocumentosPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [tipoDocumento, setTipoDocumento] = useState('extracto_bancario')
   const [descripcion, setDescripcion] = useState('')
+  const [resolvedPedidoId, setResolvedPedidoId] = useState<string | null>(pedidoIdFromUrl)
 
   useEffect(() => {
     async function cargar() {
@@ -41,11 +42,38 @@ export default function DocumentosPage() {
           return
         }
 
+        let pedidoId = pedidoIdFromUrl
+
+        // Si no hay ID en URL, buscar el borrador del usuario en Supabase
         if (!pedidoId) {
-          setError('No se encontró un pedido en curso.')
+          console.log('🔍 [PAQUETE DOCUMENTOS] No hay pedidoId en URL, buscando borrador...')
+
+          const resPaquete = await fetch(`/api/paquetes?slug=${paqueteSlug}`)
+          const infoPaquete = await resPaquete.json()
+          const targetId = infoPaquete?.id
+
+          if (targetId) {
+            const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${targetId}&tipo=paquete`)
+            const dataBorrador = await resBorrador.json()
+
+            if (dataBorrador?.pedido?.id) {
+              pedidoId = dataBorrador.pedido.id
+              setResolvedPedidoId(pedidoId)
+              console.log('✅ [PAQUETE DOCUMENTOS] Borrador encontrado:', pedidoId)
+
+              const newUrl = `${window.location.pathname}?pedido=${pedidoId}`
+              window.history.replaceState({}, '', newUrl)
+            }
+          }
+        }
+
+        if (!pedidoId) {
+          setError('No se encontró un pedido en curso. Por favor, vuelve al inicio del proceso.')
           setLoading(false)
           return
         }
+
+        setResolvedPedidoId(pedidoId)
 
         // Cargar pedido para ver documentos ya subidos
         const resPedido = await fetch(`/api/pedidos/obtener?id=${pedidoId}`)
@@ -76,10 +104,10 @@ export default function DocumentosPage() {
     }
 
     cargar()
-  }, [isUserLoaded, user, pedidoId, router])
+  }, [isUserLoaded, user, pedidoIdFromUrl, router])
 
   const handleBack = () => {
-    router.push(`/paquetes/${paqueteSlug}/onboarding/propietario?pedido=${pedidoId ?? ''}`)
+    router.push(`/paquetes/${paqueteSlug}/onboarding/propietario?pedido=${resolvedPedidoId ?? ''}`)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +117,7 @@ export default function DocumentosPage() {
   }
 
   const handleUpload = async () => {
-    if (!selectedFile || !pedidoId) return
+    if (!selectedFile || !resolvedPedidoId) return
 
     setUploading(true)
     setError('')
@@ -100,7 +128,7 @@ export default function DocumentosPage() {
     formData.append('descripcion', descripcion)
 
     try {
-      const res = await fetch(`/api/pedidos/${pedidoId}/upload-document`, {
+      const res = await fetch(`/api/pedidos/${resolvedPedidoId}/upload-document`, {
         method: 'POST',
         body: formData,
       })
@@ -126,8 +154,8 @@ export default function DocumentosPage() {
   }
 
   const handleContinuar = async () => {
-    if (!pedidoId) return
-    router.push(`/paquetes/${paqueteSlug}/onboarding/revision?pedido=${pedidoId}`)
+    if (!resolvedPedidoId) return
+    router.push(`/paquetes/${paqueteSlug}/onboarding/revision?pedido=${resolvedPedidoId}`)
   }
 
   if (loading) {

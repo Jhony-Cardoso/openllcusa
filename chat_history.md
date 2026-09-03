@@ -1426,3 +1426,83 @@ import Image from 'next/image'
   <span>Open LLC USA</span>
 </Link>
 ```
+---
+### 📅 Chat Session: 2026-09-02 22:40:13
+**Main objective:** Añadir sección de Limitaciones del Servicio de Agente Registrado.
+
+#### 👤 User Request:
+> Añadir sección nueva en la página /legal/condiciones-generales. Punto 3.1 Limitaciones del Servicio de Agente Registrado, con contenido de capturas adjuntas.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se ha añadido la subsección 3.1 solicitada en el archivo de markdown que genera la página de términos y condiciones, transcribiendo fielmente el contenido de las imágenes proporcionadas y manteniendo el formato requerido.
+- **Files created/modified:**
+  - legal/general-terms.md
+
+#### 💻 Key Code:
+`markdown
+### 3.1. Limitaciones del servicio de Registered Agent
+
+El servicio de Agente Registrado se presta a través de proveedores externos especializados (actualmente Northwest Registered Agent LLC). Al contratar este servicio, el cliente acepta las siguientes limitaciones:
+...
+`
+
+---
+### 📅 Chat Session: 2026-09-02 22:57:17
+**Main objective:** Aumentar memoria para solucionar OOM en dev.
+
+#### 👤 User Request:
+> Ya estamos con el problemita de la memoria... (con pantallazo de error de Turbopack/Rust de falta de memoria).
+
+#### 🤖 Agent Solution:
+- **Summary:** Se ha aumentado NODE_OPTIONS=--max-old-space-size a 8192 (8 GB) para los comandos dev, dev:safe y dev:notrace en package.json, siguiendo las reglas definidas en AGENTS.md para entornos de desarrollo local con 16 GB.
+- **Files created/modified:**
+  - package.json
+
+#### 💻 Key Code:
+`json
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
+    "dev:safe": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
+    "dev:notrace": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
+`
+
+---
+### 📅 Chat Session: 2026-09-02 23:02:57
+**Main objective:** Limpiar caché corrupto de Turbopack para solucionar OOM.
+
+#### 👤 User Request:
+> Seguimos igual... (el error de Rust persistía a pesar del aumento de memoria).
+
+#### 🤖 Agent Solution:
+- **Summary:** Se ha procedido a borrar completamente la carpeta .next/ para forzar un reinicio limpio del proyecto sin caché, siguiendo la directriz establecida en AGENTS.md para reseteos comunes.
+- **Files created/modified:**
+  - m -rf .next ejecutado.
+
+---
+### 📅 Chat Session: 2026-09-02 23:26:27
+**Main objective:** Implementar recolección de Communications Contact para Wyoming en el onboarding.
+
+#### 👤 User Request:
+> Añadir lógica en el onboarding para solicitar los datos del Communications Contact obligatorios para Wyoming (Nombre, Dirección, Teléfono), permitiendo que sea el propio dueño o un tercero (gestor/asesor).
+
+#### 🤖 Agent Solution:
+- **Summary:** Se actualizó la vista propietario/page.tsx para detectar si el usuario seleccionó Wyoming. De ser así, se despliega un área para declarar al Contacto de Comunicaciones. Por defecto asume que es el propio propietario (checkbox activado). Si se desactiva, despliega los campos para el tercero. Todos estos datos se persisten en el campo metadata del pedido en base de datos.
+- **Files created/modified:**
+  - pp/paquetes/[paqueteSlug]/onboarding/propietario/page.tsx
+
+---
+### 📅 Chat Session: 2026-09-03 12:35:41
+**Main objective:** Corregir ubicación de la lógica de Communications Contact de Wyoming — ubicarla en el Flujo 2 (post-pago, OnboardingWizard).
+
+#### 👤 User Request:
+> Tras prueba real, el recuadro de Wyoming no aparecía. Investigar a fondo ambos flujos.
+
+#### 🤖 Agent Solution:
+- **Summary:** Se identificó que el archivo propietario/page.tsx editado la sesión anterior no forma parte del flujo real de onboarding pre-pago. El bloque de Wyoming se implementó correctamente en:
+  1. pp/dashboard/pedidos/[id]/page.tsx: se pasa stadoCodigo (código del estado, ej: 'WY') como prop al <OnboardingWizard>.
+  2. components/dashboard/OnboardingWizard.tsx: se añade la prop stadoCodigo, los campos wy_* al formData, el bloque de UI condicional en el Paso 1 (Propietario), y la validación correspondiente.
+- **Files created/modified:**
+  - pp/dashboard/pedidos/[id]/page.tsx
+  - components/dashboard/OnboardingWizard.tsx
+
+- **Minor Update:** Añadido selector de prefijo de país (con banderas) en el campo del teléfono y modificado el fondo a g-blue-50 para un contraste adecuado.
+- **Minor Update:** Reemplazado el selector nativo de prefijos telefónicos por un custom dropdown usando el componente <Flag> (react-country-flag en SVG) para solventar los problemas de renderizado de emojis de banderas en Windows.

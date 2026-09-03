@@ -26,7 +26,8 @@ export default function DatosLLCPage() {
   const { user, isLoaded: isUserLoaded } = useUser()
 
   const paqueteSlug = (params?.paqueteSlug as string) || ''
-  const pedidoId = searchParams.get('pedido')
+  const pedidoIdFromUrl = searchParams.get('pedido')
+  const [currentPedidoId, setCurrentPedidoId] = useState<string | null>(pedidoIdFromUrl)
 
   const [form, setForm] = useState<DatosLLCForm>(INICIAL)
   const [estados, setEstados] = useState<any[]>([])
@@ -44,8 +45,33 @@ export default function DatosLLCPage() {
           return
         }
 
+        let pedidoId = pedidoIdFromUrl
+
+        // Si no hay ID en URL, buscar el borrador del usuario en Supabase
         if (!pedidoId) {
-          setError('No se encontró un pedido en curso.')
+          console.log('🔍 [PAQUETE DATOS-LLC] No hay pedidoId en URL, buscando borrador...')
+
+          const resPaquete = await fetch(`/api/paquetes?slug=${paqueteSlug}`)
+          const infoPaquete = await resPaquete.json()
+          const targetId = infoPaquete?.id
+
+          if (targetId) {
+            const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${targetId}&tipo=paquete`)
+            const dataBorrador = await resBorrador.json()
+
+            if (dataBorrador?.pedido?.id) {
+              pedidoId = dataBorrador.pedido.id
+              setCurrentPedidoId(pedidoId)
+              console.log('✅ [PAQUETE DATOS-LLC] Borrador encontrado:', pedidoId)
+
+              const newUrl = `${window.location.pathname}?pedido=${pedidoId}`
+              window.history.replaceState({}, '', newUrl)
+            }
+          }
+        }
+
+        if (!pedidoId) {
+          setError('No se encontró un pedido en curso. Por favor, vuelve al inicio del proceso.')
           setLoading(false)
           return
         }
@@ -79,13 +105,14 @@ export default function DatosLLCPage() {
       } finally {
         setLoading(false)
       }
+
     }
 
     cargar()
-  }, [isUserLoaded, user, pedidoId, router])
+  }, [isUserLoaded, user, pedidoIdFromUrl, router])
 
   const handleBack = () => {
-    router.push(`/paquetes/${paqueteSlug}/onboarding?pedido=${pedidoId ?? ''}`)
+    router.push(`/paquetes/${paqueteSlug}/onboarding?pedido=${currentPedidoId ?? ''}`)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -109,11 +136,11 @@ export default function DatosLLCPage() {
       return
     }
 
-    if (!pedidoId) return
+    if (!currentPedidoId) return
 
     setSaving(true)
     try {
-      const resPedido = await fetch(`/api/pedidos/obtener?id=${pedidoId}`)
+      const resPedido = await fetch(`/api/pedidos/obtener?id=${currentPedidoId}`)
       const dataPedido = await resPedido.json()
       const existingMeta = dataPedido.pedido?.metadata || {}
 
@@ -121,7 +148,7 @@ export default function DatosLLCPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pedidoId,
+          pedidoId: currentPedidoId,
           paso: 2,
           datos: {
             nombre_empresa: form.nombre_empresa,
@@ -138,7 +165,7 @@ export default function DatosLLCPage() {
       if (!res.ok) throw new Error('Error guardando')
       
       // Siguiente paso: propietario
-      router.push(`/paquetes/${paqueteSlug}/onboarding/propietario?pedido=${pedidoId}`)
+      router.push(`/paquetes/${paqueteSlug}/onboarding/propietario?pedido=${currentPedidoId}`)
     } catch (err) {
       setError('Error al guardar. Inténtalo de nuevo.')
       setSaving(false)

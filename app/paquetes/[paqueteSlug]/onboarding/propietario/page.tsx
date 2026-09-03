@@ -12,6 +12,11 @@ type PropietarioForm = {
   direccion: string
   email_personal: string
   email_corporativo: string
+  // Wyoming Communications Contact
+  es_mismo_contacto_wy: boolean
+  wy_contacto_nombre: string
+  wy_contacto_direccion: string
+  wy_contacto_telefono: string
 }
 
 const INICIAL: PropietarioForm = {
@@ -21,6 +26,10 @@ const INICIAL: PropietarioForm = {
   direccion: '',
   email_personal: '',
   email_corporativo: '',
+  es_mismo_contacto_wy: true,
+  wy_contacto_nombre: '',
+  wy_contacto_direccion: '',
+  wy_contacto_telefono: '',
 }
 
 export default function PropietarioPage() {
@@ -30,12 +39,13 @@ export default function PropietarioPage() {
   const { user, isLoaded: isUserLoaded } = useUser()
 
   const paqueteSlug = (params?.paqueteSlug as string) || ''
-  const pedidoId = searchParams.get('pedido')
+  const pedidoIdFromUrl = searchParams.get('pedido')
 
   const [form, setForm] = useState<PropietarioForm>(INICIAL)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [esWyoming, setEsWyoming] = useState(false)
 
   useEffect(() => {
     async function cargar() {
@@ -47,11 +57,38 @@ export default function PropietarioPage() {
           return
         }
 
+        let pedidoId = pedidoIdFromUrl
+
+        // Si no hay ID en URL, buscar el borrador del usuario en Supabase
         if (!pedidoId) {
-          setError('No se encontró un pedido en curso.')
+          console.log('🔍 [PAQUETE PROPIETARIO] No hay pedidoId en URL, buscando borrador...')
+
+          const resPaquete = await fetch(`/api/paquetes?slug=${paqueteSlug}`)
+          const infoPaquete = await resPaquete.json()
+          const targetId = infoPaquete?.id
+
+          if (targetId) {
+            const resBorrador = await fetch(`/api/pedidos/borrador?paqueteId=${targetId}&tipo=paquete`)
+            const dataBorrador = await resBorrador.json()
+
+            if (dataBorrador?.pedido?.id) {
+              pedidoId = dataBorrador.pedido.id
+              setResolvedPedidoId(pedidoId)
+              console.log('✅ [PAQUETE PROPIETARIO] Borrador encontrado:', pedidoId)
+
+              const newUrl = `${window.location.pathname}?pedido=${pedidoId}`
+              window.history.replaceState({}, '', newUrl)
+            }
+          }
+        }
+
+        if (!pedidoId) {
+          setError('No se encontró un pedido en curso. Por favor, vuelve al inicio del proceso.')
           setLoading(false)
           return
         }
+
+        setResolvedPedidoId(pedidoId)
 
         // Cargar pedido
         const resPedido = await fetch(`/api/pedidos/obtener?id=${pedidoId}`)
@@ -66,6 +103,18 @@ export default function PropietarioPage() {
         const pedido = dataPedido.pedido
         const meta = pedido.metadata || {}
 
+        // Comprobar si el estado es Wyoming
+        if (pedido.estado_usa_id) {
+          const resEstados = await fetch('/api/estados')
+          if (resEstados.ok) {
+            const estados = await resEstados.json()
+            const estadoPedido = estados.find((e: any) => e.id === pedido.estado_usa_id)
+            if (estadoPedido && estadoPedido.codigo === 'WY') {
+              setEsWyoming(true)
+            }
+          }
+        }
+
         setForm({
           nombre: meta.owner_name || user.firstName || '',
           apellidos: meta.owner_lastname || user.lastName || '',
@@ -73,6 +122,10 @@ export default function PropietarioPage() {
           direccion: meta.owner_address || '',
           email_personal: meta.personal_email || user.emailAddresses?.[0]?.emailAddress || '',
           email_corporativo: meta.corporate_email || '',
+          es_mismo_contacto_wy: meta.wy_is_same_contact ?? true,
+          wy_contacto_nombre: meta.wy_contact_name || '',
+          wy_contacto_direccion: meta.wy_contact_address || '',
+          wy_contacto_telefono: meta.wy_contact_phone || '',
         })
       } catch (e) {
         setError('Error al cargar los datos.')
@@ -82,15 +135,23 @@ export default function PropietarioPage() {
     }
 
     cargar()
-  }, [isUserLoaded, user, pedidoId, router])
+  }, [isUserLoaded, user, pedidoIdFromUrl, router])
+
+  // Ref al pedidoId resuelto (puede venir de URL o del borrador encontrado)
+  const [resolvedPedidoId, setResolvedPedidoId] = useState<string | null>(pedidoIdFromUrl)
 
   const handleBack = () => {
-    router.push(`/paquetes/${paqueteSlug}/onboarding/datos-llc?pedido=${pedidoId ?? ''}`)
+    router.push(`/paquetes/${paqueteSlug}/onboarding/datos-llc?pedido=${resolvedPedidoId ?? ''}`)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked
+      setForm((prev) => ({ ...prev, [name]: checked }))
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }))
+    }
   }
 
   const validar = (): string | null => {
@@ -99,6 +160,12 @@ export default function PropietarioPage() {
     if (!form.pasaporte.trim()) return 'El número de pasaporte (o DNI) es obligatorio.'
     if (!form.direccion.trim()) return 'La dirección es obligatoria.'
     if (!form.email_personal.trim()) return 'El email es obligatorio.'
+    
+    if (esWyoming && !form.es_mismo_contacto_wy) {
+      if (!form.wy_contacto_nombre.trim()) return 'El nombre del Contacto de Comunicaciones es obligatorio para Wyoming.'
+      if (!form.wy_contacto_direccion.trim()) return 'La dirección del Contacto de Comunicaciones es obligatoria para Wyoming.'
+      if (!form.wy_contacto_telefono.trim()) return 'El teléfono del Contacto de Comunicaciones es obligatorio para Wyoming.'
+    }
     return null
   }
 
@@ -112,30 +179,46 @@ export default function PropietarioPage() {
       return
     }
 
-    if (!pedidoId) return
+    if (!resolvedPedidoId) return
 
     setSaving(true)
     try {
-      const resPedido = await fetch(`/api/pedidos/obtener?id=${pedidoId}`)
+      const resPedido = await fetch(`/api/pedidos/obtener?id=${resolvedPedidoId}`)
       const dataPedido = await resPedido.json()
       const existingMeta = dataPedido.pedido?.metadata || {}
+      
+      const metadatosUpdate: any = {
+        ...existingMeta,
+        owner_name: form.nombre,
+        owner_lastname: form.apellidos,
+        passport: form.pasaporte,
+        owner_address: form.direccion,
+        personal_email: form.email_personal,
+        corporate_email: form.email_corporativo,
+      }
+      
+      if (esWyoming) {
+        metadatosUpdate.wy_is_same_contact = form.es_mismo_contacto_wy
+        if (!form.es_mismo_contacto_wy) {
+          metadatosUpdate.wy_contact_name = form.wy_contacto_nombre
+          metadatosUpdate.wy_contact_address = form.wy_contacto_direccion
+          metadatosUpdate.wy_contact_phone = form.wy_contacto_telefono
+        } else {
+          // Limpiar si eligió usar sus propios datos
+          metadatosUpdate.wy_contact_name = ''
+          metadatosUpdate.wy_contact_address = ''
+          metadatosUpdate.wy_contact_phone = ''
+        }
+      }
 
       const res = await fetch('/api/pedidos/actualizar', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pedidoId,
+          pedidoId: resolvedPedidoId,
           paso: 3,
           datos: {
-            metadata: {
-              ...existingMeta,
-              owner_name: form.nombre,
-              owner_lastname: form.apellidos,
-              passport: form.pasaporte,
-              owner_address: form.direccion,
-              personal_email: form.email_personal,
-              corporate_email: form.email_corporativo,
-            }
+            metadata: metadatosUpdate
           },
         }),
       })
@@ -145,7 +228,7 @@ export default function PropietarioPage() {
       const isCrecimiento = paqueteSlug === 'plan-crecimiento'
       const nextStep = isCrecimiento ? 'documentos' : 'revision'
       
-      router.push(`/paquetes/${paqueteSlug}/onboarding/${nextStep}?pedido=${pedidoId}`)
+      router.push(`/paquetes/${paqueteSlug}/onboarding/${nextStep}?pedido=${resolvedPedidoId}`)
     } catch (err) {
       setError('Error al guardar. Inténtalo de nuevo.')
       setSaving(false)
@@ -253,6 +336,66 @@ export default function PropietarioPage() {
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none transition"
             />
           </div>
+
+          {esWyoming && (
+            <div className="mt-8 bg-blue-50/50 border border-blue-100 rounded-2xl p-5 md:p-6">
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">Requisito para Wyoming: Contacto de Comunicaciones</h3>
+              <p className="text-sm text-blue-800/80 mb-4">
+                La normativa del estado de Wyoming exige designar a una persona física (natural person) con dirección física y teléfono, para que figure en los registros internos del Agente Registrado. No se hace público.
+              </p>
+              
+              <label className="flex items-center space-x-3 cursor-pointer p-3 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition">
+                <input
+                  type="checkbox"
+                  name="es_mismo_contacto_wy"
+                  checked={form.es_mismo_contacto_wy}
+                  onChange={handleChange}
+                  className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700 font-medium text-sm md:text-base">
+                  Seré yo mismo el Contacto de Comunicaciones para esta LLC.
+                </span>
+              </label>
+
+              {!form.es_mismo_contacto_wy && (
+                <div className="mt-5 space-y-5 animate-in slide-in-from-top-2 fade-in duration-200 bg-white p-5 rounded-xl border border-gray-200">
+                  <p className="text-sm text-gray-600 font-medium">Introduce los datos del tercero designado:</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre y Apellidos completos *</label>
+                    <input
+                      type="text"
+                      name="wy_contacto_nombre"
+                      value={form.wy_contacto_nombre}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección física completa *</label>
+                    <textarea
+                      name="wy_contacto_direccion"
+                      value={form.wy_contacto_direccion}
+                      onChange={handleChange}
+                      rows={2}
+                      placeholder="No se permiten apartados de correos (P.O. Box)"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none transition resize-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
+                    <input
+                      type="tel"
+                      name="wy_contacto_telefono"
+                      value={form.wy_contacto_telefono}
+                      onChange={handleChange}
+                      placeholder="Ej: +34 600 000 000"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 outline-none transition"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
             <button

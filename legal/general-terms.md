@@ -39,6 +39,27 @@ Zara Designs LLC (operando como Open LLC USA) proporciona servicios orientados a
 
 Zara Designs LLC / Open LLC USA **NO es un bufete de abogados ni una firma de contabilidad (CPA)**. La información facilitada mediante nuestros canales, artículos o servicios de consultoría tiene un fin exclusivamente educativo y de naturaleza administrativa. En ningún caso nuestra intervención debe de interpretarse como un asesoramiento jurídico, contable o fiscal. Siempre recomendamos a cada usuario validarlo por profesionales colegiados en sus respectivas jurisdicciones fiscales.
 
+### 3.1. Limitaciones del servicio de Registered Agent
+
+El servicio de Agente Registrado se presta a través de proveedores externos especializados (actualmente Northwest Registered Agent LLC). Al contratar este servicio, el cliente acepta las siguientes limitaciones:
+
+*   **Soporte al cliente**: Todo el soporte y la comunicación con el cliente final es responsabilidad exclusiva de Open LLC USA / Zara Designs LLC. El proveedor externo de Agente Registrado no atiende ni se comunica directamente con los clientes finales.
+*   **Uso de la dirección del Registered Agent**: La dirección facilitada por el Agente Registrado solo puede utilizarse para:
+    *   Listarla ante el Secretary of State correspondiente, y
+    *   Recibir correo legal y notificaciones de la administración estatal.
+    
+    **No debe utilizarse** para cuentas bancarias, verificaciones de plataformas (Amazon, Google, Walmart u otras), seguros, proveedores, ni para correo comercial u ordinario.
+*   **Correo ordinario y paquetes**:
+    *   Se incluyen un máximo de 5 piezas de correo ordinario gratuitas por año de servicio. A partir de la sexta pieza se aplica un cargo adicional.
+    *   Los paquetes se rechazan o se retienen un máximo de 12 días. No se actúa como almacén ni depositario.
+*   **Entidades de Wyoming**: La normativa de Wyoming exige que el Agente Registrado disponga en todo momento de los datos de contacto de una persona física (nombre completo, dirección física y teléfono). El cliente se compromete a facilitar y mantener actualizada esta información.
+*   **Cancelación del servicio de Registered Agent**:
+    *   La cancelación del servicio no elimina automáticamente al Agente Registrado del registro estatal. Es necesario presentar un cambio de agente ante la autoridad correspondiente.
+    *   Los documentos que lleguen después de la fecha de cancelación pueden quedar bloqueados y requerir el pago de una tarifa para su visualización.
+    *   Está prohibido solicitar un cambio de domicilio o un reenvío de correo ante el Servicio Postal de los Estados Unidos (USPS) utilizando la dirección del Agente Registrado.
+
+Open LLC USA / Zara Designs LLC no se responsabiliza de las consecuencias derivadas del incumplimiento de estas limitaciones por parte del cliente.
+
 ---
 
 ## 4. Origen de las Operaciones y Fuentes de Ingreso (Notificación No-ETBUS)

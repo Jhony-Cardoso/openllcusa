@@ -45,7 +45,7 @@ export default function AgendarPage() {
           </div>
           <div style={{ minHeight: '700px' }}>
             <InlineWidget
-              url="https://calendly.com/atlaslegal7/30min"
+              url="https://calendly.com/openllcusa/30min"
               styles={{ height: '700px' }}
             />
           </div>

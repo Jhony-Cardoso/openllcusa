@@ -9,6 +9,7 @@ import {
     PenTool, FileText, AlertTriangle, Check
 } from 'lucide-react'
 import SignaturePad from '@/components/ui/SignaturePad' // Assuming this path is correct
+import Flag from '@/components/Flag'
 
 // ... (imports anteriores se mantienen igual, solo cambia el componente)
 
@@ -16,13 +17,15 @@ type Props = {
     pedidoId: string
     nombreUsuario: string
     esEIN?: boolean
+    estadoCodigo?: string | null
 }
 
-export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = false }: Props) {
+export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = false, estadoCodigo = null }: Props) {
     const router = useRouter()
     const [step, setStep] = useState(1)
     const [loading, setLoading] = useState(false)
     const [termsAccepted, setTermsAccepted] = useState(false) // Nuevo estado para el checkbox legal
+    const [isPhonePrefixOpen, setIsPhonePrefixOpen] = useState(false)
 
     // Estado para todos los datos del checklist
     const [formData, setFormData] = useState({
@@ -58,6 +61,13 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
 
         // --- FIRMA ---
         firma_digital: '',                 // Firma del Responsible Party para el SS-4
+
+        // --- WYOMING: Contacto de Comunicaciones (solo si estadoCodigo === 'WY') ---
+        wy_es_mismo_contacto: true,        // true = el propio propietario; false = tercero designado
+        wy_contacto_nombre: '',            // Nombre completo del tercero (si aplica)
+        wy_contacto_direccion: '',         // Dirección física del tercero (sin P.O. Box)
+        wy_contacto_telefono_prefijo: '+34', // Prefijo del teléfono del tercero
+        wy_contacto_telefono: '',          // Teléfono del tercero
     })
 
     const [idFile, setIdFile] = useState<File | null>(null)
@@ -72,6 +82,28 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
     const meses = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    const phonePrefixes = [
+        { code: '+1', country_code: 'us', name: 'USA / Canadá' },
+        { code: '+34', country_code: 'es', name: 'España' },
+        { code: '+52', country_code: 'mx', name: 'México' },
+        { code: '+54', country_code: 'ar', name: 'Argentina' },
+        { code: '+57', country_code: 'co', name: 'Colombia' },
+        { code: '+56', country_code: 'cl', name: 'Chile' },
+        { code: '+51', country_code: 'pe', name: 'Perú' },
+        { code: '+58', country_code: 've', name: 'Venezuela' },
+        { code: '+593', country_code: 'ec', name: 'Ecuador' },
+        { code: '+502', country_code: 'gt', name: 'Guatemala' },
+        { code: '+53', country_code: 'cu', name: 'Cuba' },
+        { code: '+591', country_code: 'bo', name: 'Bolivia' },
+        { code: '+504', country_code: 'hn', name: 'Honduras' },
+        { code: '+503', country_code: 'sv', name: 'El Salvador' },
+        { code: '+595', country_code: 'py', name: 'Paraguay' },
+        { code: '+505', country_code: 'ni', name: 'Nicaragua' },
+        { code: '+506', country_code: 'cr', name: 'Costa Rica' },
+        { code: '+507', country_code: 'pa', name: 'Panamá' },
+        { code: '+598', country_code: 'uy', name: 'Uruguay' },
     ];
 
     // Función para validar campos antes de avanzar
@@ -93,6 +125,22 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
             if (!esEIN && (!formData.member_fecha_nacimiento || !formData.member_nacionalidad.trim())) {
                 alert('Por favor, completa fecha de nacimiento y nacionalidad.')
                 return false
+            }
+
+            // Validar datos del Communications Contact de Wyoming si aplica
+            if (!esEIN && estadoCodigo === 'WY' && !formData.wy_es_mismo_contacto) {
+                if (!formData.wy_contacto_nombre.trim()) {
+                    alert('Por favor, indica el nombre completo del Contacto de Comunicaciones para Wyoming.')
+                    return false
+                }
+                if (!formData.wy_contacto_direccion.trim()) {
+                    alert('Por favor, indica la dirección del Contacto de Comunicaciones para Wyoming.')
+                    return false
+                }
+                if (!formData.wy_contacto_telefono.trim()) {
+                    alert('Por favor, indica el teléfono del Contacto de Comunicaciones para Wyoming.')
+                    return false
+                }
             }
         }
 
@@ -720,6 +768,114 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                                 </div>
                             </div>
                         </div>
+
+                        {/* BLOQUE CONDICIONAL: Communications Contact para Wyoming */}
+                        {estadoCodigo === 'WY' && (
+                            <div className="mt-8 bg-blue-50 border border-blue-200 rounded-2xl p-6">
+                                <h4 className="text-lg font-bold text-blue-900 mb-2">Requisito legal de Wyoming: Contacto de Comunicaciones</h4>
+                                <p className="text-sm text-blue-800/80 mb-4">
+                                    El estado de Wyoming exige que el Agente Registrado disponga de una persona física de contacto (nombre completo, dirección física y teléfono). Esta información es interna y no se publica en ningún registro público.
+                                </p>
+
+                                <label className="flex items-center gap-3 cursor-pointer p-3 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition">
+                                    <input
+                                        type="checkbox"
+                                        className="w-5 h-5 rounded border-gray-300 text-blue-600"
+                                        checked={formData.wy_es_mismo_contacto}
+                                        onChange={(e) => updateField('wy_es_mismo_contacto', e.target.checked as any)}
+                                    />
+                                    <span className="text-gray-700 font-medium text-sm">
+                                        Seré yo mismo el Contacto de Comunicaciones para esta LLC.
+                                    </span>
+                                </label>
+
+                                {!formData.wy_es_mismo_contacto && (
+                                    <div className="mt-5 space-y-4 bg-white p-5 rounded-xl border border-gray-200">
+                                        <p className="text-sm font-semibold text-gray-700">Datos del tercero designado:</p>
+
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-slate-700 ml-1">Nombre y Apellidos completos <span className="text-rose-500">*</span></label>
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre completo de la persona designada"
+                                                className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                value={formData.wy_contacto_nombre}
+                                                onChange={(e) => updateField('wy_contacto_nombre', e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-slate-700 ml-1">Dirección física completa <span className="text-rose-500">*</span></label>
+                                            <textarea
+                                                placeholder="Calle, Número, Ciudad, C.P., País (no se admiten apartados de correos)"
+                                                rows={2}
+                                                className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium resize-none"
+                                                value={formData.wy_contacto_direccion}
+                                                onChange={(e) => updateField('wy_contacto_direccion', e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-slate-700 ml-1">Teléfono <span className="text-rose-500">*</span></label>
+                                            <div className="flex gap-2">
+                                                {/* Custom Dropdown para banderas SVG */}
+                                                <div className="relative w-[130px]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsPhonePrefixOpen(!isPhonePrefixOpen)}
+                                                        className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none transition-all font-medium text-sm flex items-center justify-between hover:border-blue-300 focus:ring-4 focus:ring-blue-500/10"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <Flag
+                                                                countryCode={phonePrefixes.find(p => p.code === formData.wy_contacto_telefono_prefijo)?.country_code || 'us'}
+                                                                size="sm"
+                                                            />
+                                                            <span>{formData.wy_contacto_telefono_prefijo}</span>
+                                                        </div>
+                                                        <span className="text-slate-400 text-[10px]">▼</span>
+                                                    </button>
+                                                    
+                                                    {isPhonePrefixOpen && (
+                                                        <>
+                                                            <div 
+                                                                className="fixed inset-0 z-40" 
+                                                                onClick={() => setIsPhonePrefixOpen(false)}
+                                                            />
+                                                            <div className="absolute z-50 mt-2 w-[220px] max-h-[250px] overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg p-2 flex flex-col gap-1">
+                                                                {phonePrefixes.map((p, idx) => (
+                                                                    <button
+                                                                        key={idx}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            updateField('wy_contacto_telefono_prefijo', p.code)
+                                                                            setIsPhonePrefixOpen(false)
+                                                                        }}
+                                                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left transition-colors hover:bg-slate-50 ${
+                                                                            formData.wy_contacto_telefono_prefijo === p.code ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-700'
+                                                                        }`}
+                                                                    >
+                                                                        <Flag countryCode={p.country_code} size="sm" />
+                                                                        <span>{p.name}</span>
+                                                                        <span className="ml-auto text-slate-400 text-xs">{p.code}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                <input
+                                                    type="tel"
+                                                    placeholder="Ej: 600 000 000"
+                                                    className="flex-1 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium"
+                                                    value={formData.wy_contacto_telefono}
+                                                    onChange={(e) => updateField('wy_contacto_telefono', e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )
             case 2:

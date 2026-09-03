@@ -33,7 +33,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-
+  eslint: {
+    // Evita OOM Killer por eslint durante el build en Docker
+    ignoreDuringBuilds: true,
+  },
 
   // Configuración de headers para CORS (Stripe, etc.)
   async headers() {

@@ -19,12 +19,10 @@ const nextConfig: NextConfig = {
   // Permite acceso a recursos dev desde el móvil
   allowedDevOrigins: ['192.168.42.113'],
 
-  // Configuración recomendada para evitar problemas de permisos en Docker
+  // Configuración recomendada para evitar problemas de permisos en Docker y OOM
   webpack: (config, { dev, isServer }) => {
-    // En desarrollo desactivamos la caché para evitar warnings
-    if (dev) {
-      config.cache = false;
-    }
+    // Desactivamos la caché de Webpack completamente en CI/Docker para evitar que sature la RAM
+    config.cache = false;
     return config;
   },
 

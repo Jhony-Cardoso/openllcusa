@@ -4,6 +4,7 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import styles from '../shared.module.css';
 
+
 export const metadata = {
   title: 'Condiciones Generales | Open LLC USA',
   description: 'Condiciones generales de contratación y uso del portal web Open LLC USA',

@@ -9,6 +9,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
+
 const safeDate = (d: string | null | undefined) => d ? new Date(d) : null
 
 export default async function AlertasCriticasPage() {

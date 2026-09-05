@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { PedidoModel } from '@/lib/models/pedido'
 import BotonPortalStripe from '@/components/dashboard/BotonPortalStripe'
 
+
 export default async function FacturacionPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')

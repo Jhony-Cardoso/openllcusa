@@ -10,6 +10,7 @@ import {
   getPostBySlug,
 } from '@/lib/blog/posts';
 
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }

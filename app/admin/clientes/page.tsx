@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
+
 export default async function AdminClientesPage() {
     // 1. Verificar Admin
     const { userId: adminId } = await auth()

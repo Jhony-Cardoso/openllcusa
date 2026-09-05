@@ -2,6 +2,7 @@
 
 import type { Metadata } from 'next';
 
+
 // ===================================
 // METADATA PARA SEO
 // ===================================

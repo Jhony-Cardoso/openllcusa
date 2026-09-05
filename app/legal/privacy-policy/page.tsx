@@ -1,5 +1,6 @@
 import styles from '../shared.module.css'; // Reutilizamos los estilos
 
+
 export const metadata = {
   title: 'Política de Privacidad | Open LLC USA',
   description: 'Política de privacidad y protección de datos de Open LLC USA',

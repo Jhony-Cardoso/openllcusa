@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Bell, ArrowLeft, CheckCircle2, CreditCard, FileText, Sparkles, Clock, Trash2 } from 'lucide-react'
 import { NotificacionService } from '@/lib/services/notificacion.service'
 
+
 export default async function NotificacionesPage() {
     const { userId } = await auth()
     if (!userId) redirect('/sign-in')

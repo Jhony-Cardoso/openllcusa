@@ -7,6 +7,7 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import styles from '../shared.module.css';
 
+
 export const metadata = {
   title: 'Términos y Condiciones | Open LLC USA',
   description: 'Términos y condiciones de uso de la calculadora fiscal de Open LLC USA',

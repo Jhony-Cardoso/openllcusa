@@ -6,6 +6,7 @@ import Image from 'next/image'
 import '../homepage-v4.css'
 import ScrollObserver from '@/components/home/ScrollObserver'
 
+
 const SITE_URL = 'https://openllcusa.com'
 
 // ─── Design tokens (mismo sistema que homepage) ───────────────────────────────

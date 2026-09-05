@@ -28,6 +28,7 @@ import {
   SERVICE_SLUGS
 } from '@/lib/constants'
 
+
 // Design Tokens - coherentes con la homepage
 const T = {
   bd: '#0C2047', b9: '#1E3A8A', b7: '#1D4ED8', b5: '#3B82F6',

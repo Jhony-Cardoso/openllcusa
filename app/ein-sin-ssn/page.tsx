@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+
 // ──────────────────────────────────────────────
 // SEO Metadata — Landing "EIN sin SSN"
 // Keyword principal: "EIN sin SSN extranjero", "como obtener EIN sin SSN"

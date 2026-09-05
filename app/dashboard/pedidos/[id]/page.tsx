@@ -13,6 +13,7 @@ import TaxFormViewer from '@/components/dashboard/TaxFormViewer'
 import SS4FormViewer from '@/components/dashboard/SS4FormViewer'
 import { isEIN, isReporteAnual, isTaxFilingSlug } from '@/lib/constants'
 
+
 export const dynamic = 'force-dynamic'
 
 export default async function PedidoDetallePage({

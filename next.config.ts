@@ -9,8 +9,6 @@ const nextConfig: NextConfig = {
   // ==================== SOLUCIÓN PARA EL ERROR EACCES EN .next/cache ====================
   // Esto es clave para entornos Docker como Dokploy
   experimental: {
-    // Desactiva la caché persistente en disco durante el build
-    webpackBuildWorker: false,
     // Forzamos estrictamente 1 hilo y desactivamos workers paralelos
     cpus: 1,
     workerThreads: false,
@@ -34,10 +32,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
-  eslint: {
-    // Evita OOM Killer por eslint durante el build en Docker
-    ignoreDuringBuilds: true,
-  },
+  // eslint.ignoreDuringBuilds se gestiona ahora via bandera CLI (--no-lint)
 
   // Configuración de headers para CORS (Stripe, etc.)
   async headers() {

@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, Check } from 'lucide-react';
 import TrackedLink from '@/components/home/TrackedLink';
 
+
 const paquetes = [ /* ... mismo código de paquetes ... */ ];
 
 const serviciosIndividuales = [

@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle2, AlertCircle, Info, DollarSign, ExternalLink } from 'lucide-react'
 
+
 export const metadata = {
     title: 'Gu├¡a de Transacciones Formulario 5472 - Open LLC USA',
     description: 'Gu├¡a completa sobre c├│mo identificar y registrar transacciones reportables (Part V) para tu Formulario 5472 seg├║n la normativa del IRS.',

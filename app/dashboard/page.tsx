@@ -17,6 +17,7 @@ import {
 import { PedidoModel } from '@/lib/models/pedido'
 import { isReporteAnual } from '@/lib/constants'
 
+
 export default async function DashboardPage() {
   const { userId } = await auth()
   if (!userId) {

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
+
 export default async function AnaliticasPage() {
     const { userId } = await auth()
     if (!userId) redirect('/sign-in')

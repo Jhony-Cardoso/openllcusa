@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
+
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 

@@ -5,6 +5,7 @@ import { allCountries } from '@/components/CountrySelector/countries';
 import { ArrowLeft, CheckCircle2, Globe, Shield, Zap } from 'lucide-react';
 import Flag from '@/components/Flag';
 
+
 // Generar rutas estáticas para todos los países definidos para un build más rápido
 export function generateStaticParams() {
   return allCountries.map((country) => ({
@@ -12,7 +13,7 @@ export function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ country: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const countryCode = resolvedParams.country;
   const country = allCountries.find(c => c.code === countryCode);
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   };
 }
 
-export default async function CountryGuidePage({ params }) {
+export default async function CountryGuidePage({ params }: { params: Promise<{ country: string }> }) {
   const resolvedParams = await params;
   const countryCode = resolvedParams.country;
   const country = allCountries.find(c => c.code === countryCode);

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+
 const SITEURL = 'https://openllcusa.com' // TODO cambia por tu dominio real [file:2]
 const BRANDNAME = 'Open LLC USA' // TODO cambia por tu marca [file:2]
 

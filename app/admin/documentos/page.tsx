@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { PedidoModel } from '@/lib/models/pedido'
 import AdminDocumentosClient from './DocumentosClient'
 
+
 export default async function AdminDocumentosPage() {
     // 1. Seguridad (Lado del Servidor)
     const { userId: adminId } = await auth()

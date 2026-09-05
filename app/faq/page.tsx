@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import styles from './faq.module.css'
 
+
 type FAQItem = {
   question: string
   answer: string

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
 
+
 export default async function AdminClienteDetallePage({
     params,
 }: {

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, FileText, Landmark, Key, Rocket } from 'lucide-react'
 
+
 export const metadata: Metadata = {
   title: 'El Proceso: Cómo Creamos tu LLC Paso a Paso | Open LLC USA',
   description: 'Conoce el paso a paso exacto de cómo registramos tu LLC en Estados Unidos, obtenemos el EIN y abrimos tu cuenta bancaria. Proceso 100% online y transparente.',

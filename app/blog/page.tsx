@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog/posts';
 
+
 export default function BlogPage() {
   const posts = getAllPosts();
 

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import CostCalculator from '@/components/llc-costs/CostCalculator'
 
+
 // ──────────────────────────────────────────────
 // SEO Metadata — Landing Costos
 // ──────────────────────────────────────────────

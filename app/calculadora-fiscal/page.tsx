@@ -3,6 +3,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import CalculadoraClient from '@/components/calculator/CalculadoraClient';
 
+
 export const metadata: Metadata = {
   title: 'Calculadora Fiscal 2026: Autónomo vs SL vs LLC | Open LLC USA',
   description: 'Compara cuánto pagarás de impuestos en España como Autónomo, Sociedad Limitada (SL) o con una LLC en Estados Unidos. Descubre tu ahorro fiscal.',

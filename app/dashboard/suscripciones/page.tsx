@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import CancelarRenovacionButton from "./ui/CancelarRenovacionButton";
 
+
 const AGENTE_SERVICIO_ID = "0489df83-75f2-4a58-add6-8cf78879faed";
 
 function formatDate(value: string | null) {

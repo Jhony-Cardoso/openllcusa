@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { User, Mail, ShieldCheck, ArrowLeft, ExternalLink, Camera, BadgeCheck } from 'lucide-react'
 
+
 export default async function PerfilPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')

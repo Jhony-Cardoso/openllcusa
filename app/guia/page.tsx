@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { BookOpen, ArrowRight, Clock, User } from 'lucide-react'
 
+
 export const metadata: Metadata = {
   title: 'Guías y Recursos sobre LLCs en Estados Unidos | Open LLC USA',
   description: 'Aprende todo sobre cómo abrir y mantener tu LLC desde el extranjero. Guías paso a paso sobre estados, cuentas bancarias, LLC vs Corporation e impuestos.',

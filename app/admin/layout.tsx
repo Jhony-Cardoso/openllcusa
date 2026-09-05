@@ -6,6 +6,7 @@ import {
     Settings, LogOut, LayoutDashboard, Search, MousePointer2
 } from 'lucide-react'
 
+
 export default async function AdminLayout({
     children,
 }: {

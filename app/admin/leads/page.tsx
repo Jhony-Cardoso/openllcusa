@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { LeadModel } from '@/lib/models/lead'
 
+
 // Función auxiliar para el badge del tier
 const getTierBadge = (score?: number) => {
     if (score === undefined || score === 0) return <span className="text-slate-300 italic text-[10px]">Pendiente</span>

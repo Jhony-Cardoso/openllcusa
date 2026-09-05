@@ -14,6 +14,7 @@ import AdminTaxFilingManager from '@/components/admin/AdminTaxFilingManager'
 import ResumenEjecutivo from '@/components/admin/ResumenEjecutivo'
 import { isEIN, isReporteAnual, isTaxFilingSlug } from '@/lib/constants'
 
+
 export default async function AdminPedidoDetallePage({
     params,
 }: {

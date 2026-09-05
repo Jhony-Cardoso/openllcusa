@@ -10,6 +10,7 @@ import type { Metadata } from 'next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Script from 'next/script';
 
+
 export const metadata: Metadata = {
   title: {
     template: '%s | Open LLC USA',

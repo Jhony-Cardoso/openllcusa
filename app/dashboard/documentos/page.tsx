@@ -4,6 +4,7 @@ import { FileText, Download, ArrowLeft, Search, Filter, AlertCircle, FileArchive
 import Link from 'next/link'
 import { DocumentoModel } from '@/lib/models/documento'
 
+
 export default async function DocumentosPage({
   searchParams,
 }: {

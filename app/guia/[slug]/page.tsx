@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, CheckCircle2, AlertTriangle, Info, User } from 'lucide-react'
 
+
 // Contenido de las 5 guías altamente optimizadas para SEO y con tono humanizado.
 const guiasContent: Record<string, { title: string, content: React.ReactNode, meta: string }> = {
   'como-abrir-llc-desde-el-extranjero': {

@@ -1,5 +1,6 @@
 import styles from '../shared.module.css';
 
+
 export const metadata = {
   title: 'Historial de Cambios | Open LLC USA',
   description: 'Registro de actualizaciones y mejoras de la calculadora fiscal',

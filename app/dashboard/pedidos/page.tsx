@@ -6,6 +6,8 @@ import { PedidoModel } from '@/lib/models/pedido'
 import { isReporteAnual } from '@/lib/constants'
 
 
+
+
 export default async function PedidosPage() {
   // Protección manual de la ruta
   const { userId } = await auth()

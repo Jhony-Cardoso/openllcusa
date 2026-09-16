@@ -10,6 +10,17 @@ import type { Metadata } from 'next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Script from 'next/script';
 
+const getBaseUrl = () => {
+  let url = process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com';
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = `https://${url}`;
+  }
+  try {
+    return new URL(url);
+  } catch (e) {
+    return new URL('https://openllcusa.com');
+  }
+};
 
 export const metadata: Metadata = {
   title: {
@@ -44,10 +55,9 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: 'Crea tu LLC en Estados Unidos'
-      }
     ],
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'),
+  metadataBase: getBaseUrl(),
 }
 
 export default function RootLayout({

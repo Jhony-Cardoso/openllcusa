@@ -126,6 +126,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <ClerkProvider 
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsub3BlbmxsY3VzYS5jb20k'}
           localization={esES}
           signInUrl="/sign-in"
           signUpUrl="/sign-up"

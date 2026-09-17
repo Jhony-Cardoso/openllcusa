@@ -12,7 +12,7 @@ COPY . .
 
 # Inyectar las variables PÚBLICAS directamente (Next.js las hornea en el código estático)
 # Nota: Sólo van las públicas por seguridad (NEXT_PUBLIC_), nada de contraseñas.
-ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_c3RlcmxpbmctY2ljYWRhLTY2LmNsZXJrLmFjY291bnRzLmRldiQ
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsub3BlbmxsY3VzYS5jb20k
 ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 ENV NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard

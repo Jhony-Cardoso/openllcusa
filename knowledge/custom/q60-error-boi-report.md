@@ -1,29 +1,13 @@
-# Error frecuente: No presentar el BOI Report (nuevo requisito desde 2024)
+# El BOI Report ya no es obligatorio para las LLC creadas en EE.UU. (antes sí lo era)
 
-Desde 2024, la **Ley de Transparencia Corporativa (Corporate Transparency Act)** introdujo una nueva obligación para casi todas las LLCs americanas: el **BOI Report** ante el FinCEN.
+Durante 2024 y parte de 2025, no presentar el BOI Report ante el FinCEN fue uno de los fallos más frecuentes entre propietarios de LLCs. **Ese escenario terminó:** desde la regla provisional de FinCEN del **26 de marzo de 2025**, todas las entidades creadas en Estados Unidos —y sus beneficiarios reales— están **exentas** de presentarlo.
 
-Este es uno de los errores más comunes en 2024-2025 porque muchos propietarios simplemente no saben que existe.
+## Qué cambió exactamente
+- **Antes (2024 – marzo 2025):** casi todas las LLCs debían declarar al FinCEN quiénes eran sus beneficiarios reales (25% o más de participación, o control sustancial). Plazos: 90 días para las LLC de 2024 y 30 días para las creadas desde 2025. Las LLCs pequeñas de extranjeros **no estaban exentas**.
+- **Ahora:** las entidades creadas en EE. UU. están exentas. Solo siguen obligadas las **empresas extranjeras** registradas para operar en EE. UU.
 
-## ¿Qué es?
-Es un reporte donde la LLC informa al gobierno americano sobre quiénes son sus **beneficiarios reales** (los propietarios reales). Se presenta una sola vez (y cuando hay cambios) ante el FinCEN (Financial Crimes Enforcement Network).
+## Si un proveedor te cobra por el BOI
+No lo necesitas si tu LLC es estadounidense. Antes de pagar (los precios habituales rondaban los $99), comprueba en la fuente oficial: [fincen.gov/boi](https://www.fincen.gov/boi).
 
-## ¿Quién debe presentarlo?
-La gran mayoría de LLCs. Las únicas exenciones son empresas grandes (con más de 20 empleados a tiempo completo en EE.UU. e ingresos superiores a $5 millones) y entidades altamente reguladas (bancos, compañías de seguros, etc.).
-
-**Las LLCs pequeñas de extranjeros NO están exentas.**
-
-## ¿Cuándo hay que presentarlo?
-- **LLC creada antes del 1 enero 2024:** Plazo original era el 1 enero 2025.
-- **LLC creada en 2024:** 90 días desde la fecha de constitución.
-- **LLC creada desde el 1 enero 2025:** 30 días desde la fecha de constitución.
-- **Cambios en los datos:** 30 días desde el cambio.
-
-## ¿Qué multa tiene no presentarlo?
-**$500 por día de retraso**, con posibles sanciones penales adicionales en casos de fraude.
-
-## ¿Qué datos se reportan?
-- Nombre completo y fecha de nacimiento del propietario.
-- País de residencia y dirección.
-- Número y foto del pasaporte o documento de identidad.
-
-Open LLC USA presenta el BOI Report por ti de forma segura. [Contratar aquí por $99](/servicios/boi-report).
+## Documentación oficial
+Explicación resumida en nuestra [guía sobre el BOI Report](/boi-report).

@@ -8,7 +8,7 @@
 5. **Recibes todos tus documentos** por email en formato PDF, listos para usar.
 
 ## ¿Cuánto tiempo tarda el proceso?
-Entre 7 y 15 días hábiles para tener todos los documentos (LLC + EIN + Operating Agreement). [Ver tiempos detallados por estado y proceso aquí](/servicios).
+Entre 7 y 15 días hábiles para tener todos los documentos (LLC + EIN + Operating Agreement). Conviene distinguir dos plazos: **la LLC se registra en el estado en 24-72 horas** en estados ágiles como Wyoming o Nuevo México, mientras que **el EIN del IRS es la parte lenta: cuando se solicita por fax sin SSN puede tardar entre 2 y 4 semanas**. [Ver tiempos detallados por estado y proceso aquí](/servicios).
 
 ## ¿Qué información necesitan de mí para empezar?
 - Nombre deseado para la LLC (y 1-2 alternativas).

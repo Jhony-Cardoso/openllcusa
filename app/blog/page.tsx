@@ -1,7 +1,23 @@
 // app/blog/page.tsx
 
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { getAllPosts } from '@/lib/blog/posts';
+
+export const metadata: Metadata = {
+  title: 'Blog sobre LLCs en Estados Unidos | Open LLC USA',
+  description:
+    'Guías, casos prácticos y fiscalidad para emprendedores hispanohablantes que crean y gestionan una LLC en Estados Unidos.',
+  alternates: { canonical: 'https://openllcusa.com/blog' },
+  openGraph: {
+    title: 'Blog sobre LLCs en Estados Unidos | Open LLC USA',
+    description:
+      'Guías, casos prácticos y fiscalidad para emprendedores hispanohablantes que crean y gestionan una LLC en Estados Unidos.',
+    url: 'https://openllcusa.com/blog',
+    locale: 'es_ES',
+    type: 'website',
+  },
+};
 
 
 export default function BlogPage() {

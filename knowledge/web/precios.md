@@ -5,7 +5,7 @@ tu LLC en EE. UU.
 
 Tres etapas lógicas para que siempre sepas qué estás pagando y por qué. Soporte en español pensado para hispanohablantes.
 
-[1\. Formar LLC](#formar)[2\. Mantener](#mantener)[3\. Optimizar](#optimizar)[Ver comparativa](#comparativa)
+[1\. Formar LLC](/precios#formar)[2\. Mantener](/precios#mantener)[3\. Optimizar](/precios#optimizar)[Ver comparativa](/precios#comparativa)
 
 Etapa 1
 

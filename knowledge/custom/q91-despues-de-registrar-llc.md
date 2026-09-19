@@ -25,9 +25,10 @@ Guarda copias digitales en la nube (Google Drive, Dropbox) y copias físicas.
 - Google Voice (gratuito) para empezar.
 
 ### ✅ Semana 3-4
-**5. Presentar el BOI Report ante el FinCEN:**
-- Si tu LLC fue creada desde el 1 enero 2025, tienes **30 días** desde la constitución.
-- [Open LLC USA puede gestionarlo por ti](/servicios/boi-report).
+**5. Comprobar si tienes alguna obligación de reporte ante el FinCEN (BOI):**
+- Si tu LLC se constituyó **en Estados Unidos**, estás **exento** desde marzo de 2025: no hay nada que presentar ni que pagar.
+- Solo afecta a **empresas extranjeras** registradas para operar en EE. UU.
+- [Lee la explicación completa aquí](/boi-report).
 
 **6. Configurar la contabilidad:**
 - Abre una cuenta en Wave (gratuito) o QuickBooks.

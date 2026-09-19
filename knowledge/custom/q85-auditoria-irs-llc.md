@@ -18,8 +18,8 @@ Para LLCs pequeñas de propietarios extranjeros con ingresos de fuente no americ
 1. **Haber presentado el Formulario 5472 + 1120** correctamente cada año.
 2. **Tener registros contables organizados:** facturas de ingresos, justificantes de gastos.
 3. **Tener cuenta bancaria separada** para la LLC.
-4. **Haber presentado el BOI Report** ante el FinCEN.
-5. **Operating Agreement en vigor** y actualizado.
+4. **Operating Agreement en vigor** y actualizado.
+5. **Contabilidad al día**: si tu LLC es de un solo socio, presentar el 5472 + 1120 cada año demuestra diligencia.
 
 ## Si recibes una carta del IRS:
 - No la ignores. Responde siempre dentro del plazo indicado.

@@ -3,6 +3,12 @@
 import { InlineWidget } from 'react-calendly'
 import { Shield, Clock, Star } from 'lucide-react'
 
+// Altura del widget de Calendly. La variable CSS --calendly-h se define en app/globals.css:
+// ocupa el alto del viewport (100dvh con fallback a 100vh) menos el header sticky y sus
+// márgenes, para que la ventana del calendario se vea COMPLETA sin cortarse.
+// Mismo patrón que app/contacto/page.tsx.
+const CALENDLY_HEIGHT = 'var(--calendly-h)'
+
 export default function AgendarPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -43,10 +49,10 @@ export default function AgendarPage() {
             <h2 className="text-xl font-bold text-white">Elige tu fecha y hora</h2>
             <p className="text-blue-100 text-sm mt-1">Recibirás una confirmación por email inmediatamente</p>
           </div>
-          <div style={{ minHeight: '700px' }}>
+          <div style={{ minHeight: CALENDLY_HEIGHT }}>
             <InlineWidget
               url="https://calendly.com/openllcusa/30min"
-              styles={{ height: '700px' }}
+              styles={{ height: CALENDLY_HEIGHT }}
             />
           </div>
         </div>

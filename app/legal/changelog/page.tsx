@@ -2,6 +2,7 @@ import styles from '../shared.module.css';
 
 
 export const metadata = {
+  alternates: { canonical: 'https://openllcusa.com/legal/changelog' },
   title: 'Historial de Cambios | Open LLC USA',
   description: 'Registro de actualizaciones y mejoras de la calculadora fiscal',
   robots: 'index, follow',

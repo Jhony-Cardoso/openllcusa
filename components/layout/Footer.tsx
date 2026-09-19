@@ -57,12 +57,13 @@ export default function Footer() {
             <h4 className="font-semibold text-white mb-4">Contacto</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <a href="mailto:hola@openllcusa.com" className="hover:text-white transition-colors">
-                  hola@openllcusa.com
+                <a href="mailto:info@openllcusa.com" className="hover:text-white transition-colors">
+                  info@openllcusa.com
                 </a>
               </li>
               <li>
-                <a href="https://wa.me/XXXXXXXXXXX" target="_blank" className="hover:text-white transition-colors">
+                {/* Número provisional: pendiente de definir el definitivo */}
+                <a href="https://wa.me/34699087039" target="_blank" className="hover:text-white transition-colors">
                   WhatsApp
                 </a>
               </li>

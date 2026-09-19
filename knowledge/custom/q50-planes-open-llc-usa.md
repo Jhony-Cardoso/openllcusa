@@ -17,8 +17,8 @@ Para ver los precios actualizados y los detalles exactos de cada plan, visita nu
 ### Formulario 5472 + 1120:
 Preparación y presentación ante el IRS del reporte informativo anual obligatorio para LLCs de propietarios extranjeros. [Contratar aquí](/servicios/form-5472-1120).
 
-### BOI Report (FinCEN):
-Presentación del reporte de beneficiarios reales ante el FinCEN, obligatorio desde 2024. [Contratar aquí](/servicios/boi-report).
+### BOI Report (FinCEN) — no es necesario para tu LLC:
+No ofrecemos este trámite porque **no lo necesitas**: desde marzo de 2025 las entidades creadas en EE. UU. están exentas de presentar el BOI ante el FinCEN. Solo afecta a empresas extranjeras registradas para operar en EE. UU. [Aquí explicamos por qué](/boi-report).
 
 ### Renovación anual:
 Gestión del Annual Report estatal y renovación del servicio de Agente Registrado para años sucesivos.

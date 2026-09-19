@@ -22,7 +22,7 @@ Responde 5–7 preguntas y recibe una recomendación de plan.
 
 Asesoría gratis 24/7 por voz con transcripción (modo demo por ahora).
 
-[Abrir Zara](/Zara)
+[Abrir Zara](/zara)
 
 ## Blog
 

@@ -79,7 +79,7 @@ Si necesitas un horario especial, escríbenos a info@openllcusa.com y coordinare
 
 Miles de emprendedores ya confiaron en nosotros para crear su LLC en EE.UU.
 
-[📅 Agendar mi consulta gratuita](#top)
+[📅 Agendar mi consulta gratuita](/contacto)
 
 Zara · IA AsistenteEn línea · Responde al instante
 

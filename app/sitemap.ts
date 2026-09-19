@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { getAllPosts } from '@/lib/blog/posts'
+import { allCountries } from '@/components/CountrySelector/countries'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'
@@ -45,6 +46,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/guia-llc-extranjeros',
         '/guia',
         '/guias',
+        '/guias/us',   // guia de EE.UU. (elegir estado y plazos)
+        '/boi-report', // pagina informativa sobre el BOI de FinCEN
         '/proceso',
         '/quiz',
         '/testimonios',
@@ -60,6 +63,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = await createClient()
     const { data: servicios } = await supabase.from('servicios').select('slug')
     const { data: paquetes } = await supabase.from('paquetes').select('slug')
+
+    // Guías por país (una por cada país del selector de países)
+    const countryGuides = allCountries.map((country) => ({
+        url: `${baseUrl}/guias/${country.code}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+    }))
 
     const servicePages = (servicios || []).map((servicio) => ({
         url: `${baseUrl}/servicios/${servicio.slug}`,
@@ -84,5 +95,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.9,
     }))
 
-    return [...staticPages, ...guidePages, ...servicePages, ...paquetePages, ...blogPages]
+    return [...staticPages, ...guidePages, ...countryGuides, ...servicePages, ...paquetePages, ...blogPages]
 }

@@ -246,10 +246,10 @@ if (isLoaded && !isSignedIn) {
 **Main objective:** Refactorizar app/page.tsx a Server Component para maximizar SEO y CRO.
 
 #### ?? User Request:
-> Implementar la oportunidad de mayor impacto (CRO + SEO): eliminar cÛdigo muerto/duplicado, preservar variables de Carla y WhatsApp, y extraer la lÛgica de cliente para que la p·gina de inicio sea un Server Component.
+> Implementar la oportunidad de mayor impacto (CRO + SEO): eliminar cÔøΩdigo muerto/duplicado, preservar variables de Carla y WhatsApp, y extraer la lÔøΩgica de cliente para que la pÔøΩgina de inicio sea un Server Component.
 
 #### ?? Agent Solution:
-- **Summary:** Se eliminÛ el cÛdigo muerto y redundante de la Homepage. Se extrajeron los hooks y estados a nuevos Client Components (ScrollObserver, MobileStickyCTA, QuickContactSection y TrackedLink). Se exportaron metadatos en pp/page.tsx para establecer la URL canÛnica. El build indicÛ un problema de OOM en Node localmente, pero sint·cticamente est· intacto.
+- **Summary:** Se eliminÔøΩ el cÔøΩdigo muerto y redundante de la Homepage. Se extrajeron los hooks y estados a nuevos Client Components (ScrollObserver, MobileStickyCTA, QuickContactSection y TrackedLink). Se exportaron metadatos en pp/page.tsx para establecer la URL canÔøΩnica. El build indicÔøΩ un problema de OOM en Node localmente, pero sintÔøΩcticamente estÔøΩ intacto.
 - **Files created/modified:**
   - pp/page.tsx
   - components/home/TrackedLink.tsx
@@ -421,16 +421,16 @@ export default function CalculadoraFiscal() {
 
 ---
 ### ?? Chat Session: 2026-08-01 14:36
-**Main objective:** AÒadir flujos de onboarding personalizados para los planes de mantenimiento compliance-basico y plan-crecimiento.
+**Main objective:** AÔøΩadir flujos de onboarding personalizados para los planes de mantenimiento compliance-basico y plan-crecimiento.
 
 #### ?? User Request:
-> Registrar en la base de datos los planes Compliance B·sico (\/mes) y Plan Crecimiento (\/mes), y crear un onboarding personalizado con pasos para: datos de la LLC existente, datos del propietario (nombre, apellidos, pasaporte, direcciÛn, email), y subida de documentos (extractos bancarios, movimientos contables, otros) exclusivo para Plan Crecimiento.
+> Registrar en la base de datos los planes Compliance BÔøΩsico (\/mes) y Plan Crecimiento (\/mes), y crear un onboarding personalizado con pasos para: datos de la LLC existente, datos del propietario (nombre, apellidos, pasaporte, direcciÔøΩn, email), y subida de documentos (extractos bancarios, movimientos contables, otros) exclusivo para Plan Crecimiento.
 
 #### ?? Agent Solution:
-- **Summary:** Se crearon los pasos de onboarding din·micos y la arquitectura de almacenamiento de documentos. El enrutador del onboarding es ahora inteligente y detecta si el paquete es de formaciÛn de LLC o de mantenimiento. El checkout de Stripe usa modo subscription para planes mensuales.
+- **Summary:** Se crearon los pasos de onboarding dinÔøΩmicos y la arquitectura de almacenamiento de documentos. El enrutador del onboarding es ahora inteligente y detecta si el paquete es de formaciÔøΩn de LLC o de mantenimiento. El checkout de Stripe usa modo subscription para planes mensuales.
 - **Files created/modified:**
   - supabase/migrations_self_hosted/010_add_maintenance_plans.sql (NUEVO)
-  - pp/paquetes/[paqueteSlug]/onboarding/page.tsx (MOD - enrutador din·mico)
+  - pp/paquetes/[paqueteSlug]/onboarding/page.tsx (MOD - enrutador dinÔøΩmico)
   - pp/paquetes/[paqueteSlug]/onboarding/datos-llc/page.tsx (NUEVO)
   - pp/paquetes/[paqueteSlug]/onboarding/propietario/page.tsx (NUEVO)
   - pp/paquetes/[paqueteSlug]/onboarding/documentos/page.tsx (NUEVO)
@@ -442,7 +442,7 @@ ext.config.ts (MOD - limpieza de config deprecada)
 
 #### ?? Key Code:
 ```typescript
-// Flujo din·mico por tipo de paquete en onboarding/page.tsx
+// Flujo dinÔøΩmico por tipo de paquete en onboarding/page.tsx
 const isMaintenance = paqueteSlug === 'compliance-basico' || paqueteSlug === 'plan-crecimiento';
 const nextStep = isMaintenance ? 'datos-llc' : 'estado';
 router.push(/paquetes/\/onboarding/\?pedido=\);
@@ -653,19 +653,19 @@ export async function POST(req: Request) {
 > En vez de ponerle saldo, he cambiado la API Key... he reiniciado el servidor con npm run dev pero sigue sin funcionar.
 
 #### ?? Agent Solution:
-- **Summary:** Se identificÛ que la versiÛn m·s reciente del Vercel AI SDK (@ai-sdk/react v4) introdujo un nuevo formato de streaming exclusivo (`toUIMessageStreamResponse`), el cual `useChat` espera por defecto. El cÛdigo anterior devolvÌa un texto plano (`toTextStreamResponse`) que no podÌa ser parseado por el frontend. Se actualizÛ la ruta de la API para devolver el formato correcto.
+- **Summary:** Se identificÔøΩ que la versiÔøΩn mÔøΩs reciente del Vercel AI SDK (@ai-sdk/react v4) introdujo un nuevo formato de streaming exclusivo (`toUIMessageStreamResponse`), el cual `useChat` espera por defecto. El cÔøΩdigo anterior devolvÔøΩa un texto plano (`toTextStreamResponse`) que no podÔøΩa ser parseado por el frontend. Se actualizÔøΩ la ruta de la API para devolver el formato correcto.
 - **Files created/modified:**
   - `app/api/chat/route.ts`
 
 ---
 ### ?? Chat Session: 2026-08-08 13:55 CET
-**Main objective:** Implementar Bonus (IntegraciÛn Clerk + Historial de Pedidos).
+**Main objective:** Implementar Bonus (IntegraciÔøΩn Clerk + Historial de Pedidos).
 
 #### ?? User Request:
-> Respondiendo a tus preguntas, me gustarÌa que cuando Zara hable con un usuario ya registrado, SEPA si ese usuario ya comprÛ servicios nuestros y cu·les fueron concretamente. AsÌ, podrÌa dialogar con conocimiento certero.
+> Respondiendo a tus preguntas, me gustarÔøΩa que cuando Zara hable con un usuario ya registrado, SEPA si ese usuario ya comprÔøΩ servicios nuestros y cuÔøΩles fueron concretamente. AsÔøΩ, podrÔøΩa dialogar con conocimiento certero.
 
 #### ?? Agent Solution:
-- **Summary:** Se integrÛ Clerk en `ChatWidget.tsx` para detectar el inicio de sesiÛn, saludar al usuario por su nombre y desactivar la peticiÛn del correo (lead form). En el backend (`route.ts`), se importÛ `PedidoModel` para buscar todos los paquetes/servicios que haya comprado el usuario actual y se inyectaron directamente en el `SYSTEM_PROMPT` para que Zara responda con contexto personalizado.
+- **Summary:** Se integrÔøΩ Clerk en `ChatWidget.tsx` para detectar el inicio de sesiÔøΩn, saludar al usuario por su nombre y desactivar la peticiÔøΩn del correo (lead form). En el backend (`route.ts`), se importÔøΩ `PedidoModel` para buscar todos los paquetes/servicios que haya comprado el usuario actual y se inyectaron directamente en el `SYSTEM_PROMPT` para que Zara responda con contexto personalizado.
 - **Files created/modified:**
   - `components/chat/ChatWidget.tsx`
   - `app/api/chat/route.ts`
@@ -675,11 +675,11 @@ export async function POST(req: Request) {
 **Main objective:** Implementar Fase 4 (RAG con pgvector).
 
 #### ?? User Request:
-> Respecto a tu pregunta sobre quÈ tipo de archivos lea Zara, te autorizo a que sean archivos de texto en Markdown.
-> Dicho esto, PROCEDE con la implementaciÛn del Plan Rag.
+> Respecto a tu pregunta sobre quÔøΩ tipo de archivos lea Zara, te autorizo a que sean archivos de texto en Markdown.
+> Dicho esto, PROCEDE con la implementaciÔøΩn del Plan Rag.
 
 #### ?? Agent Solution:
-- **Summary:** Se creÛ un script de migraciÛn SQL para habilitar `pgvector`, crear la tabla `knowledge_base` y la funciÛn `match_knowledge`. Se creÛ el script `scripts/ingest-knowledge.ts` que lee archivos Markdown en la carpeta `knowledge`, los trocea, obtiene sus embeddings con OpenAI y los guarda en Supabase. Finalmente, se modificÛ `route.ts` para capturar el ˙ltimo mensaje del usuario, calcular su embedding, buscar informaciÛn relevante en Supabase e inyectarla en el `SYSTEM_PROMPT`.
+- **Summary:** Se creÔøΩ un script de migraciÔøΩn SQL para habilitar `pgvector`, crear la tabla `knowledge_base` y la funciÔøΩn `match_knowledge`. Se creÔøΩ el script `scripts/ingest-knowledge.ts` que lee archivos Markdown en la carpeta `knowledge`, los trocea, obtiene sus embeddings con OpenAI y los guarda en Supabase. Finalmente, se modificÔøΩ `route.ts` para capturar el ÔøΩltimo mensaje del usuario, calcular su embedding, buscar informaciÔøΩn relevante en Supabase e inyectarla en el `SYSTEM_PROMPT`.
 - **Files created/modified:**
   - `supabase/migrations/20260808000001_knowledge_base.sql`
   - `knowledge/faq_impuestos.md`
@@ -688,13 +688,13 @@ export async function POST(req: Request) {
 
 ---
 ### ?? Chat Session: 2026-08-08 20:08 CET
-**Main objective:** AÒadir enlaces a servicios en las respuestas de Zara.
+**Main objective:** AÔøΩadir enlaces a servicios en las respuestas de Zara.
 
 #### ?? User Request:
-> Por cierto, cuando el asistente haga menciÛn a un servicio concreto, ofreciÈndolo, øte parece oportuno colocar a continuaciÛn el link de la p·gina de ese servicio concreto?
+> Por cierto, cuando el asistente haga menciÔøΩn a un servicio concreto, ofreciÔøΩndolo, ÔøΩte parece oportuno colocar a continuaciÔøΩn el link de la pÔøΩgina de ese servicio concreto?
 
 #### ?? Agent Solution:
-- **Summary:** Se ha aÒadido una instrucciÛn explÌcita ("REGLA DE ORO") en el `SYSTEM_PROMPT` del asistente (`route.ts`) para forzar a Zara a generar siempre un enlace (en formato Markdown) apuntando al servicio mencionado (ej. `/precios` o `/servicios/form-5472-1120`).
+- **Summary:** Se ha aÔøΩadido una instrucciÔøΩn explÔøΩcita ("REGLA DE ORO") en el `SYSTEM_PROMPT` del asistente (`route.ts`) para forzar a Zara a generar siempre un enlace (en formato Markdown) apuntando al servicio mencionado (ej. `/precios` o `/servicios/form-5472-1120`).
 - **Files created/modified:**
   - `app/api/chat/route.ts`
 
@@ -706,31 +706,31 @@ export async function POST(req: Request) {
 > Ahora he probado de nuevo, con la misma pregunta, y la asistente no ha respondido. (ver captura de la terminal).
 
 #### ?? Agent Solution:
-- **Summary:** Al aÒadir la regla de los enlaces en el prompt, utilicÈ comillas invertidas (backticks) para la palabra `/precios`. Como el `SYSTEM_PROMPT` entero est· envuelto en backticks, esto cerrÛ el string prematuramente y el compilador interpretÛ la palabra `precios` como una variable de JavaScript. Se han eliminado las comillas invertidas para corregir el error de sintaxis en `app/api/chat/route.ts`.
+- **Summary:** Al aÔøΩadir la regla de los enlaces en el prompt, utilicÔøΩ comillas invertidas (backticks) para la palabra `/precios`. Como el `SYSTEM_PROMPT` entero estÔøΩ envuelto en backticks, esto cerrÔøΩ el string prematuramente y el compilador interpretÔøΩ la palabra `precios` como una variable de JavaScript. Se han eliminado las comillas invertidas para corregir el error de sintaxis en `app/api/chat/route.ts`.
 - **Files created/modified:**
   - `app/api/chat/route.ts`
 
 ---
 ### ?? Chat Session: 2026-08-08 20:21 CET
-**Main objective:** Resolver error de p·nico de Turbopack.
+**Main objective:** Resolver error de pÔøΩnico de Turbopack.
 
 #### ?? User Request:
-> Ahora no me abre la interfaz del navegador. A ver quÈ le ocurre al Turbopack...
+> Ahora no me abre la interfaz del navegador. A ver quÔøΩ le ocurre al Turbopack...
 
 #### ?? Agent Solution:
-- **Summary:** Los errores FATAL de p·nico en Turbopack (Next.js 15+) suelen ocurrir por corrupciÛn del cachÈ en la carpeta `.next` durante recargas en caliente. Se instruyÛ al usuario para realizar un "Clean restart" borrando la carpeta `.next` tal como marca la regla del proyecto.
+- **Summary:** Los errores FATAL de pÔøΩnico en Turbopack (Next.js 15+) suelen ocurrir por corrupciÔøΩn del cachÔøΩ en la carpeta `.next` durante recargas en caliente. Se instruyÔøΩ al usuario para realizar un "Clean restart" borrando la carpeta `.next` tal como marca la regla del proyecto.
 - **Files created/modified:**
   - N/A
 
 ---
 ### ?? Chat Session: 2026-08-08 20:58 CET
-**Main objective:** Ajustar el lÌmite de RAM para Turbopack en modo desarrollo.
+**Main objective:** Ajustar el lÔøΩmite de RAM para Turbopack en modo desarrollo.
 
 #### ?? User Request:
-> Estoy desesperado con la memoria RAM porque me sale continuamente "out of memory", y no puedo ni hacer npm run dev øPuedes modificar el space-size?
+> Estoy desesperado con la memoria RAM porque me sale continuamente "out of memory", y no puedo ni hacer npm run dev ÔøΩPuedes modificar el space-size?
 
 #### ?? Agent Solution:
-- **Summary:** Se aumentÛ el par·metro `--max-old-space-size` en el `package.json` de 8192 MB (8GB) a 10240 MB (10GB) para los scripts locales de desarrollo (`dev`, `dev:safe`, `dev:notrace`). Turbopack en proyectos grandes de Next.js es conocido por sus fugas de memoria, por lo que aumentar el lÌmite suele evitar los cuelgues constantes.
+- **Summary:** Se aumentÔøΩ el parÔøΩmetro `--max-old-space-size` en el `package.json` de 8192 MB (8GB) a 10240 MB (10GB) para los scripts locales de desarrollo (`dev`, `dev:safe`, `dev:notrace`). Turbopack en proyectos grandes de Next.js es conocido por sus fugas de memoria, por lo que aumentar el lÔøΩmite suele evitar los cuelgues constantes.
 - **Files created/modified:**
   - `package.json`
 
@@ -739,10 +739,10 @@ export async function POST(req: Request) {
 **Main objective:** Forzar a Zara a generar los links a servicios de forma consistente.
 
 #### ?? User Request:
-> Ahora he probado de nuevo, con la misma pregunta, y la asistente SÕ ha respondido pero no muestra el link del servicioal que alude.
+> Ahora he probado de nuevo, con la misma pregunta, y la asistente SÔøΩ ha respondido pero no muestra el link del servicioal que alude.
 
 #### ?? Agent Solution:
-- **Summary:** Los LLM a veces ignoran las reglas del system prompt si est·n redactadas de forma suave o si la temperatura es alta. Se reescribiÛ la instrucciÛn de los links para hacerla una "REGLA ESTRICTA" explÌcita y se bajÛ la `temperature` de OpenAI en `route.ts` de `0.7` a `0.3` para forzar a la IA a ser mucho m·s predecible y obediente con las instrucciones de formato.
+- **Summary:** Los LLM a veces ignoran las reglas del system prompt si estÔøΩn redactadas de forma suave o si la temperatura es alta. Se reescribiÔøΩ la instrucciÔøΩn de los links para hacerla una "REGLA ESTRICTA" explÔøΩcita y se bajÔøΩ la `temperature` de OpenAI en `route.ts` de `0.7` a `0.3` para forzar a la IA a ser mucho mÔøΩs predecible y obediente con las instrucciones de formato.
 - **Files created/modified:**
   - `app/api/chat/route.ts`
 
@@ -754,7 +754,7 @@ export async function POST(req: Request) {
 > No ha escupido NADA... No he podido tomar la captura porque el servidor se me cierra continuamente.
 
 #### ?? Agent Solution:
-- **Summary:** La razÛn por la que el asistente no escupiÛ nada es precisamente porque el servidor se cerrÛ abruptamente. Al aumentar la RAM a 10 GB (10240) anteriormente, es probable que en un PC de 16 GB el sistema operativo (Windows) se haya quedado sin memoria fÌsica para sÌ mismo y haya matado el proceso Node. Se ha revertido el lÌmite a 8 GB (8192) en `package.json` para estabilizar el sistema.
+- **Summary:** La razÔøΩn por la que el asistente no escupiÔøΩ nada es precisamente porque el servidor se cerrÔøΩ abruptamente. Al aumentar la RAM a 10 GB (10240) anteriormente, es probable que en un PC de 16 GB el sistema operativo (Windows) se haya quedado sin memoria fÔøΩsica para sÔøΩ mismo y haya matado el proceso Node. Se ha revertido el lÔøΩmite a 8 GB (8192) en `package.json` para estabilizar el sistema.
 - **Files created/modified:**
   - `package.json`
 
@@ -766,32 +766,32 @@ export async function POST(req: Request) {
 > IDE errors: No se puede asignar un argumento de tipo "match_knowledge"... La propiedad 'map' no existe en el tipo 'string'.
 
 #### ?? Agent Solution:
-- **Summary:** Al aÒadir la funciÛn SQL `match_knowledge` en la base de datos, los tipos TypeScript generados de Supabase (`database.types.ts`) no estaban al corriente de su existencia. Esto causaba que TypeScript rechazara la llamada a `.rpc('match_knowledge')` y, consecuentemente, asumiera que el resultado era un `string` o tipo no iterable, rompiendo `.map()`. Se ha forzado el tipado usando `(supabase.rpc as any)` y comprobando que `matchedChunks` es un array explÌcitamente.
+- **Summary:** Al aÔøΩadir la funciÔøΩn SQL `match_knowledge` en la base de datos, los tipos TypeScript generados de Supabase (`database.types.ts`) no estaban al corriente de su existencia. Esto causaba que TypeScript rechazara la llamada a `.rpc('match_knowledge')` y, consecuentemente, asumiera que el resultado era un `string` o tipo no iterable, rompiendo `.map()`. Se ha forzado el tipado usando `(supabase.rpc as any)` y comprobando que `matchedChunks` es un array explÔøΩcitamente.
 - **Files created/modified:**
   - `app/api/chat/route.ts`
 
 ---
 ### ?? Chat Session: 2026-08-09 12:17 CET
-**Main objective:** Garantizar que Zara aÒada los enlaces a los servicios superando la sobreescritura de RAG.
+**Main objective:** Garantizar que Zara aÔøΩada los enlaces a los servicios superando la sobreescritura de RAG.
 
 #### ?? User Request:
-> Bueno, pues el chat sigue sin escupir el link del servicio al que alude. øQuÈ hacemos?
+> Bueno, pues el chat sigue sin escupir el link del servicio al que alude. ÔøΩQuÔøΩ hacemos?
 
 #### ?? Agent Solution:
-- **Summary:** Cuando RAG inyectaba el contexto, la IA olvidaba la regla de los enlaces (fenÛmeno de "Lost in the middle" de los LLMs). Se aplicÛ una soluciÛn doble: 1) Se inyectaron los enlaces Markdown directamente en la fuente RAG (`faq_impuestos.md`) y se re-ejecutÛ el script de ingesta en segundo plano. 2) Se aÒadiÛ un `RECORDATORIO CRÕTICO FINAL` en `route.ts` que se concatena *despuÈs* del texto RAG, asegurando que sea la ultimÌsima instrucciÛn que lee el modelo antes de responder.
+- **Summary:** Cuando RAG inyectaba el contexto, la IA olvidaba la regla de los enlaces (fenÔøΩmeno de "Lost in the middle" de los LLMs). Se aplicÔøΩ una soluciÔøΩn doble: 1) Se inyectaron los enlaces Markdown directamente en la fuente RAG (`faq_impuestos.md`) y se re-ejecutÔøΩ el script de ingesta en segundo plano. 2) Se aÔøΩadiÔøΩ un `RECORDATORIO CRÔøΩTICO FINAL` en `route.ts` que se concatena *despuÔøΩs* del texto RAG, asegurando que sea la ultimÔøΩsima instrucciÔøΩn que lee el modelo antes de responder.
 - **Files created/modified:**
   - `knowledge/faq_impuestos.md`
   - `app/api/chat/route.ts`
 
 ---
 ### ?? Chat Session: 2026-08-09 12:24 CET
-**Main objective:** AÒadir directrices de RAG a AGENTS.md.
+**Main objective:** AÔøΩadir directrices de RAG a AGENTS.md.
 
 #### ?? User Request:
-> Pienso que la respuesta que me acabas dar, con los 2 pasos, quiz·s debiera estar en agentes.md, porque tenemos que construir toda la base de conocimiento. øQuÈ te parece?
+> Pienso que la respuesta que me acabas dar, con los 2 pasos, quizÔøΩs debiera estar en agentes.md, porque tenemos que construir toda la base de conocimiento. ÔøΩQuÔøΩ te parece?
 
 #### ?? Agent Solution:
-- **Summary:** Se aÒadiÛ una nueva secciÛn a `AGENTS.md` ("AI Assistant & RAG Rules") documentando las 4 directrices crÌticas descubiertas durante la integraciÛn del chat: embeber Markdown links directamente en la base de datos, re-ingestar los embeddings siempre tras una modificaciÛn, inyectar reglas vitales al final del prompt para evitar el "lost in the middle", y mantener la temperatura baja (`0.3`). Esto servir· de guÌa para los futuros agentes que mantengan la base de conocimiento.
+- **Summary:** Se aÔøΩadiÔøΩ una nueva secciÔøΩn a `AGENTS.md` ("AI Assistant & RAG Rules") documentando las 4 directrices crÔøΩticas descubiertas durante la integraciÔøΩn del chat: embeber Markdown links directamente en la base de datos, re-ingestar los embeddings siempre tras una modificaciÔøΩn, inyectar reglas vitales al final del prompt para evitar el "lost in the middle", y mantener la temperatura baja (`0.3`). Esto servirÔøΩ de guÔøΩa para los futuros agentes que mantengan la base de conocimiento.
 - **Files created/modified:**
   - `AGENTS.md`
 
@@ -800,10 +800,10 @@ export async function POST(req: Request) {
 **Main objective:** Implementar sistema RAG Dual-Source para automatizar el scraping de la web.
 
 #### ?? User Request:
-> Independientemente de los archivos que incluyamos en el RAG, øcÛmo podemos hacer para que Zara tenga toda la informaciÛn de nuestro sitio web?
+> Independientemente de los archivos que incluyamos en el RAG, ÔøΩcÔøΩmo podemos hacer para que Zara tenga toda la informaciÔøΩn de nuestro sitio web?
 
 #### ?? Agent Solution:
-- **Summary:** Se ha implementado un sistema RAG hÌbrido. Se creÛ un script Crawler (`scripts/scrape-website.ts`) que usa `cheerio` y `turndown` para leer el `sitemap.xml`, extraer el texto principal de todas las p·ginas de la web y convertirlas en Markdown (`knowledge/web/`). Adicionalmente, se modificÛ el script `ingest-knowledge.ts` para que lea archivos recursivamente de las carpetas `knowledge/web/` y `knowledge/custom/`. Se probÛ localmente con Èxito, insertando 9 documentos vectorizados en Supabase.
+- **Summary:** Se ha implementado un sistema RAG hÔøΩbrido. Se creÔøΩ un script Crawler (`scripts/scrape-website.ts`) que usa `cheerio` y `turndown` para leer el `sitemap.xml`, extraer el texto principal de todas las pÔøΩginas de la web y convertirlas en Markdown (`knowledge/web/`). Adicionalmente, se modificÔøΩ el script `ingest-knowledge.ts` para que lea archivos recursivamente de las carpetas `knowledge/web/` y `knowledge/custom/`. Se probÔøΩ localmente con ÔøΩxito, insertando 9 documentos vectorizados en Supabase.
 - **Files created/modified:**
   - `app/sitemap.ts`
   - `package.json`
@@ -816,10 +816,10 @@ export async function POST(req: Request) {
 **Main objective:** Actualizar los paquetes antiguos por los nuevos en el prompt de Zara.
 
 #### ?? User Request:
-> Nuuestro website ha sufrido modificaciones importantes; antes disponÌamos de 3 paquetes que teni·n nombres y precios DIFERENTES a los actuales... Los planes actuales se llaman Starter, Professional y Business. Corrige eso.
+> Nuuestro website ha sufrido modificaciones importantes; antes disponÔøΩamos de 3 paquetes que teniÔøΩn nombres y precios DIFERENTES a los actuales... Los planes actuales se llaman Starter, Professional y Business. Corrige eso.
 
 #### ?? Agent Solution:
-- **Summary:** Aunque el sistema RAG ya estaba extrayendo los paquetes correctos (Starter, Professional, Business) desde la web p˙blica reciÈn rastreada, Zara seguÌa mencionando los antiguos (B·sico, Essential, Premium) porque estaban fuertemente incrustados en su `SYSTEM_PROMPT` interno (`route.ts`), el cual tiene prioridad absoluta. Se ha actualizado el cÛdigo fuente de `route.ts` para reflejar la nueva estructura de planes, precios e indicaciones de enlaces.
+- **Summary:** Aunque el sistema RAG ya estaba extrayendo los paquetes correctos (Starter, Professional, Business) desde la web pÔøΩblica reciÔøΩn rastreada, Zara seguÔøΩa mencionando los antiguos (BÔøΩsico, Essential, Premium) porque estaban fuertemente incrustados en su `SYSTEM_PROMPT` interno (`route.ts`), el cual tiene prioridad absoluta. Se ha actualizado el cÔøΩdigo fuente de `route.ts` para reflejar la nueva estructura de planes, precios e indicaciones de enlaces.
 - **Files created/modified:**
   - `app/api/chat/route.ts`
 
@@ -831,20 +831,20 @@ export async function POST(req: Request) {
 > El icono de Zara que sale en la ventana del chat lo podemos sustituir por la foto de una chica? (si lo ves positivo).
 
 #### ?? Agent Solution:
-- **Summary:** Se generÛ una foto profesional y realista de una asistente (Zara) mediante inteligencia artificial para aumentar la confianza y mejorar el CRO. Se sustituyeron los iconos genÈricos (`<Bot />` y `<Sparkles />` de Lucide) por el componente `<Image />` de Next.js renderizando la nueva foto de perfil en la cabecera del chat y en cada mensaje del asistente.
+- **Summary:** Se generÔøΩ una foto profesional y realista de una asistente (Zara) mediante inteligencia artificial para aumentar la confianza y mejorar el CRO. Se sustituyeron los iconos genÔøΩricos (`<Bot />` y `<Sparkles />` de Lucide) por el componente `<Image />` de Next.js renderizando la nueva foto de perfil en la cabecera del chat y en cada mensaje del asistente.
 - **Files created/modified:**
   - `public/images/zara-avatar.png`
   - `components/chat/ChatWidget.tsx`
 
 ---
 ### ?? Chat Session: 2026-08-09 14:51 CET
-**Main objective:** Implementar chat hÌbrido (·rbol de decisiones + IA).
+**Main objective:** Implementar chat hÔøΩbrido (ÔøΩrbol de decisiones + IA).
 
 #### ?? User Request:
-> Adelante con el Plan de ImplementaciÛn: Chat HÌbrido (Empezar con botones y usar la IA solo para las dudas tÈcnicas).
+> Adelante con el Plan de ImplementaciÔøΩn: Chat HÔøΩbrido (Empezar con botones y usar la IA solo para las dudas tÔøΩcnicas).
 
 #### ?? Agent Solution:
-- **Summary:** Se implementÛ un chat con m·quina de estados: AtribuciÛn ? IntenciÛn ? 4 Ramas (Lead Caliente, Lead Tibio, IA Abierta, Otro). Se creÛ la p·gina /guia-llc-extranjeros con la guÌa completa para extranjeros, la p·gina /agendar con Calendly dedicado para mejor CRO, el email de guÌa gratuita (enviarGuiaGratis en email.service.ts) y la migraciÛn SQL para aÒadir attribution e intent a chat_leads. Los usuarios logueados saltan directamente a la IA.
+- **Summary:** Se implementÔøΩ un chat con mÔøΩquina de estados: AtribuciÔøΩn ? IntenciÔøΩn ? 4 Ramas (Lead Caliente, Lead Tibio, IA Abierta, Otro). Se creÔøΩ la pÔøΩgina /guia-llc-extranjeros con la guÔøΩa completa para extranjeros, la pÔøΩgina /agendar con Calendly dedicado para mejor CRO, el email de guÔøΩa gratuita (enviarGuiaGratis en email.service.ts) y la migraciÔøΩn SQL para aÔøΩadir attribution e intent a chat_leads. Los usuarios logueados saltan directamente a la IA.
 - **Files created/modified:**
   - `components/chat/ChatWidget.tsx`
   - `components/chat/chat-widget.css`
@@ -904,22 +904,22 @@ const { data, error } = await resend.emails.send({
 
 ---
 ### ?? Chat Session: 2026-08-11 13:47
-**Main objective:** DiseÒar estrategia SEO completa con keyword research basado en an·lisis de competidores e implementar quick wins tÈcnicos
+**Main objective:** DiseÔøΩar estrategia SEO completa con keyword research basado en anÔøΩlisis de competidores e implementar quick wins tÔøΩcnicos
 
 #### ?? User Request:
-> Construir una estrategia SEO completa para Open LLC USA: keyword research, an·lisis de 7 competidores (globalfy.com, openbiz.io, gcmasesores.io, ezfrontiers.com, circleclub.com, firmaway.us, americanprana.com) e implementar quick wins tÈcnicos
+> Construir una estrategia SEO completa para Open LLC USA: keyword research, anÔøΩlisis de 7 competidores (globalfy.com, openbiz.io, gcmasesores.io, ezfrontiers.com, circleclub.com, firmaway.us, americanprana.com) e implementar quick wins tÔøΩcnicos
 
 #### ?? Agent Solution:
-- **Summary:** Se analizaron 6 competidores hispanohablantes, se generÛ el Keyword Research Maestro con 80+ keywords clasificadas en 7 tiers, se identificaron 12 brechas (keywords que ning˙n competidor domina), y se implementaron 2 quick wins tÈcnicos directamente en el cÛdigo.
+- **Summary:** Se analizaron 6 competidores hispanohablantes, se generÔøΩ el Keyword Research Maestro con 80+ keywords clasificadas en 7 tiers, se identificaron 12 brechas (keywords que ningÔøΩn competidor domina), y se implementaron 2 quick wins tÔøΩcnicos directamente en el cÔøΩdigo.
 - **Files created/modified:**
-  - pp/layout.tsx ó Schema JSON-LD Organization + WebSite + SearchAction (Knowledge Panel)
-  - pp/sitemap.ts ó Ampliado con /guia, /guias, /guia-llc-extranjeros, /proceso, /quiz, /testimonios, /agendar
-  - [artifact] keyword_research.md ó Keyword Research Maestro completo
-  - [artifact] seo_plan.md ó Plan SEO EstratÈgico actualizado
+  - pp/layout.tsx ÔøΩ Schema JSON-LD Organization + WebSite + SearchAction (Knowledge Panel)
+  - pp/sitemap.ts ÔøΩ Ampliado con /guia, /guias, /guia-llc-extranjeros, /proceso, /quiz, /testimonios, /agendar
+  - [artifact] keyword_research.md ÔøΩ Keyword Research Maestro completo
+  - [artifact] seo_plan.md ÔøΩ Plan SEO EstratÔøΩgico actualizado
 
 #### ?? Key Code:
 \\\	ypescript
-// app/layout.tsx ó Schema Organization + WebSite + SearchAction
+// app/layout.tsx ÔøΩ Schema Organization + WebSite + SearchAction
 const jsonLdOrganization = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -930,42 +930,42 @@ const jsonLdOrganization = {
 \\\
 
 #### ?? Brechas de Keywords Identificadas:
-1. "crear LLC desde EspaÒa" ó Nadie la domina en espaÒol
-2. "LLC vs SL EspaÒa" ó VacÌo total en el mercado
-3. "EIN sin SSN extranjero" ó Solo contenido dÈbil existe
-4. "LLC para Amazon FBA no residente" ó Sin competencia
-5. "cuenta bancaria LLC sin viajar" ó Contenido incompleto en competidores
+1. "crear LLC desde EspaÔøΩa" ÔøΩ Nadie la domina en espaÔøΩol
+2. "LLC vs SL EspaÔøΩa" ÔøΩ VacÔøΩo total en el mercado
+3. "EIN sin SSN extranjero" ÔøΩ Solo contenido dÔøΩbil existe
+4. "LLC para Amazon FBA no residente" ÔøΩ Sin competencia
+5. "cuenta bancaria LLC sin viajar" ÔøΩ Contenido incompleto en competidores
 
 ---
 ### ?? Chat Session: 2026-08-11 14:05
-**Main objective:** Crear p·gina pillar /crear-llc-usa y artÌculo de blog "LLC vs SL en EspaÒa"
+**Main objective:** Crear pÔøΩgina pillar /crear-llc-usa y artÔøΩculo de blog "LLC vs SL en EspaÔøΩa"
 
 #### ?? User Request:
-> Implementar p·gina pillar /crear-llc-usa y artÌculo de blog "LLC vs SL en EspaÒa" (brecha de keyword total)
+> Implementar pÔøΩgina pillar /crear-llc-usa y artÔøΩculo de blog "LLC vs SL en EspaÔøΩa" (brecha de keyword total)
 
 #### ?? Agent Solution:
-- **Summary:** Se creÛ la p·gina pillar SEO /crear-llc-usa con HowTo Schema + FAQPage Schema, y el artÌculo de blog con slug "llc-vs-sl-espana" con Article Schema. TambiÈn se actualizÛ el sitemap para incluir la nueva p·gina con prioridad 0.95.
+- **Summary:** Se creÔøΩ la pÔøΩgina pillar SEO /crear-llc-usa con HowTo Schema + FAQPage Schema, y el artÔøΩculo de blog con slug "llc-vs-sl-espana" con Article Schema. TambiÔøΩn se actualizÔøΩ el sitemap para incluir la nueva pÔøΩgina con prioridad 0.95.
 - **Files created/modified:**
-  - pp/crear-llc-usa/page.tsx ó P·gina pillar completa (hero, estados, proceso, costes, impuestos, FAQ, CTA)
-  - lib/blog/posts.ts ó Nuevo artÌculo "LLC vs SL en EspaÒa" (15 min de lectura, 3000+ palabras)
-  - pp/sitemap.ts ó /crear-llc-usa aÒadida con prioridad 0.95
+  - pp/crear-llc-usa/page.tsx ÔøΩ PÔøΩgina pillar completa (hero, estados, proceso, costes, impuestos, FAQ, CTA)
+  - lib/blog/posts.ts ÔøΩ Nuevo artÔøΩculo "LLC vs SL en EspaÔøΩa" (15 min de lectura, 3000+ palabras)
+  - pp/sitemap.ts ÔøΩ /crear-llc-usa aÔøΩadida con prioridad 0.95
 
 #### ?? Key URLs nuevas:
-- https://openllcusa.com/crear-llc-usa (p·gina pillar)
-- https://openllcusa.com/blog/llc-vs-sl-espana (artÌculo)
+- https://openllcusa.com/crear-llc-usa (pÔøΩgina pillar)
+- https://openllcusa.com/blog/llc-vs-sl-espana (artÔøΩculo)
 
 ---
 ### ?? Chat Session: 2026-08-11 18:22
 **Main objective:** Crear landing page SEO /ein-sin-ssn (Brecha competitiva)
 
 #### ?? User Request:
-> Continuar con la creaciÛn de la p·gina /ein-sin-ssn basada en la investigaciÛn de palabras clave.
+> Continuar con la creaciÔøΩn de la pÔøΩgina /ein-sin-ssn basada en la investigaciÔøΩn de palabras clave.
 
 #### ?? Agent Solution:
-- **Summary:** Se creÛ la landing page /ein-sin-ssn diseÒada para resolver el problema del 'EIN sin SSN' para extranjeros. Se incluyÛ un esquema FAQPage para ganar Featured Snippets y se optimizÛ para las palabras clave "EIN sin SSN extranjero" y "como obtener EIN sin SSN". Adem·s, se aÒadiÛ la ruta al sitemap con una prioridad alta de 0.9.
+- **Summary:** Se creÔøΩ la landing page /ein-sin-ssn diseÔøΩada para resolver el problema del 'EIN sin SSN' para extranjeros. Se incluyÔøΩ un esquema FAQPage para ganar Featured Snippets y se optimizÔøΩ para las palabras clave "EIN sin SSN extranjero" y "como obtener EIN sin SSN". AdemÔøΩs, se aÔøΩadiÔøΩ la ruta al sitemap con una prioridad alta de 0.9.
 - **Files created/modified:**
-  - pp/ein-sin-ssn/page.tsx ó Nueva landing page con Hero, proceso SS-4, mitos y Schema FAQ.
-  - pp/sitemap.ts ó Agregada la ruta /ein-sin-ssn con prioridad 0.9.
+  - pp/ein-sin-ssn/page.tsx ÔøΩ Nueva landing page con Hero, proceso SS-4, mitos y Schema FAQ.
+  - pp/sitemap.ts ÔøΩ Agregada la ruta /ein-sin-ssn con prioridad 0.9.
 
 #### ?? Key URLs nuevas:
 - https://openllcusa.com/ein-sin-ssn
@@ -978,10 +978,10 @@ const jsonLdOrganization = {
 > Ok, adelante con la landing /crear-llc-desde-espana
 
 #### ?? Agent Solution:
-- **Summary:** Se creÛ la landing page geolocalizada /crear-llc-desde-espana abordando los puntos de dolor especÌficos del mercado espaÒol (Cuota de autÛnomos, Modelo 720, LLC vs SL, IRPF). Se optimizÛ para las keywords "crear LLC desde EspaÒa" y se incluyÛ un Schema FAQPage especializado en tributaciÛn espaÒola. Se aÒadiÛ al sitemap con prioridad 0.85.
+- **Summary:** Se creÔøΩ la landing page geolocalizada /crear-llc-desde-espana abordando los puntos de dolor especÔøΩficos del mercado espaÔøΩol (Cuota de autÔøΩnomos, Modelo 720, LLC vs SL, IRPF). Se optimizÔøΩ para las keywords "crear LLC desde EspaÔøΩa" y se incluyÔøΩ un Schema FAQPage especializado en tributaciÔøΩn espaÔøΩola. Se aÔøΩadiÔøΩ al sitemap con prioridad 0.85.
 - **Files created/modified:**
-  - pp/crear-llc-desde-espana/page.tsx ó Nueva landing con Hero geolocalizado, comparativa LLC/SL, y FAQ de Hacienda.
-  - pp/sitemap.ts ó Agregada la ruta al sitemap.
+  - pp/crear-llc-desde-espana/page.tsx ÔøΩ Nueva landing con Hero geolocalizado, comparativa LLC/SL, y FAQ de Hacienda.
+  - pp/sitemap.ts ÔøΩ Agregada la ruta al sitemap.
 
 #### ?? Key URLs nuevas:
 - https://openllcusa.com/crear-llc-desde-espana
@@ -991,102 +991,102 @@ const jsonLdOrganization = {
 **Main objective:** Corregir tiempos de respuesta del EIN en la IA (Zara)
 
 #### ?? User Request:
-> Zara sigue insistiendo "entre 1 y 5 dÌas h·biles"
+> Zara sigue insistiendo "entre 1 y 5 dÔøΩas hÔøΩbiles"
 
 #### ?? Agent Solution:
-- **Summary:** Debido a problemas de OOM al intentar re-ingestar toda la base de conocimientos con ingest-knowledge.ts, se creÛ un script JS directo (ix-ein-time.mjs) que actualizÛ los campos de texto directamente en la tabla knowledge_base de Supabase, reemplazando "1 a 5 dÌas" por "2 a 4 semanas" sin tener que recalcular vectores. Se actualizaron 4 fragmentos con Èxito.
+- **Summary:** Debido a problemas de OOM al intentar re-ingestar toda la base de conocimientos con ingest-knowledge.ts, se creÔøΩ un script JS directo (ix-ein-time.mjs) que actualizÔøΩ los campos de texto directamente en la tabla knowledge_base de Supabase, reemplazando "1 a 5 dÔøΩas" por "2 a 4 semanas" sin tener que recalcular vectores. Se actualizaron 4 fragmentos con ÔøΩxito.
 - **Files created/modified:**
   - scripts/fix-ein-time.mjs (nuevo script de rescate)
 
 ---
 ### ?? Chat Session: 2026-08-11 19:27
-**Main objective:** Crear landing page SEO para /llc-wyoming (B˙squeda transaccional estatal)
+**Main objective:** Crear landing page SEO para /llc-wyoming (BÔøΩsqueda transaccional estatal)
 
 #### ?? User Request:
-> Vemos ahora con la landing /llc-wyoming. øvamos a hacer una landing para cada estado?
+> Vemos ahora con la landing /llc-wyoming. ÔøΩvamos a hacer una landing para cada estado?
 
 #### ?? Agent Solution:
-- **Summary:** Se creÛ la landing especÌfica de Wyoming (/llc-wyoming), posicion·ndola como la opciÛn #1 para no residentes por su privacidad y costo de . Incluye una comparativa visual contra Delaware y New Mexico, y un Schema JSON-LD de FAQPage especÌfico de la tributaciÛn del estado.
+- **Summary:** Se creÔøΩ la landing especÔøΩfica de Wyoming (/llc-wyoming), posicionÔøΩndola como la opciÔøΩn #1 para no residentes por su privacidad y costo de . Incluye una comparativa visual contra Delaware y New Mexico, y un Schema JSON-LD de FAQPage especÔøΩfico de la tributaciÔøΩn del estado.
 - **Files created/modified:**
-  - pp/llc-wyoming/page.tsx ó Nueva landing SEO de estado (esmeralda/naturaleza)
-  - pp/sitemap.ts ó Agregada la ruta.
+  - pp/llc-wyoming/page.tsx ÔøΩ Nueva landing SEO de estado (esmeralda/naturaleza)
+  - pp/sitemap.ts ÔøΩ Agregada la ruta.
 
 #### ?? Key URLs nuevas:
 - https://openllcusa.com/llc-wyoming
 
 ---
 ### ?? Chat Session: 2026-08-11 19:33
-**Main objective:** Crear landing page SEO para /llc-delaware (B˙squeda transaccional estatal corporativa)
+**Main objective:** Crear landing page SEO para /llc-delaware (BÔøΩsqueda transaccional estatal corporativa)
 
 #### ?? User Request:
 > Adelante con la landing de Delaware!!
 
 #### ?? Agent Solution:
-- **Summary:** Se construyÛ la landing especÌfica de Delaware (/llc-delaware), posicion·ndola para Startups, Venture Capital e inversores institucionales, con una paleta de colores azul corporativa/premium. Se incluyÛ un bloque de honestidad sobre el coste del Franchise Tax () y por quÈ los e-commerces deberÌan evitarlo. Se incluyÛ el Schema JSON-LD y se aÒadiÛ al sitemap con prioridad 0.85.
+- **Summary:** Se construyÔøΩ la landing especÔøΩfica de Delaware (/llc-delaware), posicionÔøΩndola para Startups, Venture Capital e inversores institucionales, con una paleta de colores azul corporativa/premium. Se incluyÔøΩ un bloque de honestidad sobre el coste del Franchise Tax () y por quÔøΩ los e-commerces deberÔøΩan evitarlo. Se incluyÔøΩ el Schema JSON-LD y se aÔøΩadiÔøΩ al sitemap con prioridad 0.85.
 - **Files created/modified:**
-  - pp/llc-delaware/page.tsx ó Nueva landing SEO de Delaware.
-  - pp/sitemap.ts ó Agregada la ruta.
+  - pp/llc-delaware/page.tsx ÔøΩ Nueva landing SEO de Delaware.
+  - pp/sitemap.ts ÔøΩ Agregada la ruta.
 
 #### ?? Key URLs nuevas:
 - https://openllcusa.com/llc-delaware
 
 ---
 ### ?? Chat Session: 2026-08-11 19:40
-**Main objective:** Crear landing page SEO para /llc-new-mexico (B˙squeda transaccional estatal)
+**Main objective:** Crear landing page SEO para /llc-new-mexico (BÔøΩsqueda transaccional estatal)
 
 #### ?? User Request:
-> Adelante con la landing de New Mexico. Dime quÈ es mejor de cara al SEO, "New Mexico" o "Nuevo MÈxico". Dime tambiÈn si es recomendable hacer una landing dedicada a Florida.
+> Adelante con la landing de New Mexico. Dime quÔøΩ es mejor de cara al SEO, "New Mexico" o "Nuevo MÔøΩxico". Dime tambiÔøΩn si es recomendable hacer una landing dedicada a Florida.
 
 #### ?? Agent Solution:
-- **Summary:** Se explicÛ la estrategia SEO mixta (URL en inglÈs, tÌtulo biling¸e) y se validÛ la creaciÛn futura de Florida. Se construyÛ la landing de New Mexico (/llc-new-mexico) orientada al costo cero y anonimato, con un diseÒo c·lido (terracota) y una comparativa directa con Wyoming. Se aÒadiÛ al sitemap.
+- **Summary:** Se explicÔøΩ la estrategia SEO mixta (URL en inglÔøΩs, tÔøΩtulo bilingÔøΩe) y se validÔøΩ la creaciÔøΩn futura de Florida. Se construyÔøΩ la landing de New Mexico (/llc-new-mexico) orientada al costo cero y anonimato, con un diseÔøΩo cÔøΩlido (terracota) y una comparativa directa con Wyoming. Se aÔøΩadiÔøΩ al sitemap.
 - **Files created/modified:**
-  - pp/llc-new-mexico/page.tsx ó Nueva landing SEO de New Mexico.
-  - pp/sitemap.ts ó Agregada la ruta.
+  - pp/llc-new-mexico/page.tsx ÔøΩ Nueva landing SEO de New Mexico.
+  - pp/sitemap.ts ÔøΩ Agregada la ruta.
 
 #### ?? Key URLs nuevas:
 - https://openllcusa.com/llc-new-mexico
 
 ---
 ### ?? Chat Session: 2026-08-11 19:43
-**Main objective:** Crear landing page SEO para /llc-florida (B˙squeda transaccional estatal)
+**Main objective:** Crear landing page SEO para /llc-florida (BÔøΩsqueda transaccional estatal)
 
 #### ?? User Request:
-> SÕ!!! Adelante con landing de Florida ??
+> SÔøΩ!!! Adelante con landing de Florida ??
 
 #### ?? Agent Solution:
-- **Summary:** Se construyÛ la landing especÌfica de Florida (/llc-florida), muy orientada al mercado hispanohablante/LATAM, Real Estate e importadores. Se usÛ un diseÒo costero vibrante (Cyan/Naranja). Incluye un aviso transparente sobre el registro p˙blico de Sunbiz (falta de privacidad) y la tasa anual de .75 para curarnos en salud. Se aÒadiÛ al sitemap.
+- **Summary:** Se construyÔøΩ la landing especÔøΩfica de Florida (/llc-florida), muy orientada al mercado hispanohablante/LATAM, Real Estate e importadores. Se usÔøΩ un diseÔøΩo costero vibrante (Cyan/Naranja). Incluye un aviso transparente sobre el registro pÔøΩblico de Sunbiz (falta de privacidad) y la tasa anual de .75 para curarnos en salud. Se aÔøΩadiÔøΩ al sitemap.
 - **Files created/modified:**
-  - pp/llc-florida/page.tsx ó Nueva landing SEO de Florida.
-  - pp/sitemap.ts ó Agregada la ruta.
+  - pp/llc-florida/page.tsx ÔøΩ Nueva landing SEO de Florida.
+  - pp/sitemap.ts ÔøΩ Agregada la ruta.
 
 #### ?? Key URLs nuevas:
 - https://openllcusa.com/llc-florida
 
 ---
 ### ?? Chat Session: 2026-08-11 20:06
-**Main objective:** Crear landing page pilar para /llc-para-no-residentes (B˙squeda global internacional)
+**Main objective:** Crear landing page pilar para /llc-para-no-residentes (BÔøΩsqueda global internacional)
 
 #### ?? User Request:
 > Vamos ahora con la landing /llc-para-no-residentes
 
 #### ?? Agent Solution:
-- **Summary:** Se creÛ la landing estratÈgica para "No Residentes" (/llc-para-no-residentes). Se utilizÛ un diseÒo Fintech (Õndigo/P˙rpura profundo) orientado a NÛmadas Digitales. El contenido desmitifica los impuestos (0% US Tax) explicando el concepto de "Disregarded Entity" y la falta de Presencia FÌsica (ETBUS). Se corrigieron preventivamente los problemas de mimetizaciÛn de color en los H2. Se asignÛ prioridad 0.95 en el sitemap por ser una p·gina pilar de alto tr·fico.
+- **Summary:** Se creÔøΩ la landing estratÔøΩgica para "No Residentes" (/llc-para-no-residentes). Se utilizÔøΩ un diseÔøΩo Fintech (ÔøΩndigo/PÔøΩrpura profundo) orientado a NÔøΩmadas Digitales. El contenido desmitifica los impuestos (0% US Tax) explicando el concepto de "Disregarded Entity" y la falta de Presencia FÔøΩsica (ETBUS). Se corrigieron preventivamente los problemas de mimetizaciÔøΩn de color en los H2. Se asignÔøΩ prioridad 0.95 en el sitemap por ser una pÔøΩgina pilar de alto trÔøΩfico.
 - **Files created/modified:**
-  - pp/llc-para-no-residentes/page.tsx ó Nueva landing SEO internacional.
-  - pp/sitemap.ts ó Agregada la ruta.
+  - pp/llc-para-no-residentes/page.tsx ÔøΩ Nueva landing SEO internacional.
+  - pp/sitemap.ts ÔøΩ Agregada la ruta.
 
 #### ?? Key URLs nuevas:
 - https://openllcusa.com/llc-para-no-residentes
 
 ---
-### √∞≈∏‚Äú‚Ä¶ Chat Session: 2026-08-11 21:07
-**Main objective:** Resolver cuelgue por OOM de Next.js y verificaci√É¬≥n del build
+### üìÖ Chat Session: 2026-08-11 21:07
+**Main objective:** Resolver cuelgue por OOM de Next.js y verificaci√≥n del build
 
-#### √∞≈∏‚Äò¬§ User Request:
-> Ha colapsado todo. Mi pc, la plataforma.... Creo que ha sido por un problema de memoria al ejecutar npm run build. Se ha perdido la conversaci√É¬≥n.
+#### üë§ User Request:
+> Ha colapsado todo. Mi pc, la plataforma.... Creo que ha sido por un problema de memoria al ejecutar npm run build. Se ha perdido la conversaci√≥n.
 
-#### √∞≈∏¬§‚Äì Agent Solution:
-- **Summary:** Se verific√É¬≥ que todo el trabajo previo de las 8 landings SEO estaba intacto en el c√É¬≥digo. Para evitar nuevos cuelgues del PC, se redujo el l√É¬≠mite de memoria del comando build de 8 GB a 4 GB. Se verific√É¬≥ que el build est√É¬°tico se gener√É¬≥ correctamente al 100%. Se agend√É¬≥ para la pr√É¬≥xima sesi√É¬≥n: /llc-para-trading-con-cuentas-de-fondeo.
+#### ü§ñ Agent Solution:
+- **Summary:** Se verific√≥ que todo el trabajo previo de las 8 landings SEO estaba intacto en el c√≥digo. Para evitar nuevos cuelgues del PC, se redujo el l√≠mite de memoria del comando build de 8 GB a 4 GB. Se verific√≥ que el build est√°tico se gener√≥ correctamente al 100%. Se agend√≥ para la pr√≥xima sesi√≥n: /llc-para-trading-con-cuentas-de-fondeo.
 - **Files created/modified:**
   - `package.json`
 
@@ -1121,13 +1121,13 @@ const jsonLdOrganization = {
 
 ---
 ### ?? Chat Session: 13-08-2026
-**Main objective:** Implementar la Fase 3 de SEO TÈcnico, aÒadiendo metadata y JSON-LD Schema.
+**Main objective:** Implementar la Fase 3 de SEO TÔøΩcnico, aÔøΩadiendo metadata y JSON-LD Schema.
 
 #### ?? User Request:
-> Revisa el documento seo_plan para seguir con el plan de implementaciÛn del SEO.
+> Revisa el documento seo_plan para seguir con el plan de implementaciÔøΩn del SEO.
 
 #### ?? Agent Solution:
-- **Summary:** Se verificÛ que las p·ginas pillar ya existÌan. Se procediÛ a aÒadir/corregir metadatos y enlaces canÛnicos en las rutas principales. Se inyectÛ JSON-LD Schema (Organization, WebSite, Service, Offer, Product, Article, HowTo) y se resolviÛ un fallo de Out of Memory eliminando la configuraciÛn de eslint de next.config.ts y aumentando la RAM de build en package.json.
+- **Summary:** Se verificÔøΩ que las pÔøΩginas pillar ya existÔøΩan. Se procediÔøΩ a aÔøΩadir/corregir metadatos y enlaces canÔøΩnicos en las rutas principales. Se inyectÔøΩ JSON-LD Schema (Organization, WebSite, Service, Offer, Product, Article, HowTo) y se resolviÔøΩ un fallo de Out of Memory eliminando la configuraciÔøΩn de eslint de next.config.ts y aumentando la RAM de build en package.json.
 - **Files created/modified:**
   - \pp/page.tsx\
   - \pp/calculadora-fiscal/page.tsx\
@@ -1164,10 +1164,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 **Main objective:** Implementar la Fase 4 de SEO de Contenidos, inyectando posts en el blog y optimizando Precios y FAQs.
 
 #### ?? User Request:
-> Respondiendo a Open Questions: Puedes elaborar los 3 nuevos artÌculos del blog y, a continuaciÛn, atacar las mejoras de conversiÛn en la p·gina de Precios y FAQs. PROCEDE con la Fase 4.
+> Respondiendo a Open Questions: Puedes elaborar los 3 nuevos artÔøΩculos del blog y, a continuaciÔøΩn, atacar las mejoras de conversiÔøΩn en la pÔøΩgina de Precios y FAQs. PROCEDE con la Fase 4.
 
 #### ?? Agent Solution:
-- **Summary:** Se redactaron e inyectaron en el sistema 3 artÌculos extensos y sem·nticos ('Formulario 5472', 'Wyoming vs Delaware', y 'Cuenta bancaria sin viajar'). Adem·s, se aÒadiÛ una tabla comparativa de estados en la p·gina de Precios y se aÒadieron 10 preguntas sem·nticas nuevas en la p·gina de FAQs. Se completÛ el build exitosamente validando todas las nuevas rutas est·ticas.
+- **Summary:** Se redactaron e inyectaron en el sistema 3 artÔøΩculos extensos y semÔøΩnticos ('Formulario 5472', 'Wyoming vs Delaware', y 'Cuenta bancaria sin viajar'). AdemÔøΩs, se aÔøΩadiÔøΩ una tabla comparativa de estados en la pÔøΩgina de Precios y se aÔøΩadieron 10 preguntas semÔøΩnticas nuevas en la pÔøΩgina de FAQs. Se completÔøΩ el build exitosamente validando todas las nuevas rutas estÔøΩticas.
 - **Files created/modified:**
   - \lib/blog/posts.ts\
   - \pp/precios/page.tsx\
@@ -1178,10 +1178,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 // lib/blog/posts.ts
   {
     slug: 'formulario-5472-llc',
-    title: 'Formulario 5472 y 1120: QuÈ es y cu·ndo lo necesita tu LLC en 2026',
-    excerpt: 'Si eres extranjero y tienes una LLC en EE.UU., el IRS exige que presentes el Formulario 5472 y 1120 cada aÒo...',
+    title: 'Formulario 5472 y 1120: QuÔøΩ es y cuÔøΩndo lo necesita tu LLC en 2026',
+    excerpt: 'Si eres extranjero y tienes una LLC en EE.UU., el IRS exige que presentes el Formulario 5472 y 1120 cada aÔøΩo...',
     schema: { '@type': 'Article' },
-    content: \## IntroducciÛn... \
+    content: \## IntroducciÔøΩn... \
   }
 \\\
 
@@ -1475,7 +1475,8 @@ El servicio de Agente Registrado se presta a trav√©s de proveedores externos esp
 #### ü§ñ Agent Solution:
 - **Summary:** Se ha procedido a borrar completamente la carpeta .next/ para forzar un reinicio limpio del proyecto sin cach√©, siguiendo la directriz establecida en AGENTS.md para reseteos comunes.
 - **Files created/modified:**
-  - m -rf .next ejecutado.
+  - 
+m -rf .next ejecutado.
 
 ---
 ### üìÖ Chat Session: 2026-09-02 23:26:27
@@ -1506,3 +1507,325 @@ El servicio de Agente Registrado se presta a trav√©s de proveedores externos esp
 
 - **Minor Update:** A√±adido selector de prefijo de pa√≠s (con banderas) en el campo del tel√©fono y modificado el fondo a g-blue-50 para un contraste adecuado.
 - **Minor Update:** Reemplazado el selector nativo de prefijos telef√≥nicos por un custom dropdown usando el componente <Flag> (react-country-flag en SVG) para solventar los problemas de renderizado de emojis de banderas en Windows.
+
+---
+### üìÖ Chat Session: 2026-09-17 15:26:00
+**Main objective:** Resolver error 500 en producci√≥n, arreglar botones de Clerk invisibles y aclarar dudas de indexaci√≥n SEO.
+
+#### üë§ User Request:
+> El usuario report√≥ que la web daba error 500. Al arreglarse, los botones del men√∫ de Clerk desaparecieron. Finalmente consult√≥ sobre p√°ginas no indexadas en Google Search Console y webhooks.
+
+#### ü§ñ Agent Solution:
+- **Summary:** Se corrigi√≥ el error 500 asegurando que la clave p√∫blica de Clerk estuviera disponible en el runtime. Se diagnostic√≥ que la invisibilidad de los botones de auth se deb√≠a a la falta de registros CNAME en Cloudflare para el entorno live de Clerk. Se valid√≥ el correcto funcionamiento de los robots.txt y metaetiquetas SEO, aclarando que los datos de Search Console no son en tiempo real.
+- **Files created/modified:**
+  - `Dockerfile`
+  - `app/layout.tsx`
+
+#### üíª Key Code:
+```tsx
+<ClerkProvider 
+  publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_live_Y2xlcmsub3BlbmxsY3VzYS5jb20k'}
+  localization={esES}
+  signInUrl="/sign-in"
+  signUpUrl="/sign-up"
+>
+```
+
+---
+### üìÖ Chat Session: 2026-09-19 00:08
+**Main objective:** Sustituir el n√∫mero placeholder de WhatsApp del footer por un n√∫mero provisional real.
+
+#### üë§ User Request:
+> El n√∫mero de WhatsApp a√∫n no est√° definido: poner el provisional +34 699087039. Antes, auditar d√≥nde est√°n los CTAs rotos descritos en el handover. Registrar todos los cambios en chat_history.md.
+
+#### ü§ñ Agent Solution:
+- **Summary:** Auditor√≠a de solo lectura de los "CTAs rotos" descritos en PROJECT_HANDOVER.md (26-jul-2026): la mayor√≠a ya no existen en el c√≥digo actual. El √∫nico enlace realmente roto en producci√≥n era el WhatsApp del footer, que conten√≠a el literal `XXXXXXXXXXX`. Se sustituye por `https://wa.me/34699087039` (formato wa.me: sin "+", sin espacios, con prefijo de pa√≠s) y se a√±ade un comentario indicando que es provisional.
+- **Files created/modified:**
+  - `components/layout/Footer.tsx` (l√≠nea 66)
+- **Verificaci√≥n pendiente (manual):** en el footer, columna "Contacto", el enlace WhatsApp debe abrir `wa.me/34699087039`. No se levant√≥ `npm run dev` porque no estaba autorizado.
+
+#### üíª Key Code:
+```tsx
+{/* N√∫mero provisional: pendiente de definir el definitivo */}
+<a href="https://wa.me/34699087039" target="_blank" className="hover:text-white transition-colors">
+  WhatsApp
+</a>
+```
+
+- **Minor Update (auditor√≠a, sin cambios de c√≥digo):** PROJECT_HANDOVER.md est√° desactualizado. Verificado con grep sobre el repo: `#asesoria` ya no existe (0 ocurrencias); s√≥lo queda una secci√≥n de precios (`app/page.tsx:1064-1171`) con CTAs correctos a `/paquetes/{starter|professional|business}/onboarding` (l√≠neas 1091/1114/1137); los beneficios duplicados se reducen a un comentario hu√©rfano (301-303); "Carla" eliminada (sustituida por `components/chat/ChatWidget.tsx`); precios unificados (homepage $349/$499/$849 = `/precios` l√≠nea 234/290/330 = su JSON-LD en 69-71); `app/page.tsx` ya NO es `'use client'`, exporta Metadata y usa Server Components (1179 l√≠neas, antes 1536).
+- **Pendientes detectados en la auditor√≠a (sin tocar):**
+  1. `app/contacto/page.tsx:284` ‚Üí `href="#top"` sin ning√∫n `id="top"` en la p√°gina (ancla muerta).
+  2. `components/FloatingButtons.tsx` ‚Üí c√≥digo muerto: no se importa en ning√∫n layout (`app/layout.tsx` renderiza Header, Footer, ChatWidget y CookiesBanner). Su bot√≥n con icono de WhatsApp apunta a `/contacto` y su bot√≥n "CREAR MI LLC" a `#comenzar`.
+  3. `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx:405, 412, 419` ‚Üí `TU_BILLETERA_USDT_AQUI` / `TU_BILLETERA_USDC_AQUI` / `TU_BILLETERA_BTC_AQUI`.
+  4. `components/shared/CookiesBanner.tsx:43` ‚Üí `GA_ID = 'G-XXXXXXXXXX'` (placeholder), y el banner s√≠ se monta en `app/layout.tsx:138`.
+---
+### üìÖ Chat Session: 2026-09-19 00:22
+**Main objective:** Eliminar el componente hu√©rfano `components/FloatingButtons.tsx`.
+
+#### üë§ User Request:
+> Confirmado que el bot√≥n flotante con icono de WhatsApp no aparece en la web. Decisi√≥n: dejarlo hu√©rfano (no montarlo en el layout) y borrar el componente.
+
+#### ü§ñ Agent Solution:
+- **Summary:** Se verific√≥ con grep en todo el repo que `components/FloatingButtons.tsx` no se importaba en ning√∫n sitio: sus √∫nicas referencias eran su propia definici√≥n, `chat_history.md`, `PROJECT_HANDOVER.md` y `Temp/full_history.txt`; `app/layout.tsx` renderiza √∫nicamente Header, Footer, ChatWidget y CookiesBanner. Se elimina el fichero por ser c√≥digo muerto. El bot√≥n flotante verde que s√≠ aparece en la web es el FAB de `components/chat/ChatWidget.tsx`, que NO se ve afectado.
+- **Files created/modified:**
+  - `components/FloatingButtons.tsx` (ELIMINADO)
+
+#### üíª Key Code:
+```bash
+rm components/FloatingButtons.tsx
+```
+
+- **Nota:** Borrado sin `git rm`: la eliminaci√≥n queda sin commitear para que el usuario la revise con `git status`.
+- **Verificaci√≥n pendiente (manual):** el layout no debe cambiar visualmente (el componente no se renderizaba). Opcional: `npx tsc --noEmit` o `npm run build` para descartar imports residuales.
+---
+### üìÖ Chat Session: 2026-09-19 00:35
+**Main objective:** Arreglar el ancla muerta `#top` de /contacto y hacer que el CTA "Agendar mi consulta gratuita" lleve a la ventana de Calendly, mostr√°ndola completa.
+
+#### üë§ User Request:
+> Al clicar en el bot√≥n "Agendar mi consulta gratuita" debemos ir justo a la ventana del widget de Calendly. Quiero que la ventana de Calendly se vea completa.
+
+#### ü§ñ Agent Solution:
+- **Summary:** El CTA apuntaba a `#top` (ancla inexistente en la p√°gina) y su `onClick` hac√≠a `window.scrollTo(0)`, subiendo al hero. Ahora apunta a `#agendar`, un id nuevo en el contenedor del widget, y su `onClick` calcula la posici√≥n real del widget descontando el alto del header sticky (`.site-header`, medido en runtime con `offsetHeight`) m√°s 12px, de modo que la ventana queda entera por debajo del header. La altura del iframe pasa de 700px fijos a `clamp(650px, calc(100vh - 130px), 1000px)` y el contenedor usa la misma altura en `minHeight`, para que el calendario llene el viewport disponible sin cortarse. Se a√±ade tambi√©n `scroll-mt-24` (96px) como respaldo para el caso sin JS (p. ej. abrir /contacto#agendar en pesta√±a nueva).
+- **Files created/modified:**
+  - `app/contacto/page.tsx` (4 puntos: constante CALENDLY_HEIGHT, handler handleAgendarClick, id="agendar" + minHeight, href del CTA)
+
+#### üíª Key Code:
+```tsx
+const CALENDLY_HEIGHT = 'clamp(650px, calc(100vh - 130px), 1000px)'
+...
+const handleAgendarClick = (e: MouseEvent<HTMLAnchorElement>) => {
+  const target = document.getElementById('agendar')
+  if (!target) return
+  e.preventDefault()
+  const header = document.querySelector('.site-header') as HTMLElement | null
+  const offset = (header?.offsetHeight ?? 0) + 12
+  const top = target.getBoundingClientRect().top + window.scrollY - offset
+  window.scrollTo({ top, behavior: 'smooth' })
+}
+```
+
+- **Validaci√≥n realizada:** `transpileModule` de TypeScript sobre el fichero ‚Üí sin errores de sintaxis. CRLF preservado (313 l√≠neas CRLF, 0 LF sueltos). `git diff` limpio, sin cambios colaterales.
+- **Verificaci√≥n pendiente (manual):** en /contacto, pulsar "Agendar mi consulta gratuita": debe desplazarse hasta el calendario con la ventana completa visible bajo el header, sin corte superior ni inferior.
+- **Pendiente relacionado (sin tocar):** `app/agendar/page.tsx:46,49` usa el mismo patr√≥n de altura fija de 700px y podr√≠a beneficiarse del mismo cambio.
+---
+### üìÖ Chat Session: 2026-09-19 00:52
+**Main objective:** Igualar el patr√≥n de altura del widget de Calendly en `app/agendar/page.tsx` (700px fijos) al de `/contacto`.
+
+#### üë§ User Request:
+> Verificado visualmente con `npm run dev`: en PC el scroll al calendario queda perfecto; en m√≥vil hace falta un peque√±o scroll extra. Igualar el patr√≥n de 700px de `app/agendar/page.tsx` (l√≠neas 46 y 49).
+
+#### ü§ñ Agent Solution:
+- **Summary:** Se replic√≥ en `app/agendar/page.tsx` el mismo patr√≥n que en `/contacto`: constante `CALENDLY_HEIGHT = 'clamp(650px, calc(100vh - 130px), 1000px)'` aplicada tanto al `minHeight` del contenedor como al `style.height` del `InlineWidget`, sustituyendo los 700px fijos. Esta p√°gina no tiene CTA hacia el widget (el embed va directamente bajo el hero), as√≠ que no se a√±adi√≥ id de ancla ni handler de scroll. Se devolvi√≥ el fichero a finales de l√≠nea LF (es su estilo original; `/contacto` usa CRLF).
+- **Files created/modified:**
+  - `app/agendar/page.tsx` (constante nueva + 2 sustituciones en l√≠neas 52 y 55)
+
+#### üíª Key Code:
+```tsx
+const CALENDLY_HEIGHT = 'clamp(650px, calc(100vh - 130px), 1000px)'
+...
+<div style={{ minHeight: CALENDLY_HEIGHT }}>
+  <InlineWidget
+    url="https://calendly.com/openllcusa/30min"
+    styles={{ height: CALENDLY_HEIGHT }}
+  />
+</div>
+```
+
+- **Validaci√≥n realizada:** sintaxis OK con `transpileModule` de TypeScript; `git diff` limpio (10 l√≠neas, sin ruido de finales de l√≠nea).
+- **Verificaci√≥n pendiente (manual):** /agendar en PC y m√≥vil; el calendario debe ocupar el alto disponible sin cortes.
+- **Pendiente detectado en m√≥vil (sin tocar):** en /contacto, en m√≥vil hace falta un peque√±o scroll extra al llegar al widget. Causas probables: el suelo de 650px es alto para un viewport m√≥vil y `100vh` incluye la barra de direcciones (sobreestima el alto disponible). Propuesta pendiente de autorizaci√≥n: bajar el suelo a ~560px y usar `100dvh` con fallback a `vh` mediante variable CSS en `globals.css`.
+---
+### üìÖ Chat Session: 2026-09-19 01:10
+**Main objective:** Corregir el scroll extra que ped√≠a el widget de Calendly en m√≥vil, unificando la altura en una variable CSS con soporte de `100dvh`.
+
+#### üë§ User Request:
+> Aplicar el arreglo propuesto (bajar el suelo de 650px a ~560px y usar `100dvh` con fallback a `vh` mediante variable CSS) en las dos p√°ginas.
+
+#### ü§ñ Agent Solution:
+- **Summary:** Se a√±adi√≥ al final de `app/globals.css` un bloque con la variable `--calendly-h = clamp(560px, calc(100vh - 130px), 1000px)` y, dentro de `@supports (height: 100dvh)`, la misma variable recalculada con `100dvh` (que en m√≥vil mide el viewport visible y no incluye la zona de la barra de direcciones, evitando el scroll extra). El suelo baja de 650px a 560px. Ambas p√°ginas dejan de duplicar la f√≥rmula: `const CALENDLY_HEIGHT = 'var(--calendly-h)'`, usado en el `minHeight` del contenedor y en el `height` del `InlineWidget`.
+- **Files created/modified:**
+  - `app/globals.css` (bloque nuevo al final, l√≠neas 1562-1577)
+  - `app/contacto/page.tsx` (la constante pasa a la variable CSS)
+  - `app/agendar/page.tsx` (la constante pasa a la variable CSS)
+
+#### üíª Key Code:
+```css
+:root {
+  --calendly-h: clamp(560px, calc(100vh - 130px), 1000px);
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --calendly-h: clamp(560px, calc(100dvh - 130px), 1000px);
+  }
+}
+```
+```tsx
+const CALENDLY_HEIGHT = 'var(--calendly-h)'
+```
+
+- **Validaci√≥n realizada:** sintaxis OK en los dos `.tsx` (`transpileModule` de TypeScript); llaves balanceadas en `globals.css` (288/288); `git diff` limpio (16 + 30 + 10 l√≠neas, sin ruido de finales de l√≠nea); `app/globals.css` se importa en `app/layout.tsx:1`, as√≠ que la variable est√° disponible globalmente.
+- **Verificaci√≥n pendiente (manual):** con el dev server en marcha basta recargar. En m√≥vil, al pulsar "Agendar mi consulta gratuita" en /contacto el calendario debe quedar completo sin scroll extra; /agendar debe ocupar el alto disponible.
+- **Nota:** si el m√≥vil sigue pidiendo scroll tras esto, el siguiente ajuste es bajar el suelo de 560px a ~520px (una l√≠nea en `globals.css`).
+---
+### üìÖ Chat Session: 2026-09-19 01:30
+**Main objective:** Apuntar el CTA "Iniciar mi LLC ahora" de la homepage directamente a `#precios` (antes daba un salto intermedio a `#comenzar`).
+
+#### üë§ User Request:
+> Abordar la modificaci√≥n del bot√≥n "Iniciar mi LLC ahora" llev√°ndolo a `#precios`.
+
+#### ü§ñ Agent Solution:
+- **Summary:** El CTA situado bajo la l√≠nea de tiempo de la secci√≥n de proceso (`ProcessSection`, `app/page.tsx:607`) apuntaba a `#comenzar`, el id de la secci√≥n del CTA final, obligando a un segundo salto (#comenzar ‚Üí #precios ‚Üí /paquetes/{plan}/onboarding). Ahora apunta directo a `#precios`, que es donde est√°n los botones de compra. Cambio de una l√≠nea, sin tocar el texto del bot√≥n ni su estilo.
+- **Files created/modified:**
+  - `app/page.tsx` (l√≠nea 607: `href="#comenzar"` ‚Üí `href="#precios"`)
+
+#### üíª Key Code:
+```tsx
+<TrackedLink
+  href="#precios"
+  className="inline-flex items-center gap-2 font-bold rounded-full"
+  ...
+>
+  Iniciar mi LLC ahora <ArrowRight size={16} />
+</TrackedLink>
+```
+
+- **Validaci√≥n realizada:** sintaxis OK (`transpileModule`); CRLF preservado (1179/1179); `git diff` = 1 l√≠nea modificada.
+- **Efecto colateral:** el id `id="comenzar"` de `app/page.tsx:930` se queda sin ning√∫n enlace que lo use (era su √∫nico destino). Es inocuo, pero puede limpiarse o reaprovecharse.
+- **Verificaci√≥n pendiente (manual):** en la homepage, pulsar "Iniciar mi LLC ahora" debe llevar directo a la secci√≥n de precios.
+---
+### üìÖ Chat Session: 2026-09-19 01:40
+**Main objective:** Eliminar el id="comenzar" de la homepage, que se qued√≥ sin enlaces tras redirigir su √∫nico CTA a #precios.
+
+#### üë§ User Request:
+> Limpiar el id="comenzar".
+
+#### ü§ñ Agent Solution:
+- **Summary:** Se quit√≥ el atributo `id="comenzar"` de la secci√≥n del CTA final (`CTAFinalSection`, `app/page.tsx:930`). Su √∫nico destino era el CTA "Iniciar mi LLC ahora" de ProcessSection, que ahora apunta a `#precios`. Antes de borrarlo se verific√≥ que no queda ninguna referencia viva en el c√≥digo (app, components, lib). Fuera del c√≥digo s√≠ aparecen referencias, ninguna activa en el sitio: `knowledge/web/inicio.md:172` (copia scrapeada del HTML antiguo de la homepage, con el enlace markdown `[Iniciar mi LLC ahora](#comenzar)`), `scripts/refactor-homepage.mjs:57-58` (script de refactor puntual, ya aplicado) y `PROJECT_HANDOVER.md:201` (documentaci√≥n).
+- **Files created/modified:**
+  - `app/page.tsx` (eliminada la l√≠nea 930: `id="comenzar"`)
+
+#### üíª Key Code:
+```tsx
+// antes
+<section
+  id="comenzar"
+  style={{
+
+// despu√©s
+<section
+  style={{
+```
+
+- **Validaci√≥n realizada:** sintaxis OK (`transpileModule`); CRLF preservado (1178/1178); `git diff` limpio (2 hunks: el href de la sesi√≥n anterior y esta eliminaci√≥n).
+- **Verificaci√≥n pendiente (manual):** la secci√≥n del CTA final de la homepage debe verse igual (el id no ten√≠a estilos asociados).
+---
+### üìÖ Chat Session: 2026-09-19 15:09
+**Main objective:** Inventario de desactualizaci√≥n de `knowledge/` y ejecuci√≥n de los arreglos derivados (email del footer, plazos EIN, enlaces con ancla del chat, p√°gina /guias/us, servicio BOI).
+
+#### üë§ User Request:
+> (1) Registrar el inventario en chat_history.md y prepararlo como documento. (2) Actualizar PROJECT_HANDOVER.md. (3) Cambiar el email del footer a info@openllcusa.com. (4) Aclarar en q98 y q100 que el EIN puede tardar m√°s (72h = registro, EIN = semanas). (5) Informe en tabla con los tiempos oficiales de registro de LLC en Wyoming, Nuevo M√©xico, Delaware y Florida. (6) Crear el servicio boi-report. (7) Crear la p√°gina /guias/us con SEO y CRO. (8) Arreglar los enlaces con ancla que no navegan desde el chat. (9) Recordarle los puntos pendientes al terminar.
+
+#### ü§ñ Agent Solution:
+- **Inventario de `knowledge/` (309 ficheros: 301 en `custom/`, 8 scrapes en `web/`), verificado con HTTP real contra openllcusa.com:**
+  - El script `scripts/ingest-knowledge.ts` recorre `knowledge/` recursivamente y sube TODOS los `.md`, incluidos los scrapes de `web/`. Zara NO lee los `.md` en caliente (consulta la tabla `knowledge_base` de Supabase), as√≠ que los cambios en los `.md` no tienen efecto hasta re-ingestar.
+  - **Enlaces rotos (404 verificado):** `/servicios/boi-report` (5 ficheros: faq_impuestos.md:16, q48:34, q50:21, q60:29, q91:30); `/guias/us` en el scrape inicio.md:182; `/Zara` en recursos.md:25 (la ruta viva es `/zara`, 200).
+  - **Enlaces con ancla** en los scrapes (inicio.md: #precios, #comenzar; precios.md: #formar, #mantener, #optimizar, #comparativa; contacto.md: #top) que no navegan desde el widget de chat, presente en todas las p√°ginas.
+  - **Ruido:** 17 enlaces `/_next/image?url=...` en los scrapes; `web/` duplica contenido ya presente en `custom/`.
+  - **Correcto:** precios y planes del scrape al d√≠a ($349/$499/$849; mantenimientos $49/mes y $129/mes, ambos con checkout vivo); 200 en /servicios/agente-registrado, /servicios/launch-banking, /servicios/impuestos/obtencion-ein, gu√≠as mx/co/es/ar/pe/py, /blog/llc-usa-desde-argentina, /quiz, /lead-form, /zara; `/servicios/form-5472-1120` responde 308 ‚Üí /servicios/impuestos/declaracion-anual-llc (200), as√≠ que sus 10 enlaces son v√°lidos.
+- **Cambios aplicados:**
+  - `components/layout/Footer.tsx`: email `hola@` ‚Üí `info@openllcusa.com`.
+  - `knowledge/custom/q98` y `q100`: se distingue el plazo de la LLC (24-72h en estados √°giles) del EIN del IRS (2-4 semanas sin SSN por fax).
+  - `components/chat/ChatWidget.tsx`: nueva funci√≥n `resolveChatHref()` que convierte los enlaces con ancla a rutas absolutas (`#precios` ‚Üí `/#precios`; `#formar|#mantener|#optimizar|#comparativa` ‚Üí `/precios#ancla`). Soluciona el problema sin depender de la re-ingesta.
+  - `app/guias/us/page.tsx` (NUEVA): p√°gina est√°tica de la gu√≠a de EE.UU. (elecci√≥n de estado, requisitos, comparativa de Wyoming/Nuevo M√©xico/Delaware/Florida, proceso, 5 FAQ y CTA final). Metadata completa (canonical, OG, Twitter, keywords) y JSON-LD de BreadcrumbList + FAQPage. Enlaza a las landings por estado. Los plazos oficiales por estado se integran cuando llegue el informe de Secretar√≠as de Estado.
+  - `app/sitemap.ts`: a√±adida `/guias/us`. Ojo: el sitemap NO incluye ninguna `/guias/<pais>`, solo `/guias`; es una carencia SEO pendiente.
+- **Servicio BOI ‚Äî BLOQUEADO a prop√≥sito (hallazgo legal):** NO se ha creado. La regla provisional de FinCEN del 26-mar-2025 exime a **todas las entidades creadas en EE.UU.** (las antiguas "domestic reporting companies") de presentar el BOI; solo deben presentarlo las empresas extranjeras registradas para operar en EE.UU. (finCEN.gov/boi). Vender el servicio a clientes que crean LLCs estadounidenses carece de base legal y 18 ficheros de `knowledge/` lo describen como obligatorio (algunos con la multa de $500/d√≠a), adem√°s de ofrecerlo por $99 en faq_impuestos.md con enlace a la ruta 404. Pendiente de decisi√≥n del usuario.
+- **Files created/modified:**
+  - `components/layout/Footer.tsx`
+  - `components/chat/ChatWidget.tsx`
+  - `app/guias/us/page.tsx` (nuevo)
+  - `app/sitemap.ts`
+  - `knowledge/custom/q98-faq-open-llc-usa.md`
+  - `knowledge/custom/q100-razones-llc-americana.md`
+
+#### üíª Key Code:
+```tsx
+// components/chat/ChatWidget.tsx ‚Äî los enlaces con ancla no navegan desde el widget
+const PRECIOS_ANCHORS = ['formar', 'mantener', 'optimizar', 'comparativa']
+function resolveChatHref(href: string): string {
+  if (!href.startsWith('#')) return href
+  const anchor = href.slice(1)
+  return PRECIOS_ANCHORS.includes(anchor) ? `/precios#${anchor}` : `/#${anchor}`
+}
+```
+
+- **Validaci√≥n realizada:** sintaxis OK en los cuatro `.tsx`/`.ts` tocados (`transpileModule`); CRLF preservado en Footer (95) y sitemap; `git status` limpio.
+- **Verificaci√≥n pendiente (manual):** /guias/us en el navegador (el dev server no respondi√≥ a la comprobaci√≥n autom√°tica: curl devolvi√≥ 000); nueva conversaci√≥n del chat con un enlace con ancla; footer con info@.
+- **Pendiente en esta sesi√≥n:** informe de tiempos oficiales por estado (investigaci√≥n en curso), documento de inventario, actualizaci√≥n de PROJECT_HANDOVER.md.
+---
+### üìÖ Chat Session: 2026-09-19 15:40
+**Main objective:** Cerrar la investigaci√≥n de plazos oficiales por estado e integrar todo en /guias/us y en los documentos de proyecto.
+
+#### üë§ User Request:
+> Informe en tabla con los tiempos oficiales de formaci√≥n/registro de LLC en Wyoming, Nuevo M√©xico, Delaware y Florida (fuentes fiables, pueden ser las Secretar√≠as de Estado), y actualizaci√≥n de PROJECT_HANDOVER.md.
+
+#### ü§ñ Agent Solution:
+- **Informe de plazos por estado (consulta 19-09-2026), verificado directamente en las fuentes:**
+  - **Wyoming:** tasa $100 (Filing Fee Schedule eff. 01-07-2026). Plazo: **inmediato** si se presenta online (WyoBiz, entidad activa al instante); por correo, **m√°ximo 15 d√≠as h√°biles** (FAQ oficial del SOS). El servicio expeditado ($1.400 mismo d√≠a / $700 d√≠a siguiente) **no aplica a la constituci√≥n** de la LLC.
+  - **Nuevo M√©xico:** tasa **$50** (NMSA 1978 ¬ß53-19-63(A)). El SOS **no publica plazo** ni servicio expeditado; la referencia de 1-2 d√≠as h√°biles proviene de una ponencia de su propia Divisi√≥n de Business Services y no es plazo garantizado. Solo se admite presentaci√≥n online.
+  - **Delaware:** tasa **$110** (Corporate Fee Schedule, Revised August 1, 2026). **Sin plazo publicado**: el FAQ oficial dice que "var√≠a seg√∫n el volumen". Expidetado: +$50 (24 h), +$100 (mismo d√≠a), +$500 (2 h), +$1.000 (1 h). No existe constituci√≥n online completa (solo env√≠o electr√≥nico).
+  - **Florida:** tasa **$125** = $100 (Articles of Organization) + $25 (designaci√≥n de agente registrado), Fla. Stat. ¬ß605.0213. **Sin plazo publicado**: procesa "en el orden de recepci√≥n" y publica la fecha en curso en su p√°gina Document Processing Dates. Sin expeditado publicado.
+  - Advertencias: Delaware y Florida no publican plazo num√©rico (cualquier cifra de terceros es estimaci√≥n); la web de Florida bloquea el acceso automatizado (Cloudflare 403) y sus datos operativos se leyeron de copias archivadas de las p√°ginas oficiales, con las tasas confirmadas contra el estatuto vigente; las tasas cambian (Wyoming revisa en junio, Delaware en agosto).
+- **Cambios aplicados:**
+  - `app/guias/us/page.tsx`: nueva secci√≥n "Cu√°nto tarda el registro seg√∫n el estado" con tabla de plazos, tasas y v√≠as (constante `PLAZOS`), y nota de fuentes y de vigencia de las tasas.
+  - `docs/INFORME_KNOWLEDGE.md` (NUEVO): informe completo de la auditor√≠a de `knowledge/` ‚Äî funcionamiento del RAG, enlaces 404, enlaces con ancla, ruido del scrape, contenido verificado, hallazgo legal del BOI (18 ficheros afectados) y la tabla de plazos por estado con fuentes. Decisi√≥n de ubicaci√≥n: dentro del repo (`docs/`), porque el proyecto versiona ah√≠ su documentaci√≥n t√©cnica y AGENTS.md obliga a los agentes a leer los documentos del proyecto; fuera del repo el informe quedar√≠a hu√©rfano.
+  - `PROJECT_HANDOVER.md`: **reescrito** (131 l√≠neas frente a las 278 anteriores) con leyenda ‚úÖ verificado / ‚ö†Ô∏è pendiente. Se retiran los problemas ya resueltos (homepage client-only, `#asesoria`, secciones duplicadas, precios incoherentes, canonical masivamente ausente) y se documentan los reales: gu√≠as de pa√≠s fuera del sitemap, `canonical` ausente en 6 p√°ginas p√∫blicas, `GA_ID` de relleno, dos emails, `/servicios/boi-report` 404, `#top` muerto, wallets placeholder del checkout, y limpieza de `.back*` y mojibake en `chat_history.md`. Incluye secci√≥n de m√©todos de verificaci√≥n y quirks de infraestructura.
+- **Files created/modified:**
+  - `app/guias/us/page.tsx`
+  - `docs/INFORME_KNOWLEDGE.md` (nuevo)
+  - `PROJECT_HANDOVER.md` (reescrito)
+
+#### üíª Key Code:
+```tsx
+// app/guias/us/page.tsx ‚Äî plazos oficiales por estado (extracto)
+const PLAZOS = [
+  { estado: 'Wyoming', tasa: '$100 (+2,4% si se paga con tarjeta)',
+    plazo: 'Al instante si se presenta online en WyoBiz; hasta 15 d√≠as h√°biles por correo (FAQ oficial)',
+    via: 'Online s√≠. Expedited no aplica a la constituci√≥n de la LLC' },
+  ...
+];
+```
+
+- **Validaci√≥n realizada:** sintaxis OK en `app/guias/us/page.tsx` (`transpileModule`); tablas verificadas contra las fuentes oficiales (FAQ de Wyoming, fee schedule de Wyoming, fee schedule de Delaware y estatuto de Florida consultados en directo el 19-09-2026); `git status` sin errores.
+- **Verificaci√≥n pendiente (manual):** /guias/us en el navegador (el dev server no respondi√≥ a curl: c√≥digo 000 en todas las peticiones de la sesi√≥n).
+---
+### üìÖ Chat Session: 2026-09-19 17:20
+**Main objective:** Ejecutar las decisiones del usuario sobre el BOI, los pendientes de SEO/CRO y la limpieza de deuda t√©cnica, y dejar todo commiteado.
+
+#### üë§ User Request:
+> (BOI) Eliminar la obligatoriedad en q48, q55, q60, q159, q209, q85, q91, q94 y q95; retirar el ofrecimiento de $99 en faq_impuestos.md; no mantener el servicio y publicar en su lugar una p√°gina informativa o entrada de blog. (Pendientes) GA_ID real, eliminar el ancla #top, incluir las gu√≠as que falten en el sitemap, canonical en las 6 p√°ginas p√∫blicas, igualar los emails a info@, limpieza con sumo cuidado de backups y mojibake, y add + commit + push de todo.
+
+#### ü§ñ Agent Solution:
+- **BOI corregido en 11 ficheros de knowledge:** `faq_impuestos.md` (retirada la oferta de $99 y el enlace a la ruta 404), `q48` y `q60` y `q159` y `q209` reescritos (las tres primeras explican la exenci√≥n de FinCEN del 26-mar-2025; `q209` pasa a detallar qu√© actualizar al vender una LLC), y ajustes en `q55`, `q85`, `q91`, `q94`, `q95` y `q50` (se retira el BOI del listado de servicios ofrecidos). Verificado: ya no queda ninguna referencia a `/servicios/boi-report` ni a "obligatorio desde 2024" en `knowledge/`.
+- **Nueva p√°gina `/boi-report`** (`app/boi-report/page.tsx`): informativa, no servicio. Explica la exenci√≥n, a qui√©n s√≠ obliga, qu√© hacer si ya se present√≥ y qu√© tr√°mite sigue vivo (5472 + 1120, con CTA al servicio). Metadata completa + JSON-LD (BreadcrumbList + FAQPage). Resuelve el 404 al que apuntaban 5 ficheros de knowledge y captura la b√∫squeda.
+- **Enlaces del knowledge arreglados:** `/Zara` ‚Üí `/zara` en `web/recursos.md`; anclas convertidas a rutas absolutas en `web/inicio.md` (`/#precios`, `/#comenzar`), `web/precios.md` (`/precios#formar|#mantener|#optimizar|#comparativa`) y `web/contacto.md` (`#top` ‚Üí `/contacto`).
+- **Pendiente 3 (#top):** ya no exist√≠a; era el href del CTA "Agendar mi consulta gratuita" que se reemplaz√≥ al apuntarlo a Calendly. Comprobado con grep: no queda ning√∫n `#top` en `app/contacto/page.tsx`.
+- **GA_ID (pendiente 1):** se confirm√≥ que es el ID de medici√≥n de GA4 (no una clave de API) y que `NEXT_PUBLIC_GA_ID=G-LY8T63H5SZ` ya estaba en `.env` y `.env.local`. `components/shared/CookiesBanner.tsx` deja de hardcodear `G-XXXXXXXXXX` y lee `process.env.NEXT_PUBLIC_GA_ID`, avisando por consola si falta. Antes, al aceptar cookies, se re-inyectaba gtag con un ID placeholder.
+- **Ancho del plazo de 72 h (hero + T&C):** en `app/page.tsx` el claim del hero pasa a "en solo 72 horas*" con nota aclaratoria en letra peque√±a debajo (registro estatal en Wyoming/Nuevo M√©xico; el EIN del IRS puede tardar 2-4 semanas). En `legal/general-terms.md`, nueva secci√≥n **8. Plazos de Tramitaci√≥n y Alcance de los Plazos Publicados** con tabla por estado (Wyoming, Nuevo M√©xico, Delaware, Florida), fuentes oficiales, plazo del EIN y cl√°usula de variaci√≥n. Documento subido a v1.1.0 con fecha 19-09-2026.
+- **Canonical (pendiente 5):** a√±adido a las 6 p√°ginas p√∫blicas que faltaban: `/blog` (metadata nueva), `/faq-calculadora`, `/guia`, `/guia/[slug]` (din√°mico), `/legal/changelog`, `/legal/condiciones-generales`, `/legal/privacy-policy` y `/legal/terminos-calculadora`; y nuevo `app/agendar/layout.tsx` porque la p√°gina es `'use client'` y no puede exportar metadata. Total de ficheros con canonical: 29 ‚Üí 39.
+- **Sitemap (pendiente 4):** se a√±aden las gu√≠as por pa√≠s generadas desde `allCountries` (27 rutas: ar, bo, br, cl, co, cr, cu, de, do, ec, es, fr, gb, gt, hn, it, mx, ni, pa, pe, pr, pt, py, sv, us, uy, ve), m√°s `/boi-report`. Verificado en `/sitemap.xml`: 200 y todas las URLs presentes.
+- **Limpieza (pendiente 9):** los 8 `.back*` de `lib/models/` y `Temp/full_history.txt` estaban **trackeados en git**, as√≠ que se copiaron antes a `C:\Users\recompra.es\_backup_openllc_20260919\` (red de seguridad fuera del repo) y despu√©s se eliminaron con `git rm` (el historial los conserva). Verificado que ning√∫n fichero de c√≥digo los referencia. Mojibake de `chat_history.md`: solo 6 l√≠neas con secuencias reversibles; se corrigieron 12 secuencias (`√É¬≥‚Üí√≥`, `√É¬°‚Üí√°`, `√É¬≠‚Üí√≠`, emojis de sesi√≥n) **sin tocar los 315 caracteres U+FFFD irrecuperables**; el n√∫mero de l√≠neas no cambi√≥ (1801).
+- **Verificaci√≥n en dev server:** 200 en `/boi-report`, `/blog`, `/agendar`, `/guia`, `/legal/condiciones-generales`, `/guias/us` y `/`; canonical presente en el HTML servido de `/blog` y `/boi-report`; la nota del hero y la secci√≥n 8 del T&C se renderizan.
+
+#### üíª Key Code:
+```tsx
+// components/shared/CookiesBanner.tsx
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+if (!GA_ID) {
+  console.warn('NEXT_PUBLIC_GA_ID no est√° definido: no se inicializa Google Analytics.');
+  return;
+}
+```
+
+- **Files created/modified:** `app/boi-report/page.tsx` (nuevo), `app/agendar/layout.tsx` (nuevo), `docs/INFORME_KNOWLEDGE.md` (nuevo, sesi√≥n anterior), `app/guias/us/page.tsx`, `app/page.tsx`, `app/blog/page.tsx`, `app/faq-calculadora/page.tsx`, `app/guia/page.tsx`, `app/guia/[slug]/page.tsx`, `app/legal/changelog|condiciones-generales|privacy-policy|terminos-calculadora/page.tsx`, `app/sitemap.ts`, `legal/general-terms.md`, `components/shared/CookiesBanner.tsx`, 11 ficheros de `knowledge/custom/`, 4 de `knowledge/web/`, `PROJECT_HANDOVER.md`, `chat_history.md`; eliminados: `lib/models/pedido.ts.back2..back9` y `Temp/full_history.txt`.
+- **Hallazgo nuevo (no corregido):** los t√≠tulos de p√°gina que ya incluyen "| Open LLC USA" reciben adem√°s el sufijo de la plantilla del layout ra√≠z, generando t√≠tulos duplicados del tipo "Condiciones Generales | Open LLC USA | Open LLC USA".

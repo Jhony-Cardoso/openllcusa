@@ -39,8 +39,14 @@ export default function CookiesBanner() {
   }, []);
 
   const initializeAnalytics = () => {
-    // Reemplaza 'G-XXXXXXXXXX' con tu ID de Google Analytics
-    const GA_ID = 'G-XXXXXXXXXX'; // ⚠️ CAMBIAR POR TU ID REAL
+    // ID de medición de GA4 (no es una clave de API: es el identificador público del flujo de datos).
+    // Se toma de NEXT_PUBLIC_GA_ID para no duplicar valores con el layout.
+    const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+    if (!GA_ID) {
+      console.warn('NEXT_PUBLIC_GA_ID no está definido: no se inicializa Google Analytics.');
+      return;
+    }
+
     
     // Cargar script de Google Analytics
     const script = document.createElement('script');

@@ -2,6 +2,7 @@ import styles from '../shared.module.css'; // Reutilizamos los estilos
 
 
 export const metadata = {
+  alternates: { canonical: 'https://openllcusa.com/legal/privacy-policy' },
   title: 'Política de Privacidad | Open LLC USA',
   description: 'Política de privacidad y protección de datos de Open LLC USA',
   robots: 'index, follow',

@@ -328,5 +328,6 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   return {
     title: `${contentObj.title} | Entiende tu LLC en USA`,
     description: contentObj.meta,
+    alternates: { canonical: `https://openllcusa.com/guia/${slug}` },
   }
 }

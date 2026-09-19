@@ -59,6 +59,16 @@ const INTENT_OPTIONS = [
   { label: 'Tengo una pregunta concreta', value: 'ai_chat', icon: '❓' },
 ]
 
+// El widget vive en todas las páginas, así que un enlace con ancla (#seccion) recibe el clic
+// en una página donde esa sección puede no existir y no ocurre nada. Lo resolvemos siempre a
+// una ruta absoluta: los anclas de la home van a /#ancla y los de /precios a /precios#ancla.
+const PRECIOS_ANCHORS = ['formar', 'mantener', 'optimizar', 'comparativa']
+function resolveChatHref(href: string): string {
+  if (!href.startsWith('#')) return href
+  const anchor = href.slice(1)
+  return PRECIOS_ANCHORS.includes(anchor) ? `/precios#${anchor}` : `/#${anchor}`
+}
+
 // ─── Componente: Renderizar Markdown simple ───────────────
 function SimpleMarkdown({ text }: { text?: string }) {
   const lines = (text || '').split('\n')
@@ -71,7 +81,10 @@ function SimpleMarkdown({ text }: { text?: string }) {
           const boldMatch = part.match(/^\*\*(.+)\*\*$/)
           if (boldMatch) return <strong key={j}>{boldMatch[1]}</strong>
           const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
-          if (linkMatch) return <Link key={j} href={linkMatch[2]} className="chat-link" onClick={() => trackGAEvent('chat_purchase', { url: linkMatch[2] })}>{linkMatch[1]}</Link>
+          if (linkMatch) {
+            const href = resolveChatHref(linkMatch[2])
+            return <Link key={j} href={href} className="chat-link" onClick={() => trackGAEvent('chat_purchase', { url: href })}>{linkMatch[1]}</Link>
+          }
           return <span key={j}>{part}</span>
         })
         const listMatch = line.match(/^(\s*)(•|-|[0-9]+️⃣|[0-9]+\.|✅|❌)\s*(.*)$/)

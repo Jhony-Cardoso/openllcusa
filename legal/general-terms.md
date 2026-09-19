@@ -1,7 +1,7 @@
 # Términos y Condiciones Generales
 
-**Última actualización**: 4 de abril de 2026  
-**Versión**: 1.0.0  
+**Última actualización**: 19 de septiembre de 2026  
+**Versión**: 1.1.0  
 
 Bienvenido a Open LLC USA. Te rogamos que leas detenidamente los siguientes Términos y Condiciones antes de utilizar nuestro sitio web y contratar nuestros servicios.
 
@@ -94,3 +94,26 @@ Los presentes términos estarán regulados, interpretados y aplicados de conform
 Nos reservamos el derecho exclusivo de realizar, en cualquier momento, modificaciones sustanciales o accesorias a este marco normativo. Las rectificaciones entrarán en vigencia desde el primer minuto en que comiencen a publicarse en la presente web (en esta misma URL). Recomendamos a todo usuario la revisión reiterada de este apartado.
 
 > *Para el marco de uso de nuestra herramienta interactiva, aplicarán además los [Términos de la Calculadora Fiscal](/legal/terminos-calculadora).*
+
+---
+
+## 8. Plazos de Tramitación y Alcance de los Plazos Publicados
+
+Cuando en nuestra web comunicamos plazos como «72 horas» o «3 días», nos referimos exclusivamente al **registro estatal de la LLC** en estados con tramitación online inmediata o cuasi inmediata. No comprenden la obtención del **EIN** ante el IRS ni otros trámites complementarios.
+
+### 8.1. Plazos y tasas de constitución por estado (consulta: 19 de septiembre de 2026)
+
+| Estado | Plazo de registro estatal | Tasa estatal | Fuente oficial |
+|---|---|---|---|
+| **Wyoming** | Entidad activa al instante si se presenta online (WyoBiz). Por correo: hasta 15 días hábiles | $100 | Secretary of State de Wyoming |
+| **Nuevo México** | 1-2 días hábiles según su División de Business Services (el Secretario de Estado no publica plazo garantizado) | $50 | Secretary of State de Nuevo México |
+| **Delaware** | Sin plazo publicado: depende del volumen de expedientes recibidos. Con servicio expeditado (coste adicional desde $50) puede resolverse el mismo día | $110 | Division of Corporations de Delaware |
+| **Florida** | Sin plazo publicado: se procesa por orden de recepción | $125 ($100 + $25 de agente registrado) | Division of Corporations de Florida |
+
+### 8.2. EIN (Employer Identification Number)
+
+La obtención del EIN ante el IRS se tramita por separado del registro estatal. Cuando se solicita sin SSN —por fax o correo— el IRS puede tardar **de 2 a 4 semanas**. Este plazo depende exclusivamente del IRS y no está bajo nuestro control.
+
+### 8.3. Variaciones
+
+Los plazos y tasas son competencia de cada administración estatal y pueden modificarse sin previo aviso. La información de esta sección refleja las fuentes oficiales consultadas en la fecha indicada y no constituye una garantía de plazo, salvo compromiso expreso por escrito.

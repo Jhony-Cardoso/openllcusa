@@ -5,7 +5,7 @@
 Sin visa. Sin SSN. Sin salir de casa.  
 **Más de 500 emprendedores de España y Latam** ya facturan como empresas americanas. Nosotros hacemos el 100% del trabajo.
 
-[Ver planes desde $349](#precios)
+[Ver planes desde $349](/#precios)
 
 🔒 Sin tarjeta · Sin compromiso · Garantía 100% sin errores
 
@@ -102,7 +102,7 @@ Crea tu empresa en Wyoming, Delaware o Florida en solo 72 horas. Incluye EIN y d
 *   ✅ Documentos digitales
 *   ✅ Soporte en español
 
-[Ver planes de LLC →](#precios)
+[Ver planes de LLC →](/#precios)
 
 📋
 
@@ -169,7 +169,7 @@ Registro estatal + EIN + Agente Registrado + Operating Agreement. Todo incluido.
 
 Tu LLC estará activa y lista para operar. Documentos digitales en tu email.
 
-[Iniciar mi LLC ahora](#comenzar)
+[Iniciar mi LLC ahora](/#comenzar)
 
 🔒 Sin tarjeta de crédito · Sin compromiso · Garantía 100%
 
@@ -351,7 +351,7 @@ Tu momento es ahora
 Miles de emprendedores hispanos ya están operando y facturando desde EE.UU. sin complicaciones.  
 **Tú puedes ser el siguiente.**
 
-[👉 Crear mi LLC ahora](#precios)
+[👉 Crear mi LLC ahora](/#precios)
 
 🔒 Sin tarjeta de crédito · Garantía 100% sin errores · Soporte en español
 
@@ -359,4 +359,4 @@ Abre tu LLC desde $349
 
 72 horas · Sin visa · Soporte en español
 
-[Ver Planes](#precios)
+[Ver Planes](/#precios)

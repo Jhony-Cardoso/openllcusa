@@ -1559,3 +1559,19 @@ a:hover {
 .sd-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #1e3a8a; background: #e0e7ff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #3730a3; margin-left: -12px; }
 .sd-avatar:first-child { margin-left: 0; }
 .sd-avatar-count { background: #3b82f6; color: white; }
+
+/* ============ CALENDLY EMBED (altura del widget de reserva) ============ */
+/* El widget ocupa el alto del viewport menos el header sticky (position: sticky, z-index 1000)
+   y sus margenes, para que la ventana del calendario se vea COMPLETA al llegar a ella.
+   En movil 100vh incluye la zona de la barra de direcciones y sobreestima el alto disponible,
+   por eso se usa 100dvh cuando el navegador lo soporta. El suelo de 560px evita que el
+   calendario quede inutilizable en pantallas bajas. */
+:root {
+  --calendly-h: clamp(560px, calc(100vh - 130px), 1000px);
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --calendly-h: clamp(560px, calc(100dvh - 130px), 1000px);
+  }
+}

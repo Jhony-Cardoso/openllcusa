@@ -89,6 +89,12 @@ When creating or editing blog posts (`lib/blog/posts.ts`):
 3. **Internal Linking**: Always include an explicit Next.js `<Link>` or standard markdown link CTA towards the end of the content pointing to `/agendar` or relevant services.
 4. **Humanized Tone**: The text of the blog articles must be highly humanized, conversational, and natural to avoid AI-detection by Google (SEO). Avoid robotic transition phrases (e.g., 'En conclusión', 'Es importante destacar'), use varied sentence structures, idiomatic expressions where appropriate, and write as if a real human expert is speaking directly to the reader.
 
+## Security & Compliance (Google Search Console)
+To avoid triggering Google Search Console "Deceptive Pages" or security warnings:
+1. **No Development URLs in Production:** Never configure webhooks (like Stripe) or external services to point to `ngrok-free.dev` or similar tunneling services in the production environment. Always use the official production domain.
+2. **Framework Security:** Ensure Next.js and critical dependencies (like Clerk) are kept up to date to avoid known vulnerabilities (e.g., SSRF, Auth bypass) that could allow malicious injections.
+3. **Unwanted Software Policy:** Any downloadable file (e.g., PDFs, CSVs) generated or hosted by the application MUST comply with Google's Unwanted Software Policy (https://www.google.com/about/unwanted-software-policy.html). Do not include deceptive links, hidden downloads, or misleading buttons.
+
 ## Mandatory Session Logging
 After completing an important task (or before the user ends the session), append a record to `chat_history.md` in the project root using this exact format:
 
@@ -108,3 +114,13 @@ After completing an important task (or before the user ends the session), append
 #### 💻 Key Code:
 ```[language]
 [Only the most important final code block]
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -18,8 +18,8 @@ El documento interno que regula el funcionamiento de la LLC. Lo piden bancos (Me
 ### 4. Certificate of Good Standing (cuando lo necesites)
 Se obtiene del Secretary of State bajo pedido. Bancos y contratos importantes pueden pedirlo para verificar que la LLC está activa.
 
-### 5. BOI Report (confirmación de presentación)
-Guarda el acuse de recibo del FinCEN confirmando que presentaste el BOI Report.
+### 5. Justificantes ante el FinCEN (solo si alguna vez te obligó)
+Las LLCs creadas en EE. UU. están exentas del BOI Report desde marzo de 2025, así que hoy no necesitas ningún acuse. Si presentaste el BOI en su momento (cuando era obligatorio), no hace falta hacer nada más; guarda el acuse junto al resto de la documentación por si un banco lo pide.
 
 ### 6. Registros contables y fiscales
 - Formularios 5472 + 1120 presentados cada año.

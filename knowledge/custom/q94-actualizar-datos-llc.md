@@ -7,7 +7,7 @@ Si cambias tu dirección personal en tu país, esto generalmente **no requiere n
 - Actualiza la dirección en el **Operating Agreement**.
 - Notifica a Mercury/Relay/Wise (tu banco americano).
 - Actualiza la dirección en Stripe, PayPal y otras plataformas.
-- Si presentaste el BOI Report, tienes **30 días para actualizar** tus datos en el FinCEN.
+- El BOI Report no aplica a las LLCs creadas en EE. UU. (exentas desde marzo de 2025), así que no hay que actualizar nada ante el FinCEN.
 
 ## Cambio de Agente Registrado
 Si necesitas cambiar el Agente Registrado (por ejemplo, si cambias de proveedor de servicios):

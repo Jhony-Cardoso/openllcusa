@@ -1,34 +1,18 @@
 # ¿Qué es el BOI Report (Beneficial Ownership Information) y tengo que presentarlo?
 
-El **BOI Report** es un nuevo requisito legal introducido en EE.UU. en 2024 bajo la **Ley de Transparencia Corporativa (Corporate Transparency Act - CTA)**. Es gestionado por el **FinCEN** (Financial Crimes Enforcement Network), organismo del Departamento del Tesoro de EE.UU.
+El **BOI Report** es el reporte de beneficiarios reales que introdujo en 2024 la **Ley de Transparencia Corporativa (Corporate Transparency Act)** en Estados Unidos. Lo gestiona el **FinCEN** (Financial Crimes Enforcement Network), organismo del Departamento del Tesoro.
 
-## ¿En qué consiste?
-Obliga a la mayoría de LLCs a informar al gobierno de EE.UU. sobre quiénes son sus **beneficiarios reales** (Beneficial Owners): las personas que poseen o controlan la empresa de forma significativa.
+## La respuesta corta (actualizada en septiembre de 2026)
+**Si tu LLC se constituyó en Estados Unidos, NO tienes que presentar el BOI.** Así lo establece la regla provisional de FinCEN del **26 de marzo de 2025**, que exime a todas las entidades creadas en EE. UU. y a sus beneficiarios reales. No debes pagar a ningún proveedor por este trámite.
 
-## ¿Quién es un "Beneficial Owner"?
-Cualquier persona que:
-- Posea directa o indirectamente **el 25% o más** de la LLC.
-- Ejerza **control sustancial** sobre la LLC (por ejemplo, el director ejecutivo aunque no tenga participación formal).
+## ¿Y quién sigue obligado?
+Solo las **empresas extranjeras** (constituidas fuera de EE. UU.) que se registran para hacer negocios en Estados Unidos, con plazos propios. Si algún día registras una entidad extranjera allí, entonces sí te afectaría.
 
-## ¿Cuándo hay que presentarlo?
+## ¿Qué era el BOI antes de ese cambio?
+Entre 2024 y marzo de 2025 obligaba a la mayoría de LLCs, incluidas las de no residentes, a declarar quién está detrás de la empresa: las personas con **el 25% o más** de participación o con **control sustancial** de la LLC. El plazo era de 90 días para las LLC creadas en 2024 y de 30 días para las creadas desde 2025.
 
-| Situación | Plazo |
-|-----------|-------|
-| LLC creada antes del 1 enero 2024 | 1 de enero de 2025 |
-| LLC creada en 2024 | 90 días desde la fecha de creación |
-| LLC creada desde el 1 enero 2025 | 30 días desde la fecha de creación |
-| Cambios en los datos reportados | 30 días desde el cambio |
+## ¿Y si ya lo presenté?
+No pasa nada: no tienes que hacer nada más. La exención no te obliga a borrar ni modificar nada. Si en el futuro FinCEN volviera a exigirlo, informaríamos del cambio.
 
-## Multas por incumplimiento:
-**$500 por día** de retraso, más posibles sanciones penales en casos graves.
-
-## ¿Qué información hay que reportar?
-- Nombre completo del beneficial owner.
-- Fecha de nacimiento.
-- Dirección residencial.
-- Número y foto del documento de identidad (pasaporte, DNI, Green Card o licencia de conducir americana).
-
-## ¿Es información pública?
-No. La información del BOI va a una base de datos segura del FinCEN y solo es accesible por organismos de seguridad y entidades financieras con autorización.
-
-Open LLC USA ofrece el servicio de presentación del BOI Report. [Contrata el servicio aquí](/servicios/boi-report) por solo $99.
+## ¿Dónde verificarlo?
+En la página oficial de FinCEN: [fincen.gov/boi](https://www.fincen.gov/boi). Nuestra explicación resumida, con la misma fuente, está en la [guía sobre el BOI Report](/boi-report).

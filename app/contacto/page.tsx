@@ -2,10 +2,27 @@
 
 import { InlineWidget } from 'react-calendly'
 import { Mail, Clock, Shield, Calendar, Mic } from 'lucide-react'
+import type { MouseEvent } from 'react'
+
+// Altura del widget de Calendly. La variable CSS --calendly-h se define en app/globals.css:
+// ocupa el alto del viewport (100dvh con fallback a 100vh) menos el header sticky y sus
+// márgenes, de modo que al pulsar "Agendar mi consulta gratuita" la ventana se vea COMPLETA.
+const CALENDLY_HEIGHT = 'var(--calendly-h)'
 
 export default function ContactoPage() {
   const handleZaraClick = () => {
     alert('¡Hola! Soy Zara, tu asistente virtual. Pronto estaré disponible para ayudarte 24/7.')
+  }
+
+  // Lleva la vista hasta la ventana de Calendly dejándola entera bajo el header sticky.
+  const handleAgendarClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    const target = document.getElementById('agendar')
+    if (!target) return
+    e.preventDefault()
+    const header = document.querySelector('.site-header') as HTMLElement | null
+    const offset = (header?.offsetHeight ?? 0) + 12
+    const top = target.getBoundingClientRect().top + window.scrollY - offset
+    window.scrollTo({ top, behavior: 'smooth' })
   }
 
   return (
@@ -144,13 +161,13 @@ export default function ContactoPage() {
                   </p>
                 </div>
 
-                {/* Widget de Calendly */}
+                {/* Widget de Calendly (destino del CTA "Agendar mi consulta gratuita") */}
                 <div className="p-6 bg-gray-50">
-                  <div className="bg-white rounded-lg overflow-hidden shadow-sm" style={{ minHeight: '700px' }}>
+                  <div id="agendar" className="bg-white rounded-lg overflow-hidden shadow-sm scroll-mt-24" style={{ minHeight: CALENDLY_HEIGHT }}>
                     <InlineWidget 
                       url="https://calendly.com/openllcusa/30min"
                       styles={{
-                        height: '700px',
+                        height: CALENDLY_HEIGHT,
                       }}
                       pageSettings={{
                         backgroundColor: 'ffffff',
@@ -281,11 +298,8 @@ export default function ContactoPage() {
             Miles de emprendedores ya confiaron en nosotros para crear su LLC en EE.UU.
           </p>
           <a 
-            href="#top"
-            onClick={(e) => {
-              e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
+            href="#agendar"
+            onClick={handleAgendarClick}
             className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
           >
             📅 Agendar mi consulta gratuita

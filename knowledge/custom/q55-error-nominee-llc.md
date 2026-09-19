@@ -10,7 +10,7 @@ Legalmente, quien aparece como propietario en los documentos **ES el dueño de l
 ### Riesgo fiscal (Nominee Arrangement)
 Usar a alguien como "testaferro" (nominee owner) para ocultar al verdadero propietario ante el IRS o el FinCEN es potencialmente ilegal y puede constituir evasión fiscal.
 
-El **BOI Report** (introducido en 2024) obliga a declarar quién es el **beneficiario real** de la empresa, independientemente de quién aparezca nominalmente en los documentos.
+Además, el **BOI Report** obligó entre 2024 y marzo de 2025 a declarar quién era el **beneficiario real** de la empresa, independientemente de quién apareciera nominalmente en los documentos (hoy las LLCs creadas en EE. UU. están exentas, pero el riesgo de usar un testaferro sigue existiendo por el IRS y por el propio estado).
 
 ### La solución correcta: Estados con privacidad real
 Si lo que quieres es que tu nombre no aparezca en los **registros públicos** accesibles por internet, **no necesitas un testaferro**. Basta con registrar la LLC en un estado con legislación de privacidad:
@@ -18,6 +18,6 @@ Si lo que quieres es que tu nombre no aparezca en los **registros públicos** ac
 - **Wyoming:** No publica los nombres de los socios (members) en registros públicos accesibles online. Solo el Agente Registrado aparece públicamente.
 - **Nuevo México:** Similar nivel de privacidad.
 
-Tu nombre solo constaría en el Operating Agreement (documento privado) y en el BOI Report (base de datos interna y segura del FinCEN, no pública).
+Tu nombre solo constaría en el Operating Agreement, que es un documento privado que no se publica en el registro estatal.
 
 [Crea tu LLC en Wyoming con la máxima privacidad legal](/servicios). No necesitas exponerte ni usar intermediarios.

@@ -6,6 +6,7 @@ import styles from '../shared.module.css';
 
 
 export const metadata = {
+  alternates: { canonical: 'https://openllcusa.com/legal/condiciones-generales' },
   title: 'Condiciones Generales | Open LLC USA',
   description: 'Condiciones generales de contratación y uso del portal web Open LLC USA',
   robots: 'index, follow',

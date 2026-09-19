@@ -30,7 +30,7 @@ Wyoming: ~$300-$500/año en total. Mucho más barato que una sociedad equivalent
 Trabaja desde cualquier país del mundo. Tu LLC no te ata a ningún lugar físico.
 
 ## 10. 🤝 Proceso 100% online y en español con Open LLC USA
-No necesitas viajar a EE.UU., no necesitas hablar inglés. Open LLC USA gestiona todo por ti en español en 7-15 días hábiles.
+No necesitas viajar a EE.UU., no necesitas hablar inglés. Open LLC USA gestiona todo por ti en español en 7-15 días hábiles. Ojo al matiz de los plazos: **la LLC queda registrada en 24-72 horas** (Wyoming o Nuevo México) y **lo que alarga el proceso es el EIN del IRS, que sin SSN y por fax puede tardar de 2 a 4 semanas**.
 
 ---
 

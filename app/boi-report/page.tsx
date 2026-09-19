@@ -14,7 +14,7 @@ import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ExternalLink, Shiel
 const CANONICAL = 'https://openllcusa.com/boi-report';
 
 export const metadata: Metadata = {
-  title: 'BOI Report (FinCEN) 2026: ¿tienes que presentarlo? | Open LLC USA',
+  title: 'BOI Report (FinCEN) 2026: ¿tienes que presentarlo?',
   description:
     'Actualizado en 2026: las LLC creadas en Estados Unidos están exentas del BOI Report ante el FinCEN desde marzo de 2025. Te explicamos quién sí debe presentarlo y con qué fuente oficial.',
   keywords: ['BOI Report', 'FinCEN', 'beneficial ownership', 'Corporate Transparency Act', 'BOI obligatorio 2026', 'LLC extranjera BOI'],

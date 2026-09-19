@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Agenda una consulta gratuita | Open LLC USA',
+  title: 'Agenda una consulta gratuita',
   description:
     'Reserva 30 minutos con un especialista en LLCs para no residentes: resolvemos tus dudas sobre el estado, los impuestos y la cuenta bancaria en EE.UU. Sin compromiso.',
   alternates: { canonical: 'https://openllcusa.com/agendar' },

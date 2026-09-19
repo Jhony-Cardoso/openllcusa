@@ -13,7 +13,7 @@ import Flag from '@/components/Flag';
 const CANONICAL = 'https://openllcusa.com/guias/us';
 
 export const metadata: Metadata = {
-  title: 'Guía de EE.UU.: elegir estado y crear tu LLC | Open LLC USA',
+  title: 'Guía de EE.UU.: elegir estado y crear tu LLC',
   description:
     'Comparativa de Wyoming, Nuevo México, Delaware y Florida para crear tu LLC en Estados Unidos: tasas estatales, cuota anual, privacidad y requisitos. Sin viajar y sin SSN.',
   keywords: [

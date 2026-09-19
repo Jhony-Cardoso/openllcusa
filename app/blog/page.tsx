@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { getAllPosts } from '@/lib/blog/posts';
 
 export const metadata: Metadata = {
-  title: 'Blog sobre LLCs en Estados Unidos | Open LLC USA',
+  title: 'Blog sobre LLCs en Estados Unidos',
   description:
     'Guías, casos prácticos y fiscalidad para emprendedores hispanohablantes que crean y gestionan una LLC en Estados Unidos.',
   alternates: { canonical: 'https://openllcusa.com/blog' },

@@ -89,6 +89,17 @@ async function ingestKnowledge() {
         const title = titleMatch ? titleMatch[1] : fileName;
         const cleanContent = chunks[i].trim();
 
+        // La ingesta debe ser IDEMPOTENTE: si se ejecuta varias veces no puede acumular copias
+        // (antes se llegaron a 4613 filas para 879 contenidos únicos). Borramos la fila previa
+        // con el mismo contenido y solo entonces insertamos la versión nueva.
+        const { error: errDel } = await supabase
+          .from('knowledge_base')
+          .delete()
+          .eq('content', cleanContent);
+        if (errDel) {
+          console.warn(`⚠️ No se pudo limpiar el fragmento previo ${i}:`, errDel.message);
+        }
+
         const { error } = await supabase
           .from('knowledge_base')
           .insert({

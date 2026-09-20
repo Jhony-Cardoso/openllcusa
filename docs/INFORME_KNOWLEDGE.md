@@ -148,10 +148,20 @@ Fla. Stat. §605.0213 (flsenate.gov) y páginas oficiales de Sunbiz.
   referencia del scrape). Comprobado con `scripts/verify-ingest-scope.mjs`: 0 ficheros de `web/` colados.
   En `scripts/scrape-website.ts` se añadió un aviso de que su salida no se ingiere.
 
-## 10. Hallazgo pendiente: duplicados masivos en `knowledge_base`
+## 10. Duplicados masivos en `knowledge_base` (resuelto el 20-09-2026)
 
-La tabla tiene **1000 filas** y solo **514 contenidos únicos**: 302 grupos duplicados, **788 filas repetidas**
-(el contenido más repetido aparece **7 veces**). Causa: `ingest-knowledge.ts` inserta sin borrar ni deduplicar,
-y se ha ejecutado varias veces (agosto 2026). Efecto: el retrieval puede devolver el mismo fragmento varias veces,
-desperdiciando contexto y sesgando las respuestas. **Recomendación:** script de limpieza que conserve una fila por
-contenido único (la más reciente) y borre el resto; decidir antes si se re-ingesta todo o se deduplica en sitio.
+**Magnitud real:** la tabla tenía **4613 filas para 879 contenidos únicos** (3734 filas repetidas; el contenido
+más repetido aparecía **7 veces**). Ojo con este dato: la API de Supabase devuelve **1000 filas por defecto**, así
+que cualquier recuento sin paginar (incluido el primero que hice) queda corto. Cualquier auditoría de esta tabla
+debe paginar con `range()` o pedir `count: 'exact'`.
+
+**Causa:** `ingest-knowledge.ts` insertaba sin borrar ni deduplicar y se había ejecutado unas 5 veces.
+**Efecto:** el retrieval podía devolver el mismo fragmento varias veces, gastando contexto y sesgando respuestas.
+
+**Corrección aplicada:**
+1. `scripts/dedupe-knowledge-base.mjs` (simulación por defecto; `--apply` para escribir): conserva una fila por
+   contenido exacto y borra el resto. Antes de borrar guarda una **copia completa con embeddings** (70,5 MB,
+   3734 filas) en `C:\Users\recompra.es\_backup_openllc_20260919\knowledge_base_duplicados_2026-09-20.json`.
+   Resultado verificado: **4613 → 879 filas, 0 duplicados**.
+2. `scripts/ingest-knowledge.ts` es ahora **idempotente**: antes de insertar cada fragmento borra la fila previa
+   con el mismo contenido, de modo que re-ingerir no vuelve a acumular copias.

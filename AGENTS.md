@@ -96,7 +96,13 @@ To avoid triggering Google Search Console "Deceptive Pages" or security warnings
 3. **Unwanted Software Policy:** Any downloadable file (e.g., PDFs, CSVs) generated or hosted by the application MUST comply with Google's Unwanted Software Policy (https://www.google.com/about/unwanted-software-policy.html). Do not include deceptive links, hidden downloads, or misleading buttons.
 
 ## Mandatory Session Logging
-After completing an important task (or before the user ends the session), append a record to `chat_history.md` in the project root using this exact format:
+After completing an important task (or before the user ends the session), append a record to `chat_history.md` in the project root.
+
+**Reglas del registro (obligatorias):**
+- Cada entrada debe indicar la **fecha y hora de las acciones realizadas** en su encabezado (`### 📅 Chat Session: YYYY-MM-DD HH:MM`).
+- Mantén actualizado el bloque **`## 📌 PENDIENTES ABIERTOS`** al final de `chat_history.md`: añade las tareas nuevas con su fecha, actualiza su estado y elimina las cerradas.
+
+Usa este formato exacto:
 
 ---
 ### 📅 Chat Session: [Current Date and Time]

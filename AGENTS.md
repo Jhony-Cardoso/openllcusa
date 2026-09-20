@@ -48,6 +48,15 @@ Combine verified technical facts with project priorities and safe operating rule
 - Admin: email allowlist (no Clerk orgs/roles)
 - Path alias: `@/*` → project root
 
+## Reglas de contenido (decisiones de negocio)
+
+- **Formulario 5472 + 1120: nunca mencionar la excepción del IRS** para LLC sin transacciones reportables. El negocio
+  decidió (21-09-2026) presentar siempre la obligación como universal: si un cliente no presenta y luego debe demostrar
+  ante el IRS que no tenía transacciones reportables, la carga de la prueba recae sobre él y el escenario es peor que
+  presentar. No introducir matices, excepciones ni condicionales en el prompt, la base de conocimiento ni las páginas.
+- **BOI (FinCEN): sí se explica la exención**, porque es una exención objetiva por tipo de entidad, no una excepción por
+  ausencia de hechos (ver `knowledge/custom/q48` y `q60`).
+
 ## Convenciones de edición de ficheros
 
 - **Finales de línea mixtos:** en el repo conviven ficheros en LF y en CRLF (`chat_history.md` y `app/page.tsx` están en CRLF; `knowledge/` y los scripts nuevos, en LF). Antes de editar: **normaliza a LF** (`contenido.replace("\r\n", "\n")`), aplica los cambios y **vuelve a escribir el fichero con su estilo original**.

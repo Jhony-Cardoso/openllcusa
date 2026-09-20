@@ -2002,29 +2002,45 @@ curl -s -X POST http://localhost:3000/api/chat -H "Content-Type: application/jso
 
 - **Files created/modified:** `app/api/chat/route.ts` (precio + excepción + prioridad), `chat_history.md`.
 - **Pendiente de autorización:** alinear la excepción del IRS en los 5 ficheros del knowledge que la contradicen y corregir los «~$52» de Wyoming en los otros 5.
+---
+### 📅 Chat Session: 2026-09-21 02:05
+**Main objective:** Revertir la excepción del IRS del Formulario 5472 y dejar constancia de la decisión de negocio.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 21-09-2026, 01:10)
+#### 👤 User Request:
+> Respuesta DEFINITIVA: NO vamos a hacer ninguna excepción. Mi explicación es la siguiente: si un propietario no presenta el formulario en un ejercicio o varios, cabe la posibilidad de que reciba una carta del IRS. Dicha carta puede causar quebraderos de cabeza si tienes que demostrar que no han habido transacciones reportables. Con los organismos tributarios, la carga de la prueba (en general) siempre la tiene el contribuyente. Por tanto, REVIERTE los cambios que ya has aplicado y no haremos mención de ninguna excepción.
+
+#### 🤖 Agent Solution:
+- **Prompt revertido**: la línea de obligaciones vuelve a su redacción original («TODA LLC de extranjero debe presentar anualmente el Formulario 5472 y el 1120 proforma al IRS para evitar multas de $25,000»), conservando únicamente la corrección de precio (de $250 a $297). Eliminados el párrafo de la excepción y la nota de prioridad sobre el material de apoyo. Comprobado que no queda ninguna mención a excepciones ni a las Partes IV, V o VI.
+- **Comprobado con el chat real:** a una LLC sin movimientos Zara responde «Sí, estás obligado a presentar el Formulario 5472 y el 1120, incluso si tu LLC no ha tenido ningún movimiento»; y el precio sigue siendo $297.
+- **No se toca el knowledge**: los ficheros que afirman la obligación en absoluto (`q18`, `q11`, `q13`, `q81`, `q51`) quedan como están, ahora coherentes con la decisión de negocio.
+- **Decisión registrada en `AGENTS.md`** (nueva sección «Reglas de contenido»): nunca mencionar la excepción del 5472 y no introducir matices, con la distinción respecto al BOI, donde sí se explica la exención porque es objetiva por tipo de entidad y no por ausencia de hechos. Así ningún agente futuro la reintroduce.
+- **Razón de negocio (del usuario):** con los organismos tributarios la carga de la prueba recae sobre el contribuyente; evitar que un cliente tenga que demostrar a posteriori que no hubo transacciones reportables.
+
+#### 💻 Key Code:
+```bash
+git grep -n "EXCEPCIÓN\|Partes IV" app/api/chat/route.ts   # sin resultados
+```
+
+- **Files created/modified:** `app/api/chat/route.ts` (revertido), `AGENTS.md` (regla de contenido), `chat_history.md`.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 21-09-2026, 02:05)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
 
 **Producto / decisiones de negocio**
-1. **Excepción del IRS en el knowledge (5 ficheros)** — el prompt ya la aplica, pero `q18`, `q11`, `q13`, `q81` y `q51`
-   siguen afirmando que el 5472 «debe presentarse siempre» mientras la LLC esté activa, y el RAG pesa más que el
-   prompt: Zara responde «sí, estás obligado» a una LLC sin ningún movimiento. *Propuesto el 21-09-2026, pendiente de
-   autorización.*
-2. **Cuota anual de Wyoming «~$52» en 5 ficheros del knowledge** (`q05`, `q18`, `q31`, `q37`, `q53`) — el oficial son
-   $60 como mínimo. El sitio web ya está corregido. *Detectado el 21-09-2026.*
-3. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
+1. **Cuota anual de Wyoming «~$52» en 5 ficheros del knowledge** (`q05`, `q18`, `q31`, `q37`, `q53`, seis apariciones) —
+   el oficial son $60 como mínimo. El sitio web ya está corregido. *Detectado el 21-09-2026, pendiente de autorización.*
+2. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
    muestran `TU_BILLETERA_*_AQUI`. *Estado (19-09-2026):* pendiente hasta que existan las wallets.
-4. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
-5. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
+3. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
+4. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
 
 **Técnico**
-6. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19, 20 y 21 de septiembre: `/boi-report`,
+5. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19, 20 y 21 de septiembre: `/boi-report`,
    `/guias/us`, corrección del BOI (prompt + base de conocimiento), títulos, canonical, sitemap, nota de plazos,
    ancla de la sección 8, limpieza de `/precios`, precio de $297 del servicio fiscal, las tasas de Wyoming a $60 y la
-   excepción del 5472 en el prompt.
-7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+   reversión de la excepción del 5472.
+6. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

@@ -9,7 +9,7 @@ Sí. Puedes cambiar el nombre de tu LLC en cualquier momento mediante un proceso
 4. El estado emite un certificado de enmienda que oficializa el nuevo nombre.
 
 ## Costes aproximados:
-- **Wyoming:** ~$60 por la enmienda.
+- **Wyoming:** $100 por la enmienda (tarifa estatal vigente desde julio de 2026).
 - **Delaware:** ~$200 por la enmienda.
 - **Nuevo México:** ~$50 por la enmienda.
 

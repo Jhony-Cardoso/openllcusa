@@ -165,3 +165,42 @@ debe paginar con `range()` o pedir `count: 'exact'`.
    Resultado verificado: **4613 → 879 filas, 0 duplicados**.
 2. `scripts/ingest-knowledge.ts` es ahora **idempotente**: antes de insertar cada fragmento borra la fila previa
    con el mismo contenido, de modo que re-ingerir no vuelve a acumular copias.
+
+---
+
+## 11. Pasada de contenido sobre los 301 ficheros (20-09-2026)
+
+Método: batería de comprobaciones sobre `knowledge/custom/` (precios propios, planes de terceros, afirmaciones de
+plazo, tasas estatales, restos de la web antigua, referencias temporales y umbrales fiscales), contrastando con el
+sitio actual y con las fuentes oficiales ya verificadas para el informe de plazos.
+
+### Corregido
+
+| Fichero | Qué decía | Qué dice ahora |
+|---|---|---|
+| `q92-tiempo-proceso-llc.md` | Wyoming 5-10 días con expedito de 24-48 h; Nuevo México 1-3 días; Delaware 5-10 días; total 3-5 semanas | Tabla con los datos publicados por las Secretarías de Estado (Wyoming activo al instante online y hasta 15 días por correo, sin expedito para la formación; Nuevo México 1-2 días según su División; Delaware y Florida sin plazo publicado) y total 2-5 semanas |
+| `q04-tiempo-registro-llc.md` | Wyoming 1-3 días; Nuevo México 1-5 días; cierre «operativa en 5-7 días» | Alineado con las fuentes oficiales y cierre ajustado al EIN como parte lenta |
+| `q33-cambiar-nombre-llc.md` | Enmienda en Wyoming «~$60» | $100, tarifa vigente del estado desde julio de 2026 |
+| `q98-faq-open-llc-usa.md`, `q100-razones-llc-americana.md` | «7-15 días hábiles», incoherente con un EIN de 2-4 semanas | «2-5 semanas», coherente con el resto |
+
+Índice actualizado: ingesta filtrada de esos 5 ficheros (filtro `--only` nuevo) + reconciliación (5 filas fantasma
+borradas). Estado final: **801 filas, 801 únicas, 0 duplicados, 0 restos del scrape**. El chat responde ya con los
+plazos oficiales (comprobado con una consulta real).
+
+### Sin hallazgos
+
+- **Ningún resto de la web antigua**: 0 referencias a «Carla», números `wa.me`, teléfonos de relleno o el email antiguo.
+- **Ningún dato de competidores**: la comparativa con EZFrontiers, Circle Club u Openbiz solo existía en el scrape de
+  `/precios`, ahora excluido de la ingesta.
+- Tasas estatales de terceros comprobadas y correctas: Delaware $300/año de franchise tax, Florida $138,75/año de
+  annual report, California $800 de franchise tax mínimo.
+- Umbrales de 1099-NEC ($600) correctos; el 1099-K se menciona de forma genérica, sin cifra que pueda quedar obsoleta.
+
+### Requiere tu decisión
+
+1. **Precio del servicio 5472 + 1120**: `faq_impuestos.md` dice **$250** y el system prompt del chat dice «desde $250»,
+   pero la página `/servicios` lo lista a **$397**. Hay que unificar y decidir cuál es el precio correcto.
+2. **Datos de terceros sujetos a cambios** (no los he tocado porque necesitan verificación externa con fecha): tarifas
+   de la USPTO en `q30` y `q127` ($250-$350 por clase; la USPTO revisó tarifas en 2025), importe de la inversión EB-5
+   en `q45` ($1,05 M / $800.000 en zonas de empleo objetivo) y cifras de plataformas (cuota de Amazon, comisiones
+   bancarias).

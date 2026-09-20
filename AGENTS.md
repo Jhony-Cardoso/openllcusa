@@ -48,6 +48,12 @@ Combine verified technical facts with project priorities and safe operating rule
 - Admin: email allowlist (no Clerk orgs/roles)
 - Path alias: `@/*` → project root
 
+## Convenciones de edición de ficheros
+
+- **Finales de línea mixtos:** en el repo conviven ficheros en LF y en CRLF (`chat_history.md` y `app/page.tsx` están en CRLF; `knowledge/` y los scripts nuevos, en LF). Antes de editar: **normaliza a LF** (`contenido.replace("\r\n", "\n")`), aplica los cambios y **vuelve a escribir el fichero con su estilo original**.
+- **Nunca** apliques `.replace("\n", "\r\n")` sobre contenido que ya tiene CRLF: genera `\r\r\n` y corrompe el fichero (ya ocurrió con `chat_history.md`).
+- Al terminar, comprueba el fichero: recuento de líneas coherente con lo añadido y **cero** secuencias `\r\r\n`.
+
 ## Config Quirks (Critical)
 - `typescript.ignoreBuildErrors: true` → builds succeed even with type errors
 - `output: 'standalone'` + Docker-specific settings

@@ -34,7 +34,7 @@ async function ingestKnowledge() {
   const EXCLUDED_DIRS = ['web'];
 
   // Función para obtener archivos recursivamente
-  const getFilesRecursively = (dir: string, fileList: string[] = []): string[] => {
+  const getRecursiveFiltered = (dir: string, only: string[] | null, fileList: string[] = []): string[] => {
     const files = fs.readdirSync(dir);
     for (const file of files) {
       const filePath = path.join(dir, file);
@@ -44,15 +44,24 @@ async function ingestKnowledge() {
           console.log(`⏭️  Omitido por exclusión: knowledge/${relDir}/`);
           continue;
         }
-        getFilesRecursively(filePath, fileList);
+        getRecursiveFiltered(filePath, only, fileList);
       } else if (filePath.endsWith('.md')) {
+        if (only && !only.some(o => path.basename(filePath).includes(o))) continue;
         fileList.push(filePath);
       }
     }
     return fileList;
   };
 
-  const filePaths = getFilesRecursively(knowledgeDir);
+  // Filtro opcional por nombre de fichero (para no re-ingerir todo cuando solo cambian unos pocos):
+  //   npx tsx scripts/ingest-knowledge.ts --only q92-tiempo,q04-tiempo
+  const onlyIdx = process.argv.indexOf('--only');
+  const only = onlyIdx > -1 && process.argv[onlyIdx + 1]
+    ? process.argv[onlyIdx + 1].split(',').map(s => s.trim()).filter(Boolean)
+    : null;
+
+  const filePaths = getRecursiveFiltered(knowledgeDir, only);
+  if (only) console.log(`🔎 Filtro --only aplicado: ${only.join(', ')}`);
   
   if (filePaths.length === 0) {
     console.log('⚠️ No hay archivos Markdown en la carpeta knowledge.');

@@ -17,7 +17,7 @@ Delaware es popular para corporaciones (C-Corps) con muchos inversores, startups
 ## ¿Qué estado elegir si eres extranjero con negocio digital?
 
 ### Wyoming ✅ (el más recomendado)
-- Solo ~$52/año en cuota estatal.
+- Solo $60/año (mínimo) en cuota estatal.
 - Máxima privacidad: no publica nombres de socios en registros públicos.
 - Sin impuesto estatal sobre la renta.
 - Leyes muy favorables para LLCs.

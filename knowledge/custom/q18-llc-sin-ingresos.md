@@ -12,7 +12,7 @@ Si hubo literalmente cero actividad y cero transacciones, puede presentarse un "
 
 ## Cuota estatal anual: SÍ, hay que pagarla
 La cuota anual de renovación del estado sí se paga aunque no haya actividad:
-- Wyoming: ~$52/año
+- Wyoming: $60/año (mínimo)
 - Delaware: Franchise Tax variable (puede ser varios cientos de dólares)
 - Nuevo México: Sin reporte anual ni cuota de renovación ✅
 

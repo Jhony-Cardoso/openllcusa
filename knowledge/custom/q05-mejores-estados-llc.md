@@ -5,7 +5,7 @@ Los tres estados más populares para extranjeros no residentes son:
 ## Wyoming ⭐ (el más recomendado para extranjeros)
 - Sin impuesto estatal sobre la renta empresarial.
 - Máxima privacidad: el nombre del propietario NO aparece en registros públicos.
-- Cuota anual muy baja (~$52/año).
+- Cuota anual muy baja ($60/año (mínimo)).
 - Leyes muy favorables para LLCs.
 
 ## Delaware

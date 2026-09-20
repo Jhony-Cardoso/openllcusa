@@ -2022,25 +2022,48 @@ git grep -n "EXCEPCIÓN\|Partes IV" app/api/chat/route.ts   # sin resultados
 ```
 
 - **Files created/modified:** `app/api/chat/route.ts` (revertido), `AGENTS.md` (regla de contenido), `chat_history.md`.
+---
+### 📅 Chat Session: 2026-09-21 02:40
+**Main objective:** Corregir la cuota anual de Wyoming en los 5 ficheros del knowledge que aún decían «~$52/año».
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 21-09-2026, 02:05)
+#### 👤 User Request:
+> Te otorgo mi consentimiento a los "~$52/año" de Wyoming en 5 ficheros del knowledge (q05, q18, q31, q37, q53), aunque creo que quisiste decir $62/año en lugar de $52. Entiendo que la cifra correcta es "$60/año".
+
+#### 🤖 Agent Solution:
+- Aclaración de las dos cifras que han convivido: el **sitio web** decía **$62** (que eran los $60 de tasa más el ~2,4% del procesador de tarjetas al pagar online, corregido en la sesión anterior) y el **knowledge** decía **$52** (simplemente desactualizado). El dato oficial en ambos casos son **$60 como mínimo** (o 0,0002 de los activos radicados en Wyoming, si es mayor).
+- Corregidos los 5 ficheros, cada uno con la redacción que encajaba en su frase:
+  - `q05`: «Cuota anual muy baja (~$52/año)» → «$60/año (mínimo)».
+  - `q18`: «Wyoming: ~$52/año» → «$60/año (mínimo)».
+  - `q31`: encabezado «### Wyoming (~$52/año)» → «### Wyoming ($60/año como mínimo)».
+  - `q37`: «~$52/año (incluido en la cuota)» → «$60/año (mínimo; o el 0,0002 de los activos radicados en Wyoming, si es mayor)».
+  - `q53`: «Solo ~$52/año en cuota estatal» → «Solo $60/año (mínimo) en cuota estatal».
+- Barrido adicional para descartar otras variantes («52 USD», «52 dólares») en el knowledge: ninguna.
+- Ingesta filtrada de los 5 ficheros + reconciliación (5 filas fantasma). Estado: 801 filas, 801 únicas, 0 duplicados.
+- **Comprobado con el chat real:** «¿Cuánto hay que pagar cada año al estado de Wyoming para mantener la LLC?» → «el costo anual es de **$60** en cuota estatal», con la tabla de costes anuales ya coherente.
+
+#### 💻 Key Code:
+```bash
+npx tsx scripts/ingest-knowledge.ts --only q05-mejores,q18-llc-sin,q31-mantenimiento,q37-annual,q53-error
+```
+
+- **Files created/modified:** `knowledge/custom/q05|q18|q31|q37|q53`, `chat_history.md`.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 21-09-2026, 02:40)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
 
 **Producto / decisiones de negocio**
-1. **Cuota anual de Wyoming «~$52» en 5 ficheros del knowledge** (`q05`, `q18`, `q31`, `q37`, `q53`, seis apariciones) —
-   el oficial son $60 como mínimo. El sitio web ya está corregido. *Detectado el 21-09-2026, pendiente de autorización.*
-2. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
+1. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
    muestran `TU_BILLETERA_*_AQUI`. *Estado (19-09-2026):* pendiente hasta que existan las wallets.
-3. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
-4. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
+2. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
+3. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
 
 **Técnico**
-5. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19, 20 y 21 de septiembre: `/boi-report`,
+4. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19, 20 y 21 de septiembre: `/boi-report`,
    `/guias/us`, corrección del BOI (prompt + base de conocimiento), títulos, canonical, sitemap, nota de plazos,
    ancla de la sección 8, limpieza de `/precios`, precio de $297 del servicio fiscal, las tasas de Wyoming a $60 y la
    reversión de la excepción del 5472.
-6. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+5. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

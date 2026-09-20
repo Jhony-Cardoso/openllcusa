@@ -4,7 +4,7 @@ Para mantener tu LLC en regla y proteger su estatus legal, hay obligaciones anua
 
 ## Obligaciones estatales:
 
-### Wyoming (~$52/año)
+### Wyoming ($60/año como mínimo)
 - Pagar la cuota anual de renovación antes del 1 de enero de cada año.
 - Presentar el Annual Report (incluido en la cuota).
 

@@ -8,7 +8,7 @@ El **Annual Report** (Informe Anual) o **Statement of Information** es un docume
 
 | Estado | Annual Report | Cuota |
 |--------|--------------|-------|
-| **Wyoming** | Sí (sencillo) | ~$52/año (incluido en la cuota) |
+| **Wyoming** | Sí (sencillo) | $60/año (mínimo; o el 0,0002 de los activos radicados en Wyoming, si es mayor) |
 | **Delaware** | Sí | $50 + Franchise Tax variable |
 | **Nuevo México** | **No** ✅ | Sin cuota de renovación |
 | **Nevada** | Sí | $350/año |

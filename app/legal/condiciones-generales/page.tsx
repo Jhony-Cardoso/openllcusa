@@ -21,10 +21,11 @@ async function getGeneralTermsContent() {
     .process(fileContent);
 
   // remark-html no genera ids en los encabezados: se lo añadimos a la sección 8 para poder
-  // enlazar directamente desde la nota del hero (/#seccion-8).
+  // enlazar directamente desde la nota del hero (/#seccion-8). El scroll-margin-top evita que
+  // el header sticky (z-index 1000) tape el título al llegar por el ancla.
   return processedContent
     .toString()
-    .replace(/<h2>(8\.\s*Plazos)/, '<h2 id="seccion-8">$1');
+    .replace(/<h2>(8\.\s*Plazos)/, '<h2 id="seccion-8" style="scroll-margin-top: 130px">$1');
 }
 
 export default async function CondicionesGeneralesPage() {

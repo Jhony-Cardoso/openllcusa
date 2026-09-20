@@ -955,8 +955,18 @@ function CTAFinalSection() {
             className="font-extrabold leading-[1.12] mb-5"
             style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(32px,4.5vw,54px)', color: T.wh }}
           >
-            Tu LLC lista en 72 horas.<br />¿Estás listo para dar el paso?
+            Tu LLC lista en 72 horas.*<br />¿Estás listo para dar el paso?
           </h2>
+
+          {/* Nota de alcance del plazo (misma información que en el hero y en la sección 8 de los Términos) */}
+          <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,.62)', lineHeight: 1.5, margin: '0 auto 24px', maxWidth: 620 }}>
+            * Las 72 horas se refieren al registro estatal de la LLC: en Wyoming queda activa al instante de ser
+            presentada y en Nuevo México en 1-2 días hábiles. El EIN del IRS se tramita aparte y puede tardar de 2 a
+            4 semanas (sin SSN). Detalle por estado en la sección 8 de los{' '}
+            <Link href="/legal/condiciones-generales#seccion-8" style={{ color: 'inherit', textDecoration: 'underline' }}>
+              Términos y Condiciones
+            </Link>.
+          </p>
 
           <p className="text-lg mb-10" style={{ color: 'rgba(255,255,255,.85)', maxWidth: 520, margin: '0 auto' }}>
             Miles de emprendedores hispanos ya están operando y facturando desde EE.UU. sin complicaciones.<br />

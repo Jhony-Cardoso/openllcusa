@@ -336,7 +336,6 @@ export default function PricingPage() {
                   <CheckItem>Todo del Professional</CheckItem>
                   <CheckItem>Presentación Forms 5472 + 1120</CheckItem>
                   <CheckItem>Dirección física real en EE.UU.</CheckItem>
-                  <CheckItem>BOIR incluido dentro de plazo</CheckItem>
                   <CheckItem>Soporte VIP 90 días + revisión anual</CheckItem>
                 </ul>
                 <Link
@@ -442,7 +441,6 @@ export default function PricingPage() {
                 <ul className="space-y-3 mb-8 flex-1">
                   <CheckItem>Agente registrado y dirección oficial activos</CheckItem>
                   <CheckItem>Recordatorios de annual report y obligaciones estatales</CheckItem>
-                  <CheckItem>Checklist BOIR y formularios informativos clave</CheckItem>
                   <CheckItem>Soporte por email para dudas recurrentes</CheckItem>
                   <CheckItem>Sin permanencia — pausa o cambia cuando quieras</CheckItem>
                 </ul>

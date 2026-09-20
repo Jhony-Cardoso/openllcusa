@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
         // Calcular precio exacto (fallback a 39700 si no se encuentra en DB)
         const servicio = (pedido as any)?.servicio
-        const dbPrice = servicio?.precio ? Number(servicio.precio) * 100 : 39700
+        const dbPrice = servicio?.precio ? Number(servicio.precio) * 100 : 29700
 
         // Crear Sesión de Stripe Checkout
         const session = await stripe.checkout.sessions.create({

@@ -196,11 +196,27 @@ plazos oficiales (comprobado con una consulta real).
   annual report, California $800 de franchise tax mínimo.
 - Umbrales de 1099-NEC ($600) correctos; el 1099-K se menciona de forma genérica, sin cifra que pueda quedar obsoleta.
 
-### Requiere tu decisión
+### Decisiones cerradas (20-09-2026)
 
-1. **Precio del servicio 5472 + 1120**: `faq_impuestos.md` dice **$250** y el system prompt del chat dice «desde $250»,
-   pero la página `/servicios` lo lista a **$397**. Hay que unificar y decidir cuál es el precio correcto.
-2. **Datos de terceros sujetos a cambios** (no los he tocado porque necesitan verificación externa con fecha): tarifas
-   de la USPTO en `q30` y `q127` ($250-$350 por clase; la USPTO revisó tarifas en 2025), importe de la inversión EB-5
-   en `q45` ($1,05 M / $800.000 en zonas de empleo objetivo) y cifras de plataformas (cuota de Amazon, comisiones
-   bancarias).
+1. **Precio del servicio 5472 + 1120: $297, tarifa única.** Estaba en $250 en el knowledge y en $397 en `/servicios`.
+   Alineado en los cuatro sitios donde vivía: la fila de la tabla `servicios` de Supabase (que es la fuente real del
+   precio que cobra el checkout y del que muestra la página de detalle), la tarjeta de `app/servicios/page.tsx`, los dos
+   respaldos del código (`checkout-tax-filing` y la página de checkout) y el knowledge (`faq_impuestos.md`, `q47`).
+   Verificado leyendo la fila de vuelta y con una consulta real al chat.
+2. **Datos de terceros verificados con fuente y fecha (20-09-2026)**: USPTO $350/clase de tarifa base electrónica
+   (los $250-$350 anteriores arrastraban las tarifas TEAS Plus/Standard, ya inexistentes) más recargos de $100/$200/$200;
+   EB-5 $1.050.000 y $800.000 con primer ajuste por inflación para peticiones desde el 01-01-2027; Amazon Professional
+   $39,99/mes (el dato anterior ya era correcto); Mercury, Relay y Wise sin cuota mensual obligatoria ni mínimos.
+   Volcado completo en `C:\Users\recompra.es\verificacion_tarifas_2026.json`.
+
+### Pendientes de contenido detectados en la verificación
+
+- El system prompt del chat (línea 30) y `lib/blog/posts.ts:657` dicen que el mantenimiento anual en Wyoming cuesta
+  **«$62 de tasas»**; el fee schedule oficial (revisado en junio de 2026) fija la licencia del Annual Report en
+  **$60 mínimo** (o 0,0002 de los activos radicados en el estado, si es mayor).
+- El system prompt afirma que «TODA LLC de extranjero debe presentar» el 5472. La excepción del IRS (instrucciones del
+  formulario, «Who Must File») exime del formulario cuando no hubo ninguna transacción reportable en el año, y la
+  Parte V aclara que cuentan las aportaciones, las distribuciones y los importes pagados o recibidos en la formación o
+  disolución de la entidad. Un LLC dormido de verdad no está obligado.
+- El endpoint `app/api/orders/tax-filing/create/route.ts:73` sigue con `unit_amount: 24900` ($249) y no lo llama ninguna
+  página del frontend: o es código muerto o un flujo heredado con otro precio.

@@ -10,8 +10,8 @@ Para proteger tu marca en todo el territorio de Estados Unidos y, crucialmente, 
 3. **El obstáculo para extranjeros (U.S. Counsel Rule):** Si tú (el dueño) vives fuera de EE.UU. o tu LLC extranjera es la propietaria, la USPTO exige por ley que estés representado por un **abogado licenciado en los Estados Unidos**. No puedes presentar la solicitud por tu cuenta en la web del gobierno.
 
 ## ¿Cuánto cuesta y cuánto tarda?
-- **Tiempo:** La USPTO está muy saturada. Actualmente, un registro exitoso tarda entre **10 y 14 meses**.
-- **Coste gubernamental:** ~$250 a $350 por Clase (categoría de producto).
+- **Tiempo:** El primer examen de la USPTO llega en unos **4-5 meses** (dato oficial de su año fiscal 2026). No es el plazo final: hay que sumar la respuesta al examen, los 30 días de publicación para oposiciones y la emisión del certificado. Si hay oposiciones, se alarga.
+- **Coste gubernamental:** **$350 por Clase** (tarifa base electrónica, vigente desde enero de 2025). Con recargos si la solicitud está incompleta ($100), si se describe con texto libre en lugar del ID Manual ($200) o si se supera el primer millar de caracteres ($200 más por cada millar).
 - **Coste del abogado:** Alrededor de $500 - $1,500 en honorarios legales.
 
 ## Amazon Brand Registry

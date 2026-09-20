@@ -6,11 +6,11 @@ Este es uno de los aspectos más valorados de las LLCs americanas para extranjer
 
 | Concepto | Coste aproximado |
 |----------|-----------------|
-| Cuota anual estatal (Wyoming) | ~$52/año |
+| Cuota anual estatal (Wyoming) | $60/año (mínimo) |
 | Agente Registrado | $99–$199/año |
-| Formulario 5472 + 1120 (IRS) | $0 si lo hace Open LLC USA; $200–$500 con CPA externo |
+| Formulario 5472 + 1120 (IRS) | $297 con Open LLC USA (incluido si tienes el plan Business); $200–$500 con CPA externo |
 | Cuenta bancaria digital (Mercury/Wise) | $0–$30/mes |
-| **Total mínimo estimado** | **~$350–$800 USD/año** |
+| **Total mínimo estimado** | **~$450–$1.100 USD/año** (según plan y si contratas CPA externo) |
 
 ## Costes opcionales o según uso:
 

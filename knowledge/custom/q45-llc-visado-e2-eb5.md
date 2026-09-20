@@ -24,6 +24,8 @@ La mayoría de países latinoamericanos **NO tienen tratado E-2** con EE.UU. (ex
 ### ¿Qué es?
 Otorga la Green Card directamente a cambio de una inversión mínima de **$1.05 millones** (o $800,000 en zonas de empleo objetivo) que cree al menos 10 empleos a tiempo completo para trabajadores americanos.
 
+**Ajuste por inflación:** la ley prevé revisar estos importes cada cinco años según el IPC. El primer ajuste se aplicará a las peticiones presentadas **desde el 1 de enero de 2027** y todavía no está publicado. A fecha de septiembre de 2026 siguen vigentes $1.050.000 y $800.000.
+
 ### ¿La LLC sirve?
 Sí, aunque el EB-5 generalmente se canaliza a través de **Regional Centers** aprobados por USCIS más que mediante LLCs propias.
 

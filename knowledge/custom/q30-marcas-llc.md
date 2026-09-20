@@ -12,12 +12,12 @@ Sí. Con tu LLC americana puedes solicitar el registro de marcas ante la **USPTO
 ## ¿Cómo es el proceso?
 1. Búsqueda de disponibilidad de la marca (TESS database de USPTO).
 2. Solicitud ante USPTO con descripción de la marca y clases de productos/servicios (clasificación de Niza).
-3. El proceso de examen dura normalmente entre 8 y 12 meses.
+3. El primer examen de la USPTO llega en unos 4-5 meses (dato oficial de su año fiscal 2026); el registro completo depende de si hay objeciones u oposiciones.
 4. Una vez aprobada, se publica para oposiciones durante 30 días.
 5. Si no hay oposición, la marca queda registrada.
 
 ## Coste aproximado:
-La tasa oficial de la USPTO es de $250–$350 por clase de producto/servicio. A esto se suma el coste del abogado o agente de marcas (trademarks attorney).
+La tasa oficial de la USPTO es de **$350 por clase** de producto/servicio (tarifa base electrónica, vigente desde enero de 2025). Se suman recargos si la solicitud está incompleta ($100 por clase), si se describe el producto con texto libre en lugar del Trademark ID Manual ($200) o si se supera el primer millar de caracteres de descripción ($200 por cada millar extra). Presentar en papel cuesta $850 por clase. A esto se añade el coste del abogado o agente de marcas (trademarks attorney).
 
 ## Diferencia con el registro de marca en tu país:
 Una marca registrada en EE.UU. no protege automáticamente en España o Latinoamérica, y viceversa. Si quieres protección internacional, puedes usar el Sistema de Madrid (WIPO) para registrar en múltiples países desde una sola solicitud.

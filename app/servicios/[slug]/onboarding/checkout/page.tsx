@@ -101,9 +101,9 @@ export default function CheckoutPage() {
 
     // Si es Tax Filing, leer el precio real del servicio
     if (esTaxFiling) {
-      const rawTax = pedido?.servicio?.precio ?? pedido?.servicio?.price ?? 397
+      const rawTax = pedido?.servicio?.precio ?? pedido?.servicio?.price ?? 297
       const nTax = typeof rawTax === 'number' ? rawTax : Number(String(rawTax).replace(/[^\d.,]/g, '').replace(',', '.'))
-      return Number.isFinite(nTax) && nTax > 0 ? nTax : 397
+      return Number.isFinite(nTax) && nTax > 0 ? nTax : 297
     }
 
     // Para otros servicios, buscar en paquete o servicio

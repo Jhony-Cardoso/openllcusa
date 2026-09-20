@@ -1935,26 +1935,50 @@ npx tsx scripts/ingest-knowledge.ts --only q92-tiempo,q04-tiempo,q33-cambiar,q98
 
 - **Files created/modified:** `AGENTS.md`, skill `rag-knowledge-base-maintenance` (nuevo), `knowledge/custom/q92|q04|q33|q98|q100`, `scripts/ingest-knowledge.ts` (flag `--only`), `docs/INFORME_KNOWLEDGE.md` (§11), `chat_history.md`; índice re-ingerido y reconciliado.
 - **Pendiente de decisión:** precio del servicio 5472 + 1120 ($250 en knowledge y prompt del chat frente a $397 en `/servicios`).
+---
+### 📅 Chat Session: 2026-09-20 22:40
+**Main objective:** Cambios 1-6 autorizados (USPTO, EB-5, enmienda de Wyoming, cuota anual de Wyoming, precio del 5472) y alineación del precio en $297.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 20-09-2026)
+#### 👤 User Request:
+> ✅ Autorizo los cambios 1 al 6. El importe del servicio 5472 + 1120 será de $297 ✅ (una sola tarifa), y con ello alinea el knowledge, el prompt del chat y /servicios.
+
+#### 🤖 Agent Solution:
+- **Verificación externa previa** (subagente + comprobación propia en las fuentes): la tasa base de la USPTO es de **$350/clase** (electrónica, vigente desde el 19-01-2025) con recargos de $100 (información insuficiente), $200 (texto libre en vez del ID Manual) y $200 (por cada millar extra); EB-5 sigue en **$1.050.000 / $800.000** con primer ajuste por inflación para peticiones desde el 01-01-2027; Amazon ya estaba correcto en $39,99/mes; Mercury, Relay y Wise sin cuota mensual obligatoria. Datos confirmados en uspto.gov, uscis.gov y sell.amazon.com.
+- **Corrección de un error propio:** mi cambio del día anterior en `q33` (enmienda en Wyoming de $60 a $100) estaba mal. El fee schedule revisado en junio de 2026 lista $100 para *Statutory Foundations*, mientras que la sección de **Limited Liability Companies** dice «Amendment/Dissolution/Any Other Filing — $60.00». Revertido a $60 con la cita. El mismo documento fija la licencia del Annual Report en **$60 mínimo**.
+- **Aplicado:** `q30` y `q127` (tarifa $350 + recargos y plazo de primer examen unificado en 4-5 meses según el dato oficial de la USPTO), `q33` (revertido a $60), `q45` (nota del ajuste de 2027), `q47` ($60 de cuota estatal, $297 del servicio fiscal y total anual recalculado).
+- **Precio $297 en los cuatro sitios donde vivía:** fila de la tabla `servicios` de Supabase (397 → 297; es la fuente real del precio del checkout y de la página de detalle), tarjeta de `app/servicios/page.tsx` ($397 → $297), respaldo de `app/api/stripe/checkout-tax-filing/route.ts` (39700 → 29700) y respaldo de `app/servicios/[slug]/onboarding/checkout/page.tsx` (397 → 297). Verificado leyendo la fila de vuelta y con una consulta real al chat, que responde «$297».
+- **Índice:** ingesta filtrada de los 6 ficheros tocados + reconciliación (7 filas fantasma). Estado: 801 filas, 801 únicas, 0 duplicados, 0 restos del scrape.
+
+#### 💻 Key Code:
+```bash
+npx tsx scripts/ingest-knowledge.ts --only q30-marcas,q127-registrar,q33-cambiar,q45-llc-visado,q47-coste,faq_impuestos
+```
+
+- **Files created/modified:** `knowledge/custom/q30|q127|q33|q45|q47|faq_impuestos`, `app/servicios/page.tsx`, `app/api/stripe/checkout-tax-filing/route.ts`, `app/servicios/[slug]/onboarding/checkout/page.tsx`, `docs/INFORME_KNOWLEDGE.md`, `chat_history.md`; fila de Supabase `servicios` actualizada.
+- **Nuevos pendientes:** el «$62» de Wyoming en el prompt del chat y el blog (el oficial es $60 mínimo); la afirmación «TODA LLC debe presentar el 5472» frente a la excepción del IRS; el endpoint heredado con $249 en `orders/tax-filing/create`.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 20-09-2026, 22:40)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
 
 **Producto / decisiones de negocio**
-1. **Precio del servicio 5472 + 1120 sin unificar** — `faq_impuestos.md` y el system prompt del chat dicen $250;
-   `/servicios` lo lista a $397. Decidir el precio correcto y alinear los tres sitios. *Detectado el 20-09-2026.*
-2. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
+1. **El «$62» de Wyoming** — el system prompt del chat (línea 30) y `lib/blog/posts.ts:657` dicen que el mantenimiento
+   anual en Wyoming cuesta $62; el fee schedule oficial (junio de 2026) fija $60 como mínimo. Decidir si se corrige.
+2. **Afirmación «TODA LLC de extranjero debe presentar el 5472»** (prompt del chat, `q11`) frente a la excepción del
+   IRS para LLC sin transacciones reportables. Es una decisión de comunicación, no de datos. *Detectado el 20-09-2026.*
+3. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
    muestran `TU_BILLETERA_*_AQUI`. *Estado (19-09-2026):* pendiente hasta que existan las wallets.
-3. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
-4. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
+4. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
+5. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
-5. **Datos de terceros sujetos a cambios** (requieren verificación externa con fecha): tarifas de la USPTO (`q30`,
-   `q127`), inversión EB-5 (`q45`) y cifras de plataformas como Amazon o Mercury. *Detectado el 20-09-2026.*
+6. **Payoneer sin verificar** — `q116` cita 1% por recibir y ~2% de cambio, sin fecha ni fuente. *Detectado el 20-09-2026.*
 
 **Técnico**
-6. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19 y 20 de septiembre: `/boi-report`,
+7. **Endpoint heredado con $249** — `app/api/orders/tax-filing/create/route.ts:73` (`unit_amount: 24900`), sin llamadas
+   desde el frontend. Decidir si se alinea a $297 o se elimina. *Detectado el 20-09-2026.*
+8. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19 y 20 de septiembre: `/boi-report`,
    `/guias/us`, corrección del BOI (prompt + base de conocimiento), títulos, canonical, sitemap, nota de plazos,
-   ancla de la sección 8 y limpieza de `/precios`.
-7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
-   (`TEST_SS4_*.pdf`, `diagnostico-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
+   ancla de la sección 8, limpieza de `/precios` y el nuevo precio de $297.
+9. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+   (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2025.*

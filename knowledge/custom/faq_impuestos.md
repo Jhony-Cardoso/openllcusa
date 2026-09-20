@@ -8,7 +8,7 @@ Tus ingresos tributarán en tu país de residencia fiscal personal.
 Aunque no pagues impuestos en EE. UU., el IRS (Hacienda de EE. UU.) **obliga** a todas las LLC de extranjeros a reportar sus transacciones cada año.
 Esto se hace enviando el [Formulario 5472](/servicios/form-5472-1120) junto con una portada del Formulario 1120.
 Si no envías este formulario a tiempo (generalmente antes del 15 de abril de cada año), la multa automática es de **$25,000 USD**.
-Open LLC USA ofrece el servicio de preparación y envío de estos formularios por $250. Puedes [contratarlo aquí](/servicios/form-5472-1120).
+Open LLC USA ofrece el servicio de preparación y envío de estos formularios por $297. Puedes [contratarlo aquí](/servicios/form-5472-1120).
 
 ## ¿Qué es el BOI Report (FinCEN) y tengo que presentarlo?
 Es un reporte de beneficiarios reales (Beneficial Ownership Information) que se presenta ante el FinCEN, el organismo del Tesoro de EE. UU. para la prevención del blanqueo de capitales. Lo introdujo la Ley de Transparencia Corporativa (Corporate Transparency Act).

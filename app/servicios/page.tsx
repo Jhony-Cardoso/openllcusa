@@ -9,7 +9,7 @@ const serviciosIndividuales = [
   {
     slug: 'impuestos/declaracion-anual-llc',
     title: 'Declaración de Impuestos',
-    price: '$397',
+    price: '$297',
     tagline: 'Presentación anual del Formulario 1120 + 5472 ante el IRS.',
     features: ['Presentación completa', 'Evita multas del IRS', 'Asesoría fiscal incluida', 'Entrega de documentos'],
     highlight: true,

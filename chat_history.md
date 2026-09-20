@@ -1979,18 +1979,42 @@ npx tsx scripts/ingest-knowledge.ts --only q146-comparativa,q147-no-florida,q191
 
 - **Files created/modified:** 14 ficheros web (ver lista arriba), `knowledge/custom/q146|q147|q191|q268|q116`, `app/api/orders/tax-filing/create/route.ts`, `chat_history.md`; eliminado `components/pricing/PricingCards.tsx`.
 - **No tocado (pendiente de decisión):** en `app/llc-texas/page.tsx` el bloque de ventajas (que es una lista de Wyoming y acaba con «Ver paquetes para Wyoming») dice «No existe el Franchise Tax de **Texas**» donde probablemente debería decir Wyoming, y la línea 191 habla de «Creación súper económica ($102)» cuando la tasa de Wyoming son $100. También sigue pendiente el matiz del 5472 obligatorio «para TODA LLC».
+---
+### 📅 Chat Session: 2026-09-21 01:10
+**Main objective:** Precio del 5472 en el prompt ($250 → $297) e implementación de la excepción del IRS en el prompt.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 20-09-2026, 23:55)
+#### 👤 User Request:
+> 1. Lo de Texas está correcto (es una comparación): no hay que tocar nada. 2. Implementa la excepción en el prompt DEJANDO CLARO que tiene lugar SOLAMENTE cuando no procede reportar transacciones en las Partes IV, V y VI del formulario 5472. Además: he preguntado a Zara y responde que el precio es de $250. Corrígelo.
+
+#### 🤖 Agent Solution:
+- **Localizada la fuente del $250: era el propio prompt del chat** (línea 39: «Open LLC USA ofrece este servicio desde $250»). En mi revisión anterior no lo detecté porque al mostrar la línea la truncaba a 175 caracteres; el precio quedaba fuera del corte. Corregido a **$297**.
+- **Excepción del IRS implementada en el prompt**, con las Partes IV, V y VI citadas expresamente (aportaciones de capital, distribuciones, importes pagados o recibidos en la formación, disolución, adquisición o transmisión, y cualquier operación con el propietario extranjero), más la nota de que el prompt manda sobre el material de apoyo.
+- **Comprobado con el chat real:** el precio responde $297; una LLC con aportación de capital y un gasto pagado por el dueño responde que **sí** debe presentar. Pero una LLC **sin ningún movimiento sigue recibiendo un «sí, estás obligado»**: los fragmentos del RAG que recupera (`q18`: «debe presentarse **siempre** [...] independientemente de si [...] No realizó ninguna transacción») pesan más que el prompt. La excepción no queda operativa hasta corregir esos ficheros: `q18` (líneas 6, 8, 11, 19-20), `q13` (líneas 3 y 8-9), `q11` (línea 22), `q81` (línea 15) y `q51` (línea 29). Propuesto al usuario, pendiente de autorización.
+- **Hallazgo extra:** la cuota anual de Wyoming sigue como «~$52/año» en 5 ficheros del knowledge (`q05`, `q18`, `q31`, `q37`, `q53`); el sitio web ya está limpio.
+- La base de conocimiento no tiene ningún precio antiguo: la única fila con «$250» es la del seguro FDIC de Relay (`q114`).
+
+#### 💻 Key Code:
+```bash
+# comprobar el precio real que responde el asistente
+curl -s -X POST http://localhost:3000/api/chat -H "Content-Type: application/json" \
+  -d '{"messages":[{"id":"1","role":"user","parts":[{"type":"text","text":"¿Cuánto cuesta el 5472?"}]}]}'
+```
+
+- **Files created/modified:** `app/api/chat/route.ts` (precio + excepción + prioridad), `chat_history.md`.
+- **Pendiente de autorización:** alinear la excepción del IRS en los 5 ficheros del knowledge que la contradicen y corregir los «~$52» de Wyoming en los otros 5.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 21-09-2026, 01:10)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
 
 **Producto / decisiones de negocio**
-1. **Afirmación «TODA LLC de extranjero debe presentar el 5472»** (prompt del chat, `q11`) frente a la excepción del
-   IRS para LLC sin transacciones reportables. Es una decisión de comunicación, no de datos. *Detectado el 20-09-2026.*
-2. **Bloque de ventajas de `app/llc-texas/page.tsx`**: la lista (que promociona Wyoming y cierra con «Ver paquetes para
-   Wyoming») dice «No existe el Franchise Tax de Texas» donde parece que debería decir Wyoming; y la línea 191 dice
-   «Creación súper económica ($102)» cuando la tasa de Wyoming son $100. Revisar el copy. *Detectado el 20-09-2026.*
+1. **Excepción del IRS en el knowledge (5 ficheros)** — el prompt ya la aplica, pero `q18`, `q11`, `q13`, `q81` y `q51`
+   siguen afirmando que el 5472 «debe presentarse siempre» mientras la LLC esté activa, y el RAG pesa más que el
+   prompt: Zara responde «sí, estás obligado» a una LLC sin ningún movimiento. *Propuesto el 21-09-2026, pendiente de
+   autorización.*
+2. **Cuota anual de Wyoming «~$52» en 5 ficheros del knowledge** (`q05`, `q18`, `q31`, `q37`, `q53`) — el oficial son
+   $60 como mínimo. El sitio web ya está corregido. *Detectado el 21-09-2026.*
 3. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
    muestran `TU_BILLETERA_*_AQUI`. *Estado (19-09-2026):* pendiente hasta que existan las wallets.
 4. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
@@ -1998,9 +2022,9 @@ npx tsx scripts/ingest-knowledge.ts --only q146-comparativa,q147-no-florida,q191
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
 
 **Técnico**
-6. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19 y 20 de septiembre: `/boi-report`,
+6. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19, 20 y 21 de septiembre: `/boi-report`,
    `/guias/us`, corrección del BOI (prompt + base de conocimiento), títulos, canonical, sitemap, nota de plazos,
-   ancla de la sección 8, limpieza de `/precios`, precio de $297 del servicio fiscal, eliminación del código muerto
-   y corrección de los $60 de Wyoming.
+   ancla de la sección 8, limpieza de `/precios`, precio de $297 del servicio fiscal, las tasas de Wyoming a $60 y la
+   excepción del 5472 en el prompt.
 7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

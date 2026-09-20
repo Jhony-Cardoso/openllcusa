@@ -6,7 +6,7 @@ La elección del estado es la primera gran decisión. Aquí te damos una visión
 Wyoming es el paraíso de las pequeñas y medianas empresas, e-commerce, freelancers y consultores.
 - **Ventajas:** 
   - Privacidad extrema: Tu nombre y dirección no aparecen en la base de datos pública del estado (están protegidos por el Agente Registrado).
-  - Coste de mantenimiento bajísimo: $62 anuales al estado + coste de tu Agente Registrado. No hay "Franchise Tax".
+  - Coste de mantenimiento bajísimo: $60 anuales al estado + coste de tu Agente Registrado. No hay "Franchise Tax".
   - Las mejores leyes de protección de activos (Charging Order Protection) a nivel nacional.
 - **Ideal para:** 95% de los emprendedores digitales que no buscan rondas de inversión.
 

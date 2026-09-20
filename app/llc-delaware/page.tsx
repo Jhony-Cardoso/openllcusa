@@ -73,7 +73,7 @@ const faqSchema = {
       name: 'Si solo tengo un e-commerce, ¿me conviene Delaware?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Generalmente no. Para modelos de negocio unipersonales (Single-Member LLC) como tiendas de Shopify, Amazon FBA, agencias SMMA o servicios freelance, el costo de $300 anuales del Franchise Tax es innecesario. En esos casos, estados como Wyoming o New Mexico (con costos anuales entre $0 y $62) son opciones mucho más eficientes.',
+        text: 'Generalmente no. Para modelos de negocio unipersonales (Single-Member LLC) como tiendas de Shopify, Amazon FBA, agencias SMMA o servicios freelance, el costo de $300 anuales del Franchise Tax es innecesario. En esos casos, estados como Wyoming o New Mexico (con costos anuales entre $0 y $60) son opciones mucho más eficientes.',
       },
     },
   ],

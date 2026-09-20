@@ -51,7 +51,7 @@ const ESTADOS = [
     code: 'wy',
     nombre: 'Wyoming',
     coste: '$100',
-    anual: '≈$62 (Annual Report) + agente registrado',
+    anual: '≈$60 (Annual Report) + agente registrado',
     privacidad: 'Alta: no exige publicar socios ni directores',
     ideal: 'La opción por defecto para no residentes que buscan bajo coste y privacidad.',
     href: '/llc-wyoming',

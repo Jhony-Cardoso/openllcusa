@@ -196,8 +196,8 @@ export default function LlcTexasPage() {
                   Wyoming no publica tu nombre ni tu dirección en ningún registro público de internet.
                 </li>
                 <li>
-                  <strong className="text-white block mb-1">Mantenimiento ridículo ($62/año):</strong>
-                  No existe el Franchise Tax de Texas. Solo pagas una pequeña tasa fija de $62 anuales al estado de manera directa y sencilla.
+                  <strong className="text-white block mb-1">Mantenimiento ridículo ($60/año):</strong>
+                  No existe el Franchise Tax de Texas. Solo pagas una pequeña tasa fija de $60 anuales al estado de manera directa y sencilla.
                 </li>
               </ul>
               

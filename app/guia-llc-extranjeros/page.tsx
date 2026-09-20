@@ -87,7 +87,7 @@ export default function GuiaLlcExtranjeros() {
             <div className="grid gap-4">
               <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                 <h3 className="font-bold text-slate-800 mb-2">🏔️ Wyoming — Nuestra recomendación habitual</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Tasa anual mínima de solo $62. Alta privacidad (los socios no aparecen en registros públicos). Sin impuesto estatal sobre la renta. Perfecto para negocios digitales, consultoría y e-commerce.</p>
+                <p className="text-slate-600 text-sm leading-relaxed">Tasa anual mínima de solo $60. Alta privacidad (los socios no aparecen en registros públicos). Sin impuesto estatal sobre la renta. Perfecto para negocios digitales, consultoría y e-commerce.</p>
               </div>
               <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                 <h3 className="font-bold text-slate-800 mb-2">🏙️ Delaware — Para startups con inversores</h3>

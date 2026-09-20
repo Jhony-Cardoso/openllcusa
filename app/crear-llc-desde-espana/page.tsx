@@ -138,7 +138,7 @@ export default function CrearLlcEspanaPage() {
               {
                 icon: '💸',
                 title: 'Menores Costes de Mantenimiento',
-                desc: 'Olvídate de las cuotas mensuales de gestoría para IVA trimestral y libros contables complejos. En estados como Wyoming, el coste estatal anual es de solo $62.',
+                desc: 'Olvídate de las cuotas mensuales de gestoría para IVA trimestral y libros contables complejos. En estados como Wyoming, el coste estatal anual es de solo $60.',
               },
               {
                 icon: '🌍',

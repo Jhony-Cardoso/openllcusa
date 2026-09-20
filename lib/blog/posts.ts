@@ -339,7 +339,7 @@ Mantener una SL en España cuesta, como mínimo:
 Versus la LLC:
 
 - **Agente registrado**: ~$100-200/año
-- **Renovación tasa estatal Wyoming**: ~$62/año
+- **Renovación tasa estatal Wyoming**: ~$60/año
 - **Gestoría/contabilidad** (si la contratas): $300-600/año
 
 **Total mínimo anual LLC: ~$462-860 USD**
@@ -654,7 +654,7 @@ La diferencia más notable para negocios digitales, agencias, e-commerce y freel
 
 ### Wyoming
 - **Costo Estatal de Formación**: \~$100 USD.
-- **Reporte Anual (Annual Report)**: **$62 USD** fijos (si tus activos en Wyoming son menores a $250,000, lo cual es casi siempre el caso para negocios digitales). Se paga en el aniversario de formación de tu empresa.
+- **Reporte Anual (Annual Report)**: **$60 USD** fijos (si tus activos radicados en Wyoming no superan los $300.000, lo cual es casi siempre el caso para negocios digitales). Se paga en el aniversario de formación de tu empresa.
 
 🏆 **Ganador en Costos:** **Wyoming**. Te ahorras más de $200 USD anuales en tasas del estado.
 

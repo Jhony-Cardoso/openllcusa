@@ -65,7 +65,7 @@ const faqSchema = {
       name: 'New Mexico vs Wyoming: ¿Cuál debería elegir?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Ambos son excelentes para no residentes. Wyoming cobra $62 anuales pero tiene mejores leyes de protección de activos corporativos en tribunales. New Mexico cobra $0 anuales. Si buscas el costo más bajo absoluto y anonimato para operar negocios online (Dropshipping, Freelance, Agencias), New Mexico es inigualable.',
+        text: 'Ambos son excelentes para no residentes. Wyoming cobra $60 anuales pero tiene mejores leyes de protección de activos corporativos en tribunales. New Mexico cobra $0 anuales. Si buscas el costo más bajo absoluto y anonimato para operar negocios online (Dropshipping, Freelance, Agencias), New Mexico es inigualable.',
       },
     },
     {
@@ -208,7 +208,7 @@ export default function NewMexicoLlcPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center border-b border-white/10 pb-2">
                     <span className="text-slate-300">Renovación Estatal Anual</span>
-                    <span className="font-bold text-white">$62 USD</span>
+                    <span className="font-bold text-white">$60 USD</span>
                   </div>
                   <div className="flex justify-between items-center border-b border-white/10 pb-2">
                     <span className="text-slate-300">Privacidad</span>

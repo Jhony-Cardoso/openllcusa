@@ -5,7 +5,7 @@ Es muy común que los hispanohablantes quieran abrir su LLC en Florida (por Miam
 ## Florida
 Florida es fantástica si te mudas allí a vivir, pero si operas desde Colombia o España:
 - **La base de datos pública de Sunbiz:** Todo en Florida es público y transparente. El estado de Florida exige publicar en internet (Sunbiz.org) el nombre y apellidos completos de los "Managers" o dueños de la LLC, y la dirección de la empresa. **Adiós a la privacidad.**
-- **Mantenimiento costoso:** El reporte anual (Annual Report) de Florida cuesta $138.75 cada año. Si se te pasa la fecha límite (1 de mayo), la multa es de $400. Y si no la pagas, te disuelven la empresa automáticamente en septiembre. (Wyoming cobra $62 y da mucho más margen).
+- **Mantenimiento costoso:** El reporte anual (Annual Report) de Florida cuesta $138.75 cada año. Si se te pasa la fecha límite (1 de mayo), la multa es de $400. Y si no la pagas, te disuelven la empresa automáticamente en septiembre. (Wyoming cobra $60 y da mucho más margen).
 
 ## Texas
 Texas es otro estado excelente para vivir, pero problemático corporativamente:

@@ -219,7 +219,7 @@ export default function LlcTradingPage() {
           </h2>
           <p className="text-slate-300 text-lg mb-10 leading-relaxed">
             Como trader, tu mayor activo es tu capital y tu privacidad. Wyoming ofrece las mejores leyes de protección de activos (Asset Protection) de EE.UU. 
-            Además, **nadie puede buscar tu nombre en internet** para ver cuánto dinero gestionas, porque los dueños de las LLC en Wyoming son 100% anónimos en el registro público. Todo esto por solo $62 de mantenimiento anual.
+            Además, **nadie puede buscar tu nombre en internet** para ver cuánto dinero gestionas, porque los dueños de las LLC en Wyoming son 100% anónimos en el registro público. Todo esto por solo $60 de mantenimiento anual.
           </p>
           <Link
             href="/precios"

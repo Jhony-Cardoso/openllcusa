@@ -50,7 +50,7 @@ const faqSchema = {
       name: '¿Cuánto cuesta mantener una LLC al año?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Depende del estado. En Wyoming cuesta $62 al estado más la cuota de tu Agente Registrado. En Nuevo México cuesta $0 al estado, solo pagas el Agente. En Delaware cuesta un mínimo de $300 obligatorios.',
+        text: 'Depende del estado. En Wyoming cuesta $60 al estado más la cuota de tu Agente Registrado. En Nuevo México cuesta $0 al estado, solo pagas el Agente. En Delaware cuesta un mínimo de $300 obligatorios.',
       },
     },
     {
@@ -124,7 +124,7 @@ export default function CostoLlcPage() {
                 El "Annual Report" o "Franchise Tax" es una tasa de renovación obligatoria que le pagas directamente al gobierno del estado para mantener tu empresa activa.
               </p>
               <ul className="space-y-3">
-                <li className="flex justify-between font-semibold"><span>Wyoming</span> <span>$62</span></li>
+                <li className="flex justify-between font-semibold"><span>Wyoming</span> <span>$60</span></li>
                 <li className="flex justify-between font-semibold"><span>Nuevo México</span> <span>$0</span></li>
                 <li className="flex justify-between font-semibold text-red-500"><span>Delaware</span> <span>$300 min.</span></li>
               </ul>

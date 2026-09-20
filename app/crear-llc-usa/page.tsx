@@ -42,7 +42,7 @@ const howToSchema = {
   totalTime: "P7D",
   estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "449" },
   step: [
-    { "@type": "HowToStep", position: 1, name: "Elige el estado donde registrar tu LLC", text: "Wyoming es la opción más popular para no residentes por sus bajos costes anuales (~$62) y alta privacidad." },
+    { "@type": "HowToStep", position: 1, name: "Elige el estado donde registrar tu LLC", text: "Wyoming es la opción más popular para no residentes por sus bajos costes anuales (~$60) y alta privacidad." },
     { "@type": "HowToStep", position: 2, name: "Elige el nombre de tu LLC", text: "El nombre debe ser único en el estado y terminar en LLC o Limited Liability Company." },
     { "@type": "HowToStep", position: 3, name: "Contratar un agente registrado", text: "Toda LLC necesita un agente registrado en el estado. Lo incluimos en todos nuestros planes." },
     { "@type": "HowToStep", position: 4, name: "Presentar el Articles of Organization", text: "Documento oficial de constitución que registramos ante el estado en tu nombre en 24-48 horas." },
@@ -68,7 +68,7 @@ const faqSchema = {
     {
       "@type": "Question",
       name: "¿Qué es mejor: Wyoming o Delaware para una LLC siendo extranjero?",
-      acceptedAnswer: { "@type": "Answer", text: "Para negocios digitales, Wyoming es la mejor opción: tasa anual mínima ($62), alta privacidad y sin impuesto estatal. Delaware es preferible si buscas inversores." },
+      acceptedAnswer: { "@type": "Answer", text: "Para negocios digitales, Wyoming es la mejor opción: tasa anual mínima ($60), alta privacidad y sin impuesto estatal. Delaware es preferible si buscas inversores." },
     },
     {
       "@type": "Question",
@@ -103,7 +103,7 @@ const ESTADOS = [
     badge: "Nuestra recomendación",
     badgeColor: "bg-green-100 text-green-800",
     border: "border-green-300 ring-2 ring-green-200",
-    ventajas: ["Tasa anual mínima: ~$62/año", "Alta privacidad (socios no públicos)", "Sin impuesto estatal sobre la renta", "Sin capital mínimo requerido", "Proceso de registro muy ágil"],
+    ventajas: ["Tasa anual mínima: ~$60/año", "Alta privacidad (socios no públicos)", "Sin impuesto estatal sobre la renta", "Sin capital mínimo requerido", "Proceso de registro muy ágil"],
     ideal: "Negocios digitales, SaaS, consultoría, e-commerce, freelancers",
   },
   {

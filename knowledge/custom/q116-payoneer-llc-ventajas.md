@@ -12,7 +12,7 @@ Si creaste una LLC, puedes abrir una cuenta Payoneer corporativa a nombre de la 
 5. **Retiro directo a banco local:** Facilita mucho mover el dinero a tu banco en Argentina, Colombia, Perú, etc.
 
 ## Inconvenientes (Las letras pequeñas):
-1. **Comisiones altas:** Payoneer cobra un 1% por recibir pagos de clientes (a menos que provengan del ecosistema Payoneer o marketplaces específicos). También cobran alrededor de un 2% al convertir divisas o retirar a tu banco local.
+1. **Comisiones altas:** según su tarifa oficial (consultada en septiembre de 2026), Payoneer cobra **1% por recibir pagos** (mínimo $1; y hasta 3,99% + $0,49 si quien paga usa tarjeta de crédito) y **entre 1,2% y 4% por retirar el dinero a tu banco local**, según país y divisa, con mínimos de hasta $20 en algunos países. En compras con la tarjeta sin conversión de divisa, hasta 1,8% (gratis si el comercio está en el mismo país emisor de la tarjeta). Fuente: payoneer.com/about/pricing.
 2. **No es un banco real:** Es una Institución de Dinero Electrónico. No está asegurado por la FDIC (el seguro del gobierno americano contra quiebras bancarias).
 3. **Bloqueos repentinos:** Su algoritmo de riesgo puede ser caprichoso. Si recibes un pago inusualmente grande (fuera de tu patrón), pueden congelar la cuenta pidiendo documentos de soporte y tardar semanas en responder.
 4. **No es ideal para Stripe:** Stripe a menudo identifica los "Routing Numbers" de Payoneer como cuentas virtuales de prepago y puede rechazar conectarse a ellas o pausar las liquidaciones. Para Stripe, siempre es mejor Mercury o Relay.

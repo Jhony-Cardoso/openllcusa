@@ -70,7 +70,7 @@ export async function POST(req: Request) {
                             name: 'Servicio Fiscal: Formulario 5472 + 1120',
                             description: `Preparación y presentación año fiscal ${taxData.taxYear || new Date().getFullYear() - 1}. Incluye Supporting Statements.`,
                         },
-                        unit_amount: 24900, // $249.00 USD
+                        unit_amount: 29700, // $297.00 USD
                     },
                     quantity: 1,
                 },

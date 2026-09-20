@@ -1956,29 +1956,51 @@ npx tsx scripts/ingest-knowledge.ts --only q30-marcas,q127-registrar,q33-cambiar
 
 - **Files created/modified:** `knowledge/custom/q30|q127|q33|q45|q47|faq_impuestos`, `app/servicios/page.tsx`, `app/api/stripe/checkout-tax-filing/route.ts`, `app/servicios/[slug]/onboarding/checkout/page.tsx`, `docs/INFORME_KNOWLEDGE.md`, `chat_history.md`; fila de Supabase `servicios` actualizada.
 - **Nuevos pendientes:** el «$62» de Wyoming en el prompt del chat y el blog (el oficial es $60 mínimo); la afirmación «TODA LLC debe presentar el 5472» frente a la excepción del IRS; el endpoint heredado con $249 en `orders/tax-filing/create`.
+---
+### 📅 Chat Session: 2026-09-20 23:55
+**Main objective:** Corregir los "$62" de Wyoming, alinear el endpoint heredado con $297, eliminar el código muerto PricingCards y verificar Payoneer.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 20-09-2026, 22:40)
+#### 👤 User Request:
+> 1. "$62 de tasas" en Wyoming — R. Modifícalo, de acuerdo con la tasa oficial. 3. Endpoint heredado con $249 — R. ALINÉALO. 4. Código muerto PricingCards.tsx — R. Si la solución que propones es suprimirlo, procede. 5. Payoneer sin verificar — Verifícalo.
+
+#### 🤖 Agent Solution:
+- **El "$62" era la tasa + el recargo de la tarjeta.** El fee schedule de Wyoming (revisado en junio de 2026) fija la licencia del Annual Report en $60 mínimo; el ≈$62 corresponde a esos $60 más el ~2,4% que cobra el procesador de tarjetas al pagar online. Corregidos **26 usos en 14 ficheros web** (prompt del chat, `costo-crear-llc`, `crear-llc-desde-espana`, `crear-llc-usa` ×3, `faq`, `guia-llc-extranjeros`, `guias/us`, `llc-delaware`, `llc-new-mexico` ×2, `llc-texas` ×2, `llc-trading-con-cuentas-de-fondeo`, `llc-wyoming` ×7, `precios`, `blog/posts.ts` ×2) y **4 del knowledge** (`q146`, `q147`, `q191`, `q268`). Además, el umbral del 0,0002 pasa de $250.000 a $300.000 (es el punto en que la tasa supera los $60).
+- **Endpoint heredado alineado:** `app/api/orders/tax-filing/create/route.ts:73`, `unit_amount: 24900` → `29700`.
+- **Código muerto eliminado:** `components/pricing/PricingCards.tsx` (127 líneas). Contenía una tabla de precios ajena al sitio actual (paquetes BASIC $249 / PRO $399 / FULL $749, cada uno con $100 de tasas estatales, un selector de estado y tres tarjetas con botón). No lo importaba ningún fichero y nació en el commit inicial `c27005b`.
+- **Payoneer verificado** en su página oficial de tarifas (consultada el 20-09-2026): 1% por recibir pagos (mínimo $1; hasta 3,99% + $0,49 si el pagador usa tarjeta de crédito); retirada al banco local **1,2%-4%** según país y divisa, con mínimos de hasta $20 en algunos países (el «~2%» del fichero era una aproximación); compras con tarjeta sin conversión hasta 1,8% (gratis en el país emisor). `q116` actualizado con las cifras y la fuente.
+- **Índice:** ingesta filtrada de los 5 ficheros + reconciliación (5 filas fantasma). 801 filas, 801 únicas, 0 duplicados.
+- **Comprobación real del chat:** pregunta sobre el coste anual en Wyoming y comisiones de Payoneer → responde la tabla actualizada ($60/año mínimo, $297 el servicio fiscal, total ~$450-$1.100) y sin las cifras antiguas.
+
+#### 💻 Key Code:
+```bash
+git grep -c "\$62"          # localizar todos los usos antes de tocar
+npx tsx scripts/ingest-knowledge.ts --only q146-comparativa,q147-no-florida,q191-error,q268-llc-en-nevada,q116-payoneer
+```
+
+- **Files created/modified:** 14 ficheros web (ver lista arriba), `knowledge/custom/q146|q147|q191|q268|q116`, `app/api/orders/tax-filing/create/route.ts`, `chat_history.md`; eliminado `components/pricing/PricingCards.tsx`.
+- **No tocado (pendiente de decisión):** en `app/llc-texas/page.tsx` el bloque de ventajas (que es una lista de Wyoming y acaba con «Ver paquetes para Wyoming») dice «No existe el Franchise Tax de **Texas**» donde probablemente debería decir Wyoming, y la línea 191 habla de «Creación súper económica ($102)» cuando la tasa de Wyoming son $100. También sigue pendiente el matiz del 5472 obligatorio «para TODA LLC».
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 20-09-2026, 23:55)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
 
 **Producto / decisiones de negocio**
-1. **El «$62» de Wyoming** — el system prompt del chat (línea 30) y `lib/blog/posts.ts:657` dicen que el mantenimiento
-   anual en Wyoming cuesta $62; el fee schedule oficial (junio de 2026) fija $60 como mínimo. Decidir si se corrige.
-2. **Afirmación «TODA LLC de extranjero debe presentar el 5472»** (prompt del chat, `q11`) frente a la excepción del
+1. **Afirmación «TODA LLC de extranjero debe presentar el 5472»** (prompt del chat, `q11`) frente a la excepción del
    IRS para LLC sin transacciones reportables. Es una decisión de comunicación, no de datos. *Detectado el 20-09-2026.*
+2. **Bloque de ventajas de `app/llc-texas/page.tsx`**: la lista (que promociona Wyoming y cierra con «Ver paquetes para
+   Wyoming») dice «No existe el Franchise Tax de Texas» donde parece que debería decir Wyoming; y la línea 191 dice
+   «Creación súper económica ($102)» cuando la tasa de Wyoming son $100. Revisar el copy. *Detectado el 20-09-2026.*
 3. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
    muestran `TU_BILLETERA_*_AQUI`. *Estado (19-09-2026):* pendiente hasta que existan las wallets.
 4. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
 5. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
-6. **Payoneer sin verificar** — `q116` cita 1% por recibir y ~2% de cambio, sin fecha ni fuente. *Detectado el 20-09-2026.*
 
 **Técnico**
-7. **Endpoint heredado con $249** — `app/api/orders/tax-filing/create/route.ts:73` (`unit_amount: 24900`), sin llamadas
-   desde el frontend. Decidir si se alinea a $297 o se elimina. *Detectado el 20-09-2026.*
-8. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19 y 20 de septiembre: `/boi-report`,
+6. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19 y 20 de septiembre: `/boi-report`,
    `/guias/us`, corrección del BOI (prompt + base de conocimiento), títulos, canonical, sitemap, nota de plazos,
-   ancla de la sección 8, limpieza de `/precios` y el nuevo precio de $297.
-9. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
-   (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2025.*
+   ancla de la sección 8, limpieza de `/precios`, precio de $297 del servicio fiscal, eliminación del código muerto
+   y corrección de los $60 de Wyoming.
+7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+   (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

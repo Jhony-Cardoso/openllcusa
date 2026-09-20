@@ -8,7 +8,7 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Crear LLC en Wyoming (Guía 2026 para Extranjeros)',
   description:
-    'Descubre por qué Wyoming es el mejor estado para tu LLC. Máxima privacidad, sin impuestos estatales y solo $62 de mantenimiento anual. Proceso online en 5 días.',
+    'Descubre por qué Wyoming es el mejor estado para tu LLC. Máxima privacidad, sin impuestos estatales y solo $60 de mantenimiento anual. Proceso online en 5 días.',
   alternates: {
     canonical: 'https://openllcusa.com/llc-wyoming',
   },
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Crear LLC en Wyoming: La opción #1 para no residentes',
     description:
-      'Privacidad total, $62 de coste anual y protección de activos imbatible. Abre tu empresa en Wyoming desde tu país 100% online.',
+      'Privacidad total, $60 de coste anual y protección de activos imbatible. Abre tu empresa en Wyoming desde tu país 100% online.',
     type: 'article',
     url: 'https://openllcusa.com/llc-wyoming',
     images: [
@@ -49,7 +49,7 @@ const faqSchema = {
       name: '¿Cuánto cuesta mantener una LLC en Wyoming anualmente?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'El estado de Wyoming tiene una de las tasas de mantenimiento más bajas de todo Estados Unidos. El reporte anual (Annual Report) cuesta únicamente $62 al año. A esto solo debes sumar la cuota anual del Agente Registrado.',
+        text: 'El estado de Wyoming tiene una de las tasas de mantenimiento más bajas de todo Estados Unidos. El reporte anual (Annual Report) cuesta únicamente $60 al año. A esto solo debes sumar la cuota anual del Agente Registrado.',
       },
     },
     {
@@ -65,7 +65,7 @@ const faqSchema = {
       name: 'Wyoming vs Delaware: ¿Cuál es mejor para extranjeros?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Para el 95% de los emprendedores digitales, e-commerce o servicios profesionales que NO buscan financiación de capital de riesgo (Venture Capital), Wyoming es superior. Es más barato mantener ($62 frente a $300 en Delaware) y ofrece mejores leyes de protección de activos para pequeñas empresas. Delaware solo se recomienda si planeas recibir inversión institucional.',
+        text: 'Para el 95% de los emprendedores digitales, e-commerce o servicios profesionales que NO buscan financiación de capital de riesgo (Venture Capital), Wyoming es superior. Es más barato mantener ($60 frente a $300 en Delaware) y ofrece mejores leyes de protección de activos para pequeñas empresas. Delaware solo se recomienda si planeas recibir inversión institucional.',
       },
     },
     {
@@ -99,7 +99,7 @@ export default function WyomingLlcPage() {
             Crear una LLC en Wyoming
           </h1>
           <p className="text-xl md:text-2xl text-emerald-50 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
-            Privacidad corporativa blindada, cero impuestos estatales y el costo de mantenimiento anual más bajo de Estados Unidos ($62).
+            Privacidad corporativa blindada, cero impuestos estatales y el costo de mantenimiento anual más bajo de Estados Unidos ($60).
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -141,7 +141,7 @@ export default function WyomingLlcPage() {
               {
                 icon: '💰',
                 title: 'Costes Imbatibles',
-                desc: 'La tasa estatal de renovación anual (Annual Report) es de solo $62. Compáralo con los $300 de Delaware o los $800 de California. Es ideal para mantener gastos bajos.',
+                desc: 'La tasa estatal de renovación anual (Annual Report) es de solo $60. Compáralo con los $300 de Delaware o los $800 de California. Es ideal para mantener gastos bajos.',
               },
               {
                 icon: '🛡️',
@@ -175,7 +175,7 @@ export default function WyomingLlcPage() {
               <tbody className="text-sm md:text-base">
                 <tr className="border-b border-slate-800">
                   <td className="p-4 text-slate-400">Tasa Estatal Anual</td>
-                  <td className="p-4 bg-emerald-900/20 text-white font-bold">$62 USD</td>
+                  <td className="p-4 bg-emerald-900/20 text-white font-bold">$60 USD</td>
                   <td className="p-4 text-slate-300">$300 USD (Franchise Tax)</td>
                   <td className="p-4 text-slate-300">$0 USD</td>
                 </tr>

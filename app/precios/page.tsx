@@ -718,7 +718,7 @@ export default function PricingPage() {
                   <tbody>
                     {[
                       { f: 'Perfil ideal', w: 'Negocios digitales, e-commerce, consultores', d: 'Startups tecnológicas, empresas que buscan inversión (Venture Capital)' },
-                      { f: 'Costo de mantenimiento anual (Estado)', w: '~$62 USD', d: '$300 USD fijos (Franchise Tax)' },
+                      { f: 'Costo de mantenimiento anual (Estado)', w: '~$60 USD', d: '$300 USD fijos (Franchise Tax)' },
                       { f: 'Privacidad', w: 'Excelente (Dueños no figuran en registros públicos)', d: 'Excelente (Dueños no figuran en registros públicos)' },
                       { f: 'Protección patrimonial', w: 'Excepcional (Charging Order Protection)', d: 'Excepcional (Court of Chancery)' },
                       { f: 'Prestigio Corporativo', w: 'Normal', d: 'Alto (El estándar de Fortune 500)' },

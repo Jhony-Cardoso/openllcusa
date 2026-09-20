@@ -113,7 +113,7 @@ const faqs: FAQItem[] = [
     category: 'general',
     question: '¿Cuál es la diferencia entre Wyoming y Delaware para un extranjero?',
     answer:
-      'Wyoming destaca por ser muy económico de mantener (costo anual de $62) y ofrecer gran privacidad. Delaware es ideal si buscas inversionistas (Venture Capital) o quieres llevar la empresa a la bolsa, pero su costo anual es mayor ($300 de Franchise Tax). Para negocios digitales puros, Wyoming suele ser la opción más inteligente.'
+      'Wyoming destaca por ser muy económico de mantener (costo anual de $60) y ofrecer gran privacidad. Delaware es ideal si buscas inversionistas (Venture Capital) o quieres llevar la empresa a la bolsa, pero su costo anual es mayor ($300 de Franchise Tax). Para negocios digitales puros, Wyoming suele ser la opción más inteligente.'
   },
   {
     category: 'general',

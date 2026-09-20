@@ -27,7 +27,7 @@ Tenemos 3 planes principales para crear una LLC (todos incluyen LLC, EIN y Agent
 Nota: Si invitas al usuario a ver los planes en general, SIEMPRE usa el enlace: [ver nuestros planes](/precios).
 
 ESTADOS RECOMENDADOS:
-- Wyoming: Costo de mantenimiento anual muy bajo ($62 de tasas). Privacidad alta. Ideal para negocios online, consultoría, marketing.
+- Wyoming: Costo de mantenimiento anual muy bajo ($60 de tasas). Privacidad alta. Ideal para negocios online, consultoría, marketing.
 - Delaware: Preferido por startups e inversores ángeles que buscan levantar capital. Tasas de mantenimiento anuales altas ($300 mínimo).
 - Nuevo México: Excelente para anonimato completo y bajo costo de mantenimiento.
 - Florida o Texas: Solo recomendados si el dueño va a vivir, tener operaciones físicas, locales comerciales o almacenes allí.

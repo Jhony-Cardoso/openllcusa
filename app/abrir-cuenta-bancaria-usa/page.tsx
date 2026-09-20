@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing Banco USA
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Abrir Cuenta Bancaria en USA sin Viajar (Para No Residentes) | Open LLC USA',
+  title: 'Abrir Cuenta Bancaria en USA sin Viajar (Para No Residentes)',
   description:
     'Abre una cuenta bancaria comercial en EE.UU. (Mercury Bank, Relay, Wise) a través de tu LLC americana. Proceso 100% online, sin SSN ni ITIN.',
   alternates: {

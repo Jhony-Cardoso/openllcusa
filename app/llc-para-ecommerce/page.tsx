@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing E-commerce / FBA
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear LLC para Amazon FBA y E-commerce (Guía 2026) | Open LLC USA',
+  title: 'Crear LLC para Amazon FBA y E-commerce (Guía 2026)',
   description:
     'Vende en Amazon FBA y Shopify desde tu país con una LLC en EE.UU. Abre Stripe, Mercury Bank y paga 0% en impuestos americanos sobre tus ventas online.',
   alternates: {

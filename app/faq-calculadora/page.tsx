@@ -3,7 +3,7 @@ import styles from './faq.module.css';
 
 export const metadata = {
   alternates: { canonical: 'https://openllcusa.com/faq-calculadora' },
-  title: 'FAQ calculadora fiscal para autónomos, SL y LLC | Open LLC USA',
+  title: 'FAQ calculadora fiscal para autónomos, SL y LLC',
   description:
     'Preguntas frecuentes sobre la calculadora fiscal de Open LLC USA: precisión, limitaciones técnicas, LLC para no residentes, uso del quiz y responsabilidad legal.',
   robots: 'index, follow',

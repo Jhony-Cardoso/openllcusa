@@ -5,7 +5,7 @@ import { BookOpen, ArrowRight, Clock, User } from 'lucide-react'
 
 export const metadata: Metadata = {
   alternates: { canonical: 'https://openllcusa.com/guia' },
-  title: 'Guías y Recursos sobre LLCs en Estados Unidos | Open LLC USA',
+  title: 'Guías y Recursos sobre LLCs en Estados Unidos',
   description: 'Aprende todo sobre cómo abrir y mantener tu LLC desde el extranjero. Guías paso a paso sobre estados, cuentas bancarias, LLC vs Corporation e impuestos.',
 }
 

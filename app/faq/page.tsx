@@ -185,7 +185,7 @@ const jsonLd = {
 }
 
 export const metadata: Metadata = {
-  title: 'Preguntas frecuentes sobre LLC en Estados Unidos para no residentes | Open LLC USA',
+  title: 'Preguntas frecuentes sobre LLC en Estados Unidos para no residentes',
   description:
     'Resolvemos las dudas más frecuentes sobre cómo crear y mantener una LLC en Estados Unidos siendo no residente: requisitos, impuestos, banca y cumplimiento anual.',
   alternates: {

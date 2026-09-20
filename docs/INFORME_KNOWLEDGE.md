@@ -133,3 +133,25 @@ Fla. Stat. §605.0213 (flsenate.gov) y páginas oficiales de Sunbiz.
 5. **Unificar el email de contacto**: el footer ya usa `info@`; siguen con `hola@` el JSON-LD de la home
    (`app/page.tsx:1008`) y el pie de los emails transaccionales (`lib/services/email.service.ts:1042`).
 6. **Re-ingesta programada** cada vez que se toquen precios, planes o plazos: es el único modo de que Zara lo sepa.
+
+---
+
+## 9. Estado de la corrección (19-09-2026, tarde)
+
+- **Base de datos parcheada.** `scripts/fix-boi-rows.mjs` (modo simulación por defecto, `--apply` para escribir)
+  actualizó **28 filas** de `knowledge_base` con 18 patrones de sustitución: retira la condición de obligatoriedad,
+  la oferta de $99, los enlaces a `/servicios/boi-report`, las multas de $500/día y los plazos de 90/30 días.
+  **No se recalcularon embeddings** (el tema de cada fila no cambia, así que el vector sigue siendo válido).
+  Verificación independiente con `scripts/verify-boi-rows.mjs`: **0 afirmaciones obsoletas** en las 1000 filas.
+- **Exclusión aplicada.** `scripts/ingest-knowledge.ts` incorpora `EXCLUDED_DIRS = ['web']`: la próxima ingesta
+  procesará **301 ficheros** en lugar de 309 y omitirá `knowledge/web/` (que se conserva en el repo como
+  referencia del scrape). Comprobado con `scripts/verify-ingest-scope.mjs`: 0 ficheros de `web/` colados.
+  En `scripts/scrape-website.ts` se añadió un aviso de que su salida no se ingiere.
+
+## 10. Hallazgo pendiente: duplicados masivos en `knowledge_base`
+
+La tabla tiene **1000 filas** y solo **514 contenidos únicos**: 302 grupos duplicados, **788 filas repetidas**
+(el contenido más repetido aparece **7 veces**). Causa: `ingest-knowledge.ts` inserta sin borrar ni deduplicar,
+y se ha ejecutado varias veces (agosto 2026). Efecto: el retrieval puede devolver el mismo fragmento varias veces,
+desperdiciando contexto y sesgando las respuestas. **Recomendación:** script de limpieza que conserve una fila por
+contenido único (la más reciente) y borre el resto; decidir antes si se re-ingesta todo o se deduplica en sitio.

@@ -6,7 +6,7 @@ const SITEURL = 'https://openllcusa.com' // TODO cambia por tu dominio real [fil
 const BRANDNAME = 'Open LLC USA' // TODO cambia por tu marca [file:2]
 
 export const metadata: Metadata = {
-  title: 'Recursos y Herramientas Gratuitas para Emprendedores | Open LLC USA',
+  title: 'Recursos y Herramientas Gratuitas para Emprendedores',
   description: 'Calculadora fiscal, test de estado ideal (Wyoming vs Delaware) y asesoría gratuita 24/7 con nuestra IA especializada en LLCs para no residentes.',
   alternates: { canonical: `${SITEURL}/recursos` },
   openGraph: {

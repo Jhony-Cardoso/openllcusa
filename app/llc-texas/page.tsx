@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing Texas
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear LLC en Texas (Guía 2026): Requisitos y Costos Reales | Open LLC USA',
+  title: 'Crear LLC en Texas (Guía 2026): Requisitos y Costos Reales',
   description:
     'Todo sobre crear una LLC en Texas. Ventajas, desventajas (Franchise Tax), cómo proteger tu privacidad y por qué Wyoming podría ser una mejor alternativa.',
   alternates: {

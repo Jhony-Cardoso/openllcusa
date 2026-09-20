@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing New Mexico
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear LLC en New Mexico (Nuevo México) | $0 Costo Anual | Open LLC USA',
+  title: 'Crear LLC en New Mexico (Nuevo México) | $0 Costo Anual',
   description:
     'Abre tu LLC en Nuevo México. El único estado que ofrece privacidad total y $0 de tasas estatales de mantenimiento anual. La opción más económica para no residentes.',
   alternates: {

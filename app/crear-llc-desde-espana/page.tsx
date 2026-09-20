@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing España
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear una LLC desde España (Guía 2026 para Españoles) | Open LLC USA',
+  title: 'Crear una LLC desde España (Guía 2026 para Españoles)',
   description:
     'Descubre cómo abrir una LLC en EE.UU. desde España de forma legal. Optimiza tu fiscalidad, cobra en dólares y opera tu negocio online sin cuotas mensuales abusivas.',
   alternates: {

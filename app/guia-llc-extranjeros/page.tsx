@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 
 export const metadata: Metadata = {
-  title: 'Guía Gratuita: Crea tu LLC en EE.UU. en 7 Días | Open LLC USA',
+  title: 'Guía Gratuita: Crea tu LLC en EE.UU. en 7 Días',
   description: 'Guía completa paso a paso para crear tu LLC en Estados Unidos siendo extranjero. Sin SSN, sin visa, desde cualquier país hispanohablante.',
   alternates: {
     canonical: 'https://openllcusa.com/guia-llc-extranjeros',

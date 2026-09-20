@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing No Residentes
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear LLC en USA para No Residentes (Guía Definitiva) | Open LLC USA',
+  title: 'Crear LLC en USA para No Residentes (Guía Definitiva)',
   description:
     'Abre tu LLC en Estados Unidos siendo extranjero sin viajar. Accede a bancos de USA, procesadores como Stripe y paga 0% de impuestos estadounidenses legalmente.',
   alternates: {

@@ -146,16 +146,19 @@ function HeroSection() {
               }}
             >
               Tu LLC en Estados Unidos{' '}
-              <em style={{ fontStyle: 'normal', color: '#FCD34D', textDecoration: 'underline', textDecorationColor: 'rgba(252,211,77,.45)' }}>
+              <em style={{ fontStyle: 'normal', color: '#FCD34D', textDecoration: 'underline', textDecorationColor: 'rgba(252,211,77,.45)', whiteSpace: 'nowrap' }}>
                 en solo 72 horas*
               </em>
             </h1>
 
-            {/* Nota de alcance del plazo de 72 h (mismo texto que en Términos y Condiciones) */}
+            {/* Nota de alcance del plazo de 72 h (misma información que en la sección 8 de los Términos y Condiciones) */}
             <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,.68)', lineHeight: 1.5, marginBottom: 16, maxWidth: 640, textAlign: 'left' }}>
-              * Las 72 horas se refieren al registro estatal de la LLC: en Wyoming queda activa al instante si se
-              presenta online y en Nuevo México en 1-2 días hábiles según su Secretaría de Estado. El EIN del IRS se
-              tramita aparte y, sin SSN, puede tardar de 2 a 4 semanas. Detalle por estado en los Términos y Condiciones.
+              * Las 72 horas se refieren al registro estatal de la LLC: en Wyoming queda activa al instante de ser
+              presentada y en Nuevo México en 1-2 días hábiles. El EIN del IRS se tramita aparte y puede tardar de 2 a
+              4 semanas (sin SSN). Detalle por estado en la sección 8 de los{' '}
+              <Link href="/legal/condiciones-generales#seccion-8" style={{ color: 'inherit', textDecoration: 'underline' }}>
+                Términos y Condiciones
+              </Link>.
             </p>
 
             {/* Subtítulo mejorado */}

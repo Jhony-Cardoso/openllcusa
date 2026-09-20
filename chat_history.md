@@ -1829,3 +1829,30 @@ if (!GA_ID) {
 
 - **Files created/modified:** `app/boi-report/page.tsx` (nuevo), `app/agendar/layout.tsx` (nuevo), `docs/INFORME_KNOWLEDGE.md` (nuevo, sesión anterior), `app/guias/us/page.tsx`, `app/page.tsx`, `app/blog/page.tsx`, `app/faq-calculadora/page.tsx`, `app/guia/page.tsx`, `app/guia/[slug]/page.tsx`, `app/legal/changelog|condiciones-generales|privacy-policy|terminos-calculadora/page.tsx`, `app/sitemap.ts`, `legal/general-terms.md`, `components/shared/CookiesBanner.tsx`, 11 ficheros de `knowledge/custom/`, 4 de `knowledge/web/`, `PROJECT_HANDOVER.md`, `chat_history.md`; eliminados: `lib/models/pedido.ts.back2..back9` y `Temp/full_history.txt`.
 - **Hallazgo nuevo (no corregido):** los títulos de página que ya incluyen "| Open LLC USA" reciben además el sufijo de la plantilla del layout raíz, generando títulos duplicados del tipo "Condiciones Generales | Open LLC USA | Open LLC USA".
+---
+### 📅 Chat Session: 2026-09-19 19:05
+**Main objective:** Aplicar las decisiones del usuario: parche del BOI en la BD, texto y ancla de plazos, barrido de títulos, exclusión de knowledge/web de la ingesta.
+
+#### 👤 User Request:
+> (1) Preparar y aplicar el parche puntual en `knowledge_base` sin recalcular embeddings. (2) Cambiar el texto de la nota de plazos por el redactado propuesto, con enlace directo a la sección 8 de los Términos y Condiciones, y corregir el salto de línea del titular del hero. (3) Autorizado el barrido de títulos duplicados. (4) Excluir `knowledge/web/` de la ingesta con sumo cuidado.
+
+#### 🤖 Agent Solution:
+- **Parche del BOI en Supabase (aplicado y verificado).** `scripts/fix-boi-rows.mjs` (simulación por defecto; `--apply` para escribir) modificó **28 filas** con 18 patrones: quitó la obligatoriedad, la oferta de $99, los enlaces a `/servicios/boi-report`, las multas de $500/día y los plazos de 90/30 días. Los embeddings NO se recalcularon (mismo tema, vector válido). Se añadió una normalización para no duplicar el párrafo de exención cuando la fila contenía dos afirmaciones obsoletas. Verificado con `scripts/verify-boi-rows.mjs`: **0 afirmaciones obsoletas** en las 1000 filas y 0 marcas duplicadas.
+- **Nota de plazos:** el hero usa ahora el texto acordado, con enlace a `/legal/condiciones-generales#seccion-8`. Se añadió `id="seccion-8"` al encabezado de la sección 8 en `app/legal/condiciones-generales/page.tsx` (remark-html no genera ids) y `whiteSpace: 'nowrap'` al `<em>` del titular para que "en solo 72 horas*" no se parta en dos líneas. Verificado en el HTML servido.
+- **Barrido de títulos:** 26 `metadata.title` dejan de repetir la marca (los `openGraph`/`twitter` la conservan, porque no pasan por la plantilla del layout). Comprobadas las 26 páginas en el dev server: 0 títulos duplicados. Incidente detectado y corregido en la misma pasada: la home (`app/page.tsx`) y `/servicios/[slug]` **no** reciben la plantilla del layout raíz, así que ahí la marca debe ir en el propio título; se repuso y se verificó.
+- **Exclusión de `knowledge/web/`:** `scripts/ingest-knowledge.ts` incorpora `EXCLUDED_DIRS = ['web']` (con comentario explicativo) y omite esa carpeta al ingerir. Verificado con `scripts/verify-ingest-scope.mjs`: 301 ficheros a ingerir de 309, ninguno de `web/`. Se añadió un aviso en `scripts/scrape-website.ts` porque su salida deja de ingerirse.
+
+#### 💻 Key Code:
+```ts
+// scripts/ingest-knowledge.ts
+const EXCLUDED_DIRS = ['web'];
+...
+if (fs.statSync(filePath).isDirectory()) {
+  const relDir = path.relative(knowledgeDir, filePath).split(path.sep)[0];
+  if (EXCLUDED_DIRS.includes(relDir)) { console.log(`⏭️  Omitido por exclusión: knowledge/${relDir}/`); continue; }
+  getFilesRecursively(filePath, fileList);
+}
+```
+
+- **Hallazgo nuevo registrado:** `knowledge_base` tiene 1000 filas y solo 514 contenidos únicos (302 grupos duplicados, 788 filas repetidas; el contenido más repetido aparece 7 veces) porque la ingesta inserta sin deduplicar. Documentado en `docs/INFORME_KNOWLEDGE.md` §10 con recomendación de script de limpieza.
+- **Files created/modified:** `scripts/fix-boi-rows.mjs` (nuevo), `scripts/verify-boi-rows.mjs` (nuevo), `scripts/verify-ingest-scope.mjs` (nuevo), `scripts/ingest-knowledge.ts`, `scripts/scrape-website.ts`, `app/page.tsx`, `app/legal/condiciones-generales/page.tsx`, 26 ficheros con `metadata.title`, `docs/INFORME_KNOWLEDGE.md`; eliminados los 3 scripts de sondeo `audit-boi-rows*.mjs`.

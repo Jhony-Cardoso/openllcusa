@@ -7,7 +7,7 @@ import styles from '../shared.module.css';
 
 export const metadata = {
   alternates: { canonical: 'https://openllcusa.com/legal/condiciones-generales' },
-  title: 'Condiciones Generales | Open LLC USA',
+  title: 'Condiciones Generales',
   description: 'Condiciones generales de contratación y uso del portal web Open LLC USA',
   robots: 'index, follow',
 };
@@ -19,8 +19,12 @@ async function getGeneralTermsContent() {
   const processedContent = await remark()
     .use(html)
     .process(fileContent);
-  
-  return processedContent.toString();
+
+  // remark-html no genera ids en los encabezados: se lo añadimos a la sección 8 para poder
+  // enlazar directamente desde la nota del hero (/#seccion-8).
+  return processedContent
+    .toString()
+    .replace(/<h2>(8\.\s*Plazos)/, '<h2 id="seccion-8">$1');
 }
 
 export default async function CondicionesGeneralesPage() {

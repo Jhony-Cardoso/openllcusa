@@ -26,12 +26,24 @@ async function ingestKnowledge() {
     return;
   }
 
+  // Carpetas EXCLUIDAS de la ingesta, por primer nivel dentro de knowledge/.
+  // knowledge/web son copias scrapeadas del propio sitio: duplican el contenido de
+  // knowledge/custom y arrastran ruido (enlaces /_next/image), así que no deben entrar
+  // en el índice vectorial del asistente. Se conservan en el repositorio como referencia;
+  // solo se omiten al ingerir.
+  const EXCLUDED_DIRS = ['web'];
+
   // Función para obtener archivos recursivamente
   const getFilesRecursively = (dir: string, fileList: string[] = []): string[] => {
     const files = fs.readdirSync(dir);
     for (const file of files) {
       const filePath = path.join(dir, file);
       if (fs.statSync(filePath).isDirectory()) {
+        const relDir = path.relative(knowledgeDir, filePath).split(path.sep)[0];
+        if (EXCLUDED_DIRS.includes(relDir)) {
+          console.log(`⏭️  Omitido por exclusión: knowledge/${relDir}/`);
+          continue;
+        }
         getFilesRecursively(filePath, fileList);
       } else if (filePath.endsWith('.md')) {
         fileList.push(filePath);

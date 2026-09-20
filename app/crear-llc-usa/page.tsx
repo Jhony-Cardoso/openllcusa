@@ -3,7 +3,7 @@ import Link from "next/link"
 
 
 export const metadata: Metadata = {
-  title: "Crear LLC en Estados Unidos 2026: Guía Completa para No Residentes | Open LLC USA",
+  title: "Crear LLC en Estados Unidos 2026: Guía Completa para No Residentes",
   description:
     "Aprende cómo crear una LLC en Estados Unidos siendo no residente: requisitos, estados recomendados (Wyoming, Delaware), proceso paso a paso, costes reales y obligaciones fiscales. 100% online.",
   alternates: {

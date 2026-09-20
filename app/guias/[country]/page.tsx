@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
   if (!country) return { title: 'País no encontrado' };
 
   return {
-    title: `Cómo abrir una LLC desde ${country.name} | Open LLC USA`,
+    title: `Cómo abrir una LLC desde ${country.name}`,
     description: `Guía definitiva para emprendedores en ${country.name}. Descubre cómo abrir tu LLC en Estados Unidos sin viajar y sin SSN.`,
     alternates: {
       canonical: `https://openllcusa.com/guias/${countryCode}`,

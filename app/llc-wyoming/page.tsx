@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing Wyoming
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear LLC en Wyoming (Guía 2026 para Extranjeros) | Open LLC USA',
+  title: 'Crear LLC en Wyoming (Guía 2026 para Extranjeros)',
   description:
     'Descubre por qué Wyoming es el mejor estado para tu LLC. Máxima privacidad, sin impuestos estatales y solo $62 de mantenimiento anual. Proceso online en 5 días.',
   alternates: {

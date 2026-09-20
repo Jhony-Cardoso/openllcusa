@@ -11,6 +11,8 @@ const turndownService = new TurndownService({
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const SITEMAP_URL = `${BASE_URL}/sitemap.xml`;
+// OJO: la salida de este script (knowledge/web) está EXCLUIDA de la ingesta del asistente
+// (ver EXCLUDED_DIRS en scripts/ingest-knowledge.ts). Se guarda como referencia del scrape.
 const OUTPUT_DIR = path.join(process.cwd(), 'knowledge', 'web');
 
 async function scrapeWebsite() {

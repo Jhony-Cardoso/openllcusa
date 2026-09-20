@@ -8,7 +8,7 @@ import Link from 'next/link'
 // Intención: Transaccional + Informacional (superar objeciones)
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Cómo Obtener un EIN sin SSN para Extranjeros (Guía 2026) | Open LLC USA',
+  title: 'Cómo Obtener un EIN sin SSN para Extranjeros (Guía 2026)',
   description:
     'Guía completa para obtener el EIN (Employer Identification Number) del IRS para tu LLC sin tener SSN (Social Security Number) ni ITIN. Proceso, tiempos y requisitos para no residentes.',
   alternates: {

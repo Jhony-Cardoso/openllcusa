@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing Delaware
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear LLC en Delaware (Guía para Startups y Extranjeros) | Open LLC USA',
+  title: 'Crear LLC en Delaware (Guía para Startups y Extranjeros)',
   description:
     'Abre tu LLC en Delaware, el estado del Fortune 500. Descubre por qué es el favorito de los inversores de Silicon Valley y si realmente es la mejor opción para tu negocio.',
   alternates: {

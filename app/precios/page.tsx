@@ -24,7 +24,7 @@ const T = {
 
 // ─── SEO Metadata ─────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Precios para crear y mantener tu LLC en EE. UU. | Open LLC USA',
+  title: 'Precios para crear y mantener tu LLC en EE. UU.',
   description:
     'Planes claros desde $349 para formar, mantener y optimizar tu LLC en Estados Unidos. Sin letra pequeña, sin sorpresas. Comparativa con EZFrontiers, Circle Club y Openbiz.',
   alternates: {

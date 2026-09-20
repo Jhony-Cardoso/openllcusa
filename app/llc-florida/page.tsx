@@ -6,7 +6,7 @@ import Link from 'next/link'
 // SEO Metadata — Landing Florida
 // ──────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: 'Crear LLC en Florida (Guía para Extranjeros) | Open LLC USA',
+  title: 'Crear LLC en Florida (Guía para Extranjeros)',
   description:
     'Abre tu LLC en Florida. El estado favorito de Latinoamérica y España para bienes raíces, importación/exportación y prestigio comercial. Cero impuesto estatal individual.',
   alternates: {

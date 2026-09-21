@@ -2210,7 +2210,63 @@ const getCtaLink = () => {
 
 - **Files created/modified:** `app/contacto/page.tsx`, `chat_history.md`.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 21:42)
+---
+### 📅 Chat Session: 2026-09-21 22:01
+**Main objective:** Subir a GitHub el lote de cambios del 21-09-2026 (commit y push) para que el usuario despliegue.
+
+#### 👤 User Request:
+> Sí, por favor, prepara el commit y el push de los siete ficheros (con un mensaje que describa el lote), y luego despliego yo.
+
+#### 🤖 Agent Solution:
+- Commit **`ad1484d`** en `main`: `feat(voz,cta): Zara atiende por voz en el navegador y se cierran los CTA rotos`, con 7 ficheros y +1235/-217. El cuerpo del mensaje detalla el modo voz, la instrumentación, los dos limpiadores (`speakable`/`readable`), los dos destinos nuevos del CTA de la calculadora, el enlace de `/contacto`, el copy de `/recursos` y el estado de `chat_history.md`, más la verificación hecha sin arrancar build.
+- **Push verificado por partida doble:** `git fetch` deja `origin/main` en el mismo SHA que el local (`ad1484d`) tras `a20baf5..ad1484d`, y la API de GitHub confirma el commit en el remoto con los 7 ficheros y sus líneas exactas. No hay hooks activos en `.git/hooks`, así que el commit no disparó lint ni build.
+- **Nota de estilo:** el repo mezcla mensajes con y sin tildes (7 de los últimos 60 sí las llevan); este se escribió con tildes correctas y el formato `tipo(ámbitos):` que usa el historial.
+
+#### 💻 Key Code:
+```bash
+git add app/api/chat/route.ts app/contacto/page.tsx app/recursos/page.tsx app/zara/page.tsx \
+        chat_history.md components/calculator/CalculadoraClient.tsx components/layout/Header.tsx
+git commit -F <mensaje>   # ad1484d
+GIT_TERMINAL_PROMPT=0 timeout 300 git push
+```
+
+- **Files created/modified:** `chat_history.md` (registro). El código ya iba en el commit.
+- **Siguiente paso (usuario):** desplegar en Dokploy. Después conviene comprobar en producción que `/zara` dice «Zara (voz)» y que el dictado funciona por HTTPS, que los botones flotantes de `/lead-form` llevan a `/zara` y a `/precios`, y que el botón de `/contacto` abre `/zara`.
+
+---
+### 📅 Chat Session: 2026-09-21 22:18
+**Main objective:** Verificar el despliegue en producción y resolver el punto 7 (rate limiting en /api/* y CORS comodín).
+
+#### 👤 User Request:
+> Ya está desplegado: comprueba en producción con curl los cuatro puntos. Por otra parte soluciona el 7 (sin rate limiting en /api/* y CORS *). Sube también a GitHub chat_history.md como commit de documentación.
+
+#### 🤖 Agent Solution:
+- **Producción verificada, los cuatro puntos vivos.** `/zara` sirve «Zara (voz)» y el badge `VOZ · BETA`, con cero apariciones de «Zara (demo)»; `/recursos` tiene «transcripción en pantalla» y ya no contiene «modo demo por ahora»; `/contacto` renderiza `<a href="/zara">` en el botón «🎙️ Hablar con Zara» y no queda el texto del alert; y en el chunk desplegado de la calculadora el código minificado es literalmente `href: F<800 ? "/zara" : F<2e3 ? "/contacto" : "/precios"`, con **cero** apariciones de `hablar-con-zara` y `crear-llc`.
+- **Corrección de una nota errónea:** el CTA flotante de la calculadora vive en `/calculadora-fiscal`, no en `/lead-form` (ese es el formulario de captación). La comprobación en producción se rehizo contra la ruta correcta.
+- **Punto 7 implementado** (pendiente de verificación en vivo, ver más abajo):
+  - `lib/api-guard.ts` **nuevo**: limitador de ventana fija de un minuto, en memoria del proceso, con cuatro grupos por IP — `chat` 20/min, `escritura` 30/min (leads, contact, pedidos, orders, crypto, stripe), `sensible` 6/min (rutas de diagnóstico y pruebas) y `lectura` 120/min por defecto. Los webhooks de Stripe y Clerk quedan **exentos** (son servidor a servidor: limitarlos rompería pagos y altas). Límites ajustables con `RATE_LIMIT_*` sin tocar código.
+  - `middleware.ts`: aplica el limitador a todo `/api/*` y responde 429 con `Retry-After`. Se cortocircuita **solo** al superar el límite; el resto del tráfico sigue sin devolver respuesta, para no interferir con Clerk (que decora la petición) ni con los route handlers.
+  - `next.config.ts`: se elimina el comodín `Access-Control-Allow-Origin: *` de `/api/*`. Como el sitio siempre llama a la misma origin con rutas relativas, no necesita CORS; terceros quedan bloqueados por defecto. Se añaden `X-Content-Type-Options: nosniff` y `Referrer-Policy`.
+- **Verificación del limitador (23 comprobaciones, todas correctas):** el módulo real se extrajo del fichero, se tradujo con `ts.transpileModule` y se ejecutó en Node con reloj simulado: clasificación correcta de las 13 rutas probadas (incluidos los dos webhooks exentos), 20 peticiones permitidas y la 21 denegada en `chat`, reinicio a los 60 s, cupos independientes por IP, 6 permitidas y la 7 denegada en `sensible`, 500 peticiones al webhook de Stripe sin bloquearse y lectura de la IP desde `X-Forwarded-For` (con lista), `X-Real-IP` y sin cabeceras. Además: sintaxis OK en los tres ficheros y 0 errores de tipos en ellos (el repo sigue con sus 34 preexistentes).
+- **Verificación en vivo pendiente:** el dev server estaba levantado y respondió una vez (200 a `/api/debug-db`), pero **se cayó** durante las pruebas: el shell empezó a devolver «fork: Resource temporarily unavailable» y el servidor dejó de responder (000). La causa más probable es la presión de recursos con varias pestañas pesadas abiertas por el asistente en el navegador de pruebas (la calculadora es muy pesada); la memoria quedó libre después (9,7 GB de 16). **Queda pendiente que el usuario levante `npm run dev` y se confirme que el middleware devuelve 429 al superar el límite y que `/api/chat` sigue respondiendo con normalidad.** Hasta entonces, el punto 7 no se considera cerrado.
+- **Hallazgo crítico al inventariar las rutas de API (no tocado, requiere decisión):** hay endpoints sin autenticación expuestos en producción — `/api/debug-db` (usa la clave de servicio de Supabase y devuelve todos los servicios y, con `?pedido=<id>`, la fila completa de un pedido), `/api/test-email` (envía emails a la dirección que se le pase: cualquiera puede usar el dominio y el cupo de Resend), `/api/test-automation` (usa la clave de servicio y crea tareas sobre pedidos reales) y `/api/debug/pedido-metadata` (sí pide sesión, pero está marcado «BORRAR DESPUÉS» en su propio código). Ahora quedan limitados a 6 peticiones por minuto, pero eso no los arregla: hay que borrarlos o ponerlos detrás del allowlist de admin.
+
+#### 💻 Key Code:
+```ts
+// middleware.ts — solo se cortocircuita al superar el límite
+if (pathname.startsWith('/api/')) {
+  const limite = comprobarLimite(pathname, ipDePeticion(req))
+  if (!limite.exento && !limite.permitido) {
+    return NextResponse.json({ error: 'Demasiadas peticiones. Espera unos segundos y vuelve a intentarlo.' },
+      { status: 429, headers: { 'Retry-After': String(limite.reiniciarEnSegundos), 'Cache-Control': 'no-store' } })
+  }
+}
+```
+
+- **Files created/modified:** `lib/api-guard.ts` (nuevo), `middleware.ts`, `next.config.ts`, `chat_history.md`.
+- **Comprobación pendiente del usuario:** levantar `npm run dev`; después se prueba en vivo el 429 y que `/api/chat` responde normal.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 22:18)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
@@ -2226,24 +2282,23 @@ const getCtaLink = () => {
    configurable, $0.15/hora on-demand) + **TTS Inworld Realtime TTS-2 Flash** ($15/1M caracteres on-demand) +
    **nuestro `gpt-4o-mini` con el prompt y el RAG actuales**. Unificar proveedor con Inworld es más barato que
    Deepgram Nova-3 multilingüe ($0.35/hora) y añade la detección de turno que la Fase 0 no puede tener; **Deepgram
-   queda como mejora futura cuando haya ingresos**. Lo que falta por construir: servicio WebSocket en contenedor
-   aparte (un route handler de Next no puede hacer upgrade a WebSocket), endpoint interno con secreto compartido,
-   topes de duración y presupuesto, y RGPD (consentimiento y DPA; el STT de Inworld devuelve además señales de
-   «Voice Profile» que no necesitamos). Plan y costes en
-   `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
+   queda como mejora futura cuando haya ingresos**. Falta por construir: servicio WebSocket en contenedor aparte,
+   endpoint interno con secreto compartido, topes de duración y presupuesto, y RGPD (consentimiento y DPA). Plan y
+   costes en `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-5. **Despliegue pendiente de TODO lo local (verificado el 21-09-2026 con `curl` contra producción).** En GitHub y en
-   producción solo está lo de sesiones anteriores: `/zara` sigue sirviendo «Zara (demo)» y `/recursos` mantiene «modo
-   demo por ahora». Están sin commitear y sin subir: el modo voz de Zara (`components/layout/Header.tsx`,
-   `app/zara/page.tsx`, rama de voz de `app/api/chat/route.ts`), el copy de `/recursos`, los dos destinos nuevos del
-   CTA de la calculadora (`/zara` y `/precios` en `components/calculator/CalculadoraClient.tsx`), la locución de los
-   números de formulario y el enlace nuevo de `/contacto` (`app/contacto/page.tsx`). Hasta que se suba y se despliegue,
-   los visitantes siguen viendo la demo, los dos enlaces que dan 404 y el alert de /contacto.
-6. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+5. **CRÍTICO — endpoints de diagnóstico y pruebas expuestos en producción (detectado el 21-09-2026):**
+   `/api/debug-db` (clave de servicio de Supabase sin autenticación: devuelve servicios y, con `?pedido=<id>`, la
+   fila completa de un pedido), `/api/test-email` (envía emails a la dirección indicada sin autenticación),
+   `/api/test-automation` (crea tareas sobre pedidos reales sin autenticación) y `/api/debug/pedido-metadata`
+   (protegido con sesión pero marcado «BORRAR DESPUÉS»). Se han limitado a 6 peticiones/minuto, lo que **no** los
+   arregla: hay que borrarlos o ponerlos detrás del allowlist de admin. Requiere decisión del usuario.
+6. **Rate limiting y CORS (punto 7): implementado el 21-09-2026, sin cerrar.** Nuevo `lib/api-guard.ts`, límites
+   aplicados desde `middleware.ts` y comodín de CORS eliminado de `next.config.ts`. Verificado con 23 comprobaciones
+   unitarias sobre el módulo real; **falta la prueba en vivo** (el dev server se cayó durante las pruebas por presión
+   de recursos) y, después, commit y despliegue.
+7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
-7. **No existe rate limiting en `/api/*` (verificado el 21-09-2026)** y el CORS es `*`. Conviene resolverlo antes de
-   exponer cualquier servicio de pago; la Fase 1 de voz (STT/TTS facturados por minuto) lo necesita.
 8. **Rendimiento de la calculadora (detectado el 21-09-2026)** — recalcula los escenarios en cada evento de scroll y
    satura el hilo principal: el navegador deja de responder a JavaScript y a la rueda durante varios segundos al
    desplazarse. En una página de conversión es un problema real (y afecta a móviles). *Medido en el navegador

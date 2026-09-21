@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '@/app/calculadora-fiscal/page.module.css';
@@ -45,6 +45,15 @@ const COMUNIDADES = [
   'Comunidad Valenciana', 'Extremadura', 'Galicia', 'Madrid',
   'Murcia', 'Navarra', 'País Vasco', 'La Rioja'
 ];
+
+// ===================================
+// ZONAS DE SCROLL DEL CTA FLOTANTE
+// ===================================
+// Al CTA solo le importan tres umbrales: 500 (mostrar la barra), 800 y 2000 (texto y
+// destino del botón). Guardar la posición exacta en cada evento de scroll provocaba un
+// render por evento y, con los resultados visibles, recalculaba los cuatro escenarios
+// cada vez: el hilo principal se quedaba bloqueado varios segundos al desplazarse.
+const zonaDeScroll = (y: number): number => (y <= 500 ? 0 : y < 800 ? 1 : y < 2000 ? 2 : 3);
 
 // ===================================
 // COMPONENTE PRINCIPAL
@@ -109,11 +118,31 @@ export default function CalculadoraClient() {
     }
   }, []);
 
-  // Scroll tracking para CTA dinámico
+  // Scroll tracking para CTA dinámico. Solo se actualiza el estado al cruzar un umbral
+  // (zonaDeScroll), una vez por frame como mucho, y con listener pasivo.
   useEffect(() => {
-    const handleScroll = () => setScrollPosition(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    let zonaActual = zonaDeScroll(window.scrollY);
+    let frame = 0;
+
+    // Si la página se recarga ya desplazada, situamos el estado una sola vez.
+    if (window.scrollY > 500) setScrollPosition(window.scrollY);
+
+    const handleScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const zona = zonaDeScroll(window.scrollY);
+        if (zona === zonaActual) return;
+        zonaActual = zona;
+        setScrollPosition(window.scrollY);
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   // Detectar cuando se calculan escenarios con LLC
@@ -427,7 +456,13 @@ export default function CalculadoraClient() {
     };
   };
 
-  const scenarios = showResults ? calculateScenarios() : [];
+  // Memoizado: los escenarios solo dependen del ingreso, de los gastos deducibles y de
+  // si el usuario es B2C. Sin esto se recalculaban en cada render (y el scroll generaba
+  // muchos renders por segundo).
+  const scenarios = useMemo(
+    () => (showResults ? calculateScenarios() : []),
+    [showResults, grossIncome, deductibleExpensesPercent, isB2C]
+  );
 
   const getCtaText = () => {
     if (scrollPosition < 800) return '🎙️ Hablar con Zara';

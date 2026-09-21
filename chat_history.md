@@ -2266,7 +2266,41 @@ if (pathname.startsWith('/api/')) {
 - **Files created/modified:** `lib/api-guard.ts` (nuevo), `middleware.ts`, `next.config.ts`, `chat_history.md`.
 - **Comprobación pendiente del usuario:** levantar `npm run dev`; después se prueba en vivo el 429 y que `/api/chat` responde normal.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 22:18)
+---
+### 📅 Chat Session: 2026-09-21 22:31
+**Main objective:** Verificar en vivo el limitador de peticiones y proteger con el allowlist de admin los endpoints internos que estaban expuestos.
+
+#### 👤 User Request:
+> «npm run dev, ya está levantado el dev server. Sobre los endpoints sin autenticación: ponlos detrás del allowlist de admin. Protégelos todos.»
+
+#### 🤖 Agent Solution:
+- **Limitador verificado en vivo (punto 7 funcionando):** 8 peticiones seguidas a `/api/debug-db` dieron **6×200 y después 429**, con `retry-after: 57` y `cache-control: no-store`; la ventana se reinicia al minuto y `/api/chat` siguió devolviendo 200 (sin regresión). Los endpoints legítimos de lectura (`/api/estados`, `/api/servicios`) responden 200.
+- **Cuatro endpoints internos protegidos** con un guardián común nuevo, `lib/admin.ts` (`esAdmin()` sobre la variable `ADMIN_EMAIL` más el correo del propietario, la misma allowlist que ya usan las páginas de `/admin`; `noAutorizado()` devuelve 403 sin revelar si la ruta existe):
+  - `/api/debug-db` — usaba la clave de servicio y devolvía pedidos sin autenticación.
+  - `/api/debug/pedido-metadata` — antes bastaba con tener sesión; ahora exige admin. Se retiró el import de `auth` que quedó sin uso.
+  - `/api/test-automation` — creaba tareas sobre pedidos reales.
+  - `/api/test-email` — enviaba emails a la dirección indicada.
+- **Comprobado en vivo: 403 `{"error":"No autorizado"}`** en `/api/debug-db`, `/api/debug/pedido-metadata` y `/api/test-automation` sin sesión de admin. La comprobación en vivo de `/api/test-email` **quedó pendiente**: el dev server se cayó al compilar esa ruta (segunda caída de la sesión; la máquina quedó con 8,6 GB libres y sin ningún proceso Node, así que es la presión de memoria del dev server que ya documenta `AGENTS.md`, no un error de sintaxis: el fichero pasa la comprobación de sintaxis y el guardián está en su sitio antes de enviar nada).
+- **Dos hallazgos menores:** `app/api/test/` existe como carpeta **vacía** (no hay ninguna ruta `/api/test/onboarding-flow`) y `lib/auth.ts` está **vacío** (0 bytes, fichero muerto). Ninguno se ha tocado.
+- Sin cambios en la app: se comprobó con `grep` que ningún componente ni página llama a estos endpoints, así que protegerlos no rompe ningún flujo.
+
+#### 💻 Key Code:
+```ts
+// lib/admin.ts (nuevo) — guardián común para rutas internas
+export async function esAdmin(): Promise<boolean> {
+  try {
+    const user = await currentUser()
+    return esEmailAdmin(user?.emailAddresses?.[0]?.emailAddress)
+  } catch {
+    return false
+  }
+}
+```
+
+- **Files created/modified:** `lib/admin.ts` (nuevo), `app/api/debug-db/route.ts`, `app/api/debug/pedido-metadata/route.ts`, `app/api/test-automation/route.ts`, `app/api/test-email/route.ts`, `chat_history.md`.
+- **Pendiente:** comprobar en vivo `/api/test-email` (403) cuando el dev server aguante la compilación de esa ruta, y desplegar el lote (limitador + protección).
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 22:31)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
@@ -2280,26 +2314,23 @@ if (pathname.startsWith('/api/')) {
 4. **Voz de Zara — Fase 1 con proveedores ya decididos (21-09-2026).** Stack acordado: **STT Inworld**
    (`inworld/inworld-stt-1`, español entre sus 30 idiomas, WebSocket `:streamBidirectional`, fin de turno
    configurable, $0.15/hora on-demand) + **TTS Inworld Realtime TTS-2 Flash** ($15/1M caracteres on-demand) +
-   **nuestro `gpt-4o-mini` con el prompt y el RAG actuales**. Unificar proveedor con Inworld es más barato que
-   Deepgram Nova-3 multilingüe ($0.35/hora) y añade la detección de turno que la Fase 0 no puede tener; **Deepgram
-   queda como mejora futura cuando haya ingresos**. Falta por construir: servicio WebSocket en contenedor aparte,
-   endpoint interno con secreto compartido, topes de duración y presupuesto, y RGPD (consentimiento y DPA). Plan y
-   costes en `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
+   **nuestro `gpt-4o-mini` con el prompt y el RAG actuales**. Deepgram queda como mejora futura cuando haya ingresos.
+   Falta por construir: servicio WebSocket en contenedor aparte, endpoint interno con secreto compartido, topes de
+   duración y presupuesto, y RGPD (consentimiento y DPA). Plan y costes en
+   `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-5. **CRÍTICO — endpoints de diagnóstico y pruebas expuestos en producción (detectado el 21-09-2026):**
-   `/api/debug-db` (clave de servicio de Supabase sin autenticación: devuelve servicios y, con `?pedido=<id>`, la
-   fila completa de un pedido), `/api/test-email` (envía emails a la dirección indicada sin autenticación),
-   `/api/test-automation` (crea tareas sobre pedidos reales sin autenticación) y `/api/debug/pedido-metadata`
-   (protegido con sesión pero marcado «BORRAR DESPUÉS»). Se han limitado a 6 peticiones/minuto, lo que **no** los
-   arregla: hay que borrarlos o ponerlos detrás del allowlist de admin. Requiere decisión del usuario.
-6. **Rate limiting y CORS (punto 7): implementado el 21-09-2026, sin cerrar.** Nuevo `lib/api-guard.ts`, límites
-   aplicados desde `middleware.ts` y comodín de CORS eliminado de `next.config.ts`. Verificado con 23 comprobaciones
-   unitarias sobre el módulo real; **falta la prueba en vivo** (el dev server se cayó durante las pruebas por presión
-   de recursos) y, después, commit y despliegue.
-7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+5. **Despliegue del lote de seguridad (pendiente).** Sin subir y sin desplegar: el limitador de peticiones
+   (`lib/api-guard.ts` + `middleware.ts` + `next.config.ts`, verificado en vivo: 6 peticiones y la 7ª con 429) y la
+   protección con allowlist de admin de `/api/debug-db`, `/api/debug/pedido-metadata`, `/api/test-automation` y
+   `/api/test-email` (`lib/admin.ts`, verificado en vivo en los tres primeros: 403). **Falta la comprobación en vivo de
+   `/api/test-email`**: el dev server se cae al compilar esa ruta (presión de memoria, ya documentada en `AGENTS.md`).
+6. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
-8. **Rendimiento de la calculadora (detectado el 21-09-2026)** — recalcula los escenarios en cada evento de scroll y
+7. **Rendimiento de la calculadora (detectado el 21-09-2026)** — recalcula los escenarios en cada evento de scroll y
    satura el hilo principal: el navegador deja de responder a JavaScript y a la rueda durante varios segundos al
    desplazarse. En una página de conversión es un problema real (y afecta a móviles). *Medido en el navegador
    controlado, no reproducido por el usuario.*
+8. **Cabos sueltos de código detectados el 21-09-2026 (limpieza, sin prisa):** `app/api/test/` es una carpeta vacía,
+   `lib/auth.ts` está vacío y `lib/api-guard.ts` centraliza la allowlist que las páginas de `/admin` repiten en unas
+   diez copias (candidato a unificar).

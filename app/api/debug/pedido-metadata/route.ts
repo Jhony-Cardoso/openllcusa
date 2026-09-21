@@ -1,11 +1,11 @@
-import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { esAdmin, noAutorizado } from '@/lib/admin'
 
 // RUTA DE DIAGNÓSTICO TEMPORAL - BORRAR DESPUÉS
 export async function GET(req: Request) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'not authenticated' }, { status: 401 })
+    // Antes bastaba con tener sesión de cualquier usuario; ahora exige el allowlist de admin.
+    if (!(await esAdmin())) return noAutorizado()
 
     const { searchParams } = new URL(req.url)
     const pedidoId = searchParams.get('id')

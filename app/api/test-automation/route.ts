@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
 import { TaskService } from '@/lib/services/task.service'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { esAdmin, noAutorizado } from '@/lib/admin'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
+    // Ruta interna: exige estar en el allowlist de admin (antes la podía llamar cualquiera).
+    if (!(await esAdmin())) return noAutorizado()
+
     try {
         const { searchParams } = new URL(request.url)
         const customEmail = searchParams.get('admin_email')

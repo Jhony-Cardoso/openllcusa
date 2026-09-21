@@ -2,6 +2,7 @@ import { EmailService } from '@/lib/services/email.service'
 import { NotificacionService } from '@/lib/services/notificacion.service'
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+import { esAdmin, noAutorizado } from '@/lib/admin'
 
 /**
  * Ruta de prueba para enviar emails y verificar notificaciones
@@ -11,6 +12,9 @@ import { auth } from '@clerk/nextjs/server'
  * GET /api/test-email?to=tu-email@gmail.com&tipo=confirmacion
  */
 export async function GET(request: Request) {
+    // Ruta interna: exige estar en el allowlist de admin (antes la podía llamar cualquiera).
+    if (!(await esAdmin())) return noAutorizado()
+
     try {
         const { searchParams } = new URL(request.url)
         const to = searchParams.get('to')

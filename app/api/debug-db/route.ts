@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { esAdmin, noAutorizado } from '@/lib/admin'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
+    // Ruta interna: exige estar en el allowlist de admin (antes la podía llamar cualquiera).
+    if (!(await esAdmin())) return noAutorizado()
+
     const { searchParams } = new URL(request.url)
     const pedidoId = searchParams.get('pedido')
 

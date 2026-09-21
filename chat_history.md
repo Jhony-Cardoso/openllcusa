@@ -2300,7 +2300,42 @@ export async function esAdmin(): Promise<boolean> {
 - **Files created/modified:** `lib/admin.ts` (nuevo), `app/api/debug-db/route.ts`, `app/api/debug/pedido-metadata/route.ts`, `app/api/test-automation/route.ts`, `app/api/test-email/route.ts`, `chat_history.md`.
 - **Pendiente:** comprobar en vivo `/api/test-email` (403) cuando el dev server aguante la compilación de esa ruta, y desplegar el lote (limitador + protección).
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 22:31)
+---
+### 📅 Chat Session: 2026-09-21 22:52
+**Main objective:** Verificar en producción el lote de seguridad, centralizar el allowlist de admin, limpiar el código muerto y arreglar el rendimiento de la calculadora.
+
+#### 👤 User Request:
+> «Ya está desplegado el commit. Comprueba en producción con curl que los cuatro endpoints devuelven 403 y que /api/chat y el resto siguen funcionando.» Además: atacar los cabos sueltos de código (carpeta vacía `app/api/test/`, `lib/auth.ts` vacío y el allowlist de admin duplicado) y el rendimiento de la calculadora, que recalcula escenarios en cada scroll.
+
+#### 🤖 Agent Solution:
+- **Producción verificada.** Los cuatro endpoints internos devuelven **403 `{"error":"No autorizado"}`** (`/api/debug-db`, `/api/debug/pedido-metadata`, `/api/test-automation`, `/api/test-email`). Siguen funcionando `/api/chat` (POST real: 200), `/api/estados`, `/api/servicios`, `/api/paquetes` (200) y las páginas `/precios` y `/calculadora-fiscal` (200). En las cabeceras ya **no aparece ninguna `access-control-*`** (el comodín está fuera) y sí `x-content-type-options: nosniff` y `referrer-policy`.
+- **Allowlist de admin centralizado.** Estaba duplicado en **14 ficheros** (no diez): seis páginas de `/admin` y ocho rutas de API. En los 13 que lo usaban de verdad se sustituyó la pareja `const adminEmails = [...]` + `adminEmails.includes(...)` por `esEmailAdmin(...)` de `lib/admin.ts`, conservando intactos el `const isAdmin` y su `if`. Ya no queda ninguna copia del correo fuera de `lib/admin.ts`.
+- **Un tropiezo detectado y corregido:** en `app/admin/layout.tsx` el import se insertó **dentro** del import multilínea de `lucide-react` (la heurística eligió la primera línea `import {`). Lo cazó la comprobación de sintaxis y quedó movido a su sitio; los 16 ficheros tocados pasan ahora `ts.transpileModule`. Los errores de tipos de esas rutas de admin son **preexistentes** (el total del repo sigue en 34, el mismo de antes de tocar nada).
+- **Código muerto eliminado.** En `app/api/facturas/[id]/descargar/route.ts` había un allowlist declarado y **nunca usado** (`isAdmin` fijado a `false`): parecía una verificación de seguridad que no existía. Se sustituyó por un comentario que lo explica; la comprobación real (dueño de la factura) no se ha tocado. Borrados además `lib/auth.ts` (0 bytes, nadie lo importaba) con `git rm`, y las carpetas vacías `app/api/test/` y `app/api/test/onboarding-flow/`.
+- **Rendimiento de la calculadora arreglado.** El listener de scroll guardaba `window.scrollY` en cada evento, lo que provocaba un render por evento y —con los resultados visibles— recalculaba los cuatro escenarios cada vez. Ahora el estado solo se actualiza al **cruzar un umbral relevante** (500 para mostrar la barra, 800 y 2000 para el texto y el destino del botón), una vez por frame como mucho y con listener pasivo; además los escenarios están **memoizados** sobre sus tres entradas reales (ingreso, gastos deducibles y si es B2C). También se sitúa el estado una sola vez si la página se recarga ya desplazada.
+- **Aviso sobre el entorno:** el dev server se cayó **tres veces** durante las comprobaciones en vivo, siempre al compilar rutas pesadas (la calculadora y las rutas de `/admin`). La máquina quedaba con 9,2 GB libres y sin proceso Node, así que es la presión de memoria del dev server que ya documenta `AGENTS.md`, no un fallo de los cambios. Por eso la medición del scroll en navegador quedó pendiente y se dejó de insistir para no tumbarle el servidor: **lo verifica el usuario en el navegador** (o se mide en producción, que es más ligero).
+
+#### 💻 Key Code:
+```tsx
+// components/calculator/CalculadoraClient.tsx
+const zonaDeScroll = (y: number): number => (y <= 500 ? 0 : y < 800 ? 1 : y < 2000 ? 2 : 3);
+
+const handleScroll = () => {
+  if (frame) return;
+  frame = window.requestAnimationFrame(() => {
+    frame = 0;
+    const zona = zonaDeScroll(window.scrollY);
+    if (zona === zonaActual) return;   // sin render si no se cruza un umbral
+    zonaActual = zona;
+    setScrollPosition(window.scrollY);
+  });
+};
+```
+
+- **Files created/modified:** `components/calculator/CalculadoraClient.tsx`, `app/admin/**` (6 ficheros), `app/api/admin/**` (7 ficheros), `app/api/facturas/[id]/descargar/route.ts`, borrados `lib/auth.ts` y `app/api/test/`, y `chat_history.md`.
+- **Pendiente (usuario):** comprobar en el navegador que el scroll de `/calculadora-fiscal` ya no se atasca.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 22:52)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
@@ -2316,21 +2351,15 @@ export async function esAdmin(): Promise<boolean> {
    configurable, $0.15/hora on-demand) + **TTS Inworld Realtime TTS-2 Flash** ($15/1M caracteres on-demand) +
    **nuestro `gpt-4o-mini` con el prompt y el RAG actuales**. Deepgram queda como mejora futura cuando haya ingresos.
    Falta por construir: servicio WebSocket en contenedor aparte, endpoint interno con secreto compartido, topes de
-   duración y presupuesto, y RGPD (consentimiento y DPA). Plan y costes en
+   duración y presupuesto, y RGPD. Plan y costes en
    `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-5. **Despliegue del lote de seguridad (pendiente).** Sin subir y sin desplegar: el limitador de peticiones
-   (`lib/api-guard.ts` + `middleware.ts` + `next.config.ts`, verificado en vivo: 6 peticiones y la 7ª con 429) y la
-   protección con allowlist de admin de `/api/debug-db`, `/api/debug/pedido-metadata`, `/api/test-automation` y
-   `/api/test-email` (`lib/admin.ts`, verificado en vivo en los tres primeros: 403). **Falta la comprobación en vivo de
-   `/api/test-email`**: el dev server se cae al compilar esa ruta (presión de memoria, ya documentada en `AGENTS.md`).
-6. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+5. **Despliegue del lote nuevo (pendiente):** rendimiento de la calculadora (scroll por zonas + escenarios
+   memoizados), allowlist de admin centralizado en `lib/admin.ts` (14 ficheros) y limpieza de código muerto
+   (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el allowlist sin usar de `app/api/facturas/[id]/descargar`).
+6. **Verificación visual pendiente (usuario):** que el scroll de `/calculadora-fiscal` ya no se atasca. La medición
+   automática no se pudo hacer: el dev server se cae al compilar las rutas pesadas (presión de memoria ya documentada
+   en `AGENTS.md`; la máquina queda con ~9 GB libres y sin proceso Node).
+7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
-7. **Rendimiento de la calculadora (detectado el 21-09-2026)** — recalcula los escenarios en cada evento de scroll y
-   satura el hilo principal: el navegador deja de responder a JavaScript y a la rueda durante varios segundos al
-   desplazarse. En una página de conversión es un problema real (y afecta a móviles). *Medido en el navegador
-   controlado, no reproducido por el usuario.*
-8. **Cabos sueltos de código detectados el 21-09-2026 (limpieza, sin prisa):** `app/api/test/` es una carpeta vacía,
-   `lib/auth.ts` está vacío y `lib/api-guard.ts` centraliza la allowlist que las páginas de `/admin` repiten en unas
-   diez copias (candidato a unificar).

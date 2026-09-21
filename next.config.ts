@@ -34,16 +34,19 @@ const nextConfig: NextConfig = {
 
   // eslint.ignoreDuringBuilds se gestiona ahora via bandera CLI (--no-lint)
 
-  // Configuración de headers para CORS (Stripe, etc.)
+  // Cabeceras de la API. Antes se enviaba el comodín de CORS en todas las rutas /api/*,
+  // así que cualquier web ajena podía leer sus respuestas (incluidos endpoints de
+  // diagnóstico que no deberían ser públicos). Ya NO se envía ninguna cabecera CORS: el
+  // propio sitio siempre llama a la misma origin con rutas relativas, de modo que no la
+  // necesita, y terceros quedan bloqueados por defecto. Si algún día hace falta una
+  // integración externa, se añade una allowlist explícita en lugar de volver al comodín.
   async headers() {
     return [
       {
         source: '/api/:path*',
         headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT,OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, stripe-signature' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         ],
       },
     ];

@@ -8,6 +8,7 @@ import {
     MapPin, Globe, Briefcase
 } from 'lucide-react'
 import { PedidoModel } from '@/lib/models/pedido'
+import { esEmailAdmin } from '@/lib/admin'
 
 
 export default async function AdminClienteDetallePage({
@@ -23,8 +24,7 @@ export default async function AdminClienteDetallePage({
 
     if (!adminId) redirect('/sign-in')
 
-    const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-    const isAdmin = adminEmails.includes(userAdmin?.emailAddresses[0]?.emailAddress || '')
+    const isAdmin = esEmailAdmin(userAdmin?.emailAddresses[0]?.emailAddress || '')
     if (!isAdmin) redirect('/dashboard')
 
     // 2. Obtener datos del cliente de Clerk

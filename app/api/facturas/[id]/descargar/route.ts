@@ -23,11 +23,10 @@ export async function GET(
             return NextResponse.json({ error: 'Factura no encontrada' }, { status: 404 })
         }
 
-        // Verificar permisos: dueño o admin
-        // Admin emails hardcoded temporalmente, idealmente usar roles de clerk o DB
-        const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-        const isAdmin = false // TODO: Verificar admin logic correctamente si se requiere auth() user details
-        // Por ahora solo dueño recibe la factura via este endpoint. Admin tiene endpoint separado o misma lógica.
+        // Verificar permisos: solo el dueño de la factura puede descargarla.
+        // Aquí había un allowlist de administradores declarado y nunca usado: la variable de
+        // admin estaba fijada a false y la comprobación real es la del dueño, así que se
+        // elimina para que no parezca una verificación de seguridad que no existe.
 
         if (factura.user_id !== userId) {
             // Si no es el dueño, verificar si es admin (logic compleja sin request user details completos aquí)

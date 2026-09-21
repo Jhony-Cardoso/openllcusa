@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 import { PedidoModel } from '@/lib/models/pedido'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { v4 as uuidv4 } from 'uuid'
+import { esEmailAdmin } from '@/lib/admin'
 
 export async function POST(
     request: Request,
@@ -20,8 +21,7 @@ export async function POST(
         }
 
         // Verificar que es admin
-        const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-        const isAdmin = adminEmails.includes(user?.emailAddresses[0]?.emailAddress || '')
+        const isAdmin = esEmailAdmin(user?.emailAddresses[0]?.emailAddress || '')
 
         if (!isAdmin) {
             return NextResponse.json({ error: 'Acceso denegado - Solo administradores' }, { status: 403 })

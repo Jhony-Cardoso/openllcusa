@@ -1,6 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { esEmailAdmin } from '@/lib/admin'
 
 export async function GET(
     req: Request,
@@ -14,8 +15,7 @@ export async function GET(
         if (!adminId) return new NextResponse('Unauthorized', { status: 401 })
 
         // Seguridad: Solo admin puede ver estos documentos privados
-        const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-        const isAdmin = adminEmails.includes(userAdmin?.emailAddresses[0]?.emailAddress || '')
+        const isAdmin = esEmailAdmin(userAdmin?.emailAddresses[0]?.emailAddress || '')
         if (!isAdmin) return new NextResponse('Forbidden', { status: 403 })
 
         // 1. Obtener los datos del pedido para sacar el path del documento

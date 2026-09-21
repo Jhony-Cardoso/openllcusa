@@ -5,6 +5,7 @@ import {
     BarChart3, Users, Package, FileText,
     Settings, LogOut, LayoutDashboard, Search, MousePointer2
 } from 'lucide-react'
+import { esEmailAdmin } from '@/lib/admin'
 
 
 export default async function AdminLayout({
@@ -18,8 +19,7 @@ export default async function AdminLayout({
     if (!userId) redirect('/sign-in')
 
     // Verificación de Admin
-    const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-    const isAdmin = adminEmails.includes(user?.emailAddresses[0]?.emailAddress || '')
+    const isAdmin = esEmailAdmin(user?.emailAddresses[0]?.emailAddress || '')
 
     if (!isAdmin) {
         redirect('/dashboard')

@@ -8,6 +8,7 @@ import {
     ArrowLeft, Bell, Trash2, TrendingUp
 } from 'lucide-react'
 import { LeadModel } from '@/lib/models/lead'
+import { esEmailAdmin } from '@/lib/admin'
 
 
 // Función auxiliar para el badge del tier
@@ -25,8 +26,7 @@ export default async function AdminLeadsPage() {
 
     if (!adminId) redirect('/sign-in')
 
-    const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-    const isAdmin = adminEmails.includes(userAdmin?.emailAddresses[0]?.emailAddress || '')
+    const isAdmin = esEmailAdmin(userAdmin?.emailAddresses[0]?.emailAddress || '')
     if (!isAdmin) redirect('/dashboard')
 
     // 2. Obtener leads de la base de datos

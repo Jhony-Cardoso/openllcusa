@@ -13,6 +13,7 @@ import AdminDocumentManager from '@/components/admin/AdminDocumentManager'
 import AdminTaxFilingManager from '@/components/admin/AdminTaxFilingManager'
 import ResumenEjecutivo from '@/components/admin/ResumenEjecutivo'
 import { isEIN, isReporteAnual, isTaxFilingSlug } from '@/lib/constants'
+import { esEmailAdmin } from '@/lib/admin'
 
 
 export default async function AdminPedidoDetallePage({
@@ -27,8 +28,7 @@ export default async function AdminPedidoDetallePage({
     if (!adminId) redirect('/sign-in')
 
     // Seguridad extra Admin
-    const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-    const isAdmin = adminEmails.includes(userAdmin?.emailAddresses[0]?.emailAddress || '')
+    const isAdmin = esEmailAdmin(userAdmin?.emailAddresses[0]?.emailAddress || '')
 
     if (!isAdmin) {
         redirect('/dashboard')

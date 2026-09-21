@@ -7,6 +7,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { EmailService } from '@/lib/services/email.service'
 import { NotificacionService } from '@/lib/services/notificacion.service'
 import { v4 as uuidv4 } from 'uuid'
+import { esEmailAdmin } from '@/lib/admin'
 
 export async function POST(
     request: Request,
@@ -20,8 +21,7 @@ export async function POST(
         if (!userId) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
         // Verificar admin
-        const adminEmails = [process.env.ADMIN_EMAIL, 'josemanuelguerranunez5@gmail.com']
-        const isAdmin = adminEmails.includes(userAdmin?.emailAddresses[0]?.emailAddress || '')
+        const isAdmin = esEmailAdmin(userAdmin?.emailAddresses[0]?.emailAddress || '')
         if (!isAdmin) return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
 
         const pedido = await PedidoModel.obtenerCompleto(id, true)

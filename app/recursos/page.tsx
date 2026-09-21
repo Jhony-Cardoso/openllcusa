@@ -140,7 +140,7 @@ export default function HerramientasPage() {
               >
                 <h2 style={{ fontSize: 20, fontWeight: 800 }}>Asesoría con Zara</h2>
                 <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
-                  Asesoría gratis 24/7 por voz con transcripción (modo demo por ahora).
+                  Asesoría gratis 24/7 por voz con transcripción en pantalla (beta: el dictado funciona en Chrome, Edge y Safari).
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 'auto' }}>
                   <Link className="btn btn-primary" href="/zara">

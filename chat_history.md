@@ -2048,7 +2048,169 @@ npx tsx scripts/ingest-knowledge.ts --only q05-mejores,q18-llc-sin,q31-mantenimi
 
 - **Files created/modified:** `knowledge/custom/q05|q18|q31|q37|q53`, `chat_history.md`.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 21-09-2026, 02:40)
+---
+### 📅 Chat Session: 2026-09-21 13:55
+**Main objective:** Fase 0 del agente de voz de Zara: sustituir la demo simulada por voz real con las APIs del navegador sobre el cerebro que ya existe (`/api/chat`).
+
+#### 👤 User Request:
+> Vamos primero con la Fase 0: reescribir startDemoFlow en components/layout/Header.tsx y en app/zara/page.tsx (los dos, misma máquina de estados), añadir la variante hablada del prompt en app/api/chat/route.ts (una rama nueva, sin tocar la de texto), y nada más.
+
+#### 🤖 Agent Solution:
+- **Fuera el motor simulado, dentro voz real y sin coste.** El modal usa ahora `SpeechRecognition` (dictado `es-ES` con resultados provisionales en pantalla) y `speechSynthesis` (voz española del sistema si existe), y conversa contra `/api/chat` con `useChat` + `DefaultChatTransport({ body: { mode: 'voice' } })`. La máquina de estados del modal (idle, connecting, listening, processing, speaking, ended, error, permission_denied) y todo el CSS `zara-*` se conservan tal cual.
+- **Rama hablada en el endpoint.** Nueva constante `VOICE_STYLE_RULES` que sustituye al recordatorio de enlaces Markdown cuando el cuerpo trae `mode: 'voice'`: respuestas de una o dos frases, prohibido Markdown, enlaces y URLs, y cifras escritas con letras («trescientos cuarenta y nueve dólares más las tasas del estado») para que el TTS no lea «corchete formulario 5472 paréntesis barra servicios». Se añade `maxOutputTokens: 160` solo en voz. **La rama de texto no cambia**: mismo `SYSTEM_PROMPT`, mismo RAG, mismo `linkInstruction`, misma temperatura.
+- **Nada de datos duplicados**: los precios y las reglas siguen viviendo únicamente en `SYSTEM_PROMPT`; el modo voz solo altera el estilo de entrega, y va al final del prompt para que mande.
+- **Tres ajustes necesarios para que funcione de verdad** (todos dentro de los dos ficheros autorizados): desbloqueo de la síntesis en Safari con una locución previa al gesto del usuario; botón «Interrumpir voz» mientras Zara habla (el micro está cerrado durante la reproducción para que no se escuche a sí misma, así que el corte es explícito en lugar de por barge-in continuo); y aviso en pantalla cuando el navegador no permite dictado. Los textos que mentían se corrigen: el badge deja de decir «DEMO (voz desactivada)» y pasa a «VOZ · BETA», y la intro del modal y `/zara` describen ya el comportamiento real.
+- **Verificado sin levantar el servidor** (el usuario comprueba en el navegador): sintaxis con `ts.transpileModule` → 3/3 OK; `npx tsc --noEmit` → 0 errores en los 3 ficheros (el repo mantiene sus 34 preexistentes en otros); finales de línea preservados (CRLF en `Header.tsx` y `/zara`, LF en el endpoint) y cero secuencias de CR doblado en el repo; `git diff --stat` solo con los 3 ficheros.
+- **Probados con ejecución real los regex de voz**: se extrajo `speakable()` del propio fichero y se corrió en Node con casos reales — los enlaces Markdown se convierten en su texto visible (sin leer la URL), se eliminan negritas, emojis, viñetas y numeraciones, y el troceado por frases del streaming solo corta en finales de frase completos.
+- Copia de seguridad previa de los tres ficheros en `%TEMP%/zara_fase0_backup/` (reversible con un copiado).
+- Aviso: `npx eslint` del repo está roto de antes (config circular con ESLint 10.10.0); no lo ha provocado este cambio.
+
+#### 💻 Key Code:
+```tsx
+const { messages, sendMessage, status: chatStatus, error: chatError, setMessages } = useChat({
+  transport: new DefaultChatTransport({ api: '/api/chat', body: { mode: 'voice' } }),
+  messages: []
+})
+```
+
+- **Files created/modified:** `components/layout/Header.tsx`, `app/zara/page.tsx`, `app/api/chat/route.ts`, `chat_history.md`.
+- **Verificación manual pendiente (navegador):** `npm run dev` → «Asesoría con Zara» → aceptar micrófono → preguntar por el plan recomendado y por el 5472 → cortar con «Interrumpir voz» → Finalizar. Comprobar que las cifras se pronuncian con letras y que la transcripción no muestra Markdown.
+
+---
+### 📅 Chat Session: 2026-09-21 14:06
+**Main objective:** Actualizar el copy de la tarjeta de Zara en `/recursos`, que seguía anunciando la voz como demo.
+
+#### 👤 User Request:
+> Vamos a hacer el punto 5. Copy de /recursos:143, que aún dice "(modo demo por ahora)".
+
+#### 🤖 Agent Solution:
+- Única mención en toda la página: `app/recursos/page.tsx:143` (comprobado con grep de «voz» y «demo»).
+- Texto nuevo: «Asesoría gratis 24/7 por voz con transcripción en pantalla (beta: el dictado funciona en Chrome, Edge y Safari).» La línea anterior prometía una demo y no avisaba de que el dictado depende del navegador.
+- Sin tocar nada más de la página: el enlace de la tarjeta sigue apuntando a `/zara`, el título «Asesoría con Zara» sigue igual y las meta etiquetas (que ya hablaban de «asesoría gratuita 24/7 con nuestra IA especializada», sin mencionar demo) no se han modificado.
+- Verificado: sintaxis OK con `ts.transpileModule`, CRLF preservado (247 líneas), cero secuencias de CR doblado y `git diff --stat` con este fichero como único cambio nuevo.
+
+#### 💻 Key Code:
+```tsx
+Asesoría gratis 24/7 por voz con transcripción en pantalla (beta: el dictado funciona en Chrome, Edge y Safari).
+```
+
+- **Files created/modified:** `app/recursos/page.tsx`, `chat_history.md`.
+
+---
+### 📅 Chat Session: 2026-09-21 15:10
+**Main objective:** Cerrar el fallo de la Fase 0 del voz de Zara: el dictado fallaba en silencio en algunos navegadores y la síntesis podía quedarse muda sin avisar.
+
+#### 👤 User Request:
+> El usuario probó Vivaldi en modo incógnito (no transcribía nada) y Chrome (sí transcribió); dio el OK para aplicar el paquete de instrumentación y robustez.
+
+#### 🤖 Agent Solution:
+- **Causa del fallo encontrado y documentada:** Vivaldi y Brave son Chromium pero **no incluyen el servicio de voz de Google**, así que `webkitSpeechRecognition` existe, arranca y luego falla con un error interno que la versión anterior se tragaba sin mostrar nada (de ahí «Escuchando…» con el borrador vacío para siempre).
+- **El problema ya no puede pasar desapercibido**: cada error del reconocimiento se muestra con su código y una explicación en español (`network`, `audio-capture`, `not-allowed`…), y en Vivaldi/Brave/Firefox el motivo se dice por su nombre **antes** de empezar: el botón queda desactivado y aparece el aviso en la tarjeta.
+- **Aviso de silencio:** si pasan 8 segundos escuchando sin captar nada, se muestra «No te estoy oyendo…» en lugar de quedarse mudo.
+- **Síntesis robustecida:** reintento único cuando la locución falla (en este equipo se comprobó que la primera puede fallar con `not-allowed`), llamada a `resume()` antes de hablar porque `cancel()` puede dejar la cola en pausa, y elección de la voz española en cada frase (la lista de voces llega tarde: primero 0 voces, después 3).
+- **Formato de la respuesta:** reforzada la regla hablada («RECORDATORIO FINAL PARA VOZ») porque la captura del usuario mostraba a Zara respondiendo con `**Plan Starter**` y una lista numerada, y añadida limpieza de Markdown en el texto que se pinta en la transcripción (nueva función `readable()`), separada de `speakable()` para no romper el troceado por frases del streaming.
+- **Diagnóstico permanente:** la consola del navegador registra con el prefijo `[Zara voz]` cada paso (reconocido, envío al endpoint, locución en curso, errores con código).
+- **Fallo propio detectado y corregido durante la verificación:** las enumeraciones en línea («…lo siguiente: 1. **Plan Starter**») no se limpiaban, porque el patrón solo miraba el inicio de línea. Corregido en `readable()` y en `speakable()` de los dos ficheros.
+- **Verificación sin arrancar dev ni build:** sintaxis OK con `ts.transpileModule`; `npx tsc --noEmit` → 0 errores en los 3 ficheros (34 preexistentes en el resto del repo); 20 comprobaciones de los ayudantes nuevas extraídas del propio fichero y ejecutadas en Node (Chrome/Vivaldi/Firefox simulados) con el texto real de la captura del usuario: todo correcto; CRLF preservado y 0 secuencias de CR doblado; `git diff --stat` solo con los ficheros previstos.
+- Copia de seguridad previa en `%TEMP%/zara_fase0b_backup/`.
+
+#### 💻 Key Code:
+```tsx
+// Vivaldi y Brave son Chromium pero sin el servicio de voz de Google: se avisa antes de empezar
+function isSpeechlessBrowser(): { es: boolean; motivo: string } {
+  const ua = navigator.userAgent || ''
+  if (/Vivaldi/i.test(ua)) return { es: true, motivo: 'Vivaldi no incluye el servicio de voz de Google.' }
+  if ((navigator as any).brave) return { es: true, motivo: 'Brave no incluye el servicio de voz de Google.' }
+  if (/Firefox|FxiOS/i.test(ua)) return { es: true, motivo: 'Firefox no permite el dictado por voz.' }
+  return { es: false, motivo: '' }
+}
+```
+
+- **Files created/modified:** `components/layout/Header.tsx`, `app/zara/page.tsx`, `app/api/chat/route.ts`, `chat_history.md`.
+- **Verificación manual pendiente (navegador, Chrome):** ¿se oye la voz de Zara? Si no suena, con la consola abierta (F12) aparecerá el motivo con el prefijo `[Zara voz]`.
+
+---
+### 📅 Chat Session: 2026-09-21 20:55
+**Main objective:** Confirmar que la Fase 0 del voz de Zara funciona y comprobar la rama hablada del endpoint.
+
+#### 👤 User Request:
+> «Sí, en Chrome suena la voz de Zara.»
+
+#### 🤖 Agent Solution:
+- **Confirmado por el usuario:** en Chrome la voz de Zara se reproduce; la Fase 0 cumple lo que se buscaba (voz real, coste 0, mismo cerebro que el chat escrito).
+- **Comprobación propia de la rama hablada** contra el dev server del usuario (sin arrancar nada), reconstruyendo el texto del stream de `/api/chat`:
+  - `mode: voice` + «¿Qué plan me recomiendas para empezar?» → 2 frases, sin Markdown, sin enlaces y sin símbolos de dólar.
+  - `mode: voice` + «¿Cuánto cuesta el plan Starter?» → «El plan Starter cuesta **trescientos cuarenta y nueve dólares** más las tasas del estado…»: cifras con letras, como se pidió.
+  - `mode: voice` + «¿Estoy obligado a presentar el 5472 y cuánto cuesta?» → obligación confirmada y «doscientos noventa y siete dólares» (sin `$297`).
+  - Sin `mode` (rama de texto) + la misma pregunta → «El **Plan Starter** cuesta $349 … [ver nuestros planes](/precios)»: **la rama de texto sigue intacta**, con su Markdown y sus enlaces obligatorios.
+- **Detalle menor detectado, no corregido:** al decir el número del formulario, el modelo escribió «quinientos cuarenta y siete dos». Se entiende, pero para locución sería mejor deletrearlo («cinco cuatro siete dos»). Queda como mejora opcional.
+
+#### 💻 Key Code:
+```bash
+# comprobar la rama de voz sin levantar nada (el dev server lo levanta el usuario)
+node -e "fetch('http://localhost:3000/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{id:'1',role:'user',parts:[{type:'text',text:'¿Cuánto cuesta el plan Starter?'}]}],mode:'voice'}))}"
+```
+
+- **Files created/modified:** `chat_history.md`.
+- **Estado:** Fase 0 cerrada y verificada. Queda abierta la decisión de la Fase 1 (proveedores STT/TTS).
+
+---
+### 📅 Chat Session: 2026-09-21 21:17
+**Main objective:** Cerrar dos pendientes: los dos enlaces muertos del CTA flotante de la calculadora y la locución de los números de formulario.
+
+#### 👤 User Request:
+> Ok, cerremos algunos pendientes. Procede con el 7 (dos enlaces muertos) y con el 9 (mejora de locución, deletrear bien los números).
+
+#### 🤖 Agent Solution:
+- **Pendiente 7 — enlaces muertos.** Antes de elegir destino se verificó con `curl` contra producción que las dos rutas dan **404 también en el servidor real** (`/hablar-con-zara` y `/crear-llc`), y se buscó el precedente de cada CTA en el repo: «Crear mi LLC» apunta a `/precios` en `app/llc-para-ecommerce/page.tsx:105` y la home usa el ancla `#precios`, y «Hablar con Zara» no tenía página propia salvo `/zara` (200 en producción). Cambiados los dos destinos en `components/calculator/CalculadoraClient.tsx` (getCtaLink): `/hablar-con-zara` → `/zara` y `/crear-llc` → `/precios`. El texto de las CTAs, el umbral de scroll y el render (`<Link href={getCtaLink()}>`) no se han tocado.
+- **Pendiente 9 — números de formulario.** Nueva regla en `VOICE_STYLE_RULES` (solo rama de voz): los números de formulario y los códigos se dicen **dígito a dígito** («cinco cuatro siete dos», «uno uno dos cero», «ese ese cuatro»), nunca como cantidad.
+- **Comprobado contra el dev server del usuario** (reconstruyendo el stream de `/api/chat`):
+  - VOZ + «¿Estoy obligado a presentar el 5472?» → «…presentar el formulario **cinco cuatro siete dos** y el **uno uno dos cero** cada año…».
+  - VOZ + «¿Qué formularios hay que presentar cada año?» → «…el formulario cinco cuatro siete dos y el formulario uno uno dos cero…».
+  - TEXTO + la primera pregunta → sigue diciendo «Formulario 5472» y «1120» con sus enlaces Markdown: **la rama de texto no cambia**.
+- **Verificación del CTA bloqueada por un problema del propio sitio:** en el navegador controlado, la calculadora no responde a la evaluación de JavaScript ni a la rueda del ratón al hacer scroll (el hilo principal se queda ocupado varios segundos). El cambio es de dos literales y está verificado leyendo el fichero, y los dos destinos nuevos responden 200 en producción, pero la comprobación visual del botón la tiene que hacer el usuario con un clic.
+- Ambas ediciones: sintaxis OK con `ts.transpileModule`, CRLF preservado, cero secuencias de CR doblado, copia de seguridad en `%TEMP%/zara_fase0c_backup/`.
+
+#### 💻 Key Code:
+```tsx
+const getCtaLink = () => {
+  if (scrollPosition < 800) return '/zara';      // antes '/hablar-con-zara' (404)
+  if (scrollPosition < 2000) return '/contacto';
+  return '/precios';                            // antes '/crear-llc' (404)
+};
+```
+
+- **Files created/modified:** `components/calculator/CalculadoraClient.tsx`, `app/api/chat/route.ts`, `chat_history.md`.
+- **Hallazgos nuevos de este paso:** (a) `app/contacto/page.tsx:13-15` — el botón «🎙️ Hablar con Zara» solo lanza un `alert('…Pronto estaré disponible para ayudarte 24/7')`, cuando Zara ya funciona: engaña al visitante; (b) la calculadora recalcula escenarios en cada evento de scroll y satura el hilo principal, lo que en una página de conversión es un problema de rendimiento medible.
+
+---
+### 📅 Chat Session: 2026-09-21 21:42
+**Main objective:** Arreglar el botón «Hablar con Zara» de /contacto y dejar registrada la decisión de proveedores para la Fase 1 de voz.
+
+#### 👤 User Request:
+> Procede con el 4 (botón «Hablar con Zara» de /contacto, que solo lanza un alert) y toma nota de los proveedores elegidos: STT Inworld STT, TTS Inworld Realtime TTS-2 Flash y LLM nuestro gpt-4o-mini con prompt y RAG, unificando proveedor con Inworld porque además es más económico que Deepgram Nova-3 multilingüe (cuando haya ingresos se podrá plantear el cambio a Deepgram).
+
+#### 🤖 Agent Solution:
+- **Punto 4 cerrado.** En `app/contacto/page.tsx` el botón que solo lanzaba `alert('…Pronto estaré disponible para ayudarte 24/7')` pasa a ser un enlace real de Next (`<Link href="/zara">`), con la misma apariencia y el mismo texto; se elimina el handler `handleZaraClick` y se añade el import de `next/link`. Al ser un `<a>` de verdad, además es rastreable por el buscador, cosa que un botón con JavaScript no era.
+- **Verificado en el navegador contra el dev server:** el enlace se renderiza con `href="/zara"`, es visible y no queda ni rastro de «Pronto estaré disponible»; un clic sobre él navega correctamente a `/zara`. Nota: el primer clic físico lo interceptó el banner de cookies, que tapa esa zona de la página (no es un fallo del enlace).
+- **Decisión de proveedores registrada (STT Inworld, TTS Inworld TTS-2 Flash, LLM propio).** Due diligence hecha sobre el STT de Inworld, que es la pieza nueva: modelo `inworld/inworld-stt-1`, **español incluido** entre sus 30 idiomas (código `es`), streaming bidireccional por WebSocket en `/stt/v1/transcribe:streamBidirectional`, PCM 16 kHz 16 bits mono como formato recomendado, y detección automática de fin de turno con sensibilidad configurable (o modo manual) — justo lo que la Fase 0 no puede tener porque el dictado del navegador no expone VAD. Precio: $0.15/hora en el plan on-demand ($0.10/hora desde el plan Creator) frente a los $0.35/hora de Deepgram Nova-3 multilingüe, así que unificar proveedor es además más barato, como decía el usuario. Deepgram queda como mejora futura cuando haya ingresos.
+- **Aviso importante sobre el despliegue:** comprobado con `curl` contra producción, **nada de los cambios de esta sesión está desplegado** (no ha habido commit ni push): `/zara` sigue sirviendo «Zara (demo)» y `/recursos` mantiene «modo demo por ahora». Por tanto producción aún muestra la demo, los dos enlaces muertos del CTA de la calculadora y el alert de /contacto.
+- Sintaxis OK con `ts.transpileModule`, CRLF preservado (313 líneas), cero secuencias de CR doblado, copia de seguridad en `%TEMP%/contacto_backup/`.
+
+#### 💻 Key Code:
+```tsx
+// app/contacto/page.tsx — de alert() a enlace real
+<Link
+  href="/zara"
+  className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors cursor-pointer"
+>
+  🎙️ Hablar con Zara
+</Link>
+```
+
+- **Files created/modified:** `app/contacto/page.tsx`, `chat_history.md`.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 21:42)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
@@ -2059,11 +2221,30 @@ npx tsx scripts/ingest-knowledge.ts --only q05-mejores,q18-llc-sin,q31-mantenimi
 2. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
 3. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
+4. **Voz de Zara — Fase 1 con proveedores ya decididos (21-09-2026).** Stack acordado: **STT Inworld**
+   (`inworld/inworld-stt-1`, español entre sus 30 idiomas, WebSocket `:streamBidirectional`, fin de turno
+   configurable, $0.15/hora on-demand) + **TTS Inworld Realtime TTS-2 Flash** ($15/1M caracteres on-demand) +
+   **nuestro `gpt-4o-mini` con el prompt y el RAG actuales**. Unificar proveedor con Inworld es más barato que
+   Deepgram Nova-3 multilingüe ($0.35/hora) y añade la detección de turno que la Fase 0 no puede tener; **Deepgram
+   queda como mejora futura cuando haya ingresos**. Lo que falta por construir: servicio WebSocket en contenedor
+   aparte (un route handler de Next no puede hacer upgrade a WebSocket), endpoint interno con secreto compartido,
+   topes de duración y presupuesto, y RGPD (consentimiento y DPA; el STT de Inworld devuelve además señales de
+   «Voice Profile» que no necesitamos). Plan y costes en
+   `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-4. **Despliegue y verificación en producción** (Dokploy) de los cambios del 19, 20 y 21 de septiembre: `/boi-report`,
-   `/guias/us`, corrección del BOI (prompt + base de conocimiento), títulos, canonical, sitemap, nota de plazos,
-   ancla de la sección 8, limpieza de `/precios`, precio de $297 del servicio fiscal, las tasas de Wyoming a $60 y la
-   reversión de la excepción del 5472.
-5. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+5. **Despliegue pendiente de TODO lo local (verificado el 21-09-2026 con `curl` contra producción).** En GitHub y en
+   producción solo está lo de sesiones anteriores: `/zara` sigue sirviendo «Zara (demo)» y `/recursos` mantiene «modo
+   demo por ahora». Están sin commitear y sin subir: el modo voz de Zara (`components/layout/Header.tsx`,
+   `app/zara/page.tsx`, rama de voz de `app/api/chat/route.ts`), el copy de `/recursos`, los dos destinos nuevos del
+   CTA de la calculadora (`/zara` y `/precios` en `components/calculator/CalculadoraClient.tsx`), la locución de los
+   números de formulario y el enlace nuevo de `/contacto` (`app/contacto/page.tsx`). Hasta que se suba y se despliegue,
+   los visitantes siguen viendo la demo, los dos enlaces que dan 404 y el alert de /contacto.
+6. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
+7. **No existe rate limiting en `/api/*` (verificado el 21-09-2026)** y el CORS es `*`. Conviene resolverlo antes de
+   exponer cualquier servicio de pago; la Fase 1 de voz (STT/TTS facturados por minuto) lo necesita.
+8. **Rendimiento de la calculadora (detectado el 21-09-2026)** — recalcula los escenarios en cada evento de scroll y
+   satura el hilo principal: el navegador deja de responder a JavaScript y a la rueda durante varios segundos al
+   desplazarse. En una página de conversión es un problema real (y afecta a móviles). *Medido en el navegador
+   controlado, no reproducido por el usuario.*

@@ -435,10 +435,13 @@ export default function CalculadoraClient() {
     return '🚀 Crear mi LLC';
   };
 
+  // Destinos verificados: '/zara' es la página real de Zara y '/precios' es donde
+  // apuntan las demás CTAs de "Crear mi LLC". Antes eran '/hablar-con-zara' y
+  // '/crear-llc', dos rutas inexistentes (404 en producción y en local).
   const getCtaLink = () => {
-    if (scrollPosition < 800) return '/hablar-con-zara';
+    if (scrollPosition < 800) return '/zara';
     if (scrollPosition < 2000) return '/contacto';
-    return '/crear-llc';
+    return '/precios';
   };
 
   return (

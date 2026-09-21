@@ -45,6 +45,21 @@ INSTRUCCIONES DE VENTAS:
 - Si el usuario parece convencido, recomiéndale iniciar el proceso en nuestra web o dejar su email en este chat.
 `;
 
+const VOICE_STYLE_RULES = `
+=== MODO VOZ (TIENE PRIORIDAD SOBRE TODAS LAS REGLAS DE ESTILO ANTERIORES) ===
+El usuario te está ESCUCHANDO: tu respuesta se convierte a voz y se lee en voz alta tal cual la escribas. Por eso:
+- Responde en UNA O DOS FRASES (tres como máximo si es imprescindible). Si te preguntan por los planes, NO enumeres los tres: di en una sola frase cuál encaja mejor y ofrece contarlo si quiere.
+- PROHIBIDO el formato: no uses **negritas**, ni *cursivas*, ni títulos con #, ni viñetas, ni listas numeradas ("1.", "2.", "3."), ni tablas, ni emojis. Frases seguidas y nada más.
+- PROHIBIDO escribir enlaces, rutas o URLs (nada de "(/precios)", "/servicios/..." ni "https://..."). El usuario los tiene escritos en la pantalla: si necesita consultar algo, nómbralo hablando, por ejemplo "lo tienes en la página de precios".
+- Escribe las cifras CON LETRAS, tal y como se dicen en voz alta: "trescientos cuarenta y nueve dólares más las tasas del estado", "doscientos noventa y siete dólares", "sesenta dólares al año". Nunca "$349", "$297" ni "$60".
+- Los números de formulario y los códigos se dicen DÍGITO A DÍGITO, nunca como cantidad: el 5472 se dice "cinco cuatro siete dos", el 1120 se dice "uno uno dos cero" y el SS-4 se dice "ese ese cuatro". Escríbelos ya separados con espacios para que la locución los lea así.
+- No sueltes siglas sin explicarlas: la primera vez di "el número de identificación fiscal, el EIN", y después "el EIN".
+- Habla como una asesora española en una llamada: cercana, natural y sin fórmulas robóticas.
+- Si el usuario te interrumpe o cambia de tema, atiende lo último que ha dicho, aunque no hayas terminado.
+
+RECORDATORIO FINAL PARA VOZ: ni un asterisco, ni una lista, ni un enlace, y como mucho dos frases. Si tu respuesta lleva formato, la estás escribiendo mal.
+`;
+
 export async function POST(req: Request) {
   try {
     const rawBody = await req.json();
@@ -58,6 +73,11 @@ export async function POST(req: Request) {
     }
 
     const { verify_session } = rawBody;
+
+    // MODO VOZ (Fase 0): misma información, mismo RAG y mismo modelo, pero con
+    // reglas de estilo pensadas para ser escuchadas en lugar de leídas. La rama
+    // de texto de este endpoint no cambia en nada.
+    const isVoiceMode = !Array.isArray(rawBody) && (rawBody as any)?.mode === 'voice';
 
     const user = await currentUser();
     let dynamicSystemPrompt = SYSTEM_PROMPT;
@@ -129,13 +149,20 @@ Ten en cuenta este historial para darle respuestas precisas y personalizadas sob
     }
 
     const linkInstruction = `\n\nRECORDATORIO CRÍTICO FINAL: NUNCA menciones un servicio o plan sin incluir su enlace en formato Markdown justo a continuación. Es OBLIGATORIO. Ejemplos obligatorios:\n- Si hablas del Formulario 5472: [Formulario 5472](/servicios/form-5472-1120)\n- Si invitas al usuario a ver los planes o paquetes en general: [revisar nuestros planes](/precios)\n- Si ofreces agendar llamada: [agendar llamada](/agendar)\nSIEMPRE INCLUYE LOS ENLACES.`;
-    const finalSystemPrompt = dynamicSystemPrompt + ragContext + linkInstruction;
+    // En voz no tiene sentido el recordatorio de enlaces Markdown (el TTS leería
+    // "corchete formulario 5472 paréntesis barra servicios..."): se sustituye por
+    // las reglas habladas, que siguen yendo al final del prompt para que manden.
+    const finalSystemPrompt = isVoiceMode
+      ? dynamicSystemPrompt + ragContext + VOICE_STYLE_RULES
+      : dynamicSystemPrompt + ragContext + linkInstruction;
 
     const result = streamText({
       model: openai('gpt-4o-mini'),
       system: finalSystemPrompt,
       messages: await convertToModelMessages(messages),
       temperature: 0.3,
+      // En voz limitamos la longitud: respuestas cortas se escuchan mejor.
+      ...(isVoiceMode ? { maxOutputTokens: 160 } : {}),
     });
 
     return result.toUIMessageStreamResponse();

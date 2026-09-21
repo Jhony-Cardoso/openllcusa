@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { InlineWidget } from 'react-calendly'
 import { Mail, Clock, Shield, Calendar, Mic } from 'lucide-react'
 import type { MouseEvent } from 'react'
@@ -10,10 +11,6 @@ import type { MouseEvent } from 'react'
 const CALENDLY_HEIGHT = 'var(--calendly-h)'
 
 export default function ContactoPage() {
-  const handleZaraClick = () => {
-    alert('¡Hola! Soy Zara, tu asistente virtual. Pronto estaré disponible para ayudarte 24/7.')
-  }
-
   // Lleva la vista hasta la ventana de Calendly dejándola entera bajo el header sticky.
   const handleAgendarClick = (e: MouseEvent<HTMLAnchorElement>) => {
     const target = document.getElementById('agendar')
@@ -226,12 +223,15 @@ export default function ContactoPage() {
               <p className="text-gray-600 mb-4 text-sm">
                 Si no quieres esperar, habla <strong>AHORA</strong> con Zara.<br />Está disponible 24/7
               </p>
-              <button 
-                onClick={handleZaraClick}
+              {/* Enlace real a la página de Zara: antes este botón solo mostraba un alert
+                  diciendo que estaría disponible «pronto». Como enlace, además, el
+                  buscador puede seguirlo. */}
+              <Link
+                href="/zara"
                 className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors cursor-pointer"
               >
                 🎙️ Hablar con Zara
-              </button>
+              </Link>
             </div>
           </div>
         </div>

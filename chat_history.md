@@ -2434,7 +2434,33 @@ const RATIO_CREAR = 0.71;   // «Crear mi LLC» hasta el final
 - **Files created/modified:** `components/calculator/CalculadoraClient.tsx`, `components/chat/ChatWidget.tsx`, `components/chat/chat-widget.css`, `app/chat/page.tsx`, `chat_history.md`.
 - **Verificación pendiente (usuario):** tras desplegar, que `openllcusa.com/chat` muestre solo el chat y que los tres botones de la calculadora se vean cada uno durante un tramo largo.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 14:52)
+---
+### 📅 Chat Session: 2026-09-22 23:46
+**Main objective:** Arreglar los enlaces de Zara que no eran clicables en el chat.
+
+#### 👤 User Request:
+> «He probado el chatbot una vez implementado en URL dedicada y […] los enlaces mencionados por Zara no son clicables (o no son ni siquiera enlaces como tal). Revísalo.»
+
+#### 🤖 Agent Solution:
+- **Causa encontrada (con el texto real de Zara).** El modelo envuelve el enlace en negrita: `**[Plan Professional](/paquetes/professional/onboarding)**`. El renderizador partía la línea con una expresión regular de dos alternativas (negrita o enlace) y, como la negrita empezaba antes, se quedaba con toda la expresión y pintaba su contenido como texto literal: de ahí que se vieran los corchetes y el paréntesis y que no hubiera nada clicable. Se reproducjo pidiendo la misma respuesta a `/api/chat` y volcando el texto crudo.
+- **Segundo fallo encontrado en la captura:** las viñetas se pintaban dos veces («- - Apertura…»), porque el contenido de la línea incluía el propio guion y además se añadía el de la lista.
+- **Arreglo.** El análisis del Markdown en línea se saca a un módulo propio y probado, `components/chat/markdown.ts`, que analiza de forma recursiva: funciona el enlace dentro de la negrita, la negrita dentro del enlace y también las URL sueltas (con la puntuación final respetada). `SimpleMarkdown` usa los tokens y separa el marcador de lista del contenido.
+- **Verificación en dos niveles.** (1) Pruebas unitarias ejecutando el módulo real con el texto exacto que devolvió Zara más siete casos límite (enlace en negrita, negrita en enlace, dos enlaces en la misma línea, ancla `#formar`, URL suelta, enlace sin cerrar, texto normal): todos OK. (2) Prueba de extremo a extremo en `/chat` contra el dev server: tras la pregunta real, los tres enlaces se pintan como `<a class="chat-link">` con sus destinos (`/paquetes/professional/onboarding`, `/precios`, `/agendar`), sin corchetes, sin asteriscos y sin guion doble.
+
+#### 💻 Key Code:
+```ts
+// components/chat/markdown.ts — el contenido de la negrita se vuelve a analizar
+if (elegido.tipo === 'enlace') {
+  tokens.push({ tipo: 'enlace', href: m[2], hijos: parseMarkdownEnLinea(m[1]) })
+} else if (elegido.tipo === 'negrita') {
+  tokens.push({ tipo: 'negrita', hijos: parseMarkdownEnLinea(m[1]) })
+}
+```
+
+- **Files created/modified:** `components/chat/markdown.ts` (nuevo), `components/chat/ChatWidget.tsx`, `chat_history.md`.
+- **Verificación pendiente (usuario):** tras desplegar, comprobar en producción que los enlaces de Zara se pueden pulsar.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 23:46)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2454,11 +2480,13 @@ const RATIO_CREAR = 0.71;   // «Crear mi LLC» hasta el final
    Plan y costes en `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-5. **Despliegue pendiente de:** CTA de la calculadora a 180 px, con umbrales proporcionales y reparto equitativo de
-   los tres botones (13/42/71 %), `/chat` como interfaz a página completa, rendimiento del scroll, allowlist de admin
-   centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
-   allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de `AGENTS.md`.
-6. **Verificación tras el despliegue:** que `openllcusa.com/chat` muestre solo el chat (sin botón flotante) y que en
-   la calculadora cada uno de los tres botones se vea durante un tramo largo, en cualquier tamaño de ventana.
+5. **Despliegue pendiente de:** enlaces de Zara clicables (con el repintado de viñetas), CTA de la calculadora a
+   180 px con umbrales proporcionales y reparto 13/42/71 %, `/chat` como interfaz a página completa, rendimiento del
+   scroll, allowlist de admin centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas
+   vacías de `app/api/test/` y el allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de
+   `AGENTS.md`.
+6. **Verificación tras el despliegue:** que los enlaces de Zara se puedan pulsar en producción, que
+   `openllcusa.com/chat` muestre solo el chat y que en la calculadora cada uno de los tres botones se vea durante un
+   tramo largo.
 7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

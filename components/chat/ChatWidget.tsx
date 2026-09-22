@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
 import { MessageCircle, X, Send, Sparkles, ArrowRight, ChevronDown, User, Phone } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useUser } from '@clerk/nextjs'
+import { parseMarkdownEnLinea, MARCADOR_LISTA, type TokenMarkdown } from './markdown'
 import './chat-widget.css'
 
 // ─── Analytics ────────────────────────────────────────────
@@ -70,24 +71,38 @@ function resolveChatHref(href: string): string {
 }
 
 // ─── Componente: Renderizar Markdown simple ───────────────
+// Los tokens llegan del analizador (components/chat/markdown.ts), que resuelve el enlace
+// dentro de la negrita, la negrita dentro del enlace y las URL sueltas. Antes se partía la
+// línea con una expresión regular y el enlace envuelto en negrita se mostraba como texto
+// literal, sin ser clicable.
+function renderTokens(tokens: TokenMarkdown[], clave: string): ReactNode[] {
+  return tokens.map((token, j) => {
+    if (token.tipo === 'enlace') {
+      const href = resolveChatHref(token.href)
+      return (
+        <Link key={`${clave}-${j}`} href={href} className="chat-link" onClick={() => trackGAEvent('chat_purchase', { url: href })}>
+          {renderTokens(token.hijos, `${clave}-${j}t`)}
+        </Link>
+      )
+    }
+    if (token.tipo === 'negrita') {
+      return <strong key={`${clave}-${j}`}>{renderTokens(token.hijos, `${clave}-${j}t`)}</strong>
+    }
+    return <span key={`${clave}-${j}`}>{token.valor}</span>
+  })
+}
+
 function SimpleMarkdown({ text }: { text?: string }) {
   const lines = (text || '').split('\n')
   return (
     <div className="chat-markdown">
       {lines.map((line, i) => {
         if (!line.trim()) return <br key={i} />
-        const parts = line.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g)
-        const rendered = parts.map((part, j) => {
-          const boldMatch = part.match(/^\*\*(.+)\*\*$/)
-          if (boldMatch) return <strong key={j}>{boldMatch[1]}</strong>
-          const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
-          if (linkMatch) {
-            const href = resolveChatHref(linkMatch[2])
-            return <Link key={j} href={href} className="chat-link" onClick={() => trackGAEvent('chat_purchase', { url: href })}>{linkMatch[1]}</Link>
-          }
-          return <span key={j}>{part}</span>
-        })
-        const listMatch = line.match(/^(\s*)(•|-|[0-9]+️⃣|[0-9]+\.|✅|❌)\s*(.*)$/)
+        // El marcador de la lista se separa del texto para no pintarlo dos veces: antes el
+        // contenido incluía el propio guion y se veía «- -» al principio de cada línea.
+        const listMatch = line.match(MARCADOR_LISTA)
+        const contenido = listMatch ? line.slice(listMatch[0].length) : line
+        const rendered = renderTokens(parseMarkdownEnLinea(contenido), `l${i}`)
         if (listMatch) {
           return (
             <div key={i} className="chat-list-item">

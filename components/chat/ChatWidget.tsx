@@ -142,8 +142,10 @@ export default function ChatWidget() {
   })
   const isLoading = status === 'streaming' || status === 'submitted'
 
-  // Enlace directo para redes: cualquier URL con ?chat=1 (o la ruta corta /chat, que
-  // redirige a /?chat=1) abre el widget solo, sin que el visitante tenga que buscarlo.
+  // Enlace directo para redes. Con ?chat=1 el widget se abre solo en cualquier página. En
+  // la ruta /chat se abre además como interfaz a página completa: una clase en el body hace
+  // que el CSS esconda el botón flotante y su aviso, y estire la ventana bajo la cabecera
+  // (ver chat-widget.css, sección «/chat: interfaz a página completa»).
   useEffect(() => {
     if (typeof window === 'undefined') return
     const params = new URLSearchParams(window.location.search)
@@ -151,13 +153,18 @@ export default function ChatWidget() {
     const porRuta = window.location.pathname.replace(/\/$/, '') === '/chat'
     if (!porParametro && !porRuta) return
 
+    if (porRuta) document.body.classList.add('chat-modo-pagina')
     setIsOpen(true)
     setUnreadCount(0)
     setHasInteracted(true) // sin el aviso «¿Tienes dudas?», que ya está abierto
     trackGAEvent('chat_enlace_directo', {
       origen: document.referrer || 'directo',
-      via: porParametro ? 'parametro' : 'ruta'
+      via: porRuta ? 'pagina' : 'parametro'
     })
+
+    return () => {
+      if (porRuta) document.body.classList.remove('chat-modo-pagina')
+    }
   }, [])
 
   // Usuarios logueados: saltar directamente a IA

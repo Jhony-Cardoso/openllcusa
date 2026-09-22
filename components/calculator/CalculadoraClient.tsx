@@ -54,9 +54,12 @@ const COMUNIDADES = [
 // de más de 1.771 px de alto el desplazamiento máximo nunca llegaba a 2.000 y el botón
 // «Crear mi LLC» no se mostraba jamás. Con proporciones, los tres estados son alcanzables
 // en cualquier tamaño de ventana.
+// Salvo el tramo inicial (la barra no aparece hasta el 13 %), el resto del recorrido se
+// reparte en tres partes iguales: 13-42 % «Hablar con Zara», 42-71 % «Agendar Cita» y
+// 71-100 % «Crear mi LLC», de modo que los tres botones se ven durante un tramo similar.
 const RATIO_BARRA = 0.13;      // a partir de aquí aparece la barra
-const RATIO_AGENDAR = 0.21;    // «Agendar Cita»
-const RATIO_CREAR = 0.53;      // «Crear mi LLC»
+const RATIO_AGENDAR = 0.42;    // «Hablar con Zara» deja paso a «Agendar Cita»
+const RATIO_CREAR = 0.71;      // «Crear mi LLC» hasta el final
 
 const zonaDeScroll = (y: number, desplazable: number): number => {
   if (desplazable <= 0) return 0;

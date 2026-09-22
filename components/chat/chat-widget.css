@@ -234,6 +234,57 @@
   pointer-events: none;
 }
 
+/* ═══════════ /chat: interfaz a página completa ═══════════
+   La ruta /chat (enlace corto para redes) abre el asistente como página propia: sin botón
+   flotante ni aviso, y con la ventana ocupando el ancho útil por debajo de la cabecera del
+   sitio. La clase la pone ChatWidget en el body solo al cargar /chat, así que el resto de
+   páginas no se ven afectadas. */
+body.chat-modo-pagina .chat-fab,
+body.chat-modo-pagina .chat-tooltip,
+body.chat-modo-pagina .chat-header__close {
+  display: none;
+}
+
+body.chat-modo-pagina .chat-window {
+  position: fixed;
+  top: clamp(160px, 18vh, 195px); /* deja ver el titular y la entradilla de la página */
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: min(100% - 32px, 880px);
+  height: auto;
+  max-height: none;
+}
+
+.chat-pagina {
+  min-height: 100dvh;
+  padding: 24px 16px 0;
+  background: #081a33;
+  text-align: center;
+}
+
+.chat-pagina h1 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.chat-pagina p {
+  margin: 0 auto;
+  max-width: 620px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* En pantallas estrechas la entradilla ocuparía más alto que el hueco del titular, así que
+   se queda solo el titular (el panel de chat empieza justo debajo). */
+@media (max-width: 700px) {
+  .chat-pagina p {
+    display: none;
+  }
+}
+
 @keyframes chatWindowOpen {
   from {
     opacity: 0;

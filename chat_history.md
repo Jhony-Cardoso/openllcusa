@@ -2412,11 +2412,33 @@ const zonaDeScroll = (y: number, desplazable: number): number => {
 - **Files created/modified:** `components/calculator/CalculadoraClient.tsx`, `components/chat/ChatWidget.tsx`, `app/chat/page.tsx` (nuevo), `chat_history.md`.
 - **Verificación pendiente:** tras desplegar, `openllcusa.com/chat` debe redirigir a `/?chat=1` y el widget abrirse solo; y en la calculadora el tercer botón debe aparecer al final de la página en cualquier tamaño de ventana.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 14:26)
+---
+### 📅 Chat Session: 2026-09-22 14:52
+**Main objective:** Repartir el recorrido de la página entre los tres botones del CTA y convertir /chat en una interfaz de chat a página completa.
+
+#### 👤 User Request:
+> «Se te olvidó mostrar el botón “Hablar con Zara”. Reparte el espacio entre los 3 botones + aparición de la barra.» Y sobre el enlace del chatbot: «abre la Home, que en su parte derecha muestra el chatbot ya abierto. Pero NO abre una interfaz con el chatbot exclusivamente.»
+
+#### 🤖 Agent Solution:
+- **Reparto equitativo del recorrido.** El estado «Hablar con Zara» solo duraba del 13 % al 21 % del scroll (unos 256 px de 3.203), así que en la práctica no se veía: de ahí la impresión de que faltaba. Ahora, tras el tramo inicial del 13 % en el que no hay barra, el resto se reparte en tres partes iguales: 13-42 % «Hablar con Zara», 42-71 % «Agendar Cita» y 71-100 % «Crear mi LLC». Medido ejecutando la función real del fichero: **929 px por botón, el 29 % del recorrido cada uno**, y las cuatro zonas alcanzables en ventanas de 600 a 2.160 px de alto.
+- **/chat pasa a ser una interfaz de chat a página completa.** Antes redirigía a `/?chat=1` y se abría sobre la home. Ahora `app/chat/page.tsx` es una página propia (titular «Habla con Zara», entradilla de una línea, `noindex` para no competir con la home) y el widget global detecta la ruta, añade la clase `chat-modo-pagina` al `body` y el CSS esconde el botón flotante, su aviso y la cruz de cerrar, estirando la ventana bajo la cabecera del sitio (`.chat-window` centrada, `min(100% - 32px, 880px)`, de `clamp(160px, 18vh, 195px)` al fondo). Las reglas van bajo `body.chat-modo-pagina`, así que **ninguna otra página cambia**. Se conserva el parámetro `?chat=1`, que sigue abriendo el widget flotante en cualquier página.
+- Comprobado en el navegador contra el dev server, con captura: en `/chat` el titular y la entradilla quedan visibles con 20 px de aire sobre el panel, el panel está centrado (880 px de ancho), el botón flotante está oculto y el banner de cookies no interfiere (en la primera captura parecía un defecto de la página y era el aviso de cookies, que se cerró).
+
+#### 💻 Key Code:
+```ts
+const RATIO_BARRA = 0.13;   // aparece la barra
+const RATIO_AGENDAR = 0.42; // «Hablar con Zara» -> «Agendar Cita»
+const RATIO_CREAR = 0.71;   // «Crear mi LLC» hasta el final
+```
+
+- **Files created/modified:** `components/calculator/CalculadoraClient.tsx`, `components/chat/ChatWidget.tsx`, `components/chat/chat-widget.css`, `app/chat/page.tsx`, `chat_history.md`.
+- **Verificación pendiente (usuario):** tras desplegar, que `openllcusa.com/chat` muestre solo el chat y que los tres botones de la calculadora se vean cada uno durante un tramo largo.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 14:52)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
-> acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes se listan en líneas numeradas para
-> poder referirse a ellos por su número.
+> acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
+> ellos por su número.
 
 **Producto / decisiones de negocio**
 1. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
@@ -2424,20 +2446,19 @@ const zonaDeScroll = (y: number, desplazable: number): number => {
 2. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
 3. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
-4. **Voz de Zara — Fase 1 con proveedores ya decididos (21-09-2026).** Stack acordado: **STT Inworld**
-   (`inworld/inworld-stt-1`, español entre sus 30 idiomas, WebSocket `:streamBidirectional`, fin de turno
-   configurable, $0.15/hora on-demand) + **TTS Inworld Realtime TTS-2 Flash** ($15/1M caracteres on-demand) +
-   **nuestro `gpt-4o-mini` con el prompt y el RAG actuales**. Deepgram queda como mejora futura cuando haya ingresos.
-   Falta por construir: servicio WebSocket en contenedor aparte, endpoint interno con secreto compartido, topes de
-   duración y presupuesto, y RGPD. Plan y costes en
-   `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
+4. **Voz de Zara — Fase 1 (Inworld STT + Inworld TTS-2 Flash + gpt-4o-mini).** Primer paso acordado el 22-09-2026:
+   el usuario crea la cuenta de Inworld con tope de gasto y la clave de API (variable `INWORLD_API_KEY` en Dokploy y
+   en `.env.local`, nunca en el repo), y con esa clave el asistente hace una prueba de ida y vuelta (audio real ->
+   texto en español -> audio) midiendo calidad, latencia y coste por minuto antes de tocar la web. Después: servicio
+   WebSocket en contenedor aparte, endpoint interno con secreto compartido, topes de duración y presupuesto, y RGPD.
+   Plan y costes en `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-5. **Despliegue pendiente de:** CTA de la calculadora a 180 px y con umbrales proporcionales, enlace directo al
-   chatbot (`/chat` y `?chat=1`), rendimiento del scroll, allowlist de admin centralizado en `lib/admin.ts`,
-   limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el allowlist sin usar de
-   `app/api/facturas/[id]/descargar`) y la regla 6 de `AGENTS.md`.
-6. **Verificación tras el despliegue:** que `openllcusa.com/chat` redirija a `/?chat=1` y abra el widget solo, y que
-   en la calculadora se vean los tres estados del CTA (incluido «Crear mi LLC») en cualquier tamaño de ventana.
+5. **Despliegue pendiente de:** CTA de la calculadora a 180 px, con umbrales proporcionales y reparto equitativo de
+   los tres botones (13/42/71 %), `/chat` como interfaz a página completa, rendimiento del scroll, allowlist de admin
+   centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
+   allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de `AGENTS.md`.
+6. **Verificación tras el despliegue:** que `openllcusa.com/chat` muestre solo el chat (sin botón flotante) y que en
+   la calculadora cada uno de los tres botones se vea durante un tramo largo, en cualquier tamaño de ventana.
 7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

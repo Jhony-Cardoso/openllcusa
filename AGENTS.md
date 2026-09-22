@@ -89,6 +89,11 @@ Combine verified technical facts with project priorities and safe operating rule
    - Files created/modified
    - What the user must visually verify in the browser
 5. Never assume tests exist. Always remind the user to verify manually.
+6. **Respuestas al usuario: solo el resumen final.** No narrar los pasos intermedios ni
+   repetir el proceso seguido: entregar el resultado (qué cambió, qué se verificó y qué
+   queda pendiente) en el menor texto posible, sin volver a explicar lo que ya se contó.
+   Motivo: cada respuesta larga gasta tokens de salida y tiempo de lectura; el usuario lo
+   pidió expresamente el 22-09-2026. El detalle va en `chat_history.md`, no en el chat.
 
 ## AI Assistant & RAG (Knowledge Base) Rules
 When updating the AI Assistant (`app/api/chat/route.ts`) or the Knowledge Base (`knowledge/*.md`), follow these best practices to ensure the LLM follows instructions and avoids "Lost in the middle" syndrome:

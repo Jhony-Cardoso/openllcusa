@@ -2362,7 +2362,29 @@ const handleScroll = () => {
 - **Files created/modified:** `app/calculadora-fiscal/page.module.css`, `chat_history.md`.
 - **Verificación pendiente (usuario):** que los tres botones ya no toquen el botón del chat ni su aviso, en escritorio y en móvil, tras desplegar.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 13:39)
+---
+### 📅 Chat Session: 2026-09-22 14:08
+**Main objective:** Separar más el CTA flotante del chatbot, aplicar la regla de respuestas breves y analizar el enlace compartible del chat.
+
+#### 👤 User Request:
+> Subir un poco más los tres botones para que se separen claramente del botón del chat y de su aviso; valorar si responder solo con el resumen final ahorra tokens de salida (y anotarlo en `AGENTS.md` y `chat_history.md`); y saber si es posible tener un enlace directo al chatbot de texto para redes sociales.
+
+#### 🤖 Agent Solution:
+- **CTA subido de 152 a 180 px** (escritorio y móvil) en `app/calculadora-fiscal/page.module.css`: unos 40 px de aire sobre el aviso de primera visita, que llega a 139 px. El botón del chat y su aviso siguen intactos.
+- **Regla de comunicación añadida a `AGENTS.md`** (regla 6 de «Agent Behavior Rules»): responder solo con el resumen final, sin narrar los pasos intermedios; el detalle va en `chat_history.md`. Confirmado al usuario que sí ahorra: los tokens de salida se facturan por token generado, y una respuesta larga ronda los 800-1.000 tokens frente a los ~150 de un resumen.
+- **Diagnóstico del botón «Crear mi LLC»:** el texto del CTA depende de umbrales en píxeles absolutos (500 muestra la barra, 800 pasa a «Agendar Cita» y 2000 a «Crear mi LLC»). Medido en producción: el documento mide **3.771 px**, así que el tercer estado solo es alcanzable si la ventana del navegador mide **menos de 1.771 px de alto**; en pantallas muy altas (2K/4K) el desplazamiento máximo no llega a 2.000 px y el botón nunca aparece. Propuesto al usuario pasar a umbrales relativos (porcentaje de la página) para que los tres estados sean siempre alcanzables; **pendiente de su decisión**.
+- **Enlace compartible del chat:** hoy no existe ninguna URL que abra el widget de texto (vive montado en todas las páginas y se abre con el botón flotante). Propuesto: que el widget lea un parámetro (`https://openllcusa.com/?chat=1`) y se abra solo, más una ruta corta `/chat` que redirija a esa URL para usarla en redes; **pendiente de autorización**.
+- Recordatorio operativo para futuras mediciones: la calculadora está detrás del gate de `lead-id` (intencionado) y su modal de primera visita bloquea el scroll hasta aceptarlo.
+
+#### 💻 Key Code:
+```css
+.stickyCta { position: fixed; bottom: 180px; right: 2rem; z-index: 999; }
+```
+
+- **Files created/modified:** `app/calculadora-fiscal/page.module.css`, `AGENTS.md`, `chat_history.md`.
+- **Verificación pendiente (usuario):** que los tres botones queden claramente separados del chat tras desplegar.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 14:08)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
@@ -2380,13 +2402,19 @@ const handleScroll = () => {
    Falta por construir: servicio WebSocket en contenedor aparte, endpoint interno con secreto compartido, topes de
    duración y presupuesto, y RGPD. Plan y costes en
    `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
+5. **Umbrales del CTA flotante de la calculadora (22-09-2026, pendiente de decisión).** Hoy son píxeles absolutos
+   (800/2000) sobre una página de 3.771 px, así que en ventanas de más de 1.771 px de alto el botón «Crear mi LLC»
+   no llega a mostrarse. Propuesta: umbrales relativos (porcentaje de la página) para que los tres estados sean
+   siempre alcanzables.
+6. **Enlace compartible del chat para redes (22-09-2026, pendiente de autorización).** Propuesta: que el widget de
+   texto se abra con un parámetro (`https://openllcusa.com/?chat=1`) y una ruta corta `/chat` que apunte ahí, para
+   usarla en contenido de redes y reducir agendados.
 
 **Técnico**
-5. **Despliegue pendiente de:** CTA flotante de la calculadora subido a 152 px (escritorio y móvil), rendimiento del
-   scroll de la calculadora (por zonas + escenarios memoizados), allowlist de admin centralizado en `lib/admin.ts` y
-   limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el allowlist sin usar de
-   `app/api/facturas/[id]/descargar`).
-6. **Verificación visual pendiente (usuario):** que los tres botones del CTA ya no se solapen con el botón del chat ni
-   con su aviso, en escritorio y móvil.
-7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+7. **Despliegue pendiente de:** CTA a 180 px, rendimiento del scroll de la calculadora, allowlist de admin
+   centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
+   allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de `AGENTS.md`.
+8. **Verificación visual pendiente (usuario):** separación de los tres botones flotantes respecto al chat, en
+   escritorio y móvil.
+9. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

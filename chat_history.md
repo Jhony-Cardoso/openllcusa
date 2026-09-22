@@ -2335,7 +2335,34 @@ const handleScroll = () => {
 - **Files created/modified:** `components/calculator/CalculadoraClient.tsx`, `app/admin/**` (6 ficheros), `app/api/admin/**` (7 ficheros), `app/api/facturas/[id]/descargar/route.ts`, borrados `lib/auth.ts` y `app/api/test/`, y `chat_history.md`.
 - **Pendiente (usuario):** comprobar en el navegador que el scroll de `/calculadora-fiscal` ya no se atasca.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-21 22:52)
+---
+### 📅 Chat Session: 2026-09-22 13:39
+**Main objective:** Subir el CTA flotante de la calculadora para que no se solape con el botón del chat y comprobar el rendimiento del scroll.
+
+#### 👤 User Request:
+> «No tenía conocimiento de que el scroll de /calculadora-fiscal se atascara. Por favor, haz tú mismo la comprobación y, por cierto, esos tres botones se superponen con el botón del chat (Zara - IA Asistente). Tenemos que subir un poco los tres botones (excepto el del chat).»
+
+#### 🤖 Agent Solution:
+- **Solape medido y corregido.** Medido en producción con `getBoundingClientRect` (viewport de 568 px): el CTA ocupa de 28 a 80 px del fondo (52 px de alto) y el botón del chat de 24 a 84 px → **se solapaban 52 px**, es decir el botón entero, con el chat por encima (`z-index: 10000` frente a `999`). El aviso de primera visita («💬 ¿Tienes dudas?») llega hasta los 139 px del fondo, así que subir el CTA solo por encima del botón (100 px) habría hecho que el aviso le tapara el texto.
+- **Cambio aplicado** en `app/calculadora-fiscal/page.module.css`: `.stickyCta` pasa de `bottom: 2rem` a `bottom: 152px` en escritorio y de `bottom: 1rem` a `bottom: 152px` en móvil (mismo sitio en píxeles para el botón del chat y su aviso), con un comentario que explica la aritmética. El botón del chat y su aviso **no se han tocado**. Los tres estados del CTA (Hablar con Zara / Agendar Cita / Crear mi LLC) comparten el mismo elemento, así que un solo cambio cubre los tres.
+- **Corrección honesta sobre el rendimiento del scroll.** Medido en producción con `PerformanceObserver` de `longtask`, con la comparativa calculada en pantalla y ráfagas de rueda (40+ eventos): **cero tareas largas** y ninguna pérdida de respuesta. El bloqueo de varios segundos que reporté en la sesión anterior era del **dev server** (build sin minificar, recompilando bajo demanda), no de producción. El usuario tenía razón al decir que no conocía el problema: en el sitio real no se reproduce. El cambio de rendimiento (scroll por zonas + escenarios memoizados) sigue siendo correcto y reduce trabajo por evento, pero **no arreglaba un problema visible en producción**; se queda como mejora preventiva y él puede decidir revertirlo.
+- **Hallazgo operativo:** `/calculadora-fiscal` está detrás de un gate — sin `lead-id` en `localStorage` redirige a `/lead-form` (`components/calculator/CalculadoraClient.tsx:80-92`). Para medirla en un navegador hay que sembrar esa clave antes de entrar.
+
+#### 💻 Key Code:
+```css
+/* app/calculadora-fiscal/page.module.css */
+.stickyCta {
+  position: fixed;
+  bottom: 152px;   /* 24 del botón del chat + 60 + 8 + 47 del aviso + aire = 152 */
+  right: 2rem;
+  z-index: 999;
+}
+```
+
+- **Files created/modified:** `app/calculadora-fiscal/page.module.css`, `chat_history.md`.
+- **Verificación pendiente (usuario):** que los tres botones ya no toquen el botón del chat ni su aviso, en escritorio y en móvil, tras desplegar.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 13:39)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí.
@@ -2355,11 +2382,11 @@ const handleScroll = () => {
    `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-5. **Despliegue del lote nuevo (pendiente):** rendimiento de la calculadora (scroll por zonas + escenarios
-   memoizados), allowlist de admin centralizado en `lib/admin.ts` (14 ficheros) y limpieza de código muerto
-   (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el allowlist sin usar de `app/api/facturas/[id]/descargar`).
-6. **Verificación visual pendiente (usuario):** que el scroll de `/calculadora-fiscal` ya no se atasca. La medición
-   automática no se pudo hacer: el dev server se cae al compilar las rutas pesadas (presión de memoria ya documentada
-   en `AGENTS.md`; la máquina queda con ~9 GB libres y sin proceso Node).
+5. **Despliegue pendiente de:** CTA flotante de la calculadora subido a 152 px (escritorio y móvil), rendimiento del
+   scroll de la calculadora (por zonas + escenarios memoizados), allowlist de admin centralizado en `lib/admin.ts` y
+   limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el allowlist sin usar de
+   `app/api/facturas/[id]/descargar`).
+6. **Verificación visual pendiente (usuario):** que los tres botones del CTA ya no se solapen con el botón del chat ni
+   con su aviso, en escritorio y móvil.
 7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

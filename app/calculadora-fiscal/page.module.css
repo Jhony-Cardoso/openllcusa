@@ -429,10 +429,14 @@
   border-color: #9ca3af;
 }
 
-/* CTA Sticky del bottom-right */
+/* CTA Sticky del bottom-right.
+   Se apila por ENCIMA de los elementos del chat, que viven abajo a la derecha:
+   el botón del chat ocupa de 24 a 84 px del fondo y el aviso de primera visita
+   («💬 ¿Tienes dudas? ¡Pregúntame!») llega hasta los 139 px; con 152 px el CTA queda
+   libre de los dos. Antes estaba a 32 px y el botón del chat le tapaba el texto. */
 .stickyCta {
   position: fixed;
-  bottom: 2rem;
+  bottom: 152px;
   right: 2rem;
   z-index: 999;
   animation: slideInRight 0.5s ease-out;
@@ -484,7 +488,9 @@
   }
 
   .stickyCta {
-    bottom: 1rem;
+    /* Misma altura que en escritorio: el botón del chat y su aviso ocupan el mismo
+       sitio en móvil (posiciones fijas en píxeles). */
+    bottom: 152px;
     right: 1rem;
     left: 1rem;
   }

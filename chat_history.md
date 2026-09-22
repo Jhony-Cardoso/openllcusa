@@ -2460,7 +2460,35 @@ if (elegido.tipo === 'enlace') {
 - **Files created/modified:** `components/chat/markdown.ts` (nuevo), `components/chat/ChatWidget.tsx`, `chat_history.md`.
 - **Verificación pendiente (usuario):** tras desplegar, comprobar en producción que los enlaces de Zara se pueden pulsar.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 23:46)
+---
+### 📅 Chat Session: 2026-09-23 00:13
+**Main objective:** Valorar si ElevenLabs (u otro proveedor) mejora la voz de Zara frente a las voces de Inworld.
+
+#### 👤 User Request:
+> «He estado probando las voces de Inworld pero las siento un poco robóticas. ¿ElevenLabs sirve para nuestro propósito? ¿Alguna otra solución?»
+
+#### 🤖 Agent Solution:
+- **Hallazgo que explica la sensación de voz robótica:** el plan de la Fase 1 eligió **Inworld Realtime TTS-2 Flash**, que es justamente la variante que «aplasta la latencia y el coste a cambio de parte de la expresividad y de las funciones avanzadas de dirección; la expresividad máxima es del TTS-2 completo». Antes de cambiar de proveedor procede probar el TTS-2 completo con una voz española y dirección de tono en lenguaje natural, que no cuesta nada extra (la cuenta ya existe).
+- **Comparativa de candidatos (tarifas de API verificadas el 22-09-2026):**
+  - **ElevenLabs Flash v2.5**: referencia de naturalidad para agentes en tiempo real (~135 ms hasta el primer audio), español entre sus idiomas; $0,05 por 1.000 caracteres en Flash (~$50/1M) frente a $0,10 en los modelos multilingües v2/v3. Planes: gratis (10.000 créditos), $6 Starter, $22 Creator, $99 Pro. Su capa de agentes cuesta $0,08-0,10 por minuto de conversación, más LLM y telefonía aparte.
+  - **Cartesia Sonic**: la latencia más baja (unos 85 ms), 44 idiomas, plan gratuito de 10.000 créditos y entrada de $4-5 al mes.
+  - **Deepgram Aura-2**: la opción natural más barata, $30/1M caracteres el modelo estrella y $15/1M el rápido; su API de agente completo (STT + TTS + orquestación) sale a $4,50/hora.
+  - **OpenAI TTS (gpt-4o-mini-tts)**: lo más barato y suficiente, pero por detrás en naturalidad; sentido si queremos quedarnos en un solo proveedor.
+  - Descartados para nuestro caso: los agentes llave en mano (pagan sobreprecio por lo que ya construimos) y los modelos de pesos abiertos tipo Kokoro o XTTS (necesitan GPU y el VPS de 4 GB no la tiene).
+- **Traducción a nuestro coste real:** una respuesta hablada de Zara son dos frases (~300 caracteres) y un minuto de conversación ronda los 800 caracteres. Eso deja el gasto por minuto hablado en ~$0,04 con ElevenLabs Flash, ~$0,03 con Cartesia, ~$0,024 con Aura-2 y ~$0,012 con Inworld Flash. La diferencia entre proveedores son céntimos por minuto, así que **la decisión debe tomarla el oído, no el precio**; Inworld Flash es el más barato y también el que suena peor.
+- **Ojo:** la sensación de robot viene de la síntesis, no del reconocimiento, así que el STT de Inworld (más económico que la alternativa) puede seguir en pie aunque cambiemos la voz.
+- **Siguiente paso propuesto:** probar el TTS-2 completo de Inworld con voz española; si sigue sin convencer, hacer una prueba a ciegas con la misma frase de Zara en ElevenLabs Flash, Cartesia Sonic, Deepgram Aura-2 y OpenAI, con sus latencias y costes medidos, para elegir la voz escuchando. El usuario aporta las claves de prueba (todas tienen capa gratuita); el asistente prepara el comparador.
+
+#### 💻 Key Code:
+```ts
+// Fase 1: la voz es una pieza intercambiable del stack
+/* STT: Inworld inworld-stt-1  ·  LLM: gpt-4o-mini + RAG  ·  TTS: a decidir por oído */
+```
+
+- **Files created/modified:** `chat_history.md`.
+- **Verificación pendiente (usuario):** escuchar el TTS-2 completo de Inworld y, si no convence, decidir con la comparativa a ciegas.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-23 00:13)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2472,21 +2500,24 @@ if (elegido.tipo === 'enlace') {
 2. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
 3. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
-4. **Voz de Zara — Fase 1 (Inworld STT + Inworld TTS-2 Flash + gpt-4o-mini).** Primer paso acordado el 22-09-2026:
-   el usuario crea la cuenta de Inworld con tope de gasto y la clave de API (variable `INWORLD_API_KEY` en Dokploy y
-   en `.env.local`, nunca en el repo), y con esa clave el asistente hace una prueba de ida y vuelta (audio real ->
-   texto en español -> audio) midiendo calidad, latencia y coste por minuto antes de tocar la web. Después: servicio
-   WebSocket en contenedor aparte, endpoint interno con secreto compartido, topes de duración y presupuesto, y RGPD.
-   Plan y costes en `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
+4. **Voz de Zara — elegir la voz por oído (22-09-2026).** La Fase 1 había fijado Inworld Realtime TTS-2 **Flash**, que
+   es la variante menos expresiva: primer paso, probar el **TTS-2 completo** con voz española y dirección de tono
+   (sin coste extra, la cuenta existe). Si sigue robótica, comparar a ciegas la misma frase con **ElevenLabs Flash
+   v2.5** ($0,05/1.000 caracteres, ~135 ms), **Cartesia Sonic** ($4-5/mes, ~85 ms), **Deepgram Aura-2** ($30/1M,
+   ~115 ms) y **OpenAI gpt-4o-mini-tts**, y elegir la que suene mejor. A nuestro volumen la diferencia es de
+   céntimos por minuto hablado. El STT de Inworld no es el problema y puede quedarse.
+5. **Fase 1 de voz — construcción pendiente** una vez elegida la voz: servicio WebSocket en contenedor aparte,
+   endpoint interno con secreto compartido, topes de duración y presupuesto, y RGPD. Plan y costes en
+   `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
 
 **Técnico**
-5. **Despliegue pendiente de:** enlaces de Zara clicables (con el repintado de viñetas), CTA de la calculadora a
+6. **Despliegue pendiente de:** enlaces de Zara clicables (con el repintado de viñetas), CTA de la calculadora a
    180 px con umbrales proporcionales y reparto 13/42/71 %, `/chat` como interfaz a página completa, rendimiento del
    scroll, allowlist de admin centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas
    vacías de `app/api/test/` y el allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de
    `AGENTS.md`.
-6. **Verificación tras el despliegue:** que los enlaces de Zara se puedan pulsar en producción, que
+7. **Verificación tras el despliegue:** que los enlaces de Zara se puedan pulsar en producción, que
    `openllcusa.com/chat` muestre solo el chat y que en la calculadora cada uno de los tres botones se vea durante un
    tramo largo.
-7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+8. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

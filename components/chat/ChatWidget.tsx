@@ -142,6 +142,24 @@ export default function ChatWidget() {
   })
   const isLoading = status === 'streaming' || status === 'submitted'
 
+  // Enlace directo para redes: cualquier URL con ?chat=1 (o la ruta corta /chat, que
+  // redirige a /?chat=1) abre el widget solo, sin que el visitante tenga que buscarlo.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const porParametro = ['1', 'true', 'si', 'sí'].includes((params.get('chat') || '').toLowerCase())
+    const porRuta = window.location.pathname.replace(/\/$/, '') === '/chat'
+    if (!porParametro && !porRuta) return
+
+    setIsOpen(true)
+    setUnreadCount(0)
+    setHasInteracted(true) // sin el aviso «¿Tienes dudas?», que ya está abierto
+    trackGAEvent('chat_enlace_directo', {
+      origen: document.referrer || 'directo',
+      via: porParametro ? 'parametro' : 'ruta'
+    })
+  }, [])
+
   // Usuarios logueados: saltar directamente a IA
   useEffect(() => {
     if (isLoaded && isSignedIn && user?.firstName) {

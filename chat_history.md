@@ -2384,10 +2384,39 @@ const handleScroll = () => {
 - **Files created/modified:** `app/calculadora-fiscal/page.module.css`, `AGENTS.md`, `chat_history.md`.
 - **Verificación pendiente (usuario):** que los tres botones queden claramente separados del chat tras desplegar.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 14:08)
+---
+### 📅 Chat Session: 2026-09-22 14:26
+**Main objective:** Hacer alcanzables los tres estados del CTA y crear un enlace directo al chatbot para redes.
+
+#### 👤 User Request:
+> Umbrales relativos para el CTA: SÍ, HAZLO. Enlace compartible del chatbot con parámetro más ruta corta: SÍ, IMPLEMÉNTALO. Y a partir de ahora, listar los pendientes en líneas numeradas.
+
+#### 🤖 Agent Solution:
+- **CTA con umbrales proporcionales.** En `components/calculator/CalculadoraClient.tsx` los umbrales fijos (800 y 2000 px) pasan a proporciones de lo que se puede desplazar la página: 13 % para que aparezca la barra, 21 % para «Agendar Cita» y 53 % para «Crear mi LLC». Así los tres estados son alcanzables en cualquier ventana; antes, con una ventana de más de 1.771 px de alto sobre una página de 3.771 px, el tercero no se mostraba nunca. El estado del componente guarda ahora la zona (0-3) en lugar de la posición en píxeles, y el render consulta la zona.
+- **Enlace directo al chatbot.** `components/chat/ChatWidget.tsx` abre el widget automáticamente si la URL trae `?chat=1` (también acepta `true`, `si`, `sí`) y envía el evento de GA `chat_enlace_directo` con el origen; además oculta el aviso «¿Tienes dudas?» porque la ventana ya está abierta. Nueva ruta corta `app/chat/page.tsx` que redirige a `/?chat=1`: **`openllcusa.com/chat`** es el enlace para redes. Se usa una redirección (no un rewrite) para que `/chat` no compita con la home en buscadores.
+- **Formato de respuesta:** a partir de ahora los pendientes se listan en líneas numeradas, como pidió.
+- Verificación: sintaxis OK con `ts.transpileModule` en los tres ficheros, 0 errores de tipos en ellos (el repo sigue con 34 preexistentes) y finales de línea preservados (CRLF en los dos primeros, LF en `ChatWidget.tsx`, que ya era LF). La comprobación en vivo queda para después del despliegue: el dev server estaba caído y los cambios aún no están en producción.
+
+#### 💻 Key Code:
+```ts
+const zonaDeScroll = (y: number, desplazable: number): number => {
+  if (desplazable <= 0) return 0;
+  const ratio = y / desplazable;
+  if (ratio < 0.13) return 0;   // sin barra
+  if (ratio < 0.21) return 1;   // Hablar con Zara
+  if (ratio < 0.53) return 2;   // Agendar Cita
+  return 3;                     // Crear mi LLC
+};
+```
+
+- **Files created/modified:** `components/calculator/CalculadoraClient.tsx`, `components/chat/ChatWidget.tsx`, `app/chat/page.tsx` (nuevo), `chat_history.md`.
+- **Verificación pendiente:** tras desplegar, `openllcusa.com/chat` debe redirigir a `/?chat=1` y el widget abrirse solo; y en la calculadora el tercer botón debe aparecer al final de la página en cualquier tamaño de ventana.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-22 14:26)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
-> acciones realizadas. Lo que se cierra, se elimina de aquí.
+> acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes se listan en líneas numeradas para
+> poder referirse a ellos por su número.
 
 **Producto / decisiones de negocio**
 1. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
@@ -2402,19 +2431,13 @@ const handleScroll = () => {
    Falta por construir: servicio WebSocket en contenedor aparte, endpoint interno con secreto compartido, topes de
    duración y presupuesto, y RGPD. Plan y costes en
    `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
-5. **Umbrales del CTA flotante de la calculadora (22-09-2026, pendiente de decisión).** Hoy son píxeles absolutos
-   (800/2000) sobre una página de 3.771 px, así que en ventanas de más de 1.771 px de alto el botón «Crear mi LLC»
-   no llega a mostrarse. Propuesta: umbrales relativos (porcentaje de la página) para que los tres estados sean
-   siempre alcanzables.
-6. **Enlace compartible del chat para redes (22-09-2026, pendiente de autorización).** Propuesta: que el widget de
-   texto se abra con un parámetro (`https://openllcusa.com/?chat=1`) y una ruta corta `/chat` que apunte ahí, para
-   usarla en contenido de redes y reducir agendados.
 
 **Técnico**
-7. **Despliegue pendiente de:** CTA a 180 px, rendimiento del scroll de la calculadora, allowlist de admin
-   centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
-   allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de `AGENTS.md`.
-8. **Verificación visual pendiente (usuario):** separación de los tres botones flotantes respecto al chat, en
-   escritorio y móvil.
-9. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+5. **Despliegue pendiente de:** CTA de la calculadora a 180 px y con umbrales proporcionales, enlace directo al
+   chatbot (`/chat` y `?chat=1`), rendimiento del scroll, allowlist de admin centralizado en `lib/admin.ts`,
+   limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el allowlist sin usar de
+   `app/api/facturas/[id]/descargar`) y la regla 6 de `AGENTS.md`.
+6. **Verificación tras el despliegue:** que `openllcusa.com/chat` redirija a `/?chat=1` y abra el widget solo, y que
+   en la calculadora se vean los tres estados del CTA (incluido «Crear mi LLC») en cualquier tamaño de ventana.
+7. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

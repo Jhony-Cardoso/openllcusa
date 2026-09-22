@@ -49,11 +49,23 @@ const COMUNIDADES = [
 // ===================================
 // ZONAS DE SCROLL DEL CTA FLOTANTE
 // ===================================
-// Al CTA solo le importan tres umbrales: 500 (mostrar la barra), 800 y 2000 (texto y
-// destino del botón). Guardar la posición exacta en cada evento de scroll provocaba un
-// render por evento y, con los resultados visibles, recalculaba los cuatro escenarios
-// cada vez: el hilo principal se quedaba bloqueado varios segundos al desplazarse.
-const zonaDeScroll = (y: number): number => (y <= 500 ? 0 : y < 800 ? 1 : y < 2000 ? 2 : 3);
+// Los umbrales son PROPORCIONALES a lo que se puede desplazar la página, no píxeles
+// absolutos: con umbrales fijos (800 y 2000 px) sobre una página de 3.771 px, en ventanas
+// de más de 1.771 px de alto el desplazamiento máximo nunca llegaba a 2.000 y el botón
+// «Crear mi LLC» no se mostraba jamás. Con proporciones, los tres estados son alcanzables
+// en cualquier tamaño de ventana.
+const RATIO_BARRA = 0.13;      // a partir de aquí aparece la barra
+const RATIO_AGENDAR = 0.21;    // «Agendar Cita»
+const RATIO_CREAR = 0.53;      // «Crear mi LLC»
+
+const zonaDeScroll = (y: number, desplazable: number): number => {
+  if (desplazable <= 0) return 0;
+  const ratio = y / desplazable;
+  if (ratio < RATIO_BARRA) return 0;
+  if (ratio < RATIO_AGENDAR) return 1;
+  if (ratio < RATIO_CREAR) return 2;
+  return 3;
+};
 
 // ===================================
 // COMPONENTE PRINCIPAL
@@ -69,7 +81,7 @@ export default function CalculadoraClient() {
   const [disability, setDisability] = useState('no');
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
+  const [zonaScroll, setZonaScroll] = useState(0);
   const [showTooltip, setShowTooltip] = useState(false);
   const [showLLCWarning, setShowLLCWarning] = useState(false);
   const [cameFromQuiz, setCameFromQuiz] = useState(false);
@@ -118,23 +130,24 @@ export default function CalculadoraClient() {
     }
   }, []);
 
-  // Scroll tracking para CTA dinámico. Solo se actualiza el estado al cruzar un umbral
+  // Scroll tracking para CTA dinámico. Solo se actualiza el estado al cruzar una zona
   // (zonaDeScroll), una vez por frame como mucho, y con listener pasivo.
   useEffect(() => {
-    let zonaActual = zonaDeScroll(window.scrollY);
+    const desplazable = () => document.documentElement.scrollHeight - window.innerHeight;
+    let zonaActual = zonaDeScroll(window.scrollY, desplazable());
     let frame = 0;
 
     // Si la página se recarga ya desplazada, situamos el estado una sola vez.
-    if (window.scrollY > 500) setScrollPosition(window.scrollY);
+    if (zonaActual > 0) setZonaScroll(zonaActual);
 
     const handleScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         frame = 0;
-        const zona = zonaDeScroll(window.scrollY);
+        const zona = zonaDeScroll(window.scrollY, desplazable());
         if (zona === zonaActual) return;
         zonaActual = zona;
-        setScrollPosition(window.scrollY);
+        setZonaScroll(zona);
       });
     };
 
@@ -465,8 +478,8 @@ export default function CalculadoraClient() {
   );
 
   const getCtaText = () => {
-    if (scrollPosition < 800) return '🎙️ Hablar con Zara';
-    if (scrollPosition < 2000) return '📅 Agendar Cita';
+    if (zonaScroll <= 1) return '🎙️ Hablar con Zara';
+    if (zonaScroll === 2) return '📅 Agendar Cita';
     return '🚀 Crear mi LLC';
   };
 
@@ -474,8 +487,8 @@ export default function CalculadoraClient() {
   // apuntan las demás CTAs de "Crear mi LLC". Antes eran '/hablar-con-zara' y
   // '/crear-llc', dos rutas inexistentes (404 en producción y en local).
   const getCtaLink = () => {
-    if (scrollPosition < 800) return '/zara';
-    if (scrollPosition < 2000) return '/contacto';
+    if (zonaScroll <= 1) return '/zara';
+    if (zonaScroll === 2) return '/contacto';
     return '/precios';
   };
 
@@ -915,7 +928,7 @@ export default function CalculadoraClient() {
         {/* ← FIN SECCIÓN FAQ */}
 
         {/* CTA Sticky Dinámico */}
-        {scrollPosition > 500 && (
+        {zonaScroll >= 1 && (
           <div className={styles.stickyCta}>
             <Link href={getCtaLink()} className={styles.ctaButton}>
               {getCtaText()}

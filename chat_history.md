@@ -2488,7 +2488,58 @@ if (elegido.tipo === 'enlace') {
 - **Files created/modified:** `chat_history.md`.
 - **Verificación pendiente (usuario):** escuchar el TTS-2 completo de Inworld y, si no convence, decidir con la comparativa a ciegas.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-09-23 00:13)
+---
+
+### 📅 Chat Session: 2026-09-24 15:04
+**Main objective:** Arreglar que en móvil, en `/chat`, no se pudiera navegar desde el menú hamburguesa porque la interfaz del chat lo tapaba.
+
+#### 👤 User Request:
+> «En `/chat`, al abrirlo en el móvil, no podemos navegar a otra página desde el menú hamburguesa porque la interfaz del chatbot no desaparece. Investígalo.»
+
+#### 🤖 Agent Solution:
+- **Causa:** en `/chat` el panel se abre en «modo página» con `z-index: 10001`, por encima de la cabecera (`.site-header`, `z-index: 1000`). El desplegable del menú hamburguesa vive dentro de la cabecera, así que quedaba debajo del panel fijo y sus enlaces no se podían pulsar. Además, el widget vive en el layout raíz y nunca se desmonta: al navegar por cliente desde `/chat`, la clase `chat-modo-pagina` y el panel seguían activos en la página nueva.
+- **Arreglo 1 (CSS):** en `body.chat-modo-pagina .chat-window` se fija `z-index: 900`, por debajo de la cabecera, de modo que el menú hamburguesa queda por encima del panel.
+- **Arreglo 2 (React):** el efecto de apertura pasa a depender de `usePathname()`. Al salir de `/chat` por navegación de cliente se quita `chat-modo-pagina` y se cierra el panel (`setIsOpen(false)`), con un `ref` para no alterar el comportamiento del widget abierto con `?chat=1` en otras páginas.
+- **Arreglo 3 (menú móvil):** `Header` añade la clase `menu-movil-abierto` al body mientras el menú está abierto, y el CSS oculta `.chat-window` con esa clase. Así el chat desaparece al abrir el menú, sin depender del apilado de z-index.
+- **Verificación:** `npx tsc --noEmit` sin errores nuevos en `ChatWidget.tsx`, `Header.tsx` y `npm run build` correcto.
+
+#### 💻 Key Code:
+```tsx
+const porRuta = pathname.replace(/\/$/, '') === '/chat'
+...
+if (enModoPaginaRef.current) {
+  enModoPaginaRef.current = false
+  document.body.classList.remove('chat-modo-pagina')
+  setIsOpen(false)
+}
+```
+
+- **Files created/modified:** `components/chat/ChatWidget.tsx`, `components/chat/chat-widget.css`, `components/layout/Header.tsx`, `chat_history.md`.
+- **Verificado por el usuario (24-09-2026):** en móvil, al abrir el menú hamburguesa el chat desaparece y la navegación funciona.
+
+---
+### 📅 Chat Session: 2026-10-05 21:03
+**Main objective:** Dejar por escrito el plan de implementación del agente de voz, actualizado al estado real del proyecto.
+
+#### 👤 User Request:
+> «Sigue recordando siempre las tareas pendientes. Por otra parte, me gustaría tener por escrito el plan de implementación del Agente de Voz (Zara), aunque sé que todavía no hemos terminado.»
+
+#### 🤖 Agent Solution:
+- **Plan versión 2, en tres formatos**, en `C:/Users/recompra.es/Downloads/`: `Plan_Agente_Voz_Zara_2026-09-22.pdf` (11 páginas, 339 KB, generado con Chrome en modo sin interfaz desde el HTML), `Plan_Agente_Voz_Zara_2026-09-22.html` (30 KB, con hoja de estilo de impresión) y `Plan_Agente_Voz_Zara_2026-09-22.md` (22 KB, fuente de verdad). La versión 1 del 21-09 se conserva al lado, sin borrar.
+- **Qué se ha actualizado respecto a la versión 1:** la Fase 0 figura como terminada y desplegada (voz real en el navegador con la rama `mode: 'voice'` del prompt y badge «VOZ · BETA»); los prerrequisitos ya están cerrados (límite de peticiones, CORS, endpoints internos con 403, enlaces muertos y copy de `/recursos`); el STT consta como decidido (Inworld `inworld-stt-1`, $0,15/h) y el TTS pasa de «elegido» a **en evaluación por oído**, con la comparativa de precios del 22-09 y la explicación de que Flash es la variante que recorta expresividad. Se añade el reparto de tareas por pasos (quién hace qué), los criterios de aceptación de cada paso, la tabla de coste recalculada (de 3 a 9 céntimos por conversación de 3 minutos) y las decisiones pendientes.
+- **Verificación:** el PDF se generó sin errores (11 páginas) y se comprobó el aspecto de la primera página renderizando el HTML a imagen: titulares, tablas con cabecera azul y filas legibles, nada cortado.
+- **Recordatorio de pendientes:** se mantiene el compromiso de repasar el bloque `## 📌 PENDIENTES ABIERTOS` al abrir cada sesión o jornada y de entregar la lista numerada al cerrar cada tanda de trabajo.
+
+#### 💻 Key Code:
+```
+chrome --headless=new --no-pdf-header-footer --print-to-pdf=Plan_Agente_Voz_Zara_2026-09-22.pdf \
+       file:///C:/Users/recompra.es/Downloads/Plan_Agente_Voz_Zara_2026-09-22.html
+```
+
+- **Files created/modified:** `C:/Users/recompra.es/Downloads/Plan_Agente_Voz_Zara_2026-09-22.md`, `.html`, `.pdf`; `chat_history.md`.
+- **Verificación pendiente (usuario):** leer el plan y decidir la voz (TTS) para desbloquear la Fase 1.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 21:03)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2500,24 +2551,26 @@ if (elegido.tipo === 'enlace') {
 2. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
 3. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
    proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
-4. **Voz de Zara — elegir la voz por oído (22-09-2026).** La Fase 1 había fijado Inworld Realtime TTS-2 **Flash**, que
-   es la variante menos expresiva: primer paso, probar el **TTS-2 completo** con voz española y dirección de tono
-   (sin coste extra, la cuenta existe). Si sigue robótica, comparar a ciegas la misma frase con **ElevenLabs Flash
-   v2.5** ($0,05/1.000 caracteres, ~135 ms), **Cartesia Sonic** ($4-5/mes, ~85 ms), **Deepgram Aura-2** ($30/1M,
-   ~115 ms) y **OpenAI gpt-4o-mini-tts**, y elegir la que suene mejor. A nuestro volumen la diferencia es de
-   céntimos por minuto hablado. El STT de Inworld no es el problema y puede quedarse.
-5. **Fase 1 de voz — construcción pendiente** una vez elegida la voz: servicio WebSocket en contenedor aparte,
-   endpoint interno con secreto compartido, topes de duración y presupuesto, y RGPD. Plan y costes en
-   `C:/Users/recompra.es/Downloads/Plan_Voz_Zara_OpenLLCUSA_2026-09-21.pdf`.
+4. **Voz de Zara — elegir la voz por oído (22-09-2026).** Primer paso: probar en Inworld el **TTS-2 completo** (no
+   Flash) con voz española y dirección de tono, sin coste extra. Si no convence, comparar a ciegas la misma frase con
+   **ElevenLabs Flash v2.5** ($0,05/1.000 caracteres, ~135 ms), **Cartesia Sonic** ($4-5/mes, ~85 ms), **Deepgram
+   Aura-2** ($30/1M, ~115 ms) y **OpenAI gpt-4o-mini-tts**, y decidir escuchando. El STT de Inworld no es el problema.
+   Plan completo (versión 2, con reparto de tareas y criterios de aceptación) en
+   `C:/Users/recompra.es/Downloads/Plan_Agente_Voz_Zara_2026-09-22.pdf`.
+5. **Fase 1 de voz — construcción pendiente** una vez elegida la voz, según el plan versión 2: cerebro compartido en
+   `lib/ai/zara.ts`, endpoint interno `/api/voice/reply`, servicio WS en contenedor aparte con VAD y barge-in,
+   cliente de audio en el modal y en `/zara`, topes de duración y presupuesto, y RGPD.
+6. **Decisiones pendientes del plan:** voz (TTS), si la Fase 1 se construye de una vez o por tramos, tope de duración
+   por sesión (propuesta 3-5 minutos) y texto de consentimiento con su sitio.
 
 **Técnico**
-6. **Despliegue pendiente de:** enlaces de Zara clicables (con el repintado de viñetas), CTA de la calculadora a
+7. **Despliegue pendiente de:** enlaces de Zara clicables (con el repintado de viñetas), CTA de la calculadora a
    180 px con umbrales proporcionales y reparto 13/42/71 %, `/chat` como interfaz a página completa, rendimiento del
    scroll, allowlist de admin centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas
    vacías de `app/api/test/` y el allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de
    `AGENTS.md`.
-7. **Verificación tras el despliegue:** que los enlaces de Zara se puedan pulsar en producción, que
+8. **Verificación tras el despliegue:** que los enlaces de Zara se puedan pulsar en producción, que
    `openllcusa.com/chat` muestre solo el chat y que en la calculadora cada uno de los tres botones se vea durante un
    tramo largo.
-8. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+9. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*

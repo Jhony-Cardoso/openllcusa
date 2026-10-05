@@ -2887,31 +2887,31 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-3. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-4. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes` y `/guias`. Lo hace el usuario.
-5. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
-6. **Enlazar las páginas pilar huérfanas que quedan** (el hub ya enlaza tres de las doce).
-7. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
-8. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-9. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-10. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-11. **`favicon.ico` real** (acabado, menor).
-12. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
+4. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
+5. **Enlazar las páginas pilar huérfanas que quedan** (el hub ya enlaza tres de las doce).
+6. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
+7. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+8. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+9. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+10. **`favicon.ico` real** (acabado, menor).
+11. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
     arreglos del sitemap, del hub y del host con www.
 
 **Producto / decisiones de negocio**
-13. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-14. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-15. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+12. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+13. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+14. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-16. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-17. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-18. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-19. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-20. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+15. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+16. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+17. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+18. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+19. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-21. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+20. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

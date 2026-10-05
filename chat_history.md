@@ -2904,8 +2904,11 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
   ningún enlace roto.
 - **Files created/modified:** `app/sitemap.ts`, `app/admin/layout.tsx`, `app/guias/page.tsx`,
   `components/layout/Footer.tsx`, `chat_history.md`.
-- **Verificación pendiente:** tras el despliegue, comprobar el `noindex` en las siete rutas de `/admin`, los nueve
-  enlaces en `/guias` y que `/testimonios` ya no aparece en el sitemap.
+- **Verificado en producción tras el despliegue:** las **siete rutas de `/admin`** sirven ya
+  `noindex, nofollow` (antes `index, follow`); el sitemap tiene **cero** menciones a `testimonios`; `/guias` sirve
+  los doce enlaces a páginas pilar con sus dos encabezados nuevos («Explora por tema» y «Servicios y proceso»); y
+  el pie de la portada incluye `href="/legal/changelog">Registro de cambios<`. Con esto **ninguna de las doce
+  páginas pilar queda huérfana**.
 
 #### 💻 Key Code:
 ```ts
@@ -2923,30 +2926,28 @@ export const metadata: Metadata = {
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Comprobar tras el despliegue** (yo): `noindex` en las siete rutas de `/admin`, los nueve enlaces nuevos en
-   `/guias`, el enlace del pie a `/legal/changelog` y que `/testimonios` ya no está en el sitemap.
-2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-3. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-4. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes` y `/guias`. Lo hace el usuario.
-5. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-6. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-7. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-8. **`favicon.ico` real** (acabado, menor).
-9. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
+4. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+5. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+6. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+7. **`favicon.ico` real** (acabado, menor).
+8. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
    arreglos del sitemap, del hub y del host con www.
 
 **Producto / decisiones de negocio**
-10. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-11. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-12. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+9. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+10. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+11. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-13. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-14. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-15. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-16. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-17. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+12. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+13. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+14. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+15. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+16. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-18. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+17. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

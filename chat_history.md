@@ -2539,38 +2539,80 @@ chrome --headless=new --no-pdf-header-footer --print-to-pdf=Plan_Agente_Voz_Zara
 - **Files created/modified:** `C:/Users/recompra.es/Downloads/Plan_Agente_Voz_Zara_2026-09-22.md`, `.html`, `.pdf`; `chat_history.md`.
 - **Verificación pendiente (usuario):** leer el plan y decidir la voz (TTS) para desbloquear la Fase 1.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 21:03)
+---
+### 📅 Chat Session: 2026-10-05 21:16
+**Main objective:** Auditar por qué Google Search Console no indexa parte del sitio, a partir de la captura de «Páginas no indexadas».
+
+#### 👤 User Request:
+> El usuario abre el trabajo de Google Search Console y aporta la captura de «¿Por qué hay páginas que no se indexan?»: 6 sin encontrar (404), 1 con redirección, 1 alternativa canónica, 2 rastreadas sin indexar, 16 excluidas por noindex y 34 descubiertas sin indexar.
+
+#### 🤖 Agent Solution:
+- **Auditoría de solo lectura**, sin modificar nada: se rastrearon las 66 URLs del sitemap de producción, se extrajeron todos sus enlaces internos y se probó cada destino con curl/siguiendo redirecciones. Los hallazgos se confirmaron además con el DOM ya hidratado (JavaScript), para no confundir enlaces ausentes con enlaces pintados en cliente.
+- **Dos URLs del sitemap devuelven 404:** `/guias` (está en `app/sitemap.ts:48` y **no existe** `app/guias/page.tsx`; solo hay `[country]/` y `us/`) y `/testimonios` (`app/sitemap.ts:53`), que no es una ruta sino la sección `#testimonios` de la home (`app/page.tsx:768`).
+- **El hub de guías que falta explica el grueso del problema.** `/guias/us` enlaza dos veces a `/guias` (`app/guias/us/page.tsx:185` y `:370`), así que hay enlaces rotos desde una página del sitemap. Y al no existir el hub, **20 de las 27 guías por país no tienen ningún enlace interno**: solo la home enlaza siete (`ar`, `co`, `es`, `mx`, `pe`, `py`, `us`).
+- **32 destinos internos sin un solo enlace entrante** (comprobado también con JavaScript): las 20 guías mencionadas y las páginas pilar `/crear-llc-usa`, `/llc-para-no-residentes`, `/llc-para-ecommerce`, `/costo-crear-llc`, `/abrir-cuenta-bancaria-usa`, `/llc-trading-con-cuentas-de-fondeo`, `/ein-sin-ssn`, `/crear-llc-desde-espana`, `/llc-texas`, `/boi-report`, `/proceso` y `/legal/changelog`. Encaja con el grupo «Descubierta: actualmente sin indexar (34)».
+- **`/admin/*` es rastreable e indexable:** las siete rutas responden con `robots: index, follow` y `robots.txt` no las bloquea. `/dashboard/*` sí va con `noindex`.
+- **Comprobado que está bien:** `robots.txt` correcto; `/chat` va `noindex` y **no** figura en el sitemap; las 66 URLs del sitemap responden 200 salvo las dos citadas; el 308 de `/servicios/form-5472-1120` es intencionado; el pie usa el enlace ofuscado de Cloudflare `/cdn-cgi/l/email-protection`, que un rastreador ve como 404 (candidato a engrosar el grupo de 404).
+- **Verificación de despliegue aprovechando la sesión:** se confirmó en producción que el arreglo de los enlaces de Zara está desplegado (cuatro enlaces `chat-link` en una respuesta real: Starter, Professional, Business y `/agendar`) y que el CSS del CTA lleva el `180px`.
+- **Pendiente de datos que solo tiene el usuario:** las listas de URLs de cada grupo de GSC (6 de 404, 2 de «rastreada sin indexar», 34 de «descubierta sin indexar» y 16 de `noindex`) para cuadrar los tres 404 que aún no puedo deducir y confirmar que las 16 excluidas son intencionadas.
+
+#### 💻 Key Code:
+```
+404 en el sitemap:  /guias  (app/sitemap.ts:48 — no existe app/guias/page.tsx)
+404 en el sitemap:  /testimonios  (app/sitemap.ts:53 — es la seccion #testimonios, no una ruta)
+Enlaces rotos a /guias:  app/guias/us/page.tsx:185 y app/guias/us/page.tsx:370
+```
+
+- **Files created/modified:** ninguno (auditoría de solo lectura); `chat_history.md`.
+- **Verificación pendiente (usuario):** copiar de GSC las listas de URLs de cada motivo y decidir por dónde empieza el arreglo (propuesta: crear el hub `/guias`).
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 21:16)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
 > ellos por su número.
 
+**Google Search Console (auditoría del 22-09-2026, sin tocar nada todavía)**
+1. **Crear el hub `/guias`** (`app/guias/page.tsx`): hoy la URL está en el sitemap y `app/guias/us/page.tsx:185 y 370`
+   enlazan a ella, pero la página no existe. Es a la vez un 404 del sitemap, dos enlaces rotos y el motivo de que 20 de
+   las 27 guías por país no tengan ningún enlace interno. Arregla los tres grupos de un golpe.
+2. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts:53`): no es una ruta, es la sección `#testimonios` de la home.
+3. **Enlazar las páginas pilar huérfanas:** `/crear-llc-usa`, `/llc-para-no-residentes`, `/llc-para-ecommerce`,
+   `/costo-crear-llc`, `/abrir-cuenta-bancaria-usa`, `/llc-trading-con-cuentas-de-fondeo`, `/ein-sin-ssn`,
+   `/crear-llc-desde-espana`, `/llc-texas`, `/boi-report`, `/proceso` y `/legal/changelog` no reciben ni un enlace
+   interno; son los candidatos que explican «Descubierta: actualmente sin indexar (34)».
+4. **`noindex` en `/admin/*`:** las siete rutas responden `index, follow` y no están bloqueadas en `robots.txt`.
+5. **Revisar el enlace ofuscado de Cloudflare** `/cdn-cgi/l/email-protection` del pie: los rastreadores lo ven como
+   404 (probable candidato del grupo de 404).
+6. **`canonical` ausente** en páginas públicas (`/servicios`, `/contacto`, `/zara`, `/agendar`) y en otras que quizá no
+   deban indexarse (`/quiz`, `/quiz/resultado`, `/lead-form`, `/pago-exitoso`, `/test-analytics`, `/sign-in`,
+   `/sign-up`).
+7. **Copiar de GSC las listas de URLs** de cada motivo (6 de 404, 2 de «rastreada sin indexar», 34 de «descubierta sin
+   indexar», 16 de `noindex`) para cuadrar los tres 404 que aún no se pueden deducir y confirmar que las 16 excluidas
+   son intencionadas.
+
 **Producto / decisiones de negocio**
-1. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
-   muestran `TU_BILLETERA_*_AQUI`. *Estado (19-09-2026):* pendiente hasta que existan las wallets.
-2. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
-3. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
-   proceso y tarjeta de beneficios). Ya está en el hero y en el CTA final. *Detectado el 19-09-2026.*
-4. **Voz de Zara — elegir la voz por oído (22-09-2026).** Primer paso: probar en Inworld el **TTS-2 completo** (no
-   Flash) con voz española y dirección de tono, sin coste extra. Si no convence, comparar a ciegas la misma frase con
-   **ElevenLabs Flash v2.5** ($0,05/1.000 caracteres, ~135 ms), **Cartesia Sonic** ($4-5/mes, ~85 ms), **Deepgram
-   Aura-2** ($30/1M, ~115 ms) y **OpenAI gpt-4o-mini-tts**, y decidir escuchando. El STT de Inworld no es el problema.
-   Plan completo (versión 2, con reparto de tareas y criterios de aceptación) en
+8. **Voz de Zara — elegir la voz por oído.** Primer paso: probar en Inworld el **TTS-2 completo** (no Flash) con voz
+   española y dirección de tono. Si no convence, comparar a ciegas con **ElevenLabs Flash v2.5** ($0,05/1.000
+   caracteres), **Cartesia Sonic**, **Deepgram Aura-2** y **OpenAI gpt-4o-mini-tts**. Plan completo (versión 2) en
    `C:/Users/recompra.es/Downloads/Plan_Agente_Voz_Zara_2026-09-22.pdf`.
-5. **Fase 1 de voz — construcción pendiente** una vez elegida la voz, según el plan versión 2: cerebro compartido en
-   `lib/ai/zara.ts`, endpoint interno `/api/voice/reply`, servicio WS en contenedor aparte con VAD y barge-in,
-   cliente de audio en el modal y en `/zara`, topes de duración y presupuesto, y RGPD.
-6. **Decisiones pendientes del plan:** voz (TTS), si la Fase 1 se construye de una vez o por tramos, tope de duración
-   por sesión (propuesta 3-5 minutos) y texto de consentimiento con su sitio.
+9. **Fase 1 de voz — construcción pendiente** una vez elegida la voz: cerebro compartido en `lib/ai/zara.ts`, endpoint
+   interno `/api/voice/reply`, servicio WS en contenedor aparte con VAD y barge-in, cliente de audio, topes de
+   duración y presupuesto, y RGPD. Decisiones asociadas: construir de una vez o por tramos, tope por sesión
+   (propuesta 3-5 minutos) y texto de consentimiento.
+10. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
+    muestran `TU_BILLETERA_*_AQUI`. *Detectado el 19-09-2026.*
+11. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
+12. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas» (texto de servicios, tag del
+    proceso y tarjeta de beneficios). *Detectado el 19-09-2026.*
 
 **Técnico**
-7. **Despliegue pendiente de:** enlaces de Zara clicables (con el repintado de viñetas), CTA de la calculadora a
-   180 px con umbrales proporcionales y reparto 13/42/71 %, `/chat` como interfaz a página completa, rendimiento del
-   scroll, allowlist de admin centralizado en `lib/admin.ts`, limpieza de código muerto (`lib/auth.ts`, carpetas
-   vacías de `app/api/test/` y el allowlist sin usar de `app/api/facturas/[id]/descargar`) y la regla 6 de
-   `AGENTS.md`.
-8. **Verificación tras el despliegue:** que los enlaces de Zara se puedan pulsar en producción, que
-   `openllcusa.com/chat` muestre solo el chat y que en la calculadora cada uno de los tres botones se vea durante un
-   tramo largo.
-9. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
-   (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
+13. **Verificado ya en producción (22-09-2026):** los enlaces de Zara son clicables (Starter, Professional, Business y
+    `/agendar`), `/chat` muestra solo el chat con `noindex` y el CTA de la calculadora lleva el `180px`. Queda por
+    confirmar a ojo que los tres botones de la calculadora se vean bien repartidos.
+14. **Despliegue pendiente de:** limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
+    allowlist sin usar de `app/api/facturas/[id]/descargar`), allowlist de admin centralizado en `lib/admin.ts` y la
+    regla 6 de `AGENTS.md`.
+15. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` en la raíz del repo y los ficheros de test en `public/`
+    (`TEST_SS4_*.pdf`, `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
+16. **Mantener al día las dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.

@@ -2633,7 +2633,37 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
 - **Files created/modified:** `chat_history.md`. Los documentos del plan vuelven a `Downloads/`.
 - **Verificación pendiente (usuario):** decir cuándo retomamos la voz. Mientras tanto no se trabaja en ella.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:15)
+---
+### 📅 Chat Session: 2026-10-05 23:25
+**Main objective:** Revisar las 2 URLs del grupo «Rastreada: actualmente sin indexar» de Search Console.
+
+#### 👤 User Request:
+> El usuario aporta la captura con las dos URLs de ese grupo y pide seguir punto por punto, más despacio.
+
+#### 🤖 Agent Solution:
+- **Conclusión: las dos son ruido, no requieren ninguna acción.**
+- **`https://clerk.openllcusa.com/`** (rastreada el 21-09-2026): es el endpoint de la API de Clerk, no una página del
+  sitio. Comprobado: responde **200** con `Content-Type: application/json` y cabecera `X-Clerk-Trace-Id`, detrás de
+  Cloudflare. Google lo rastreó, vio un JSON y decidió no indexarlo. No es contenido nuestro ni se controla desde
+  nuestro `robots.txt` (el suyo responde 404): no hay nada que arreglar.
+- **`https://www.openllcusa.com/favicon.ico?favicon.0x3dzn~oxb6tn.ico`** (rastreada el 10-07-2026): es una URL de
+  icono con el hash de una compilación antigua; hoy responde **404**. Google la rastreó y la descartó, así que
+  desaparecerá sola. El 301 del host con www (pendiente 2) también la eliminará de la lista.
+- **Observación colateral (sin tocar nada):** `/favicon.ico` no existe en el sitio (responde 404 también en el dominio
+  principal); los iconos vigentes son `/icon.png` y `/apple-icon.png`, declarados en el layout. Los navegadores
+  modernos los usan, así que no es urgente, pero añadir un `favicon.ico` real sería un detalle de acabado.
+
+#### 💻 Key Code:
+```
+clerk.openllcusa.com/   -> 200  content-type: application/json  (endpoint de Clerk)
+www.../favicon.ico?favicon.0x3dzn~oxb6tn.ico -> 404  (hash de una compilacion antigua)
+openllcusa.com/favicon.ico -> 404  (no existe; se usan /icon.png y /apple-icon.png)
+```
+
+- **Files created/modified:** ninguno (solo lectura); `chat_history.md`.
+- **Verificación pendiente (usuario):** ninguna para este punto.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:25)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2649,40 +2679,26 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
    registro `www` está en nube naranja. Avisar para comprobar el 301.
 3. **«Validar corrección» en GSC** para `/servicios/form-5472` (ya redirige, 308) y `/guias/us` (ya responde 200); son
    datos obsoletos. Lo hace el usuario.
-4. **Crear el hub `/guias`** (`app/guias/page.tsx`): está en el sitemap, `app/guias/us/page.tsx:185 y 370` enlazan a
-   él y no existe. Es a la vez un 404, dos enlaces rotos y el motivo de que 20 de las 27 guías por país no tengan
-   ningún enlace interno. *Pendiente de autorización.*
-5. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts:53`): no es una ruta, es la sección `#testimonios` de la
-   home.
-6. **Enlazar las páginas pilar huérfanas:** `/crear-llc-usa`, `/llc-para-no-residentes`, `/llc-para-ecommerce`,
-   `/costo-crear-llc`, `/abrir-cuenta-bancaria-usa`, `/llc-trading-con-cuentas-de-fondeo`, `/ein-sin-ssn`,
-   `/crear-llc-desde-espana`, `/llc-texas`, `/boi-report`, `/proceso` y `/legal/changelog`.
-7. **`noindex` en `/admin/*`:** las siete rutas responden `index, follow` y no están bloqueadas en `robots.txt`.
-8. **Revisar el enlace ofuscado de Cloudflare** `/cdn-cgi/l/email-protection` del pie (los rastreadores lo ven como
-   404).
-9. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara` y `/agendar`, y en otras que quizá no deban
-   indexarse (`/quiz`, `/quiz/resultado`, `/lead-form`, `/pago-exitoso`, `/test-analytics`, `/sign-in`, `/sign-up`).
-10. **Pegar las listas que faltan de GSC:** 2 de «rastreada sin indexar», 34 de «descubierta sin indexar» y 16 de
-    `noindex` (el grupo de 404 ya está cerrado).
+4. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
+5. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts:53`).
+6. **Enlazar las páginas pilar huérfanas** (12 URLs, entre ellas `/crear-llc-usa`, `/llc-texas` y `/boi-report`).
+7. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
+8. **Revisar el enlace ofuscado de Cloudflare** `/cdn-cgi/l/email-protection` del pie.
+9. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+10. **Pegar la lista de «descubierta sin indexar» (34) y la de `noindex` (16).** El grupo de 404 y el de «rastreada sin
+    indexar» (2, ruido) ya están cerrados.
+11. **`favicon.ico` real** (detalle de acabado; hoy solo hay `/icon.png` y `/apple-icon.png`).
 
 **Producto / decisiones de negocio**
-11. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
-    muestran `TU_BILLETERA_*_AQUI`. *Detectado el 19-09-2026.*
-12. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
-13. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+12. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+13. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+14. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-14. **Verificado ya en producción:** enlaces de Zara clicables, `/chat` con `noindex` y mostrando solo el chat, y CTA
-    de la calculadora con el `180px`. Queda por confirmar a ojo que los tres botones se vean bien repartidos.
-15. **Despliegue pendiente de:** limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
-    allowlist sin usar de `app/api/facturas/[id]/descargar`), allowlist de admin centralizado en `lib/admin.ts` y la
-    regla 6 de `AGENTS.md`.
-16. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` y los ficheros de test en `public/` (`TEST_SS4_*.pdf`,
-    `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
-17. **Mantener al día las dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-18. **Tres ficheros modificados sin commitear que no son del asistente** (`components/chat/ChatWidget.tsx`,
-    `components/chat/chat-widget.css`, `components/layout/Header.tsx`): mejoras del modo página de `/chat`. Pendiente
-    de que el usuario diga si los revisamos.
-19. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga. Lo que hay hecho: la Fase 0 desplegada (voz de
-    Zara con las voces del navegador, sin coste y sin relación con Inworld) y los dos documentos del plan en
-    `C:/Users/recompra.es/Downloads/`. Nada de proveedores por ahora.
+15. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+16. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+17. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+18. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+19. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+    `chat-widget.css`, `Header.tsx`).
+20. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

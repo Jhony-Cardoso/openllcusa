@@ -57,7 +57,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/boi-report', // pagina informativa sobre el BOI de FinCEN
         '/proceso',
         '/quiz',
-        '/testimonios',
         '/agendar',
     ].map((route) => ({
         url: `${baseUrl}${route}`,

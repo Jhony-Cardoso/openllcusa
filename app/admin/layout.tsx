@@ -6,6 +6,13 @@ import {
     Settings, LogOut, LayoutDashboard, Search, MousePointer2
 } from 'lucide-react'
 import { esEmailAdmin } from '@/lib/admin'
+import type { Metadata } from 'next'
+
+// El panel de administración es interno: se marca noindex desde aquí para que las siete rutas
+// de /admin no puedan aparecer en buscadores aunque alguna vez se enlacen desde fuera.
+export const metadata: Metadata = {
+    robots: { index: false, follow: false },
+}
 
 
 export default async function AdminLayout({

@@ -119,13 +119,26 @@ const PASOS = [
   },
 ];
 
-const OTRAS_UTILES = [
-  { titulo: 'Cómo crear una LLC paso a paso', href: '/crear-llc-usa' },
-  { titulo: 'Guías y artículos por tema', href: '/guia' },
-  { titulo: 'LLC para no residentes', href: '/llc-para-no-residentes' },
-  { titulo: 'Qué cuesta mantenerla cada año', href: '/precios' },
-  { titulo: 'Calculadora fiscal', href: '/calculadora-fiscal' },
+// Páginas que hasta ahora solo conocía el sitemap: enlazarlas desde aquí les da un camino
+// de rastreo interno real (antes eran huérfanas).
+const EXPLORA_POR_TEMA = [
+  { titulo: 'LLC para ecommerce y Amazon FBA', href: '/llc-para-ecommerce' },
+  { titulo: 'Cuánto cuesta crear una LLC', href: '/costo-crear-llc' },
+  { titulo: 'Abrir cuenta bancaria en EE.UU.', href: '/abrir-cuenta-bancaria-usa' },
+  { titulo: 'LLC para trading con cuentas de fondeo', href: '/llc-trading-con-cuentas-de-fondeo' },
+  { titulo: 'Obtener el EIN sin SSN', href: '/ein-sin-ssn' },
+  { titulo: 'Crear una LLC desde España', href: '/crear-llc-desde-espana' },
+  { titulo: 'Crear una LLC en Texas', href: '/llc-texas' },
   { titulo: 'Informe del BOI (FinCEN)', href: '/boi-report' },
+  { titulo: 'Guías y artículos por tema', href: '/guia' },
+];
+
+const SERVICIOS_Y_PROCESO = [
+  { titulo: 'Cómo crear una LLC paso a paso', href: '/crear-llc-usa' },
+  { titulo: 'LLC para no residentes', href: '/llc-para-no-residentes' },
+  { titulo: 'Cómo trabajamos, paso a paso', href: '/proceso' },
+  { titulo: 'Planes y precios', href: '/precios' },
+  { titulo: 'Calculadora fiscal', href: '/calculadora-fiscal' },
   { titulo: 'Hablemos de tu caso', href: '/contacto' },
 ];
 
@@ -326,9 +339,28 @@ export default function GuiasPage() {
 
         {/* Otras páginas útiles */}
         <section className="mt-20">
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-6">Otras páginas que te pueden servir</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 mb-3">Otras páginas que te pueden servir</h2>
+          <p className="text-slate-600 mb-8 max-w-2xl">
+            Si tu duda no es el país sino el tipo de negocio o el trámite, empieza por aquí.
+          </p>
+
+          <h3 className="text-xl font-extrabold text-slate-900 mb-4">Explora por tema</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {OTRAS_UTILES.map((enlace) => (
+            {EXPLORA_POR_TEMA.map((enlace) => (
+              <Link
+                key={enlace.href}
+                href={enlace.href}
+                className="group flex items-center justify-between gap-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:border-blue-200 hover:shadow-md transition-all"
+              >
+                <span className="font-semibold text-slate-900 text-sm">{enlace.titulo}</span>
+                <ArrowRight className="text-slate-300 group-hover:text-blue-600 transition-colors" size={18} />
+              </Link>
+            ))}
+          </div>
+
+          <h3 className="text-xl font-extrabold text-slate-900 mt-10 mb-4">Servicios y proceso</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {SERVICIOS_Y_PROCESO.map((enlace) => (
               <Link
                 key={enlace.href}
                 href={enlace.href}

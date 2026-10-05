@@ -2879,7 +2879,43 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
   (por tanto en todas las páginas), `/guia` muestra el bloque «¿Prefieres empezar por tu país?» y `/guias` incluye la
   entrada «Guías y artículos por tema» hacia `/guia`.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:00)
+---
+### 📅 Chat Session: 2026-10-06 01:10
+**Main objective:** Cerrar tres puntos de Search Console: quitar `/testimonios` del sitemap, enlazar las páginas pilar huérfanas y poner `noindex` en `/admin/*`.
+
+#### 👤 User Request:
+> «✅ ADELANTE con: 4. Quitar /testimonios del sitemap. 5. Enlazar las páginas pilar huérfanas que quedan (9 de 12). 6. noindex en /admin/*».
+
+#### 🤖 Agent Solution:
+- **Punto 4 — sitemap.** Eliminada la entrada `'/testimonios'` de `app/sitemap.ts`. Esa URL no es una página: es la sección
+  `#testimonios` de la home, así que el sitemap enviaba a Google una dirección inexistente.
+- **Punto 6 — `noindex` en `/admin`.** `app/admin/layout.tsx` es un componente de servidor, así que basta con exportar
+  `metadata` con `robots: { index: false, follow: false }` para cubrir las siete rutas del panel. Comprobado antes del
+  cambio: las siete respondían `index, follow`. No se toca `robots.txt` (bastaba con el `noindex`, y los buscadores
+  necesitan poder rastrear la página para leerlo).
+- **Punto 5 — páginas pilar huérfanas.** Las nueve que quedaban se enlazan ahora desde el hub `/guias`, en una sección
+  reorganizada en dos grupos: **«Explora por tema»** (ecommerce, coste, cuenta bancaria, trading con fondeo, EIN sin
+  SSN, desde España, Texas, BOI y el hub de contenido `/guia`) y **«Servicios y proceso»** (crear una LLC, no
+  residentes, `/proceso`, precios, calculadora y contacto). La última que faltaba, `/legal/changelog`, entra en la
+  columna «Soporte y Legal» del pie como «Registro de cambios».
+- **Verificación:** sintaxis OK en los cuatro ficheros con `ts.transpileModule`; finales de línea CRLF intactos en los
+  cuatro (105/105, 133/133, 401/401 y 97/97, cero `\r\r\n`); diff de exactamente −1 línea en el sitemap, +7 en el
+  layout de admin, +44/−7 en el hub y +1 en el pie; y **los trece destinos nuevos responden 200**, así que no se añade
+  ningún enlace roto.
+- **Files created/modified:** `app/sitemap.ts`, `app/admin/layout.tsx`, `app/guias/page.tsx`,
+  `components/layout/Footer.tsx`, `chat_history.md`.
+- **Verificación pendiente:** tras el despliegue, comprobar el `noindex` en las siete rutas de `/admin`, los nueve
+  enlaces en `/guias` y que `/testimonios` ya no aparece en el sitemap.
+
+#### 💻 Key Code:
+```ts
+// app/admin/layout.tsx
+export const metadata: Metadata = {
+    robots: { index: false, follow: false },
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:10)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2887,31 +2923,30 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Comprobar tras el despliegue** (yo): `noindex` en las siete rutas de `/admin`, los nueve enlaces nuevos en
+   `/guias`, el enlace del pie a `/legal/changelog` y que `/testimonios` ya no está en el sitemap.
+2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+3. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+4. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes` y `/guias`. Lo hace el usuario.
-4. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
-5. **Enlazar las páginas pilar huérfanas que quedan** (el hub ya enlaza tres de las doce).
-6. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
-7. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-8. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-9. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-10. **`favicon.ico` real** (acabado, menor).
-11. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
-    arreglos del sitemap, del hub y del host con www.
+5. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+6. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+7. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+8. **`favicon.ico` real** (acabado, menor).
+9. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
+   arreglos del sitemap, del hub y del host con www.
 
 **Producto / decisiones de negocio**
-12. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-13. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-14. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+10. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+11. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+12. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-15. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-16. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-17. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-18. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-19. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+13. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+14. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+15. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+16. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+17. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-20. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+18. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

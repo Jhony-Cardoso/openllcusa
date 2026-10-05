@@ -85,6 +85,24 @@ export default function GuiasIndexPage() {
           ))}
         </div>
 
+        {/* Cruce con el hub por país: quien llega buscando por tema también suele
+            querer los requisitos concretos de su país. */}
+        <Link
+          href="/guias"
+          className="mt-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white flex flex-col md:flex-row items-start md:items-center gap-6 hover:shadow-xl transition-all duration-300"
+        >
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold mb-2">¿Prefieres empezar por tu país?</h2>
+            <p className="text-blue-50 leading-relaxed">
+              Requisitos, plazos, costes y obligaciones concretas para crear tu LLC desde México, España,
+              Colombia, Argentina y 22 países más.
+            </p>
+          </div>
+          <span className="bg-white text-blue-700 px-6 py-3 rounded-xl font-bold shrink-0 flex items-center gap-2">
+            Ver guías por país <ArrowRight size={18} />
+          </span>
+        </Link>
+
       </div>
     </main>
   )

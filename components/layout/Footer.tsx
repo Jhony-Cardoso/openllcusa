@@ -26,6 +26,7 @@ export default function Footer() {
               <li><Link href="/quiz" className="hover:text-white transition-colors">Quiz: ¿Es una LLC para ti?</Link></li>
               <li><Link href="/servicios" className="hover:text-white transition-colors">Todos los Servicios</Link></li>
               <li><Link href="/precios" className="hover:text-white transition-colors">Planes y Precios</Link></li>
+              <li><Link href="/guias" className="hover:text-white transition-colors">Guías por país</Link></li>
             </ul>
           </div>
 

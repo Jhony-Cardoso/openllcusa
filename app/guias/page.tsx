@@ -121,6 +121,7 @@ const PASOS = [
 
 const OTRAS_UTILES = [
   { titulo: 'Cómo crear una LLC paso a paso', href: '/crear-llc-usa' },
+  { titulo: 'Guías y artículos por tema', href: '/guia' },
   { titulo: 'LLC para no residentes', href: '/llc-para-no-residentes' },
   { titulo: 'Qué cuesta mantenerla cada año', href: '/precios' },
   { titulo: 'Calculadora fiscal', href: '/calculadora-fiscal' },

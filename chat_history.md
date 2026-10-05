@@ -2845,7 +2845,40 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 - **Files created/modified:** `chat_history.md`.
 - **Verificación pendiente (usuario):** ninguna para este punto.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 00:08)
+---
+### 📅 Chat Session: 2026-10-06 01:00
+**Main objective:** Enlazar el hub `/guias` desde el pie y cruzar los dos hubs de guías.
+
+#### 👤 User Request:
+> «Mi elección: A (pie), y con un enlace en cada dirección (uno por fichero).» Antes había pedido comparar menú y pie teniendo
+> en cuenta que `/guia` cuelga de «Recursos».
+
+#### 🤖 Agent Solution:
+- **Dato que decidió la recomendación:** el ítem del menú ya se llama **«Guías»** (en plural) y apunta a `/guia`
+  (`components/layout/Header.tsx:819`), así que añadir otro «Guías…» al mismo desplegable habría duplicado la etiqueta y
+  restado prominencia a los dos. En el pie, en cambio, no existía ninguna entrada de guías.
+- **Opción A aplicada (pie):** una línea nueva en la columna «Explorar» de `components/layout/Footer.tsx`, con la
+  etiqueta «Guías por país» para que el nombre describa el contenido.
+- **Cruce en los dos sentidos:** en `app/guia/page.tsx`, un bloque destacado al final («¿Prefieres empezar por tu
+  país?») que lleva a `/guias`; y en `app/guias/page.tsx`, una entrada «Guías y artículos por tema» en la lista de
+  páginas útiles que lleva a `/guia`.
+- **Verificación:** sintaxis OK con `ts.transpileModule` en los tres ficheros; finales de línea CRLF intactos en los
+  tres (96/96, 109/109 y 369/369, cero `\r\r\n`); y el `git diff` muestra exactamente **una línea** en el pie, **18
+  líneas** en `/guia` (el bloque nuevo) y **una línea** en el hub.
+- **No se ha tocado el menú**, así que la etiqueta «Guías» sigue apuntando a `/guia` como hasta ahora.
+
+#### 💻 Key Code:
+```tsx
+// components/layout/Footer.tsx (columna Explorar)
+<li><Link href="/guias" className="hover:text-white transition-colors">Guías por país</Link></li>
+```
+
+- **Files created/modified:** `components/layout/Footer.tsx`, `app/guia/page.tsx`, `app/guias/page.tsx`,
+  `chat_history.md`.
+- **Verificación pendiente:** tras el despliegue, comprobar que el enlace aparece en el pie de cualquier página y que
+  los dos cruces se ven en pantalla.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:00)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2853,13 +2886,12 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Comprobar tras el despliegue** el enlace «Guías por país» del pie y los dos cruces entre hubs (yo).
+2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+3. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+4. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes` y `/guias`. Lo hace el usuario.
-4. **Enlazar `/guias` desde el menú o el pie** (propuesta aparte, requiere autorización): hoy solo lo enlaza la guía de
-   EE.UU., así que su descubrimiento depende del sitemap.
 5. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
 6. **Enlazar las páginas pilar huérfanas que quedan** (el hub ya enlaza tres de las doce).
 7. **`noindex` en `/admin/*`** (siete rutas indexables hoy).

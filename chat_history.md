@@ -2875,8 +2875,9 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 
 - **Files created/modified:** `components/layout/Footer.tsx`, `app/guia/page.tsx`, `app/guias/page.tsx`,
   `chat_history.md`.
-- **Verificación pendiente:** tras el despliegue, comprobar que el enlace aparece en el pie de cualquier página y que
-  los dos cruces se ven en pantalla.
+- **Verificado en producción tras el despliegue:** el pie de la portada ya sirve `href="/guias">Guías por país<`
+  (por tanto en todas las páginas), `/guia` muestra el bloque «¿Prefieres empezar por tu país?» y `/guias` incluye la
+  entrada «Guías y artículos por tema» hacia `/guia`.
 
 ## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:00)
 
@@ -2886,7 +2887,6 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Comprobar tras el despliegue** el enlace «Guías por país» del pie y los dos cruces entre hubs (yo).
 2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
 3. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.

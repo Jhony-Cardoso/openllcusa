@@ -86,6 +86,26 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/servicios/consultoria-legal',
+        destination: '/servicios/consultoria-fiscal',
+        permanent: true,
+      },
+      {
+        source: '/servicios/inc',
+        destination: '/servicios',
+        permanent: true,
+      },
+      {
+        source: '/servicios/mantenimiento',
+        destination: '/servicios/reporte-anual',
+        permanent: true,
+      },
+      {
+        source: '/servicios/llc',
+        destination: '/crear-llc-usa',
+        permanent: true,
+      },
+      {
         source: '/paquetes',
         destination: '/precios',
         permanent: true,

@@ -2588,31 +2588,53 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
 - **Files created/modified:** ninguno (solo lectura); `chat_history.md`.
 - **Verificación pendiente (usuario):** decidir si autoriza las cuatro redirecciones y si quiere un 301 de `www` a `openllcusa.com`.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 22:37)
+---
+### 📅 Chat Session: 2026-10-05 22:50
+**Main objective:** Cerrar el grupo de 404 de Search Console con cuatro redirecciones y resolver el host con www.
+
+#### 👤 User Request:
+> «Te AUTORIZO a añadir esas cuatro redirecciones 301 al bloque redirects() de next.config.ts, exactamente como las cinco que ya hay (mismas claves, mismo formato)» y, para el host con www, «si no hay que tocar el repo con la opción (a) HAGÁMOSLO […]. Pero dime si tengo que tocar algún registro en Cloudflare».
+
+#### 🤖 Agent Solution:
+- **Cuatro redirecciones añadidas** en `next.config.ts`, dentro del bloque `redirects()` y con el mismo formato que las existentes (tras la de `/servicios/obtencion-ein`): `/servicios/consultoria-legal` → `/servicios/consultoria-fiscal`, `/servicios/inc` → `/servicios`, `/servicios/mantenimiento` → `/servicios/reporte-anual` y `/servicios/llc` → `/crear-llc-usa`.
+- **Verificación de la edición:** sintaxis OK con `ts.transpileModule`; `git diff` muestra exactamente 20 líneas añadidas y ninguna modificada; finales de línea CRLF intactos (141 CR / 141 LF, cero `\r\r\n`); leído de vuelta, el bloque tiene ahora doce entradas en el orden esperado. Los tres destinos nuevos ya se comprobaron antes contra producción (200).
+- **Host con www, respuesta a su pregunta:** **no hay que tocar ningún registro DNS.** El registro de `www` ya existe y ya atraviesa Cloudflare (resuelve a 104.21.60.197 y 172.67.200.127, direcciones de Cloudflare), así que basta con crear una **Redirect Rule** en la zona: hostname `www.openllcusa.com` → 301 a `https://openllcusa.com` + `http.request.uri.path`, con «Preserve query string» activado (tipo dinámico, porque el destino estático no arrastra la ruta). Lo único que conviene mirar es que ese registro esté en **nube naranja (proxied)**: si estuviera en DNS only, la regla no se aplicaría.
+- **Sin verificación en caliente:** las redirecciones solo entran en vigor al reconstruir y desplegar, así que la comprobación (esperar 308 en las cuatro rutas y 301 en el host con www) queda para después del despliegue.
+
+#### 💻 Key Code:
+```ts
+      {
+        source: '/servicios/llc',
+        destination: '/crear-llc-usa',
+        permanent: true,
+      },
+```
+
+- **Files created/modified:** `next.config.ts` (líneas 88-107), `chat_history.md`.
+- **Verificación pendiente (usuario):** desplegar y comprobar que las cuatro rutas responden 308 a su destino; crear la regla de Cloudflare y avisar para comprobar el 301 del host con www.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 22:50)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
 > ellos por su número.
 
 **Google Search Console**
-1. **404 · añadir cuatro redirecciones 301 en `next.config.ts`** (bloque `redirects()`, junto a las cinco que ya
-   existen): `/servicios/consultoria-legal` → `/servicios/consultoria-fiscal`, `/servicios/inc` → `/servicios`,
-   `/servicios/mantenimiento` → `/servicios/reporte-anual` y `/servicios/llc` → `/crear-llc-usa`. *Pendiente de
-   autorización del usuario.*
-2. **404 · datos obsoletos:** `/servicios/form-5472` ya redirige (308) y `/guias/us` ya responde 200. No hay nada que
-   arreglar: hay que pulsar «Validar corrección» en GSC (el usuario).
-3. **301 de `www.openllcusa.com` a `openllcusa.com`:** hoy el host con www sirve el sitio entero con 200 y sin
-   redirección. El `canonical` apunta bien, así que es una mejora, no una urgencia. Decidir dónde se hace (regla de
-   redirección en Cloudflare o redirección por host en `next.config.ts`).
+1. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que `/servicios/consultoria-legal`,
+   `/servicios/inc`, `/servicios/mantenimiento` y `/servicios/llc` responden 308 a su destino.
+2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta,
+   código 301, con «Preserve query string» (tipo dinámico). No hay que tocar registros DNS; solo comprobar que el
+   registro `www` está en nube naranja. Avisar para comprobar el 301.
+3. **«Validar corrección» en GSC** para `/servicios/form-5472` (ya redirige, 308) y `/guias/us` (ya responde 200); son
+   datos obsoletos. Lo hace el usuario.
 4. **Crear el hub `/guias`** (`app/guias/page.tsx`): está en el sitemap, `app/guias/us/page.tsx:185 y 370` enlazan a
    él y no existe. Es a la vez un 404, dos enlaces rotos y el motivo de que 20 de las 27 guías por país no tengan
-   ningún enlace interno. *Primer arreglo propuesto, pendiente de autorización.*
+   ningún enlace interno. *Pendiente de autorización.*
 5. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts:53`): no es una ruta, es la sección `#testimonios` de la
    home.
 6. **Enlazar las páginas pilar huérfanas:** `/crear-llc-usa`, `/llc-para-no-residentes`, `/llc-para-ecommerce`,
    `/costo-crear-llc`, `/abrir-cuenta-bancaria-usa`, `/llc-trading-con-cuentas-de-fondeo`, `/ein-sin-ssn`,
-   `/crear-llc-desde-espana`, `/llc-texas`, `/boi-report`, `/proceso` y `/legal/changelog` no reciben ni un enlace
-   interno y son los candidatos que explican «Descubierta: actualmente sin indexar (34)».
+   `/crear-llc-desde-espana`, `/llc-texas`, `/boi-report`, `/proceso` y `/legal/changelog`.
 7. **`noindex` en `/admin/*`:** las siete rutas responden `index, follow` y no están bloqueadas en `robots.txt`.
 8. **Revisar el enlace ofuscado de Cloudflare** `/cdn-cgi/l/email-protection` del pie (los rastreadores lo ven como
    404).
@@ -2645,6 +2667,5 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
     `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
 19. **Mantener al día las dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
 20. **Tres ficheros modificados sin commitear que no son del asistente** (`components/chat/ChatWidget.tsx`,
-    `components/chat/chat-widget.css`, `components/layout/Header.tsx`): mejoras del modo página de `/chat`
-    (detección de ruta con `usePathname`, menú móvil por encima del panel). Pendiente de que el usuario diga si los
-    revisamos.
+    `components/chat/chat-widget.css`, `components/layout/Header.tsx`): mejoras del modo página de `/chat`. Pendiente
+    de que el usuario diga si los revisamos.

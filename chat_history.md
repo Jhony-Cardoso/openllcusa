@@ -2613,11 +2613,35 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
 - **Files created/modified:** `next.config.ts` (líneas 88-107), `chat_history.md`.
 - **Verificación pendiente (usuario):** desplegar y comprobar que las cuatro rutas responden 308 a su destino; crear la regla de Cloudflare y avisar para comprobar el 301 del host con www.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 22:50)
+---
+### 📅 Chat Session: 2026-10-05 23:15
+**Main objective:** Anular todo el trabajo de voz con Inworld a petición del usuario.
+
+#### 👤 User Request:
+> «Borra y anula lo que estás haciendo de Inworld, me estoy poniendo nervioso...»
+
+#### 🤖 Agent Solution:
+- **Trabajo de voz con Inworld anulado.** No se sigue con la comparativa de proveedores ni con la Fase 1. Los tres
+  documentos del plan de voz (versión del 21-09 y versión del 22-09, en sus formatos `.md`, `.html` y `.pdf`) se han
+  sacado de `Downloads` y quedan en `C:/Users/recompra.es/Downloads/_voz_anulada/` por si hicieran falta; **no se ha
+  borrado nada de forma irreversible**.
+- **No hay nada que deshacer en el código ni gasto alguno comprometido.** El trabajo de voz de Inworld nunca pasó de la
+  investigación y el documento: **no se ha escrito ni una línea en el repositorio**, no se ha llamado a la API de
+  Inworld (nunca hubo clave), no se ha creado ninguna cuenta ni clave, y por tanto no hay ningún cargo posible. La
+  "Fase 0" que sí está desplegada (voz de Zara con las voces del **navegador**, con la rama `mode: 'voice'` del prompt)
+  no tiene relación con Inworld y es gratuita: se queda tal cual, salvo que el usuario diga lo contrario.
+- **Pendientes de voz retirados** del bloque de pendientes abiertos.
+- **Files created/modified:** `chat_history.md`. Los ficheros de plan movidos a `Downloads/_voz_anulada/`.
+- **Verificación pendiente (usuario):** confirmar si los documentos de `_voz_anulada/` se borran del todo y si la voz
+  del navegador (Fase 0) se mantiene.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:15)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
 > ellos por su número.
+> **Retirado el 05-10-2026:** toda la línea de voz con proveedores (Inworld/ElevenLabs/Cartesia/Deepgram) queda anulada
+> a petición del usuario. No figura en esta lista.
 
 **Google Search Console**
 1. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que `/servicios/consultoria-legal`,
@@ -2644,28 +2668,22 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
     `noindex` (el grupo de 404 ya está cerrado).
 
 **Producto / decisiones de negocio**
-11. **Voz de Zara — elegir la voz por oído.** Primer paso: probar en Inworld el **TTS-2 completo** (no Flash) con voz
-    española y dirección de tono. Si no convence, comparar a ciegas con **ElevenLabs Flash v2.5** ($0,05/1.000
-    caracteres), **Cartesia Sonic**, **Deepgram Aura-2** y **OpenAI gpt-4o-mini-tts**. Plan completo (versión 2) en
-    `C:/Users/recompra.es/Downloads/Plan_Agente_Voz_Zara_2026-09-22.pdf`.
-12. **Fase 1 de voz — construcción pendiente** una vez elegida la voz: cerebro compartido en `lib/ai/zara.ts`,
-    endpoint interno `/api/voice/reply`, servicio WS en contenedor aparte con VAD y barge-in, cliente de audio, topes
-    de duración y presupuesto, y RGPD. Decisiones asociadas: construir de una vez o por tramos, tope por sesión
-    (propuesta 3-5 minutos) y texto de consentimiento.
-13. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
+11. **Wallets cripto del checkout** — `app/paquetes/[paqueteSlug]/onboarding/checkout/page.tsx` líneas 405, 412 y 419
     muestran `TU_BILLETERA_*_AQUI`. *Detectado el 19-09-2026.*
-14. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
-15. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+12. **Número de WhatsApp definitivo** — ahora hay uno provisional (+34 699087039) en el footer.
+13. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-16. **Verificado ya en producción:** enlaces de Zara clicables, `/chat` con `noindex` y mostrando solo el chat, y CTA
+14. **Verificado ya en producción:** enlaces de Zara clicables, `/chat` con `noindex` y mostrando solo el chat, y CTA
     de la calculadora con el `180px`. Queda por confirmar a ojo que los tres botones se vean bien repartidos.
-17. **Despliegue pendiente de:** limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
+15. **Despliegue pendiente de:** limpieza de código muerto (`lib/auth.ts`, carpetas vacías de `app/api/test/` y el
     allowlist sin usar de `app/api/facturas/[id]/descargar`), allowlist de admin centralizado en `lib/admin.ts` y la
     regla 6 de `AGENTS.md`.
-18. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` y los ficheros de test en `public/` (`TEST_SS4_*.pdf`,
+16. **Limpieza menor pendiente** — `_RESPALDO_SERVICIOS/` y los ficheros de test en `public/` (`TEST_SS4_*.pdf`,
     `diagnosticos-pagos.html`, `llms.txt`). *Detectado el 19-09-2026.*
-19. **Mantener al día las dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-20. **Tres ficheros modificados sin commitear que no son del asistente** (`components/chat/ChatWidget.tsx`,
+17. **Mantener al día las dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+18. **Tres ficheros modificados sin commitear que no son del asistente** (`components/chat/ChatWidget.tsx`,
     `components/chat/chat-widget.css`, `components/layout/Header.tsx`): mejoras del modo página de `/chat`. Pendiente
     de que el usuario diga si los revisamos.
+19. **Decidir qué se hace con los documentos movidos a** `C:/Users/recompra.es/Downloads/_voz_anulada/` (borrarlos del
+    todo o dejarlos guardados) y si la voz del navegador (Fase 0) se mantiene como está.

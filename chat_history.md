@@ -2824,7 +2824,28 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 ];
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 00:04)
+---
+### 📅 Chat Session: 2026-10-06 00:08
+**Main objective:** Verificar en producción el hub `/guias` recién creado.
+
+#### 👤 User Request:
+> Continuación del punto 4: comprobar el hub una vez desplegado.
+
+#### 🤖 Agent Solution:
+- **Hub verificado en producción.** `/guias` responde **200**, con `title` «Guías por país para crear tu LLC en
+  EE.UU. | Open LLC USA» (la marca la añade la plantilla, sin duplicarse), `canonical` a
+  `https://openllcusa.com/guias` y el titular «Guías para crear tu LLC en EE.UU. desde tu país».
+- **Contenido comprobado en el DOM, no solo por HTTP:** las **27 tarjetas de país** están presentes con su bandera
+  (27 SVG), los cuatro encabezados de zona aparecen en su orden, hay un enlace a `/guias/us` y la maquetación no
+  colapsa (comprobado el alto de la última tarjeta). Revisión visual con captura: hero, rejilla de países por zona y
+  secciones siguientes, todo alineado y coherente con el resto del sitio.
+- **Datos estructurados:** el `ItemList` y el `BreadcrumbList` viajan en el HTML servido (se cuentan cuatro bloques
+  JSON-LD, uno de ellos el `ItemList`), con lo que las migas que ya usaba la guía de EE.UU. quedan validadas.
+- **`/guias/us` sigue respondiendo 200**, y sus dos enlaces «Volver a las guías» ya llevan a una página real.
+- **Files created/modified:** `chat_history.md`.
+- **Verificación pendiente (usuario):** ninguna para este punto.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 00:08)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2832,34 +2853,33 @@ const ZONAS: { titulo: string; descripcion: string; codes: string[] }[] = [
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Desplegar y verificar el hub `/guias`** (yo): debe responder 200, con su `canonical` y las 27 salidas.
-2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-3. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-4. **«Solicitar indexación» en GSC** para las páginas de dinero: portada, `/precios`, `/calculadora-fiscal`,
-   `/crear-llc-usa`, `/llc-para-no-residentes` y ahora `/guias`. Lo hace el usuario.
-5. **Enlazar `/guias` desde el menú o el pie** (propuesta aparte, requiere autorización): hoy solo lo enlaza la guía
-   de EE.UU., así que su descubrimiento depende del sitemap.
-6. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
-7. **Enlazar las páginas pilar huérfanas que quedan** (el hub ya enlaza tres de las doce).
-8. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
-9. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-10. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-11. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-12. **`favicon.ico` real** (acabado, menor).
-13. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
+2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+   `/llc-para-no-residentes` y `/guias`. Lo hace el usuario.
+4. **Enlazar `/guias` desde el menú o el pie** (propuesta aparte, requiere autorización): hoy solo lo enlaza la guía de
+   EE.UU., así que su descubrimiento depende del sitemap.
+5. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
+6. **Enlazar las páginas pilar huérfanas que quedan** (el hub ya enlaza tres de las doce).
+7. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
+8. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+9. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+10. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+11. **`favicon.ico` real** (acabado, menor).
+12. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
     arreglos del sitemap, del hub y del host con www.
 
 **Producto / decisiones de negocio**
-14. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-15. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-16. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+13. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+14. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+15. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-17. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-18. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-19. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-20. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-21. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+16. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+17. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+18. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+19. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+20. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-22. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+21. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

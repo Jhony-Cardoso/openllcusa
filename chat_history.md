@@ -2741,7 +2741,26 @@ lastModified: new Date(post.date), // los posts del blog, sin cambios
 - **Files created/modified:** `app/sitemap.ts`, `chat_history.md`.
 - **Verificación pendiente (usuario):** desplegar. Después se comprueba el sitemap por consola.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:40)
+---
+### 📅 Chat Session: 2026-10-05 23:56
+**Main objective:** Cerrar la comprobación de incidencias en Search Console.
+
+#### 👤 User Request:
+> «Mirar la pestaña “Problemas de seguridad” en GSC. Respuesta: También dice: ✅ No se ha detectado ningún problema.»
+
+#### 🤖 Agent Solution:
+- **Propiedad limpia por los dos lados:** sin acciones manuales y sin problemas de seguridad. Queda descartado que el
+  rastreo casi nulo venga de una sanción de Google: es una cuestión de señales y de prioridad de rastreo, no de castigo.
+- **Con esto, el diagnóstico de los 34 quedaba cerrado con dos causas nuestras:** el `lastmod` del sitemap (ya
+  corregido) y el sitio servido en dos hosts sin redirección (pendiente de la regla de Cloudflare).
+- **Expectativa realista:** aunque los dos arreglos estén listos, Google tarda días o semanas en mover los grupos de
+  «Páginas»; conviene volver a mirar Search Console dentro de una o dos semanas antes de sacar conclusiones. Si tras
+  eso sigue sin rastrear, el siguiente factor a mirar es la autoridad del dominio (enlaces y menciones externas) y no
+  algo técnico del sitio.
+- **Files created/modified:** `chat_history.md`.
+- **Verificación pendiente (usuario):** ninguna para este punto.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:56)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2752,22 +2771,21 @@ lastModified: new Date(post.date), // los posts del blog, sin cambios
 1. **Desplegar y comprobar el sitemap:** dos descargas separadas unos segundos deben devolver los mismos `lastmod`.
    *(`app/sitemap.ts` ya está corregido y subido.)*
 2. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que responden 308 a su destino.
-3. **Mirar «Problemas de seguridad»** (la otra pestaña de «Seguridad y acciones manuales»): acciones manuales ya está
-   descartada, pero el aviso de páginas engañosas vivía en esa pestaña. Lo hace el usuario.
-4. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+3. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-5. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-6. **«Solicitar indexación» en GSC** para las páginas de dinero: portada, `/precios`, `/calculadora-fiscal`,
+4. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+5. **«Solicitar indexación» en GSC** para las páginas de dinero: portada, `/precios`, `/calculadora-fiscal`,
    `/crear-llc-usa` y `/llc-para-no-residentes`, unas pocas al día. Lo hace el usuario.
-7. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
-8. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts`, la ruta que no existe): no es una página, es la sección
-   `#testimonios` de la home, y por eso aparece en el grupo de 34.
-9. **Enlazar las 12 páginas pilar huérfanas** (mejora de enlazado interno).
-10. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
-11. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-12. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-13. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-14. **`favicon.ico` real** (acabado, menor).
+6. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
+7. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
+8. **Enlazar las 12 páginas pilar huérfanas** (mejora de enlazado interno).
+9. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
+10. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+11. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+12. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+13. **`favicon.ico` real** (acabado, menor).
+14. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
+    arreglos del sitemap y del host con www.
 
 **Producto / decisiones de negocio**
 15. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*

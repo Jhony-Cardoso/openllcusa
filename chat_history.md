@@ -2918,7 +2918,41 @@ export const metadata: Metadata = {
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:10)
+---
+### 📅 Chat Session: 2026-10-06 01:20
+**Main objective:** Poner `canonical` en las páginas públicas que no lo tenían.
+
+#### 👤 User Request:
+> «✅ ADELANTE con: 5. canonical en las públicas que no lo tienen (`/servicios`, `/contacto`, `/zara`, `/agendar`…).»
+
+#### 🤖 Agent Solution:
+- **Corrección de la auditoría anterior.** Lo que había dicho salía de un grep sobre `page.tsx`, pero en este proyecto los
+  metadatos de las páginas de cliente viven en **layouts hermanos**. Medido ahora en el HTML servido: `/servicios`,
+  `/contacto`, `/quiz`, `/lead-form` y `/agendar` **ya tienen `canonical`** (por ejemplo `app/agendar/layout.tsx:7`), así
+  que solo faltaba en `/zara`.
+- **`app/zara/layout.tsx` (nuevo).** `/zara` es componente de cliente, así que sus metadatos van en un layout hermano,
+  siguiendo el patrón de `/agendar`. Se le pone `canonical` propio y, además, **título y descripción propios**: hasta
+  ahora heredaba los de la home («Crea tu LLC en Estados Unidos en 72 horas»), de modo que competía con ella por el
+  mismo título. Incluye Open Graph y Twitter.
+- **Lo que NO se ha tocado:** `/quiz/resultado` ya apunta su `canonical` a `/quiz`, que es lo correcto (consolida las
+  variantes del resultado). Y `/pago-exitoso`, `/test-analytics`, `/sign-in` y `/sign-up` siguen sin `canonical` a
+  propósito: en esas páginas lo que procede es un `noindex`, no un `canonical` (una página de agradecimiento, una de
+  pruebas interno y las dos de acceso no deben estar en buscadores). Queda como propuesta, con sus títulos propios.
+- **Verificación:** sintaxis OK con `ts.transpileModule` y CRLF del fichero nuevo (30/30, cero `\r\r\n`). Comprobación
+  en producción pendiente del despliegue.
+- **Files created/modified:** `app/zara/layout.tsx` (nuevo), `chat_history.md`.
+- **Verificación pendiente:** tras el despliegue, que `/zara` sirva su propio `title` y su `canonical`.
+
+#### 💻 Key Code:
+```ts
+// app/zara/layout.tsx
+export const metadata: Metadata = {
+  title: 'Asesoría con Zara: preguntas sobre tu LLC en EE.UU.',
+  alternates: { canonical: 'https://openllcusa.com/zara' },
+};
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:20)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2926,28 +2960,30 @@ export const metadata: Metadata = {
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Comprobar tras el despliegue** que `/zara` sirve su propio título y su `canonical` (yo).
+2. **`noindex` en las páginas de utilidad:** `/pago-exitoso` (agradecimiento), `/test-analytics` (pruebas interno),
+   `/sign-in` y `/sign-up` (acceso). Hoy son indexables y heredan el título de la home. *Pendiente de autorización.*
+3. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+4. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+5. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes` y `/guias`. Lo hace el usuario.
-4. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-5. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-6. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-7. **`favicon.ico` real** (acabado, menor).
-8. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
+6. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+7. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+8. **`favicon.ico` real** (acabado, menor).
+9. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
    arreglos del sitemap, del hub y del host con www.
 
 **Producto / decisiones de negocio**
-9. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-10. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-11. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+10. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+11. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+12. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-12. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-13. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-14. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-15. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-16. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+13. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+14. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+15. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+16. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+17. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-17. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+18. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

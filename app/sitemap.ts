@@ -3,6 +3,13 @@ import { createClient } from '@/lib/supabase/server'
 import { getAllPosts } from '@/lib/blog/posts'
 import { allCountries } from '@/components/CountrySelector/countries'
 
+// Fecha de la última revisión real del contenido del sitio: se actualiza a mano cuando se
+// tocan estas páginas. Antes cada bloque usaba `new Date()`, que devolvía el momento de la
+// petición, así que el sitemap declaraba que todo cambiaba en cada lectura y Google
+// descartaba el `lastmod` por poco fiable (verificado el 05-10-2026: dos descargas separadas
+// tres segundos daban sellos distintos). Los posts del blog conservan su fecha propia.
+const ULTIMA_REVISION = new Date('2026-10-05')
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://openllcusa.com'
 
@@ -36,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/legal/changelog',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
-        lastModified: new Date(),
+        lastModified: ULTIMA_REVISION,
         changeFrequency: 'weekly' as const,
         priority: route === '' ? 1 : route === '/crear-llc-usa' ? 0.95 : route === '/llc-para-no-residentes' ? 0.95 : route === '/ein-sin-ssn' ? 0.9 : route === '/llc-wyoming' ? 0.85 : route === '/llc-delaware' ? 0.85 : route === '/llc-new-mexico' ? 0.85 : route === '/llc-florida' ? 0.85 : route === '/crear-llc-desde-espana' ? 0.85 : 0.8,
     }))
@@ -54,7 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/agendar',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
-        lastModified: new Date(),
+        lastModified: ULTIMA_REVISION,
         changeFrequency: 'monthly' as const,
         priority: 0.75,
     }))
@@ -67,14 +74,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Guías por país (una por cada país del selector de países)
     const countryGuides = allCountries.map((country) => ({
         url: `${baseUrl}/guias/${country.code}`,
-        lastModified: new Date(),
+        lastModified: ULTIMA_REVISION,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
     }))
 
     const servicePages = (servicios || []).map((servicio) => ({
         url: `${baseUrl}/servicios/${servicio.slug}`,
-        lastModified: new Date(),
+        lastModified: ULTIMA_REVISION,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
     }))
@@ -90,7 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const paquetePages = (paquetes || []).map((paquete) => ({
         url: `${baseUrl}/paquetes/${paquete.slug}`,
-        lastModified: new Date(),
+        lastModified: ULTIMA_REVISION,
         changeFrequency: 'monthly' as const,
         priority: 0.9,
     }))

@@ -2710,7 +2710,38 @@ lastModified: new Date(post.date), // bien: los posts del blog ya lo hacen asi
 - **Files created/modified:** ninguno (solo lectura); `chat_history.md`.
 - **Verificación pendiente (usuario):** mirar «Seguridad y acciones manuales» en GSC.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:30)
+---
+### 📅 Chat Session: 2026-10-05 23:40
+**Main objective:** Arreglar el `lastmod` del sitemap, que impedía a Google priorizar el rastreo.
+
+#### 👤 User Request:
+> «En Seguridad y Acciones manuales ➡️ Acciones manuales dice: ✅ No se ha detectado ningún problema» y «ADELANTE con: en `app/sitemap.ts`, sustituir el `lastModified: new Date()` por una fecha real y estable por URL, igual que ya hacen los posts».
+
+#### 🤖 Agent Solution:
+- **Descartada la acción manual:** sin acciones manuales en Search Console, el episodio de «páginas engañosas» no dejó sanción registrada, así que el rastreo casi nulo de la propiedad hay que explicarlo por las señales que enviamos nosotros, no por un castigo.
+- **Aplicado el arreglo del sitemap.** `app/sitemap.ts` define ahora al principio una constante documentada,
+  `const ULTIMA_REVISION = new Date('2026-10-05')`, y los **cinco bloques** que usaban `new Date()` (páginas
+  estáticas, guías, guías por país, servicios y paquetes) usan esa fecha. Los posts del blog **conservan su
+  `new Date(post.date)`**, que ya era correcto.
+- **Verificación de la edición:** sintaxis OK con `ts.transpileModule`; `git diff` de 12 inserciones y 5 borrados,
+  exactamente el comentario, la constante y las cinco líneas sustituidas; finales de línea CRLF intactos (106 CR / 106
+  LF, cero `\r\r\n`); leído de vuelta, las cinco apariciones apuntan a la constante y la de los posts sigue con su
+  fecha propia.
+- **Pendiente de comprobar tras el despliegue:** descargar el sitemap dos veces separadas unos segundos y confirmar
+  que los sellos `lastmod` ya no cambian entre lecturas.
+
+#### 💻 Key Code:
+```ts
+const ULTIMA_REVISION = new Date('2026-10-05')
+...
+lastModified: ULTIMA_REVISION,   // páginas estáticas, guías, países, servicios y paquetes
+lastModified: new Date(post.date), // los posts del blog, sin cambios
+```
+
+- **Files created/modified:** `app/sitemap.ts`, `chat_history.md`.
+- **Verificación pendiente (usuario):** desplegar. Después se comprueba el sitemap por consola.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:40)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2718,20 +2749,20 @@ lastModified: new Date(post.date), // bien: los posts del blog ya lo hacen asi
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Arreglar `lastmod` del sitemap** (`app/sitemap.ts`, líneas 39, 57, 70, 77 y 93): cambiar `lastModified: new Date()`
-   por una fecha real y estable por URL (fecha de compilación o constante por página), como ya hacen los posts del
-   blog. Es la causa verificada de que Google ignore la frescura de las 61 URLs. *Pendiente de autorización.*
-2. **Mirar «Seguridad y acciones manuales» en GSC** (usuario): si el episodio de páginas engañosas dejó acción manual,
-   explicaría el rastreo casi nulo de la propiedad.
-3. **«Solicitar indexación» en GSC** para las páginas de dinero (portada, `/precios`, `/calculadora-fiscal`,
-   `/crear-llc-usa`, `/llc-para-no-residentes`), unas pocas al día. Lo hace el usuario.
-4. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que responden 308 a su destino.
-5. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Desplegar y comprobar el sitemap:** dos descargas separadas unos segundos deben devolver los mismos `lastmod`.
+   *(`app/sitemap.ts` ya está corregido y subido.)*
+2. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que responden 308 a su destino.
+3. **Mirar «Problemas de seguridad»** (la otra pestaña de «Seguridad y acciones manuales»): acciones manuales ya está
+   descartada, pero el aviso de páginas engañosas vivía en esa pestaña. Lo hace el usuario.
+4. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-6. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+5. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+6. **«Solicitar indexación» en GSC** para las páginas de dinero: portada, `/precios`, `/calculadora-fiscal`,
+   `/crear-llc-usa` y `/llc-para-no-residentes`, unas pocas al día. Lo hace el usuario.
 7. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
-8. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts:53`): no es una ruta, es la sección `#testimonios`.
-9. **Enlazar las 12 páginas pilar huérfanas** (mejora de enlazado, ya no se atribuye al grupo de 34).
+8. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts`, la ruta que no existe): no es una página, es la sección
+   `#testimonios` de la home, y por eso aparece en el grupo de 34.
+9. **Enlazar las 12 páginas pilar huérfanas** (mejora de enlazado interno).
 10. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
 11. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
 12. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.

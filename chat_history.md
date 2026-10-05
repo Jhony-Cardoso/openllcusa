@@ -2615,33 +2615,31 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
 
 ---
 ### 📅 Chat Session: 2026-10-05 23:15
-**Main objective:** Anular todo el trabajo de voz con Inworld a petición del usuario.
+**Main objective:** Aparcar la línea de voz con proveedores: se retomará más adelante, cuando el usuario lo diga.
 
 #### 👤 User Request:
-> «Borra y anula lo que estás haciendo de Inworld, me estoy poniendo nervioso...»
+> «La cuestión del agente de voz la retomaremos más adelante.» El usuario aclara que estábamos trabajando en otra cosa (Google Search Console) y que el teclado y la terminal le estaban haciendo saltar a iteraciones pasadas.
 
 #### 🤖 Agent Solution:
-- **Trabajo de voz con Inworld anulado.** No se sigue con la comparativa de proveedores ni con la Fase 1. Los tres
-  documentos del plan de voz (versión del 21-09 y versión del 22-09, en sus formatos `.md`, `.html` y `.pdf`) se han
-  sacado de `Downloads` y quedan en `C:/Users/recompra.es/Downloads/_voz_anulada/` por si hicieran falta; **no se ha
-  borrado nada de forma irreversible**.
+- **Línea de voz aparcada, no anulada.** No se sigue con la comparativa de proveedores ni con la Fase 1 hasta que el
+  usuario lo diga. Los tres documentos del plan de voz (versión del 21-09 y versión del 22-09, en `.md`, `.html` y
+  `.pdf`) se apartaron un momento y **se han devuelto a `C:/Users/recompra.es/Downloads/`**, donde siguen a mano.
 - **No hay nada que deshacer en el código ni gasto alguno comprometido.** El trabajo de voz de Inworld nunca pasó de la
   investigación y el documento: **no se ha escrito ni una línea en el repositorio**, no se ha llamado a la API de
   Inworld (nunca hubo clave), no se ha creado ninguna cuenta ni clave, y por tanto no hay ningún cargo posible. La
   "Fase 0" que sí está desplegada (voz de Zara con las voces del **navegador**, con la rama `mode: 'voice'` del prompt)
   no tiene relación con Inworld y es gratuita: se queda tal cual, salvo que el usuario diga lo contrario.
-- **Pendientes de voz retirados** del bloque de pendientes abiertos.
-- **Files created/modified:** `chat_history.md`. Los ficheros de plan movidos a `Downloads/_voz_anulada/`.
-- **Verificación pendiente (usuario):** confirmar si los documentos de `_voz_anulada/` se borran del todo y si la voz
-  del navegador (Fase 0) se mantiene.
+- **Pendientes de voz resumidos en una sola línea** del bloque abierto, para retomarlos cuando toque.
+- **Files created/modified:** `chat_history.md`. Los documentos del plan vuelven a `Downloads/`.
+- **Verificación pendiente (usuario):** decir cuándo retomamos la voz. Mientras tanto no se trabaja en ella.
 
 ## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:15)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
 > ellos por su número.
-> **Retirado el 05-10-2026:** toda la línea de voz con proveedores (Inworld/ElevenLabs/Cartesia/Deepgram) queda anulada
-> a petición del usuario. No figura en esta lista.
+> **Aparcado el 05-10-2026:** la línea de voz con proveedores (Inworld/ElevenLabs/Cartesia/Deepgram) se retoma más
+> adelante, cuando el usuario lo diga. Mientras tanto no se trabaja en ella.
 
 **Google Search Console**
 1. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que `/servicios/consultoria-legal`,
@@ -2685,5 +2683,6 @@ openllcusa.com/      ->  200                      canonical: https://openllcusa.
 18. **Tres ficheros modificados sin commitear que no son del asistente** (`components/chat/ChatWidget.tsx`,
     `components/chat/chat-widget.css`, `components/layout/Header.tsx`): mejoras del modo página de `/chat`. Pendiente
     de que el usuario diga si los revisamos.
-19. **Decidir qué se hace con los documentos movidos a** `C:/Users/recompra.es/Downloads/_voz_anulada/` (borrarlos del
-    todo o dejarlos guardados) y si la voz del navegador (Fase 0) se mantiene como está.
+19. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga. Lo que hay hecho: la Fase 0 desplegada (voz de
+    Zara con las voces del navegador, sin coste y sin relación con Inworld) y los dos documentos del plan en
+    `C:/Users/recompra.es/Downloads/`. Nada de proveedores por ahora.

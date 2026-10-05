@@ -2550,7 +2550,10 @@ chrome --headless=new --no-pdf-header-footer --print-to-pdf=Plan_Agente_Voz_Zara
 - **Auditoría de solo lectura**, sin modificar nada: se rastrearon las 66 URLs del sitemap de producción, se extrajeron todos sus enlaces internos y se probó cada destino con curl/siguiendo redirecciones. Los hallazgos se confirmaron además con el DOM ya hidratado (JavaScript), para no confundir enlaces ausentes con enlaces pintados en cliente.
 - **Dos URLs del sitemap devuelven 404:** `/guias` (está en `app/sitemap.ts:48` y **no existe** `app/guias/page.tsx`; solo hay `[country]/` y `us/`) y `/testimonios` (`app/sitemap.ts:53`), que no es una ruta sino la sección `#testimonios` de la home (`app/page.tsx:768`).
 - **El hub de guías que falta explica el grueso del problema.** `/guias/us` enlaza dos veces a `/guias` (`app/guias/us/page.tsx:185` y `:370`), así que hay enlaces rotos desde una página del sitemap. Y al no existir el hub, **20 de las 27 guías por país no tienen ningún enlace interno**: solo la home enlaza siete (`ar`, `co`, `es`, `mx`, `pe`, `py`, `us`).
-- **32 destinos internos sin un solo enlace entrante** (comprobado también con JavaScript): las 20 guías mencionadas y las páginas pilar `/crear-llc-usa`, `/llc-para-no-residentes`, `/llc-para-ecommerce`, `/costo-crear-llc`, `/abrir-cuenta-bancaria-usa`, `/llc-trading-con-cuentas-de-fondeo`, `/ein-sin-ssn`, `/crear-llc-desde-espana`, `/llc-texas`, `/boi-report`, `/proceso` y `/legal/changelog`. Encaja con el grupo «Descubierta: actualmente sin indexar (34)».
+- **32 destinos internos sin un solo enlace entrante** (comprobado también con JavaScript): las 20 guías mencionadas y las páginas pilar `/crear-llc-usa`, `/llc-para-no-residentes`, `/llc-para-ecommerce`, `/costo-crear-llc`, `/abrir-cuenta-bancaria-usa`, `/llc-trading-con-cuentas-de-fondeo`, `/ein-sin-ssn`, `/crear-llc-desde-espana`, `/llc-texas`, `/boi-report`, `/proceso` y `/legal/changelog`. En principio lo relacioné con el grupo «Descubierta: actualmente sin indexar (34)», pero **la lista real de ese
+  grupo (recibida el 05-10-2026) desmiente la relación**: no incluye ni una sola guía por país y la mayoría de sus
+  34 URLs sí están enlazadas desde la home. El enlazado interno sigue siendo una mejora pendiente, pero no es la
+  causa de ese grupo.
 - **`/admin/*` es rastreable e indexable:** las siete rutas responden con `robots: index, follow` y `robots.txt` no las bloquea. `/dashboard/*` sí va con `noindex`.
 - **Comprobado que está bien:** `robots.txt` correcto; `/chat` va `noindex` y **no** figura en el sitemap; las 66 URLs del sitemap responden 200 salvo las dos citadas; el 308 de `/servicios/form-5472-1120` es intencionado; el pie usa el enlace ofuscado de Cloudflare `/cdn-cgi/l/email-protection`, que un rastreador ve como 404 (candidato a engrosar el grupo de 404).
 - **Verificación de despliegue aprovechando la sesión:** se confirmó en producción que el arreglo de los enlaces de Zara está desplegado (cuatro enlaces `chat-link` en una respuesta real: Starter, Professional, Business y `/agendar`) y que el CSS del CTA lleva el `180px`.
@@ -2663,42 +2666,88 @@ openllcusa.com/favicon.ico -> 404  (no existe; se usan /icon.png y /apple-icon.p
 - **Files created/modified:** ninguno (solo lectura); `chat_history.md`.
 - **Verificación pendiente (usuario):** ninguna para este punto.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:25)
+---
+### 📅 Chat Session: 2026-10-05 23:30
+**Main objective:** Diagnosticar el grupo «Descubierta: actualmente sin indexar» (34 URLs) de Search Console.
+
+#### 👤 User Request:
+> El usuario aporta las cuatro capturas con las 34 URLs.
+
+#### 🤖 Agent Solution:
+- **La lista completa** (34): `/abrir-cuenta-bancaria-usa`, `/agendar`, los cinco `/blog/*` (cuenta bancaria, 5472,
+  argentina, llc-vs-sl, wyoming-vs-delaware), `/calculadora-fiscal`, `/contacto`, `/costo-crear-llc`,
+  `/crear-llc-desde-espana`, `/crear-llc-usa`, `/ein-sin-ssn`, `/faq`, `/faq-calculadora`, `/guia`,
+  `/guia-llc-extranjeros`, `/guias`, los cuatro `/legal/*`, `/llc-delaware`, `/llc-florida`, `/llc-new-mexico`,
+  `/llc-para-no-residentes`, `/llc-texas`, `/llc-trading-con-cuentas-de-fondeo`, `/llc-wyoming`, `/precios`,
+  `/proceso`, `/recursos`, `/testimonios` y `/zara`. **Todas con «último rastreo: N/D»**, es decir, Google las conoce
+  pero no ha rastreado ninguna.
+- **No hay bloqueo técnico.** Comprobado: Googlebot (escritorio y móvil), Bingbot, ChatGPT-User y curl reciben **200**
+  con el HTML completo, sin retos de Cloudflare ni `X-Robots-Tag`; el servidor responde en 0,25-0,55 s con las
+  páginas en caché; y las 34 están en el sitemap, con muchas enlazadas desde la home. El problema no es el
+  descubrimiento ni el acceso: es que **Google no las rastrea**, y en toda la propiedad solo dos URLs tienen fecha de
+  rastreo (el subdominio de Clerk y un favicon antiguo).
+- **Causa verificada y arreglable: el sitemap miente con las fechas.** `app/sitemap.ts` usa `lastModified: new Date()`
+  (líneas 39, 57, 70, 77 y 93), así que **declara que las 61 URLs principales se han modificado en el momento de cada
+  petición**. Comprobado descargando el sitemap dos veces con 3 segundos de diferencia: los sellos cambian
+  (21:30:22 → 21:30:26). Google solo usa `lastmod` si es fiable y coherente; cuando cambia en cada lectura lo
+  descarta, con lo que **enviamos 66 URLs sin ninguna señal de frescura** con la que priorizar su rastreo. Los cinco
+  posts del blog sí llevan fecha real (`new Date(post.date)`), que es el patrón correcto.
+- **Segundo factor, ya conocido:** el sitio se sirve igual en `openllcusa.com` y en `www.openllcusa.com` sin
+  redirección, y una búsqueda del dominio devuelve mezcladas URLs con www y sin www: dos copias de cada página que
+  retrasan la consolidación. El 301 pendiente del host con www va justo a esto.
+- **Corrección de la auditoría anterior:** el enlazado interno de las 12 páginas pilar sigue siendo una mejora, pero no
+  explica este grupo (las guías por país no están en él y la mayoría de estas 34 sí están enlazadas).
+- **Lo que solo puede mirar el usuario:** Search Console → «Seguridad y acciones manuales». Si el episodio de «páginas
+  engañosas» dejó una acción manual registrada, sería la explicación más directa de un rastreo casi nulo.
+
+#### 💻 Key Code:
+```ts
+// app/sitemap.ts (cinco sitios) — fecha que cambia en cada peticion
+lastModified: new Date(),          // mal: Google descarta lastmod si cambia siempre
+lastModified: new Date(post.date), // bien: los posts del blog ya lo hacen asi
+```
+
+- **Files created/modified:** ninguno (solo lectura); `chat_history.md`.
+- **Verificación pendiente (usuario):** mirar «Seguridad y acciones manuales» en GSC.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:30)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
 > ellos por su número.
-> **Aparcado el 05-10-2026:** la línea de voz con proveedores (Inworld/ElevenLabs/Cartesia/Deepgram) se retoma más
-> adelante, cuando el usuario lo diga. Mientras tanto no se trabaja en ella.
+> **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que `/servicios/consultoria-legal`,
-   `/servicios/inc`, `/servicios/mantenimiento` y `/servicios/llc` responden 308 a su destino.
-2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta,
-   código 301, con «Preserve query string» (tipo dinámico). No hay que tocar registros DNS; solo comprobar que el
-   registro `www` está en nube naranja. Avisar para comprobar el 301.
-3. **«Validar corrección» en GSC** para `/servicios/form-5472` (ya redirige, 308) y `/guias/us` (ya responde 200); son
-   datos obsoletos. Lo hace el usuario.
-4. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
-5. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts:53`).
-6. **Enlazar las páginas pilar huérfanas** (12 URLs, entre ellas `/crear-llc-usa`, `/llc-texas` y `/boi-report`).
-7. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
-8. **Revisar el enlace ofuscado de Cloudflare** `/cdn-cgi/l/email-protection` del pie.
-9. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-10. **Pegar la lista de «descubierta sin indexar» (34) y la de `noindex` (16).** El grupo de 404 y el de «rastreada sin
-    indexar» (2, ruido) ya están cerrados.
-11. **`favicon.ico` real** (detalle de acabado; hoy solo hay `/icon.png` y `/apple-icon.png`).
+1. **Arreglar `lastmod` del sitemap** (`app/sitemap.ts`, líneas 39, 57, 70, 77 y 93): cambiar `lastModified: new Date()`
+   por una fecha real y estable por URL (fecha de compilación o constante por página), como ya hacen los posts del
+   blog. Es la causa verificada de que Google ignore la frescura de las 61 URLs. *Pendiente de autorización.*
+2. **Mirar «Seguridad y acciones manuales» en GSC** (usuario): si el episodio de páginas engañosas dejó acción manual,
+   explicaría el rastreo casi nulo de la propiedad.
+3. **«Solicitar indexación» en GSC** para las páginas de dinero (portada, `/precios`, `/calculadora-fiscal`,
+   `/crear-llc-usa`, `/llc-para-no-residentes`), unas pocas al día. Lo hace el usuario.
+4. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que responden 308 a su destino.
+5. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+   tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
+6. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+7. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
+8. **Quitar `/testimonios` del sitemap** (`app/sitemap.ts:53`): no es una ruta, es la sección `#testimonios`.
+9. **Enlazar las 12 páginas pilar huérfanas** (mejora de enlazado, ya no se atribuye al grupo de 34).
+10. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
+11. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+12. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+13. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+14. **`favicon.ico` real** (acabado, menor).
 
 **Producto / decisiones de negocio**
-12. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-13. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-14. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+15. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+16. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+17. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-15. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-16. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-17. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-18. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-19. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+18. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+19. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+20. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+21. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+22. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-20. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+23. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

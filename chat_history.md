@@ -2954,7 +2954,39 @@ export const metadata: Metadata = {
 };
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:20)
+---
+### 📅 Chat Session: 2026-10-06 01:28
+**Main objective:** Sacar de los buscadores las páginas de utilidad: `/pago-exitoso`, `/test-analytics`, `/sign-in` y `/sign-up`.
+
+#### 👤 User Request:
+> «✅ Sí, adelante con tu propuesta: 1. noindex en `/pago-exitoso`, `/test-analytics`, `/sign-in` y `/sign-up`».
+
+#### 🤖 Agent Solution:
+- **Cuatro layouts nuevos** (no se toca ninguna página): `app/pago-exitoso/layout.tsx`, `app/sign-in/layout.tsx`,
+  `app/sign-up/layout.tsx` y `app/test-analytics/layout.tsx`. Las cuatro páginas son componentes de cliente y no pueden
+  exportar `metadata`, así que se les pone un layout hermano, el mismo patrón que ya usan `/agendar`, `/zara` y
+  `/calculadora-fiscal`. Los de `sign-in` y `sign-up` se colocan en el segmento (`app/sign-in/`), de modo que cubren
+  también las subrutas que Clerk genera por debajo.
+- **Qué se les pone:** título y descripción propios —hasta ahora heredaban los de la home— y `robots: { index: false,
+  follow: true }` en las tres páginas del recorrido del usuario (agradecimiento y acceso), y `{ index: false, follow:
+  false }` en la de pruebas internas. Se deja sin `canonical` a propósito: con `noindex` no aporta nada.
+- **Comprobado antes del cambio** en producción: las cuatro respondían `index, follow` y con el título de la home.
+- **Verificación:** las cuatro páginas quedan intactas (`git diff` sin cambios en cada `page.tsx`), los cuatro layouts
+  pasan `ts.transpileModule` y están en CRLF.
+- **Files created/modified:** `app/pago-exitoso/layout.tsx`, `app/sign-in/layout.tsx`, `app/sign-up/layout.tsx`,
+  `app/test-analytics/layout.tsx` (los cuatro nuevos), `chat_history.md`.
+- **Verificación pendiente:** tras el despliegue, que las cuatro sirvan `noindex` y su propio título.
+
+#### 💻 Key Code:
+```ts
+// app/sign-in/layout.tsx
+export const metadata: Metadata = {
+  title: 'Iniciar sesión',
+  robots: { index: false, follow: true },
+};
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:28)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2962,8 +2994,8 @@ export const metadata: Metadata = {
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **`noindex` en las páginas de utilidad:** `/pago-exitoso` (agradecimiento), `/test-analytics` (pruebas interno),
-   `/sign-in` y `/sign-up` (acceso). Hoy son indexables y heredan el título de la home. *Pendiente de autorización.*
+1. **Comprobar tras el despliegue** que `/pago-exitoso`, `/sign-in`, `/sign-up` y `/test-analytics` sirven `noindex` y su
+   propio título (yo).
 2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
 3. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.

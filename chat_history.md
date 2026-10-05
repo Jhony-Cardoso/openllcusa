@@ -2760,7 +2760,36 @@ lastModified: new Date(post.date), // los posts del blog, sin cambios
 - **Files created/modified:** `chat_history.md`.
 - **Verificación pendiente (usuario):** ninguna para este punto.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-05 23:56)
+---
+### 📅 Chat Session: 2026-10-06 00:00
+**Main objective:** Verificar en producción las cuatro redirecciones 308 y el arreglo del sitemap.
+
+#### 👤 User Request:
+> «Adelante con: 2. Desplegar y verificar las cuatro redirecciones 308.»
+
+#### 🤖 Agent Solution:
+- **Despliegue confirmado y verificado en producción.** Las cuatro rutas responden **308** con el destino correcto en
+  la cabecera `Location` y, al seguirlas, aterrizan en una página **200**:
+  `/servicios/consultoria-legal` → `/servicios/consultoria-fiscal`; `/servicios/inc` → `/servicios`;
+  `/servicios/mantenimiento` → `/servicios/reporte-anual`; `/servicios/llc` → `/crear-llc-usa`. Los cuatro destinos
+  responden 200.
+- **El arreglo del sitemap también está desplegado:** dos descargas separadas cuatro segundos devuelven ahora los
+  **mismos** sellos `lastmod` (y aparece el 2026-10-05 de la constante), donde antes cambiaban en cada petición.
+- **Con esto quedan cerrados** el grupo de 404 de Search Console (los cuatro servicios no construidos ya redirigen) y
+  la señal de frescura del sitemap. Los dos pendientes salen de la lista.
+- **Files created/modified:** `chat_history.md`.
+- **Verificación pendiente (usuario):** ninguna para estos dos puntos.
+
+#### 💻 Key Code:
+```
+308  /servicios/consultoria-legal  ->  /servicios/consultoria-fiscal
+308  /servicios/inc                ->  /servicios
+308  /servicios/mantenimiento      ->  /servicios/reporte-anual
+308  /servicios/llc                ->  /crear-llc-usa
+sitemap: lastmod estable entre dos descargas (2026-10-05)
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 00:00)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2768,35 +2797,32 @@ lastModified: new Date(post.date), // los posts del blog, sin cambios
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Desplegar y comprobar el sitemap:** dos descargas separadas unos segundos deben devolver los mismos `lastmod`.
-   *(`app/sitemap.ts` ya está corregido y subido.)*
-2. **Desplegar** las cuatro redirecciones nuevas de `next.config.ts` y comprobar que responden 308 a su destino.
-3. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
    tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-4. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
-5. **«Solicitar indexación» en GSC** para las páginas de dinero: portada, `/precios`, `/calculadora-fiscal`,
+2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+3. **«Solicitar indexación» en GSC** para las páginas de dinero: portada, `/precios`, `/calculadora-fiscal`,
    `/crear-llc-usa` y `/llc-para-no-residentes`, unas pocas al día. Lo hace el usuario.
-6. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
-7. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
-8. **Enlazar las 12 páginas pilar huérfanas** (mejora de enlazado interno).
-9. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
-10. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-11. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
-12. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-13. **`favicon.ico` real** (acabado, menor).
-14. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
+4. **Crear el hub `/guias`** (`app/guias/page.tsx`). *Pendiente de autorización.*
+5. **Quitar `/testimonios` del sitemap** (la ruta que no existe; es la sección `#testimonios` de la home).
+6. **Enlazar las 12 páginas pilar huérfanas** (mejora de enlazado interno).
+7. **`noindex` en `/admin/*`** (siete rutas indexables hoy).
+8. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+9. **`canonical` ausente** en `/servicios`, `/contacto`, `/zara`, `/agendar` y en las que quizá no deban indexarse.
+10. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
+11. **`favicon.ico` real** (acabado, menor).
+12. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
     arreglos del sitemap y del host con www.
 
 **Producto / decisiones de negocio**
-15. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-16. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-17. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+13. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+14. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+15. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-18. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-19. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-20. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-21. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-22. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+16. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+17. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+18. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+19. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+20. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-23. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+21. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

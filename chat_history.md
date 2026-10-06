@@ -3059,7 +3059,30 @@ git log -S "X-Robots-Tag" -> solo los cambios de esta sesion (el noindex no sali
      (1 salto, ruta y cadena de consulta conservadas; el dominio principal sigue en 200)
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:20)
+---
+### 📅 Chat Session: 2026-10-06 14:23
+**Main objective:** Revisar el enlace del correo ofuscado por Cloudflare en el pie.
+
+#### 👤 User Request:
+> «El punto que te muestro a continuación, ¿es tuyo o mío?: 3. Revisar el enlace ofuscado de Cloudflare del pie
+> (`/cdn-cgi/l/email-protection`).»
+
+#### 🤖 Agent Solution:
+- **Es revisión mía, y queda cerrada sin cambios.** Medido en producción: el correo del pie está **completamente
+  ofuscado** por Cloudflare (cero `mailto:` limpios en el HTML y un enlace
+  `/cdn-cgi/l/email-protection#a6cf…`), ese enlace responde **404**, y **Googlebot recibe exactamente el mismo enlace
+  ofuscado** (1 ofuscado, 0 limpio). No está en el sitemap ni en `robots.txt`.
+- **Pero no es un problema vivo:** esa URL **no aparece en el grupo de 404 de Search Console** (las seis eran rutas de
+  `/servicios/*`), así que Google no la está reportando. Además el repositorio no puede evitarlo: la ofuscación la
+  inyecta Cloudflare en el borde, no el código.
+- **Recomendación: dejarlo como está.** Desactivarlo no aportaría nada medible y a cambio expondría el correo a los
+  rastreadores de spam. Si algún día se quisiera eliminar del todo, es una casilla en Cloudflare
+  (**Scrape Shield → Email Address Obfuscation → OFF**), sin tocar el repositorio; el precio es ese spam y que, sin
+  JavaScript, el enlace del correo deja de funcionar (hoy lo reconstruye el script de Cloudflare al cargar).
+- **Files created/modified:** ninguno (solo comprobaciones); `chat_history.md`.
+- **Verificación pendiente (usuario):** ninguna.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:23)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -3071,21 +3094,20 @@ git log -S "X-Robots-Tag" -> solo los cambios de esta sesion (el noindex no sali
    `/servicios/form-5472` y `/guias/us`. Lo hace el usuario.
 2. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`. Unas pocas al día, lo hace el usuario.
-3. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-4. **`favicon.ico` real** (acabado, menor).
-5. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas**: con el sitemap corregido, el hub creado, los
+3. **`favicon.ico` real** (acabado, menor).
+4. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas**: con el sitemap corregido, el hub creado, los
    pilares enlazados y el `www` redirigido, deberían empezar a moverse los grupos.
 
 **Producto / decisiones de negocio**
-6. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-7. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-8. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+5. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+6. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+7. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-9. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-10. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-11. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-12. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-13. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+8. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+9. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+10. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+11. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+12. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-14. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+13. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

@@ -3026,7 +3026,40 @@ export const metadata: Metadata = {
 git log -S "X-Robots-Tag" -> solo los cambios de esta sesion (el noindex no salia del repo)
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 13:44)
+---
+### 📅 Chat Session: 2026-10-06 14:20
+**Main objective:** Verificar la redirección del host con `www` que acaba de crear el usuario en Cloudflare.
+
+#### 👤 User Request:
+> «✅ Ya está implementada la regla.» (Regla de redirección creada en Cloudflare con «Patrón comodín»,
+> `https://www.*` → `https://${1}`, código 301 y cadena de consulta conservada.)
+
+#### 🤖 Agent Solution:
+- **Regla verificada de punta a punta, y hace exactamente lo que buscábamos:**
+  - `https://www.openllcusa.com/` → **301** → `https://openllcusa.com/` → 200 en **un solo salto**.
+  - `https://www.openllcusa.com/precios` → 301 → `https://openllcusa.com/precios` → 200.
+  - `https://www.openllcusa.com/blog/formulario-5472-llc` → 301 → la misma ruta en el dominio principal → 200:
+    **conserva la ruta**.
+  - `https://www.openllcusa.com/guias/us?ref=prueba&x=1` → 301 → el mismo destino **con los parámetros intactos**,
+    así que «Preserve query string» funciona.
+  - `http://www.openllcusa.com/precios` → 301 a `https://www…` (Always Use HTTPS) y luego 301 al dominio principal:
+    dos saltos, correcto y sin bucles.
+  - **El dominio principal sigue intacto:** `https://openllcusa.com/` y `/precios` responden 200 sin redirección, así
+    que no hay bucle.
+- **Qué arregla de cara a Search Console:** consolida las dos copias de cada página. Se llevará por delante el grupo de
+  URLs con `www` que aparecía entre las 16 excluidas por `noindex` (nueve) y la URL de favicon con `www` que estaba
+  entre las «rastreadas sin indexar».
+- **Files created/modified:** ninguno (solo comprobaciones); `chat_history.md`.
+- **Verificación pendiente (usuario):** ninguna. En GSC no hay que hacer nada por esta regla: los cambios se reflejan
+  cuando Google vuelva a rastrear.
+
+#### 💻 Key Code:
+```
+301  https://www.openllcusa.com/<ruta>?<query>  ->  https://openllcusa.com/<ruta>?<query>
+     (1 salto, ruta y cadena de consulta conservadas; el dominio principal sigue en 200)
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:20)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -3034,27 +3067,25 @@ git log -S "X-Robots-Tag" -> solo los cambios de esta sesion (el noindex no sali
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **«Validar corrección» en el grupo de `noindex`** (las 16 ya no llevan la etiqueta) y también en las filas de
+1. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
    `/servicios/form-5472` y `/guias/us`. Lo hace el usuario.
-2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
-   tipo dinámico con `http.request.uri.path`, «Preserve query string»). Se lleva por delante 9 de esas 16 URLs.
-3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
-   `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`. Lo hace el usuario.
-4. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-5. **`favicon.ico` real** (acabado, menor).
-6. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas**: con el sitemap corregido, el hub creado, los
+2. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+   `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`. Unas pocas al día, lo hace el usuario.
+3. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
+4. **`favicon.ico` real** (acabado, menor).
+5. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas**: con el sitemap corregido, el hub creado, los
    pilares enlazados y el `www` redirigido, deberían empezar a moverse los grupos.
 
 **Producto / decisiones de negocio**
-7. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-8. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-9. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+6. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+7. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+8. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-10. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-11. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-12. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-13. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-14. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+9. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+10. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+11. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+12. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+13. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-15. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+14. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

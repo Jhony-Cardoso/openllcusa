@@ -47,8 +47,51 @@ export function isSpeechlessBrowser(): { es: boolean; motivo: string } {
   return { es: false, motivo: '' }
 }
 
+// ── Memoria de los navegadores que no pueden llegar al servicio de voz ──
+// Detectar la marca del navegador no es fiable: Vivaldi, por ejemplo, se presenta como Chrome a
+// secas (comprobado el 07-10-2026: "… Chrome/152.0.0.0 Safari/537.36"), así que el micro se
+// ofrecía y solo fallaba al intentarlo. Por eso, cuando un intento falla porque no se puede
+// conectar con el servicio de voz, se apunta y se deja de ofrecer durante un tiempo: mejor no
+// ofrecer un botón que no puede funcionar. Un fallo de permiso o de micrófono NO se apunta,
+// porque eso sí tiene arreglo (dar permiso o conectar el micrófono).
+const CLAVE_SIN_SERVICIO = 'zara_voz_sin_servicio'
+const DIAS_SIN_SERVICIO = 30
+
+export function servicioVozDescartado(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    const guardado = window.localStorage.getItem(CLAVE_SIN_SERVICIO)
+    if (!guardado) return false
+    const hasta = Number(guardado)
+    if (!Number.isFinite(hasta) || hasta <= 0) return false
+    if (Date.now() > hasta) {
+      window.localStorage.removeItem(CLAVE_SIN_SERVICIO)
+      return false
+    }
+    return true
+  } catch {
+    // Navegación privada o almacenamiento bloqueado: sin memoria, pero sin romper nada.
+    return false
+  }
+}
+
+export function marcarServicioVozDescartado() {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(CLAVE_SIN_SERVICIO, String(Date.now() + DIAS_SIN_SERVICIO * 86400000))
+    logDictado(`el servicio de voz no responde: no volveré a ofrecer el micro en ${DIAS_SIN_SERVICIO} días`)
+  } catch {
+    /* sin almacenamiento disponible: la memoria solo vale para esta visita */
+  }
+}
+
+// ¿Este error significa «este navegador no puede llegar al servicio de voz»?
+export function esFalloDeServicioVoz(codigo: string): boolean {
+  return codigo === 'network' || codigo === 'service-not-allowed'
+}
+
 export function dictationAvailable(): boolean {
-  return speechSupported() && !isSpeechlessBrowser().es
+  return speechSupported() && !isSpeechlessBrowser().es && !servicioVozDescartado()
 }
 
 export function dictationNote(): string {
@@ -56,6 +99,9 @@ export function dictationNote(): string {
   if (es) return `${motivo} Prueba con Chrome, Edge o Safari, o escribe tu pregunta.`
   if (!speechSupported()) {
     return 'Este navegador no permite dictado por voz. Prueba con Chrome, Edge o Safari.'
+  }
+  if (servicioVozDescartado()) {
+    return 'El dictado por voz no está disponible en este navegador. Prueba con Chrome, Edge o Safari, o escribe tu pregunta.'
   }
   return ''
 }

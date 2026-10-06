@@ -15,6 +15,8 @@ import {
   dictationNote,
   describeRecognitionError,
   logDictado,
+  esFalloDeServicioVoz,
+  marcarServicioVozDescartado,
 } from '@/lib/voz/dictado'
 import './chat-widget.css'
 
@@ -421,6 +423,12 @@ export default function ChatWidget() {
       logDictado('error del dictado', codigo)
       dictadoActivoRef.current = false
       setDictando(false)
+      // Si el navegador no puede llegar al servicio de voz —el caso de Vivaldi, que se presenta
+      // como Chrome— retiramos el micro: no se ofrece un botón que no puede funcionar.
+      if (esFalloDeServicioVoz(codigo)) {
+        marcarServicioVozDescartado()
+        setMicroDisponible(false)
+      }
       setAvisoVoz(mensaje || null)
       trackGAEvent('chat_dictado', { accion: 'error', codigo })
     }

@@ -15,6 +15,7 @@ import {
   Send,
   Building
 } from 'lucide-react'
+import { esFalloDeServicioVoz, marcarServicioVozDescartado, servicioVozDescartado } from '@/lib/voz/dictado'
 import {
   SignInButton,
   SignUpButton,
@@ -94,7 +95,9 @@ function isSpeechlessBrowser(): { es: boolean; motivo: string } {
 }
 
 function dictationAvailable(): boolean {
-  return speechSupported() && !isSpeechlessBrowser().es
+  // `servicioVozDescartado()` recuerda los navegadores que ya fallaron al conectar con el
+  // servicio de voz (Vivaldi se presenta como Chrome, así que la marca no basta).
+  return speechSupported() && !isSpeechlessBrowser().es && !servicioVozDescartado()
 }
 
 function dictationNote(): string {
@@ -102,6 +105,9 @@ function dictationNote(): string {
   const { es, motivo } = isSpeechlessBrowser()
   if (es) return `${motivo} Prueba con Chrome, Edge o Safari, o escribe en el chat de texto.`
   if (!speechSupported()) return 'Este navegador no permite dictado por voz. Prueba con Chrome, Edge o Safari.'
+  if (servicioVozDescartado()) {
+    return 'El dictado por voz no está disponible en este navegador. Prueba con Chrome, Edge o Safari, o escribe en el chat de texto.'
+  }
   return ''
 }
 
@@ -385,6 +391,12 @@ function ZaraModal({
       const explicacion = describeRecognitionError(code)
       if (!explicacion) return
       activeRef.current = false
+      // Navegador sin servicio de voz: lo apuntamos para no volver a ofrecer el micro, y la
+      // tarjeta muestra el motivo en lugar de dejar un botón que solo puede fallar.
+      if (esFalloDeServicioVoz(code)) {
+        marcarServicioVozDescartado()
+        setSupported(false)
+      }
       setStatus(code === 'not-allowed' || code === 'service-not-allowed' ? 'permission_denied' : 'error')
       setErrorMsg(explicacion)
     }

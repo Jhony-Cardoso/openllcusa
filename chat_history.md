@@ -3195,7 +3195,45 @@ pie del chat en produccion:  input  ->  button.chat-footer__mic  ->  button.chat
 al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dictado not-allowed
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 23:53)
+---
+### 📅 Chat Session: 2026-10-07 00:53
+**Main objective:** Que el navegador aprenda del fallo de voz en lugar de fiarse de su marca.
+
+#### 👤 User Request:
+> En Vivaldi aparece: «El dictado de este navegador no ha podido conectar con su servicio de voz. Prueba con Chrome,
+> Edge o Safari.» Aporta dos capturas: el aviso en el pie del chat con el micro todavía visible, y el identificador de
+> su Vivaldi, que es `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
+> Chrome/152.0.0.0 Safari/537.36` — **sin la palabra Vivaldi**. Autoriza el aprendizaje del fallo en el chat
+> (`lib/voz/dictado.ts` y `ChatWidget.tsx`) y también en la ventana de voz del menú (dos ficheros más).
+
+#### 🤖 Agent Solution:
+- **Causa confirmada con dos pruebas propias:** el identificador de su Vivaldi no lleva la marca, así que ninguna
+  detección por nombre puede funcionar (Vivaldi se presenta como Chrome a propósito, para que los sitios que lo
+  bloquean no lo bloqueen); y simulando un identificador con `Vivaldi/6.7.3329.41` el botón **sí** desaparece, o sea
+  que el código hacía lo correcto cuando el navegador dice su nombre. Queda descartado adivinar la marca.
+- **Commit `6cf6e3d`.** `lib/voz/dictado.ts` estrena una memoria del fallo en `localStorage`
+  (`zara_voz_sin_servicio`, caducidad de 30 días) con tres funciones nuevas: `servicioVozDescartado()`,
+  `marcarServicioVozDescartado()` y `esFalloDeServicioVoz()`. Se apunta **solo** cuando el error es de servicio
+  (`network` o `service-not-allowed`); un fallo de permiso o de micrófono no se apunta, porque eso se arregla dando
+  permiso o conectando el dispositivo. `dictationAvailable()` y `dictationNote()` ya lo tienen en cuenta.
+- **Los tres sitios donde se ofrece voz aprenden:** el chat retira el botón en la misma visita y deja el aviso
+  (`ChatWidget.tsx`); la tarjeta de la ventana del menú y la de `/zara` muestran el motivo en lugar de un botón que
+  solo puede fallar (`Header.tsx` y `app/zara/page.tsx`). La memoria caduca sola, así que si el navegador se arregla
+  o el usuario cambia de red vuelve a ofrecerse. En Chrome, Edge y Safari nada cambia.
+- **Verificado en producción, y no de booleano sino de verdad:**
+  - El código nuevo está en el bundle: `zara_voz_sin_servicio` aparece en el chunk `app/layout-616941972882efe5.js`
+    (comprobado mirando la **portada**, con cache-buster, para no repetir el falso negativo de la ruta `/chat`).
+  - Sembrando la memoria con caducidad futura, el pie del chat queda en campo + enviar, **sin micro**, y el chat
+    sigue funcionando.
+  - Sembrándola caducada, el micro **vuelve** y la clave se limpia sola (`localStorage` sin la clave tras cargar).
+  - En `/zara`, con la memoria puesta, se lee «El dictado por voz no está disponible en este navegador…» y al pulsar
+    «Iniciar asesoría por voz» aparece ese motivo en lugar de abrir el micro.
+- **Files created/modified:** `lib/voz/dictado.ts`, `components/chat/ChatWidget.tsx`, `components/layout/Header.tsx`,
+  `app/zara/page.tsx` (commit `6cf6e3d`), `chat_history.md`.
+- **Verificación pendiente:** que el usuario pruebe en su Vivaldi y confirme que ya no se le ofrece el micro (puede
+  tardar una visita, porque la memoria se escribe al fallar) y que en Edge todo sigue igual.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 00:53)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -3204,29 +3242,31 @@ al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dic
 > es otra cosa: usa las APIs del navegador y no cuesta nada.
 
 **Chat de Zara**
-1. **Probar el dictado real con micrófono** (usuario): pulsar el micro, hablar y comprobar que el texto se escribe en
-   el campo, que el botón se pone rojo mientras escucha y que después se puede enviar.
-2. **Decidir si el micro va también en otros sitios:** hoy solo está en la caja del chat de IA; los formularios de
-   nombre, email y teléfono del propio widget no lo tienen. *Propuesta pendiente de valorar.*
+1. **Probar en Vivaldi** (usuario): al pulsar el micro una vez, ese navegador queda apuntado y el botón ya no se
+   ofrece en las visitas siguientes; el aviso explica que hay que dictar con Chrome, Edge o Safari.
+2. **Dictado real con Chrome** (usuario): en Edge ya funciona.
+3. **Decidir si el micro va también en los formularios del propio widget** (nombre, email, teléfono) o solo en la caja
+   del chat — hoy solo está en el chat.
 
 **Google Search Console**
-3. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
+4. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
    `/servicios/form-5472` y `/guias/us`. Lo hace el usuario.
-4. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+5. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`. Unas pocas al día, lo hace el usuario.
-5. **`favicon.ico` real** (acabado, menor).
-6. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas.**
+6. **`favicon.ico` real** (acabado, menor).
+7. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas.**
 
 **Producto / decisiones de negocio**
-7. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-8. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-9. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+8. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+9. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+10. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-10. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-11. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-12. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-13. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-14. **Unificar los ayudantes de voz:** cuando se toque `Header.tsx`, hacer que use `lib/voz/dictado.ts` en lugar de su
-    copia propia.
-15. **Voz de Zara con proveedores — aparcada:** se retoma cuando el usuario lo diga.
+11. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+12. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+13. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+14. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+15. **Unificar los ayudantes de voz (queda menos):** la memoria del fallo ya es compartida por los tres sitios, pero
+    `Header.tsx` y `app/zara/page.tsx` conservan su copia de `speechSupported`, `isSpeechlessBrowser`,
+    `describeRecognitionError` y `createRecognition`. Sustituirlas por las del módulo es cosmético y sin prisa.
+16. **Voz de Zara con proveedores — aparcada:** se retoma cuando el usuario lo diga.

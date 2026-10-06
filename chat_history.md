@@ -2989,7 +2989,44 @@ export const metadata: Metadata = {
 };
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 01:28)
+---
+### 📅 Chat Session: 2026-10-06 13:44
+**Main objective:** Revisar las 16 URLs del grupo «Excluida por una etiqueta noindex» de Search Console.
+
+#### 👤 User Request:
+> El usuario aporta las dos capturas con las 16 URLs de ese grupo.
+
+#### 🤖 Agent Solution:
+- **Conclusión: el grupo entero es residuo de rastreos antiguos, no un problema vivo.** Comprobadas las 16 una a una
+  contra producción: **ninguna sirve hoy `noindex`**, todas responden **200** con `index, follow`. Las fechas de último
+  rastreo van del 23 de abril al 27 de agosto de 2026.
+- **La lista, tal cual llega:** la portada (`http://openllcusa.com/`, rastreada el 27-08), `/guias/pe`, `/quiz`, `/blog`,
+  `/guias/mx`, `/llc-para-ecommerce`, `/guias/ar`, `/guias/py`, y nueve URLs del host con `www`
+  (`/legal/condiciones-generales`, `/servicios/agente-registrado`, `/servicios/reporte-anual`,
+  `/servicios/formacion-llc`, `/servicios/form-5472-1120`, `/servicios/impuestos/declaracion-anual-llc`, `/faq` y el
+  paso `/servicios/agente-registrado/onboarding`).
+- **De dónde venía ese `noindex`:** no del código que tenemos. Buscado en **todo el historial de git**
+  (`git log -S "X-Robots-Tag"` y `-S "noindex"`), las únicas apariciones son los cambios de esta misma sesión; el
+  layout raíz declara `index: true, follow: true` (`app/layout.tsx:41-44`) y nunca ha estado a `false`. Por tanto la
+  etiqueta salía de la capa de despliegue de entonces (fase previa a publicar o entorno de staging), no del
+  repositorio.
+- **Consecuencia para todo el diagnóstico:** el sitio estuvo fuera del índice hasta finales de agosto, y eso explica
+  que Google apenas lo haya rastreado (solo dos URLs con fecha de rastreo en toda la propiedad) y que el resto de
+  grupos estén llenos de datos antiguos. Lo que toca ahora no es arreglar código aquí, sino conseguir que vuelva a
+  rastrear: validar la corrección en GSC, el 301 del host con `www` (que se llevará por delante nueve de estas
+  dieciséis) y pedir indexación de las importantes.
+- **Detalle aislado:** `https://www.openllcusa.com/servicios/agente-registrado/onboarding` responde **404** (ese patrón
+  de ruta no existe: el onboarding vive en `/paquetes/<slug>/onboarding`), así que Google la descartará sola.
+- **Files created/modified:** ninguno (solo lectura y comprobaciones); `chat_history.md`.
+- **Verificación pendiente (usuario):** pulsar «Validar corrección» en ese grupo en GSC.
+
+#### 💻 Key Code:
+```
+16 URL del grupo noindex -> comprobadas hoy: 200 con index, follow (0 con noindex)
+git log -S "X-Robots-Tag" -> solo los cambios de esta sesion (el noindex no salia del repo)
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 13:44)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -2997,27 +3034,27 @@ export const metadata: Metadata = {
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
 
 **Google Search Console**
-1. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
-   tipo dinámico con `http.request.uri.path`, «Preserve query string»). No hay que tocar registros DNS.
-2. **«Validar corrección» en GSC** para `/servicios/form-5472` (308) y `/guias/us` (200): datos obsoletos.
+1. **«Validar corrección» en el grupo de `noindex`** (las 16 ya no llevan la etiqueta) y también en las filas de
+   `/servicios/form-5472` y `/guias/us`. Lo hace el usuario.
+2. **Crear la regla de redirección en Cloudflare** para `www.openllcusa.com` → `https://openllcusa.com` + ruta (301,
+   tipo dinámico con `http.request.uri.path`, «Preserve query string»). Se lleva por delante 9 de esas 16 URLs.
 3. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
-   `/llc-para-no-residentes` y `/guias`. Lo hace el usuario.
+   `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`. Lo hace el usuario.
 4. **Revisar el enlace ofuscado de Cloudflare** del pie (`/cdn-cgi/l/email-protection`).
-5. **Pegar la lista de `noindex` (16)** para confirmar que todas son intencionadas.
-6. **`favicon.ico` real** (acabado, menor).
-7. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas** para ver si los grupos se mueven tras los
-   arreglos del sitemap, del hub y del host con www.
+5. **`favicon.ico` real** (acabado, menor).
+6. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas**: con el sitemap corregido, el hub creado, los
+   pilares enlazados y el `www` redirigido, deberían empezar a moverse los grupos.
 
 **Producto / decisiones de negocio**
-8. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-9. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-10. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+7. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+8. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+9. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-11. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-12. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-13. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-14. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-15. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
+10. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+11. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+12. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+13. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+14. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
     `chat-widget.css`, `Header.tsx`).
-16. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+15. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.

@@ -3082,32 +3082,87 @@ git log -S "X-Robots-Tag" -> solo los cambios de esta sesion (el noindex no sali
 - **Files created/modified:** ninguno (solo comprobaciones); `chat_history.md`.
 - **Verificación pendiente (usuario):** ninguna.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:23)
+---
+### 📅 Chat Session: 2026-10-06 14:42
+**Main objective:** Añadir dictado por voz a la caja de escritura del chat de Zara.
+
+#### 👤 User Request:
+> «En la caja de escritura […] solamente se puede escribir texto. La idea es que el usuario también pueda emplear su
+> voz. […] implementar por defecto un micrófono. En el caso de que el usuario decida utilizar texto escrito, al
+> escribir apenas un solo carácter ya se activaría el botón de envío.» Y eligió la opción **A**: dictas, el texto queda
+> escrito en la caja y el usuario pulsa enviar.
+
+#### 🤖 Agent Solution:
+- **Comprobado antes de tocar nada:** el botón de envío **ya funciona como pedía** —está siempre visible, atenuado al
+  40 % sin texto y se activa con el primer carácter (verificado en producción escribiendo una sola letra); un espacio
+  suelto no lo activa. No había nada que cambiar ahí.
+- **Módulo compartido nuevo: `lib/voz/dictado.ts`** (LF, 100 líneas). Reúne el tipo del reconocimiento, la detección de
+  navegadores que no pueden dictar (Firefox, y Vivaldi o Brave por ser Chromium sin el servicio de voz de Google), los
+  mensajes de error en español y `createRecognition()` configurado en `es-ES` con resultados provisionales. Nace para
+  que el widget y el modal de Fase 0 compartan una sola fuente de verdad; **de momento solo lo usa el widget**, porque
+  `Header.tsx` tiene cambios sin commitear ajenos y no se toca.
+- **`components/chat/ChatWidget.tsx`:** botón de micrófono a la izquierda del de enviar, con tres estados (inactivo,
+  escuchando en rojo pulsante y oculto si el navegador no sabe dictar), texto provisional en el campo mientras se
+  habla, placeholder «Escuchando… habla ahora», aviso visible encima del pie cuando algo falla (permiso denegado, sin
+  micrófono, sin servicio de voz) y cierre del micro al enviar o al desmontar. El reconocimiento se reabre desde
+  `onend` porque Chrome lo corta en cada pausa.
+- **`components/chat/chat-widget.css`:** 62 líneas de estilos para el botón, el latido mientras escucha y el aviso.
+- **Verificación:** sintaxis OK con `ts.transpileModule` en los tres ficheros y finales de línea preservados
+  (ChatWidget en LF, el CSS en CRLF, el módulo nuevo en LF). Falta la prueba en navegador: el dictado real necesita
+  micrófono y lo probará el usuario; tras el despliegue comprobaré que el botón aparece y que el camino de error
+  muestra su mensaje.
+- **BLOQUEO PENDIENTE DE DECISIÓN:** los cambios no están commiteados. `ChatWidget.tsx` y `chat-widget.css` son dos de
+  los tres ficheros que ya tenían cambios ajenos sin commitear (el otro es `Header.tsx`), y en `ChatWidget.tsx` los
+  hunks de ambos están **mezclados** (imports, estado y efectos), así que no se pueden separar por hunks; en el CSS sí
+  están limpios. Opciones: **(a)** commit conjunto de los tres ficheros, con un mensaje que describa las dos partes
+  *(recomendada)*; **(b)** dejar el trabajo en el árbol de trabajo para que lo suba el usuario.
+- **Files created/modified:** `lib/voz/dictado.ts` (nuevo), `components/chat/ChatWidget.tsx`,
+  `components/chat/chat-widget.css` (los tres **sin commitear**), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// components/chat/ChatWidget.tsx — el dictado escribe en la caja; el envío sigue siendo del usuario
+rec.onresult = (evento: any) => {
+  /* el texto confirmado se acumula y el provisional se ve en el campo */
+}
+rec.onend = () => {
+  if (dictadoActivoRef.current) { try { rec.start(); return } catch {} }  // Chrome corta en cada pausa
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:42)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
 > ellos por su número.
-> **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga.
+> **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga. El dictado del chat
+> es otra cosa: usa las APIs del navegador y no cuesta nada.
+
+**Chat de Zara**
+1. **Decidir el commit del dictado:** los tres ficheros del micro (`ChatWidget.tsx`, `chat-widget.css`,
+   `lib/voz/dictado.ts`) están sin subir porque los dos primeros comparten hunks con cambios ajenos pendientes.
+   *(a) commit conjunto de los tres ficheros con el micro —recomendado— o (b) dejarlo para el usuario.*
+2. **Verificar el dictado tras el despliegue:** que el botón aparece en el pie del chat, que al pulsarlo pide permiso
+   y que cualquier fallo muestra su aviso en español; el dictado real lo prueba el usuario con su micrófono.
 
 **Google Search Console**
-1. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
+3. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
    `/servicios/form-5472` y `/guias/us`. Lo hace el usuario.
-2. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+4. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`. Unas pocas al día, lo hace el usuario.
-3. **`favicon.ico` real** (acabado, menor).
-4. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas**: con el sitemap corregido, el hub creado, los
-   pilares enlazados y el `www` redirigido, deberían empezar a moverse los grupos.
+5. **`favicon.ico` real** (acabado, menor).
+6. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas.**
 
 **Producto / decisiones de negocio**
-5. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-6. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-7. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+7. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
+8. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
+9. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
 
 **Técnico**
-8. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
-9. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-10. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-11. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-12. **Decidir qué hacemos con los tres ficheros modificados que no son del asistente** (`ChatWidget.tsx`,
-    `chat-widget.css`, `Header.tsx`).
-13. **Voz de Zara — aparcada:** se retoma cuando el usuario lo diga.
+10. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+11. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+12. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
+13. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+14. **Unificar los ayudantes de voz:** cuando se resuelvan los cambios ajenos de `Header.tsx`, hacer que use
+    `lib/voz/dictado.ts` en lugar de su copia propia.
+15. **Voz de Zara con proveedores — aparcada:** se retoma cuando el usuario lo diga.

@@ -3130,7 +3130,34 @@ rec.onend = () => {
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:42)
+---
+### 📅 Chat Session: 2026-10-06 14:58
+**Main objective:** Commit conjunto del dictado por voz y de los cambios que ya estaban en el árbol.
+
+#### 👤 User Request:
+> «✅ Opción (a) Commit conjunto de los tres ficheros (los ajenos + el micro) con un mensaje que describa las dos
+> partes.»
+
+#### 🤖 Agent Solution:
+- **Commit `41e752d`** con las dos partes descritas por separado en el mensaje: (1) el modo página de `/chat` y el menú
+  móvil que ya estaban en el árbol de trabajo —detección de ruta con `usePathname`, ventana a `z-index: 900` y
+  ocultación mientras el menú móvil está abierto, con la clase que añade `Header`— y (2) el dictado por voz nuevo
+  (`lib/voz/dictado.ts`, el botón de micro y sus estilos).
+- **Inventario antes de commitear:** exactamente tres ficheros modificados y uno nuevo, sin restos de depuración
+  (cero `console.log`; el único `console.info` va dentro de `logDictado`, con su prefijo). El árbol de trabajo queda
+  **limpio** por primera vez en varias sesiones.
+- **Verificación pendiente, y bloqueada por el despliegue:** durante ocho minutos, cinco comprobaciones sobre el CSS
+  servido en producción no encuentran las clases del micro (`chat-footer__mic`, `chat-footer__aviso`, `chatMicPulso`),
+  así que producción sigue sirviendo la versión anterior. El commit está en GitHub (`local == remoto == 41e752d`). Hay
+  que revisar en Dokploy si la construcción sigue en curso o ha fallado (el `AGENTS.md` documenta OOM del build en el
+  VPS de 4 GB).
+- **También cayó el navegador controlado** a mitad de la comprobación (conexión CDP perdida), así que la prueba del
+  botón en pantalla se hará con HTTP y, cuando el despliegue llegue, con una sesión nueva.
+- **Files created/modified:** `components/chat/ChatWidget.tsx`, `components/chat/chat-widget.css`,
+  `components/layout/Header.tsx`, `lib/voz/dictado.ts` (commit `41e752d`), `chat_history.md`.
+- **Verificación pendiente:** que el despliegue llegue y, después, el botón y su camino de error.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:58)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -3139,11 +3166,11 @@ rec.onend = () => {
 > es otra cosa: usa las APIs del navegador y no cuesta nada.
 
 **Chat de Zara**
-1. **Decidir el commit del dictado:** los tres ficheros del micro (`ChatWidget.tsx`, `chat-widget.css`,
-   `lib/voz/dictado.ts`) están sin subir porque los dos primeros comparten hunks con cambios ajenos pendientes.
-   *(a) commit conjunto de los tres ficheros con el micro —recomendado— o (b) dejarlo para el usuario.*
-2. **Verificar el dictado tras el despliegue:** que el botón aparece en el pie del chat, que al pulsarlo pide permiso
-   y que cualquier fallo muestra su aviso en español; el dictado real lo prueba el usuario con su micrófono.
+1. **Revisar el despliegue de `41e752d` en Dokploy**: ocho minutos después del push, producción seguía sirviendo la
+   versión anterior (las clases del micro no aparecen en el CSS). Comprobar si el build sigue en curso o ha fallado.
+   Lo mira el usuario; el asistente ayuda con el error si lo hay.
+2. **Verificar el micro cuando esté desplegado:** que el botón aparece en el pie del chat y que un fallo muestra su
+   aviso en español (asistente), y probar el dictado real con micrófono (usuario).
 
 **Google Search Console**
 3. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
@@ -3163,6 +3190,6 @@ rec.onend = () => {
 11. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
 12. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
 13. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
-14. **Unificar los ayudantes de voz:** cuando se resuelvan los cambios ajenos de `Header.tsx`, hacer que use
-    `lib/voz/dictado.ts` en lugar de su copia propia.
+14. **Unificar los ayudantes de voz:** cuando se toque `Header.tsx`, hacer que use `lib/voz/dictado.ts` en lugar de su
+    copia propia.
 15. **Voz de Zara con proveedores — aparcada:** se retoma cuando el usuario lo diga.

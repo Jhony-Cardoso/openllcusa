@@ -255,6 +255,15 @@ body.chat-modo-pagina .chat-window {
   width: min(100% - 32px, 880px);
   height: auto;
   max-height: none;
+  /* Por debajo de la cabecera (.site-header, z-index 1000): así el menú hamburguesa en móvil
+     queda por encima del panel y sus enlaces se pueden pulsar para navegar. */
+  z-index: 900;
+}
+
+/* Mientras el menú móvil está abierto, el panel de chat desaparece para que no tape los enlaces.
+   Es una salvaguarda además del z-index: en móvil el menú debe poder usarse siempre. */
+body.menu-movil-abierto .chat-window {
+  display: none;
 }
 
 .chat-pagina {
@@ -832,6 +841,59 @@ body.chat-modo-pagina .chat-window {
 .chat-footer__send:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* ─── Dictado por voz en la caja de escritura ───────────── */
+/* El aviso de voz (permiso denegado, navegador sin servicio, no te oigo) va encima del pie,
+   no escondido: es la lección que dejó la Fase 0 del modal. */
+.chat-footer-wrap {
+  flex-shrink: 0;
+}
+
+.chat-footer__aviso {
+  margin: 0;
+  padding: 8px 16px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--chat-text-muted);
+}
+
+.chat-footer__mic {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--chat-border);
+  background: var(--chat-bg-subtle);
+  color: var(--chat-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.chat-footer__mic:hover:not(:disabled) {
+  border-color: var(--chat-text-muted);
+}
+
+.chat-footer__mic:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Mientras escucha, el botón se pone rojo y late: tiene que verse que el micro está abierto. */
+.chat-footer__mic--activo,
+.chat-footer__mic--activo:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+  animation: chatMicPulso 1.4s ease-in-out infinite;
+}
+
+@keyframes chatMicPulso {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45); }
+  50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
 }
 
 /* ─── Powered by ───────────────────────────────────────── */

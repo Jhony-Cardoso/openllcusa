@@ -771,6 +771,15 @@ export default function Header() {
     setIsHerramientasOpen(false)
   }
 
+  // Mientras el menú móvil está abierto, ocultamos el panel de chat mediante una clase en el
+  // body para que no tape los enlaces del menú (ver chat-widget.css, regla body.menu-movil-abierto).
+  useEffect(() => {
+    document.body.classList.toggle('menu-movil-abierto', isMenuOpen)
+    return () => {
+      document.body.classList.remove('menu-movil-abierto')
+    }
+  }, [isMenuOpen])
+
   const serviciosItems = useMemo(
     () => [
       {

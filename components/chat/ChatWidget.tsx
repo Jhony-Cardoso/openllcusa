@@ -1,13 +1,21 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react'
-import { MessageCircle, X, Send, Sparkles, ArrowRight, ChevronDown, User, Phone } from 'lucide-react'
+import { MessageCircle, X, Send, Sparkles, ArrowRight, ChevronDown, User, Phone, Mic, MicOff } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useUser } from '@clerk/nextjs'
 import { parseMarkdownEnLinea, MARCADOR_LISTA, type TokenMarkdown } from './markdown'
+import {
+  createRecognition,
+  dictationAvailable,
+  dictationNote,
+  describeRecognitionError,
+  logDictado,
+} from '@/lib/voz/dictado'
 import './chat-widget.css'
 
 // ─── Analytics ────────────────────────────────────────────
@@ -149,6 +157,18 @@ export default function ChatWidget() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [input, setInput] = useState('')
 
+  // Dictado por voz en la caja de escritura: el texto se escribe en el campo, el usuario
+  // revisa y envía con el botón de siempre (APIs del navegador, sin coste por minuto).
+  const [dictando, setDictando] = useState(false)
+  const [microDisponible, setMicroDisponible] = useState(false)
+  const [avisoVoz, setAvisoVoz] = useState<string | null>(null)
+  const reconocimientoRef = useRef<any>(null)
+  const dictadoActivoRef = useRef(false)
+  const textoBaseRef = useRef('')
+
+  const pathname = usePathname()
+  const enModoPaginaRef = useRef(false)
+
   const { user, isSignedIn, isLoaded } = useUser()
 
   const { messages, sendMessage, status, setMessages } = useChat({
@@ -165,20 +185,54 @@ export default function ChatWidget() {
     if (typeof window === 'undefined') return
     const params = new URLSearchParams(window.location.search)
     const porParametro = ['1', 'true', 'si', 'sí'].includes((params.get('chat') || '').toLowerCase())
-    const porRuta = window.location.pathname.replace(/\/$/, '') === '/chat'
-    if (!porParametro && !porRuta) return
+    const porRuta = pathname.replace(/\/$/, '') === '/chat'
 
-    if (porRuta) document.body.classList.add('chat-modo-pagina')
-    setIsOpen(true)
-    setUnreadCount(0)
-    setHasInteracted(true) // sin el aviso «¿Tienes dudas?», que ya está abierto
-    trackGAEvent('chat_enlace_directo', {
-      origen: document.referrer || 'directo',
-      via: porRuta ? 'pagina' : 'parametro'
-    })
+    if (porRuta) {
+      enModoPaginaRef.current = true
+      document.body.classList.add('chat-modo-pagina')
+      setIsOpen(true)
+      setUnreadCount(0)
+      setHasInteracted(true) // sin el aviso «¿Tienes dudas?», que ya está abierto
+      trackGAEvent('chat_enlace_directo', {
+        origen: document.referrer || 'directo',
+        via: 'pagina'
+      })
+      return () => {
+        document.body.classList.remove('chat-modo-pagina')
+      }
+    }
 
+    // Al salir de /chat mediante navegación de cliente, el widget sigue montado (vive en el
+    // layout raíz). Quitamos el modo página y cerramos el panel para que la interfaz del chat
+    // no siga tapando el resto del sitio en móvil.
+    if (enModoPaginaRef.current) {
+      enModoPaginaRef.current = false
+      document.body.classList.remove('chat-modo-pagina')
+      setIsOpen(false)
+    }
+
+    if (porParametro) {
+      setIsOpen(true)
+      setUnreadCount(0)
+      setHasInteracted(true)
+      trackGAEvent('chat_enlace_directo', {
+        origen: document.referrer || 'directo',
+        via: 'parametro'
+      })
+    }
+  }, [pathname])
+
+  // El botón de micro solo aparece si el navegador puede dictar de verdad (Firefox no, y
+  // Vivaldi o Brave tampoco, porque son Chromium sin el servicio de voz de Google).
+  useEffect(() => {
+    setMicroDisponible(dictationAvailable())
     return () => {
-      if (porRuta) document.body.classList.remove('chat-modo-pagina')
+      dictadoActivoRef.current = false
+      try {
+        reconocimientoRef.current?.abort()
+      } catch {
+        /* ya estaba parado */
+      }
     }
   }, [])
 
@@ -315,10 +369,96 @@ export default function ChatWidget() {
     trackGAEvent('lead_captured', { intent: 'warm_lead' })
   }
 
+  // ── Dictado por voz ──────────────────────────────────────
+  const pararDictado = useCallback(() => {
+    dictadoActivoRef.current = false
+    try {
+      reconocimientoRef.current?.stop()
+    } catch {
+      /* si ya estaba detenido, da igual */
+    }
+  }, [])
+
+  const abrirDictado = useCallback(() => {
+    const rec = createRecognition()
+    if (!rec) {
+      setAvisoVoz(dictationNote() || 'Este navegador no permite dictado por voz.')
+      return
+    }
+
+    textoBaseRef.current = input
+    dictadoActivoRef.current = true
+    reconocimientoRef.current = rec
+
+    rec.onstart = () => {
+      setDictando(true)
+      setAvisoVoz(null)
+      logDictado('dictado iniciado')
+      trackGAEvent('chat_dictado', { accion: 'inicio' })
+    }
+
+    rec.onresult = (evento: any) => {
+      let confirmado = ''
+      let provisional = ''
+      for (let i = evento.resultIndex; i < evento.results.length; i++) {
+        const fragmento = evento.results[i][0].transcript
+        if (evento.results[i].isFinal) confirmado += fragmento
+        else provisional += fragmento
+      }
+      if (confirmado) {
+        const base = textoBaseRef.current.replace(/\s+$/, '')
+        textoBaseRef.current = (base ? base + ' ' : '') + confirmado.trim()
+      }
+      // El texto provisional se ve en gris sobre el campo hasta que el motor lo confirma.
+      const conProvisional =
+        textoBaseRef.current + (provisional ? (textoBaseRef.current ? ' ' : '') + provisional : '')
+      setInput(conProvisional.replace(/^\s+/, ''))
+    }
+
+    rec.onerror = (evento: any) => {
+      const codigo = evento?.error || 'desconocido'
+      const mensaje = describeRecognitionError(codigo)
+      logDictado('error del dictado', codigo)
+      dictadoActivoRef.current = false
+      setDictando(false)
+      setAvisoVoz(mensaje || null)
+      trackGAEvent('chat_dictado', { accion: 'error', codigo })
+    }
+
+    rec.onend = () => {
+      // Chrome cierra el reconocimiento en cada pausa: si el usuario sigue dictando, se reabre.
+      if (dictadoActivoRef.current) {
+        try {
+          rec.start()
+          return
+        } catch {
+          dictadoActivoRef.current = false
+        }
+      }
+      setDictando(false)
+      reconocimientoRef.current = null
+      inputRef.current?.focus()
+      logDictado('dictado terminado')
+    }
+
+    try {
+      rec.start()
+    } catch {
+      dictadoActivoRef.current = false
+      setAvisoVoz('No se pudo abrir el micrófono. Inténtalo otra vez.')
+    }
+  }, [input])
+
+  const alternarDictado = useCallback(() => {
+    if (dictando) pararDictado()
+    else abrirDictado()
+  }, [dictando, pararDictado, abrirDictado])
+
   // ── Chat IA ──────────────────────────────────────────────
   const onSubmitChat = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!(input || '').trim()) return
+    if (dictando) pararDictado() // el micro no debe quedarse abierto al enviar
     sendMessage({ role: 'user', parts: [{ type: 'text', text: input }] } as any)
     setInput('')
   }
@@ -654,25 +794,44 @@ export default function ChatWidget() {
 
         {/* Footer / Input — solo visible en modo IA */}
         {phase === 'ai_chat' && (
-          <form className="chat-footer" onSubmit={onSubmitChat}>
-            <input
-              ref={inputRef}
-              type="text"
-              className="chat-footer__input"
-              placeholder="Escribe tu pregunta..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              className="chat-footer__send"
-              disabled={!(input || '').trim() || isLoading}
-              aria-label="Enviar mensaje"
-            >
-              <Send size={18} />
-            </button>
-          </form>
+          <div className="chat-footer-wrap">
+            {avisoVoz && (
+              <p className="chat-footer__aviso" role="status">
+                {avisoVoz}
+              </p>
+            )}
+            <form className="chat-footer" onSubmit={onSubmitChat}>
+              <input
+                ref={inputRef}
+                type="text"
+                className="chat-footer__input"
+                placeholder={dictando ? 'Escuchando… habla ahora' : 'Escribe tu pregunta...'}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={isLoading}
+              />
+              {microDisponible && (
+                <button
+                  type="button"
+                  className={`chat-footer__mic ${dictando ? 'chat-footer__mic--activo' : ''}`}
+                  onClick={alternarDictado}
+                  disabled={isLoading}
+                  aria-label={dictando ? 'Detener el dictado' : 'Dictar tu pregunta'}
+                  title={dictando ? 'Detener el dictado' : 'Dictar tu pregunta'}
+                >
+                  {dictando ? <MicOff size={18} /> : <Mic size={18} />}
+                </button>
+              )}
+              <button
+                type="submit"
+                className="chat-footer__send"
+                disabled={!(input || '').trim() || isLoading}
+                aria-label="Enviar mensaje"
+              >
+                <Send size={18} />
+              </button>
+            </form>
+          </div>
         )}
 
         {/* Powered by */}

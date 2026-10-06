@@ -3146,9 +3146,13 @@ rec.onend = () => {
 - **Inventario antes de commitear:** exactamente tres ficheros modificados y uno nuevo, sin restos de depuración
   (cero `console.log`; el único `console.info` va dentro de `logDictado`, con su prefijo). El árbol de trabajo queda
   **limpio** por primera vez en varias sesiones.
-- **Verificación pendiente, y bloqueada por el despliegue:** durante ocho minutos, cinco comprobaciones sobre el CSS
-  servido en producción no encuentran las clases del micro (`chat-footer__mic`, `chat-footer__aviso`, `chatMicPulso`),
-  así que producción sigue sirviendo la versión anterior. El commit está en GitHub (`local == remoto == 41e752d`). Hay
+- **Verificación, con un falso negativo mío que conviene recordar:** durante ocho minutos, cinco comprobaciones sobre el
+  CSS servido **en la ruta `/chat`** no encontraron las clases del micro, y lo interpreté como que el despliegue no
+  había llegado. **Estaba equivocado:** lo que me llegaba era el **HTML de `/chat` cacheado**, que referenciaba los
+  CSS antiguos. Mirando el bundle completo de la **portada**, el CSS `d844d942e5f01a22.css` y el chunk
+  `app/layout-62383b38dcd47fa1.js` ya contienen `chat-footer__mic`, `chatMicPulso`, `chat-footer__aviso`,
+  `chat_dictado` y `[Zara dictado]`: el despliegue sí había llegado. Lección para próximas comprobaciones: mirar el
+  bundle de la portada y todos los ficheros referenciados, no el HTML de una ruta concreta que puede venir cacheado. El commit está en GitHub (`local == remoto == 41e752d`). Hay
   que revisar en Dokploy si la construcción sigue en curso o ha fallado (el `AGENTS.md` documenta OOM del build en el
   VPS de 4 GB).
 - **También cayó el navegador controlado** a mitad de la comprobación (conexión CDP perdida), así que la prueba del
@@ -3157,7 +3161,41 @@ rec.onend = () => {
   `components/layout/Header.tsx`, `lib/voz/dictado.ts` (commit `41e752d`), `chat_history.md`.
 - **Verificación pendiente:** que el despliegue llegue y, después, el botón y su camino de error.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 14:58)
+---
+### 📅 Chat Session: 2026-10-06 23:53
+**Main objective:** Verificar en producción el micrófono de dictado del chat.
+
+#### 👤 User Request:
+> El usuario aporta la captura de los tres últimos despliegues en Dokploy: el commit del micro (`41e752d`) figuraba
+> como «Running» mientras el posterior de documentación ya estaba «Done».
+
+#### 🤖 Agent Solution:
+- **El despliegue sí había llegado, y mi comprobación anterior era un falso negativo** (explicado y corregido en la
+  entrada de arriba): estaba mirando los CSS que referenciaba el HTML cacheado de `/chat`. En el bundle de la portada
+  aparecen ya el CSS y el chunk con las clases y las cadenas del dictado.
+- **Verificado en producción, en el navegador:**
+  - El botón existe en el pie del chat, en el orden previsto: campo de texto → **micro** → enviar, con la etiqueta
+    accesible «Dictar tu pregunta».
+  - Al pulsarlo, el navegador pide permiso y, como en este equipo no hay micrófono autorizado, aparece el aviso en
+    español encima del pie: «Necesito permiso para usar el micrófono. Actívalo en el candado de la barra de
+    direcciones y vuelve a intentarlo.», y el botón vuelve a su estado inactivo. En consola queda
+    `[Zara dictado] error del dictado not-allowed`, así que el diagnóstico futuro no depende de adivinar.
+  - **Sin regresión en el envío:** con el campo vacío el botón está desactivado (opacidad 0,4) y con un solo carácter
+    se activa (opacidad 1). Se envió una pregunta real («¿cuánto cuesta el plan Starter?») y Zara respondió «$349 +
+    tasas del estado», con el pie intacto después.
+- **Queda por probar el dictado real**, que necesita micrófono: lo hace el usuario (pulsar el micro, hablar y ver el
+  texto escribirse en el campo, y después enviar).
+- **Sobre Dokploy:** los despliegues parecen ejecutarse en paralelo (el commit del micro quedó «Running» mientras el
+  posterior ya estaba «Done»), pero el código acabó llegando. No hay error de construcción que investigar.
+- **Files created/modified:** ninguno (solo comprobaciones); `chat_history.md`.
+
+#### 💻 Key Code:
+```
+pie del chat en produccion:  input  ->  button.chat-footer__mic  ->  button.chat-footer__send
+al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dictado not-allowed
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-06 23:53)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
@@ -3166,11 +3204,10 @@ rec.onend = () => {
 > es otra cosa: usa las APIs del navegador y no cuesta nada.
 
 **Chat de Zara**
-1. **Revisar el despliegue de `41e752d` en Dokploy**: ocho minutos después del push, producción seguía sirviendo la
-   versión anterior (las clases del micro no aparecen en el CSS). Comprobar si el build sigue en curso o ha fallado.
-   Lo mira el usuario; el asistente ayuda con el error si lo hay.
-2. **Verificar el micro cuando esté desplegado:** que el botón aparece en el pie del chat y que un fallo muestra su
-   aviso en español (asistente), y probar el dictado real con micrófono (usuario).
+1. **Probar el dictado real con micrófono** (usuario): pulsar el micro, hablar y comprobar que el texto se escribe en
+   el campo, que el botón se pone rojo mientras escucha y que después se puede enviar.
+2. **Decidir si el micro va también en otros sitios:** hoy solo está en la caja del chat de IA; los formularios de
+   nombre, email y teléfono del propio widget no lo tienen. *Propuesta pendiente de valorar.*
 
 **Google Search Console**
 3. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de

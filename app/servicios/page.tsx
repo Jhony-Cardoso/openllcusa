@@ -65,7 +65,7 @@ const serviciosIndividuales = [
 
 export default function ServiciosPage() {
   return (
-    <main>
+    <main style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* Héroe a todo lo ancho: el mismo degradado y resplandor de /precios */}
       <section
         className="relative overflow-hidden text-center px-6 py-24"

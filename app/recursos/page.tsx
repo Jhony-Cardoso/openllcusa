@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import '../homepage-v4.css'
 
 
 const SITEURL = 'https://openllcusa.com' // TODO cambia por tu dominio real [file:2]
@@ -49,7 +50,7 @@ export default function HerramientasPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main style={{ background: 'var(--color-background)' }}>
+      <main style={{ background: 'var(--color-background)', fontFamily: "'Inter', sans-serif" }}>
         {/* Hero: reutiliza el look & feel de otras páginas */}
         <section className="section" style={{ paddingTop: 110, paddingBottom: 40 }}>
           <div className="section-container" style={{ maxWidth: 900 }}>

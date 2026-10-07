@@ -3346,7 +3346,57 @@ className={`relative bg-white rounded-3xl p-8 border-2 shadow-[0_12px_32px_-16px
 }`}
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 22:24)
+---
+### 📅 Chat Session: 2026-10-07 22:54
+**Main objective:** Segunda pasada de `/servicios`: iconos por servicio y héroe con el degradado de `/precios`.
+
+#### 👤 User Request:
+> El usuario aprueba la lista de iconos «tal cual», quiere el héroe **a todo lo ancho, igual que `/precios`**, y
+> añadir la línea pequeña sobre el titular con el texto **«Formación, mantenimiento y cumplimiento»**.
+
+#### 🤖 Agent Solution:
+- **Antes de tocar nada se le entregó la lista con los iconos REALES**: se extrajeron los SVG de
+  `node_modules/lucide-react/dist/esm/icons/*.js` (versión 0.546.0, la que ya usa el proyecto) y se montó una vista
+  previa con el héroe y las seis tarjetas, más una tabla con el icono propuesto y su alternativa. Ficheros:
+  `Downloads\Propuesta_UI_Servicios_2026-10-07_segunda_pasada.{html,png}`.
+- **Commit `7a8c430`**, un solo fichero otra vez: `app/servicios/page.tsx` (+40/-19). Iconos `FileText`,
+  `CalendarCheck`, `Hash`, `MapPin`, `Landmark` y `MessagesSquare` en un recuadro azul claro de 44 px en el hueco
+  izquierdo de la fila superior, a la misma altura que la etiqueta «Recomendado», marcados `aria-hidden` porque son
+  decorativos. El héroe pasa a banda a todo lo ancho con el degradado y el resplandor radial **exactos** de
+  `/precios` (`linear-gradient(145deg, #0C2047 0%, #1E3A8A 65%, #1a368a 100%)` más
+  `radial-gradient(ellipse 55% 55% at 80% 50%, rgba(59,130,246,.14)…)`), titular en blanco a `clamp(30px,4.5vw,56px)`
+  y subtítulo con `rgba(255,255,255,.75)`, como allí. Se añade encima la pastilla azul con el texto aprobado.
+  Para que el héroe sea de borde a borde hubo que sacarlo del contenedor `max-w-7xl` y envolver la sección de
+  servicios en uno propio; el resto de la página no cambia.
+- **Contrastes medidos sobre las tres paradas del degradado:** titular blanco 10,4-16:1 y subtítulo al 75 % de
+  blanco 6,6-9,4:1, los dos por encima del mínimo AA. (El primer cálculo salió mal por un error mío al componer el
+  blanco translúcido —calculaba el fondo al 75 % en vez del blanco— y se rehízo antes de informar.)
+- **Verificado en producción:** el HTML servido trae los cuatro marcadores exclusivos; el degradado computado es
+  `rgb(12,32,71) → rgb(30,58,138) → rgb(26,54,138)`; el titular es blanco a 56 px y peso 800; la pastilla es
+  `rgb(239,246,255)` con texto `rgb(29,78,216)` (azul-50 sobre azul-700, la misma pareja que `/precios`); los **seis**
+  chips llevan `aria-hidden` y sus `path` coinciden con los del paquete (FileText, CalendarCheck, Hash, MapPin,
+  Landmark y MessagesSquare, comprobados uno a uno); el hover sigue: `:hover` verdadero, subida de 3,5 px y sombra
+  `0 25px 50px -12px`; y a 375 px la rejilla queda en una columna de 289 px sin desborde, con el héroe en 394 px.
+- **Trampa de verificación (tercera vez en la misma faena):** el hover parecía no funcionar y eran **las dos veces**
+  fallos de mi prueba. El sitio desplaza con suavidad, así que leer el rectángulo justo después de `scrollIntoView`
+  da coordenadas viejas y el ratón sintético cae fuera de la ventana. La solución es esperar a que termine el
+  desplazamiento antes de medir, y comprobar `element.matches(':hover')` para saber si es el sitio o la prueba. Lo que
+  zanjó el diagnóstico fue un **control**: el botón azul de al lado sí cambiaba de fondo con el mismo evento, así que
+  el mecanismo funcionaba y el problema era la coordenada.
+- **Files created/modified:** `app/servicios/page.tsx` (commit `7a8c430`),
+  `Downloads\Propuesta_UI_Servicios_2026-10-07_segunda_pasada.{html,png}`, `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// héroe a todo lo ancho: el degradado y el resplandor son los de /precios, literales
+style={{ background: 'linear-gradient(145deg, #0C2047 0%, #1E3A8A 65%, #1a368a 100%)' }}
+// y el icono, en el hueco izquierdo de la fila superior, a la altura de la etiqueta
+<span aria-hidden="true" className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center flex-shrink-0">
+  <s.icono size={22} />
+</span>
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 22:54)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3381,11 +3431,9 @@ className={`relative bg-white rounded-3xl p-8 border-2 shadow-[0_12px_32px_-16px
 16. Voz de Zara con proveedores — aparcada.
 
 **Diseño**
-17. ✅ **CERRADO** *(07-10-2026)* — UI de `/servicios`: opción A aplicada, desplegada y verificada en producción
-    (commit `a620da8`).
+17. ✅ **CERRADO** *(07-10-2026)* — UI de `/servicios`: opción A aplicada, desplegada y verificada (commit `a620da8`).
 18. **Decidir si `/servicios` recupera su bloque de paquetes** (Starter, Professional y Business), perdido el
     25-05-2026 en el commit `3a5c544`: hoy la página solo muestra servicios individuales. Si se restaura, los precios
     deben salir de la fuente actual ($349 / $499 / $849). *Tú decides, yo lo implemento.*
-19. **Segunda pasada de `/servicios`:** iconos de cada servicio (en el hueco izquierdo de la fila superior, a la
-    altura de la etiqueta) y el héroe con el degradado navy → azul de `/precios`. *Autorizado a medias por el usuario:
-    pendiente de que diga cuándo.*
+19. ✅ **CERRADO** *(07-10-2026)* — Segunda pasada de `/servicios`: iconos por servicio y héroe con el degradado,
+    desplegado y verificado (commit `7a8c430`).

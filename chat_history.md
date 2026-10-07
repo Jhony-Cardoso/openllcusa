@@ -3256,7 +3256,53 @@ al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dic
 - **Sin cambios de código en esta sesión:** solo el registro.
 - **Files created/modified:** `chat_history.md`.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 15:32)
+---
+### 📅 Chat Session: 2026-10-07 16:15
+**Main objective:** Propuesta de UI para `/servicios` (se ve demasiado blanco, sin contraste entre tarjetas y fondo).
+
+#### 👤 User Request:
+> «En la página /servicios no me termina de convencer la UI, porque lo veo todo demasiado blanco, no hay un contraste
+> entre las tarjetas de los diferentes servicios y el background de la sección. Ofréceme alguna solución que mejore
+> este aspecto, respetando siempre la identidad de marca, la UI y la UX.» **Nada aplicado: es una propuesta**.
+
+#### 🤖 Agent Solution:
+- **Diagnóstico medido, no a ojo:** la página es un héroe y una sola sección con seis tarjetas en dos columnas
+  (`bg-white border-2 rounded-3xl`, `border-gray-200`). Contrastes calculados con la fórmula WCAG sobre lo que sirve
+  producción: fondo crema `#FCFCF9` frente a la tarjeta **1,03:1** y borde `#E5E7EB` frente a la tarjeta **1,24:1**,
+  o sea que ni el fondo ni el borde dibujan la tarjeta. La conclusión que explica el porqué: una tarjeta blanca sobre
+  un fondo casi blanco no puede separarse por color de fondo (cualquier blanco roto da 1,03-1,18:1); tiene que
+  hacerlo el borde (subido a `slate-300`, 1,48:1) y la sombra.
+- **Precedente de marca respetado:** se reutiliza el lenguaje que ya existe en `/precios` (panel `bg-slate-50` con
+  `border-slate-200`, tarjetas blancas con `shadow-sm`, badge de destacado, héroe con degradado navy → azul), en vez
+  de inventar estilos nuevos. Colores: navy `#0F172A`, azul `#1D4ED8`, ámbar `#FBBF24`, verde de check `#16A34A`.
+- **Tres opciones, con su coste y su riesgo:** **A** (recomendada) héroe con degradado + la sección en panel con
+  tinte + tarjetas con borde visible y sombra, con barra de acento y jerarquía interna; **B** la sección entera sobre
+  el navy de la marca (contraste 17,85:1, más rotundo pero oscurece la página a media altura); **C** mínima
+  intervención, dos clases por tarjeta. Ninguna introduce colores nuevos ni toca precios, slugs, rutas ni textos.
+- **Comparativo visual construido y revisado con la vista:** `mockup_servicios.html` reproduce el estado actual y
+  las tres opciones con el texto real de las tarjetas; se capturó la página completa y se inspeccionaron A y B a
+  tamaño real antes de escribir la propuesta.
+- **HALLAZGO APARTE (de CRO, no de UI): `/servicios` perdió su bloque de paquetes.** El array `paquetes` es hoy una
+  línea (`const paquetes = [ /* ... mismo código de paquetes ... */ ];`) y **no se renderiza ninguna sección de
+  planes**: quien entra ve servicios sueltos y no ve Starter, Professional ni Business, que solo viven en `/precios`.
+  Viene del commit `3a5c544` (25-05-2026, «Mejora página /servicios: estilo similar a homepage…»), que sustituyó el
+  array por ese comentario; el commit anterior, `cfd3a72`, sí los tenía. Si se restaura, los precios de entonces
+  (**$597 / $897 / $1397**) están obsoletos: los actuales son **$349 / $499 / $849**. Se deja como decisión aparte,
+  sin mezclarla con la propuesta de UI.
+- **Files created/modified:** `C:\Users\recompra.es\Downloads\Propuesta_UI_Servicios_2026-10-07.{md,html,pdf,png}`,
+  `..._mockup.{html,png}` (nada del repositorio se ha tocado), `chat_history.md`.
+- **Verificación pendiente:** la decisión del usuario (A, B o C) y, si autoriza, la comprobación en producción de
+  los contrastes servidos, los seis enlaces a 200 y el móvil a una columna.
+
+#### 💻 Key Code:
+```tsx
+// app/servicios/page.tsx — lo que cambia en la tarjeta (opción A)
+// hoy:  bg-white border-2 rounded-3xl p-8 hover:shadow-xl  + border-gray-200
+// A:    bg-white rounded-3xl p-8 border border-slate-300 shadow-[0_12px_32px_-16px_rgba(15,23,42,0.28)]
+//       hover:shadow-2xl hover:-translate-y-1 transition-all
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 16:15)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3266,32 +3312,34 @@ al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dic
 > es otra cosa: usa las APIs del navegador y no cuesta nada.
 
 **Chat de Zara**
-1. ✅ **CERRADO** *(usuario, 2026-10-07)* — Probar en Vivaldi: el micro queda apuntado al primer fallo y ya no
-   se ofrece después.
-2. ✅ **CERRADO** *(usuario, 2026-10-07)* — Dictado real con Chrome: funciona.
-3. ✅ **CERRADO** *(usuario, 2026-10-07)* — Decisión: el micro va **solo en la caja del chat**, no en los
-   formularios del widget.
+1. ✅ **CERRADO** *(usuario, 07-10-2026)* — Vivaldi: el micro queda apuntado al primer fallo y ya no se ofrece.
+2. ✅ **CERRADO** *(usuario, 07-10-2026)* — Dictado real con Chrome: funciona.
+3. ✅ **CERRADO** *(usuario, 07-10-2026)* — Decisión: el micro va solo en la caja del chat.
 
 **Google Search Console**
-4. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
-   `/servicios/form-5472` y `/guias/us`. *Tú.*
-5. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
+4. «Validar corrección» en GSC del grupo de `noindex` (las 16) y de las filas `/servicios/form-5472` y `/guias/us`. *Tú.*
+5. «Solicitar indexación» en GSC de portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`, unas pocas al día. *Tú.*
-6. **`favicon.ico` real** (acabado, menor). *Yo.*
-7. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas.** *Tú.*
+6. `favicon.ico` real (acabado, menor). *Yo.*
+7. Volver a mirar «Páginas» en GSC dentro de una o dos semanas. *Tú.*
 
 **Producto / decisiones de negocio**
-8. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Aplazado hasta que existan las
-   wallets.*
-9. **Número de WhatsApp definitivo** (hoy el provisional `+34 699087039`). *Tú.*
-10. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.* *Yo.*
+8. Wallets cripto del checkout — aplazado hasta que existan.
+9. Número de WhatsApp definitivo (hoy el provisional `+34 699087039`). *Tú.*
+10. Nota de plazos en los 3 puntos de la home que prometen «72 horas» sin aclaración. *Yo.*
 
 **Técnico**
-11. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción). *Tú.*
-12. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-13. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`. *Yo.*
-14. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11. *Yo.*
-15. **Unificar los ayudantes de voz (queda menos):** la memoria del fallo ya es compartida por los tres sitios, pero
-    `Header.tsx` y `app/zara/page.tsx` conservan su copia de `speechSupported`, `isSpeechlessBrowser`,
-    `describeRecognitionError` y `createRecognition`. Cosmético y sin prisa. *Yo.*
-16. **Voz de Zara con proveedores — aparcada:** se retoma cuando el usuario lo diga.
+11. Verificar a ojo los tres botones de la calculadora. *Tú.*
+12. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+13. Limpieza menor: `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`. *Yo.*
+14. Subir dependencias críticas (Next 16.3.4 → 16.3.8 y Clerk 6 → 7.9.11). *Yo.*
+15. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
+16. Voz de Zara con proveedores — aparcada.
+
+**Diseño**
+17. **Decidir la UI de `/servicios`** entre las tres opciones propuestas y, si se autoriza, implementarla y
+    verificarla. El comparativo está en `Downloads\Propuesta_UI_Servicios_2026-10-07_mockup.html`. *Tú decides, yo la
+    implemento.*
+18. **Decidir si `/servicios` recupera su bloque de paquetes** (Starter, Professional y Business), perdido el
+    25-05-2026 en el commit `3a5c544`: hoy la página solo muestra servicios individuales. Si se restaura, los precios
+    deben salir de la fuente actual ($349 / $499 / $849), no del commit antiguo. *Tú decides, yo lo implemento.*

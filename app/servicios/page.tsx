@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, CalendarCheck, Check, FileText, Hash, Landmark, MapPin, MessagesSquare } from 'lucide-react';
 import TrackedLink from '@/components/home/TrackedLink';
+import '../homepage-v4.css';
 
 
 const paquetes = [ /* ... mismo código de paquetes ... */ ];
@@ -79,7 +80,10 @@ export default function ServiciosPage() {
           <span className="inline-block text-xs font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full bg-blue-50 text-blue-700 mb-6">
             Formación, mantenimiento y cumplimiento
           </span>
-          <h1 className="font-extrabold text-white leading-tight mb-5" style={{ fontSize: 'clamp(30px, 4.5vw, 56px)' }}>
+          <h1
+            className="font-extrabold text-white leading-tight mb-5"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(30px, 4.5vw, 56px)' }}
+          >
             Servicios para tu LLC en Estados Unidos
           </h1>
           <p className="mx-auto" style={{ fontSize: 'clamp(16px, 1.8vw, 20px)', color: 'rgba(255,255,255,.75)' }}>

@@ -3471,7 +3471,49 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
 <main style={{ background: 'var(--color-background)', fontFamily: "'Inter', sans-serif" }}>  // recursos
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 23:34)
+---
+### 📅 Chat Session: 2026-10-07 23:51
+**Main objective:** Que los precios de `/servicios` vayan en negrita, como los de `/precios`.
+
+#### 👤 User Request:
+> «Sospecho que los precios en la página `/precios` están con tipografía en negrita, mientras que en `/servicios` no lo
+> están. […] Me parece que quedan mejor en negrita. Así que, por favor, coloca los precios en negrita en `/servicios`».
+
+#### 🤖 Agent Solution:
+- **Su sospecha era exacta y la causa estaba en el código:** los dos precios pedían `font-extrabold` (peso 800), pero el
+  de `/precios` lo hace en **Plus Jakarta Sans** —que sí tiene cara 800— y el de `/servicios` había heredado **Inter** al
+  pasar el cuerpo a esa familia en el cambio anterior. De Inter solo se cargan las caras **400, 500 y 600**, así que la
+  petición de 800 se resolvía con la 600: pedía negrita y recibía seminegrita.
+- **Prueba hecha dentro de la página, no deducida:** un experimento en el propio navegador midiendo el mismo texto con
+  `Inter 800` y con `Inter 600` da **el mismo ancho (89 px)**, señal de que la 800 no existe; en `/precios` el precio va
+  en `Plus Jakarta Sans 800` (87 px, otra métrica). También se veía en las caras que el navegador tenía cargadas.
+- **Commit `f77bc6a`:** el precio declara `'Plus Jakarta Sans', sans-serif` y conserva el peso 800, exactamente la
+  pareja de `/precios`. No añade peticiones: esa cara ya se descarga para el titular del héroe. Queda un comentario en
+  el fichero explicando el porqué, para que nadie lo «simplifique» a Inter más adelante.
+- **Verificado en producción:** los **seis** precios computan `Plus Jakarta Sans` con peso 800, la cara
+  `Plus Jakarta Sans 800` figura entre las cargadas y `document.fonts.check('800 36px "Plus Jakarta Sans"', '$197')`
+  responde verdadero. El titular del héroe sigue en Jakarta y el cuerpo sigue en Inter. Revisado también en la captura:
+  los precios se ven claramente en negrita.
+- **Incidente propio, durante el registro de esta sesión:** al corregir la numeración de los pendientes usé `find()`
+  sobre el encabezado del bloque, y esa cadena aparece **citada dentro de una entrada antigua**, así que la escritura
+  borró 944 líneas del registro (desde una sesión del 05-10 hasta el final). Se detectó al comprobar el recuento de
+  líneas, se restauró el fichero desde el commit anterior (`git checkout -- chat_history.md`) y se rehizo la operación
+  buscando la **última** coincidencia del encabezado y comprobando que el número de entradas crece exactamente en una.
+  Ningún dato se ha perdido.
+- **Files created/modified:** `app/servicios/page.tsx` (commit `f77bc6a`), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// el precio, con la misma pareja que /precios: peso 800 y una familia que si tenga cara 800
+<p
+  className="text-4xl font-extrabold text-blue-600 mb-6"
+  style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+>
+  {s.price}
+</p>
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 23:51)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3516,3 +3558,10 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
     (Plus Jakarta Sans, commit `ff32d91`).
 21. ✅ **CERRADO** *(07-10-2026)* — Cuerpo de `/servicios` y de `/recursos` pasado a Inter, como `/precios`
     (commit `2c2b457`).
+22. ✅ **CERRADO** *(07-10-2026)* — Precios de `/servicios` en negrita real, con Plus Jakarta Sans como `/precios`
+    (commit `f77bc6a`).
+
+**Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
+600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el
+comportamiento que ya tiene `/precios`. Extender la hoja al 700/800 afectaría también a la home y a `/precios`, así que
+no se toca sin pedirlo.

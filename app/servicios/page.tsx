@@ -72,33 +72,49 @@ export default function ServiciosPage() {
       {/* Paquetes - se mantiene igual */}
 
       {/* Servicios Individuales */}
-      <section>
+      <section className="bg-slate-50 border border-slate-200 rounded-3xl px-6 py-12 md:px-12 md:py-14">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900">Servicios Individuales</h2>
-          <p className="text-gray-600 mt-3">Soluciones específicas para cada necesidad</p>
+          <h2 className="text-4xl font-bold text-slate-900">Servicios Individuales</h2>
+          <p className="text-slate-600 mt-3">Soluciones específicas para cada necesidad</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           {serviciosIndividuales.map((s) => (
             <div
               key={s.slug}
-              className={`bg-white border-2 rounded-3xl p-8 hover:shadow-xl transition-all ${s.highlight ? 'border-amber-400' : 'border-gray-200'}`}
+              className={`relative bg-white rounded-3xl p-8 border-2 shadow-[0_12px_32px_-16px_rgba(15,23,42,0.28)] transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl ${
+                s.highlight
+                  ? 'border-amber-400 hover:border-amber-500'
+                  : 'border-slate-300 hover:border-slate-400'
+              }`}
             >
-              {s.highlight && (
-                <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-sm font-bold px-4 py-1 rounded-full mb-6">
-                  ⭐ Recomendado
-                </div>
-              )}
+              {/* Barra de acento: azul en los servicios, ámbar en los recomendados */}
+              <span
+                aria-hidden="true"
+                className={`absolute top-0 left-8 right-8 h-1 rounded-b ${
+                  s.highlight ? 'bg-amber-400' : 'bg-blue-600'
+                }`}
+              />
 
-              <h3 className="text-2xl font-bold text-blue-700 mb-2">{s.title}</h3>
+              {/* Fila superior: a la izquierda irá el icono del servicio y a la derecha la etiqueta */}
+              <div className="flex items-start justify-between gap-4 mb-5 min-h-[34px]">
+                <span aria-hidden="true" />
+                {s.highlight && (
+                  <span className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-sm font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                    ⭐ Recomendado
+                  </span>
+                )}
+              </div>
+
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">{s.title}</h3>
               <p className="text-4xl font-extrabold text-blue-600 mb-6">{s.price}</p>
-              <p className="text-gray-600 mb-8">{s.tagline}</p>
+              <p className="text-slate-600 mb-8">{s.tagline}</p>
 
               <ul className="space-y-3 mb-10">
                 {s.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <Check className="text-green-500 mt-1" size={20} />
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-slate-600">{feature}</span>
                   </li>
                 ))}
               </ul>

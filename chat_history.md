@@ -3396,7 +3396,50 @@ style={{ background: 'linear-gradient(145deg, #0C2047 0%, #1E3A8A 65%, #1a368a 1
 </span>
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 22:54)
+---
+### 📅 Chat Session: 2026-10-07 23:12
+**Main objective:** Igualar la tipografía del titular del héroe de `/servicios` a la de `/precios`.
+
+#### 👤 User Request:
+> «Estoy observando que los títulos de las tipografías de los héroes son diferentes en `/servicios` y en `/precios`.
+> Me gusta más la de `/precios`. Compruébalo y modifica la de servicios.»
+
+#### 🤖 Agent Solution:
+- **Comprobado y confirmado con datos, antes de tocar nada:** `/precios` declaraba
+  `font-family: "Plus Jakarta Sans", sans-serif` en su titular y `/servicios` la del sistema
+  (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto…`). Los dos a 56 px, peso 800 e interlineado 70 px, así que
+  la diferencia era solo la familia.
+- **Y se comprobó que en `/precios` la fuente se pinta de verdad, no cae al respaldo:** la primera línea de su titular
+  mide **709 px**, exactamente lo que mide ese texto en Plus Jakarta Sans (709) frente a 723 del sistema y 794 de
+  Arial, y el woff2 de la fuente se descarga. Sin ese paso, el arreglo podría haber sido copiar una declaración que
+  tampoco surtía efecto.
+- **Causa:** la fuente no la carga el titular, la carga `app/homepage-v4.css` (un `@import` de Google Fonts), que
+  importan la home y `/precios` pero no `/servicios`. El fichero solo define clases `.hp-*`, keyframes y la fuente, así
+  que importarlo no puede alterar nada más.
+- **Commit `ff32d91`:** `import '../homepage-v4.css'` (el mismo patrón que `/precios`, línea 6 de su `page.tsx`) y
+  `fontFamily: "'Plus Jakarta Sans', sans-serif"` en el titular, conservando el `clamp(30px, 4.5vw, 56px)` y el peso
+  800. Solo se toca `app/servicios/page.tsx`.
+- **Verificado en producción:** el HTML servido declara ya `font-family:'Plus Jakarta Sans', sans-serif` en el titular;
+  y en el navegador, con las fuentes ya resueltas, aparece **cargada la cara `Plus Jakarta Sans 800`** (que es justo la
+  que usa el titular) con `document.fonts.check` en verdadero, a 56 px / 800 / 70 px igual que `/precios`.
+- **Trampa de verificación, para no repetirla:** la primera medición dio «la fuente no se descarga y cae al respaldo»,
+  y era **falsa**: la fuente entra por una cadena de dos peticiones (hoja de Google → fichero woff2) y con `display=swap`
+  el navegador pinta primero el respaldo. Hay que esperar a `document.fonts.ready` antes de dar un veredicto, y mirar
+  las **caras cargadas** (`[...document.fonts].filter(f=>f.status==='loaded')`), no solo `document.fonts.check` sin
+  esperar. Comparar anchos de texto sirve como prueba, pero solo con textos largos: en textos cortos las dos familias
+  dan anchos casi idénticos (569 y 570 en la prueba que no discriminaba nada).
+- **Files created/modified:** `app/servicios/page.tsx` (commit `ff32d91`), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en la home
+<h1
+  className="font-extrabold text-white leading-tight mb-5"
+  style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(30px, 4.5vw, 56px)' }}
+>
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 23:12)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3435,5 +3478,9 @@ style={{ background: 'linear-gradient(145deg, #0C2047 0%, #1E3A8A 65%, #1a368a 1
 18. **Decidir si `/servicios` recupera su bloque de paquetes** (Starter, Professional y Business), perdido el
     25-05-2026 en el commit `3a5c544`: hoy la página solo muestra servicios individuales. Si se restaura, los precios
     deben salir de la fuente actual ($349 / $499 / $849). *Tú decides, yo lo implemento.*
-19. ✅ **CERRADO** *(07-10-2026)* — Segunda pasada de `/servicios`: iconos por servicio y héroe con el degradado,
-    desplegado y verificado (commit `7a8c430`).
+19. ✅ **CERRADO** *(07-10-2026)* — Segunda pasada de `/servicios`: iconos por servicio y héroe con el degradado
+    (commit `7a8c430`).
+20. ✅ **CERRADO** *(07-10-2026)* — Tipografía del titular del héroe de `/servicios` igualada a la de `/precios`
+    (Plus Jakarta Sans, commit `ff32d91`). **Observación, sin pendiente abierto:** el cuerpo de `/servicios` sigue con
+    la tipografía del sistema mientras `/precios` usa Inter en todo el texto; alinearlo es una decisión aparte que el
+    usuario no ha pedido.

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, CalendarCheck, Check, FileText, Hash, Landmark, MapPin, MessagesSquare } from 'lucide-react';
 import TrackedLink from '@/components/home/TrackedLink';
 
 
@@ -8,6 +8,7 @@ const paquetes = [ /* ... mismo código de paquetes ... */ ];
 const serviciosIndividuales = [
   {
     slug: 'impuestos/declaracion-anual-llc',
+    icono: FileText,
     title: 'Declaración de Impuestos',
     price: '$297',
     tagline: 'Presentación anual del Formulario 1120 + 5472 ante el IRS.',
@@ -16,6 +17,7 @@ const serviciosIndividuales = [
   },
   {
     slug: 'reporte-anual',
+    icono: CalendarCheck,
     title: 'Reporte Anual Estatal',
     price: 'Desde $99',
     tagline: 'Mantenimiento obligatorio de tu LLC año tras año.',
@@ -24,6 +26,7 @@ const serviciosIndividuales = [
   },
   {
     slug: 'impuestos/obtencion-ein',
+    icono: Hash,
     title: 'Obtención del EIN',
     price: '$197',
     tagline: 'Número fiscal federal (Tax ID) del IRS, incluso sin SSN.',
@@ -32,6 +35,7 @@ const serviciosIndividuales = [
   },
   {
     slug: 'agente-registrado',
+    icono: MapPin,
     title: 'Agente Registrado + Dirección Física',
     price: '$149/año',
     tagline: 'Cumple con la ley en EE.UU. sin necesidad de tener dirección física allí.',
@@ -40,6 +44,7 @@ const serviciosIndividuales = [
   },
   {
     slug: 'launch-banking',
+    icono: Landmark,
     title: 'Cuenta Bancaria Empresarial',
     price: '$199',
     tagline: 'Abre tu cuenta en dólares en EE.UU. (Mercury, Wise, Relay, etc.).',
@@ -48,6 +53,7 @@ const serviciosIndividuales = [
   },
   {
     slug: 'consultoria-fiscal',
+    icono: MessagesSquare,
     title: 'Consultoría Fiscal',
     price: '$197',
     tagline: 'Sesiones personalizadas sobre estructura fiscal y optimización.',
@@ -58,21 +64,33 @@ const serviciosIndividuales = [
 
 export default function ServiciosPage() {
   return (
-    <main className="max-w-7xl mx-auto px-6 py-16">
-      {/* Hero */}
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-extrabold text-gray-900 mb-6">
-          Servicios para tu LLC en Estados Unidos
-        </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Desde la formación hasta el mantenimiento continuo. Todo lo que necesitas para operar con éxito y tranquilidad.
-        </p>
-      </div>
+    <main>
+      {/* Héroe a todo lo ancho: el mismo degradado y resplandor de /precios */}
+      <section
+        className="relative overflow-hidden text-center px-6 py-24"
+        style={{ background: 'linear-gradient(145deg, #0C2047 0%, #1E3A8A 65%, #1a368a 100%)' }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse 55% 55% at 80% 50%, rgba(59,130,246,.14) 0%, transparent 70%)' }}
+        />
+        <div className="relative max-w-3xl mx-auto">
+          <span className="inline-block text-xs font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full bg-blue-50 text-blue-700 mb-6">
+            Formación, mantenimiento y cumplimiento
+          </span>
+          <h1 className="font-extrabold text-white leading-tight mb-5" style={{ fontSize: 'clamp(30px, 4.5vw, 56px)' }}>
+            Servicios para tu LLC en Estados Unidos
+          </h1>
+          <p className="mx-auto" style={{ fontSize: 'clamp(16px, 1.8vw, 20px)', color: 'rgba(255,255,255,.75)' }}>
+            Desde la formación hasta el mantenimiento continuo. Todo lo que necesitas para operar con éxito y tranquilidad.
+          </p>
+        </div>
+      </section>
 
-      {/* Paquetes - se mantiene igual */}
-
-      {/* Servicios Individuales */}
-      <section className="bg-slate-50 border border-slate-200 rounded-3xl px-6 py-12 md:px-12 md:py-14">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {/* Servicios Individuales */}
+        <section className="bg-slate-50 border border-slate-200 rounded-3xl px-6 py-12 md:px-12 md:py-14">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-slate-900">Servicios Individuales</h2>
           <p className="text-slate-600 mt-3">Soluciones específicas para cada necesidad</p>
@@ -96,9 +114,11 @@ export default function ServiciosPage() {
                 }`}
               />
 
-              {/* Fila superior: a la izquierda irá el icono del servicio y a la derecha la etiqueta */}
-              <div className="flex items-start justify-between gap-4 mb-5 min-h-[34px]">
-                <span aria-hidden="true" />
+              {/* Fila superior: icono del servicio a la izquierda, etiqueta a la derecha */}
+              <div className="flex items-start justify-between gap-4 mb-5 min-h-[44px]">
+                <span aria-hidden="true" className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center flex-shrink-0">
+                  <s.icono size={22} />
+                </span>
                 {s.highlight && (
                   <span className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 text-sm font-bold px-4 py-1 rounded-full whitespace-nowrap">
                     ⭐ Recomendado
@@ -131,7 +151,8 @@ export default function ServiciosPage() {
             </div>
           ))}
         </div>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

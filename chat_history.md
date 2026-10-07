@@ -3439,7 +3439,39 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
 >
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 23:12)
+---
+### 📅 Chat Session: 2026-10-07 23:34
+**Main objective:** Pasar el cuerpo de `/servicios` y de `/recursos` a Inter, como en `/precios`.
+
+#### 👤 User Request:
+> «Me gusta más Inter, como está en `/precios`. Por favor, cambia a Inter en `/servicios` y también en `/recursos`».
+
+#### 🤖 Agent Solution:
+- **Commit `2c2b457`**, siguiendo el patrón de `/precios` (que declara la familia en su propio `main`): en
+  `app/servicios/page.tsx` el `main` declara `'Inter', sans-serif` y el titular del héroe conserva su Plus Jakarta Sans
+  —igual que allí, héroe en Jakarta y cuerpo en Inter—; en `app/recursos/page.tsx` se añade el
+  `import '../homepage-v4.css'` (que es lo que trae la fuente) y el `main` declara Inter junto al fondo por token que
+  ya tenía. Ninguna de las dos páginas define familia propia, así que todo su contenido la hereda.
+- **Verificado en producción, con las fuentes ya resueltas:** `/servicios` tiene el `main` en `Inter, sans-serif` y el
+  `h1` en `"Plus Jakarta Sans", sans-serif`, con las caras **Inter 400, Inter 600 y Plus Jakarta Sans 800 cargadas**;
+  en `/recursos` el `main`, el `h1` y los párrafos están en Inter, con **Inter 400 y 600 cargadas**. La cabecera y el
+  pie siguen con la tipografía del sistema en las dos páginas, igual que en `/precios` (no se toca el marco del sitio).
+- **Trampa de verificación nueva, y esta vez era mía otra vez:** di por hecho que el despliegue no había llegado
+  porque buscaba en el HTML la cadena `font-family:'Inter', sans-serif` **con las comillas simples literales**, y React
+  las escapa en el HTML servido como `&#x27;`. La cadena real es
+  `font-family:&#x27;Inter&#x27;, sans-serif`. Con el marcador correcto el despliegue llevaba ya un rato arriba. Regla:
+  cuando el marcador sale de un `style` en línea, buscarlo **escapado** (o usar texto sin comillas), y no fiarse del
+  primer «cero coincidencias».
+- **Files created/modified:** `app/servicios/page.tsx`, `app/recursos/page.tsx` (commit `2c2b457`), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// las dos páginas declaran la familia en su main, como /precios
+<main style={{ fontFamily: "'Inter', sans-serif" }}>                                  // servicios
+<main style={{ background: 'var(--color-background)', fontFamily: "'Inter', sans-serif" }}>  // recursos
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 23:34)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3481,6 +3513,6 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
 19. ✅ **CERRADO** *(07-10-2026)* — Segunda pasada de `/servicios`: iconos por servicio y héroe con el degradado
     (commit `7a8c430`).
 20. ✅ **CERRADO** *(07-10-2026)* — Tipografía del titular del héroe de `/servicios` igualada a la de `/precios`
-    (Plus Jakarta Sans, commit `ff32d91`). **Observación, sin pendiente abierto:** el cuerpo de `/servicios` sigue con
-    la tipografía del sistema mientras `/precios` usa Inter en todo el texto; alinearlo es una decisión aparte que el
-    usuario no ha pedido.
+    (Plus Jakarta Sans, commit `ff32d91`).
+21. ✅ **CERRADO** *(07-10-2026)* — Cuerpo de `/servicios` y de `/recursos` pasado a Inter, como `/precios`
+    (commit `2c2b457`).

@@ -3539,8 +3539,15 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
   web»**, pero eso vale para problemas que se pueden corregir; y añade que «no siempre tiene sentido corregir y validar
   un problema concreto» y que se decida según el criterio propio. De los cuatro casos, tres son estados previstos y el
   cuarto es una variante ya descartada: iniciar validaciones ahí solo añadiría ruido.
-- **Dato que sí conviene mirar:** las tres filas «Iniciada» son las que estaban bien planteadas (noindex 15, 404 6 y
-  descubiertas 46, con el re-rastreo en marcha y aviso por correo al terminar). Y «Descubierta: actualmente sin
+- **Dato que sí conviene mirar:** las tres filas «Iniciada» (noindex 15, 404 6 y descubiertas 46) tienen la validación
+  **en marcha**, y eso no hay que relanzarlo: Google avisa por correo al resolverla. **Pero eso no equivale a «no hay
+  nada que hacer» en el grupo de descubiertas.** La documentación describe ese grupo así: «Google ha encontrado la
+  página, pero **todavía no la ha rastreado**. Probablemente porque ha determinado que, de hacerlo, el sitio se
+  sobrecargaría. Por tanto, ha tenido que aplazar el rastreo». Para pedir el rastreo de una URL concreta existe
+  **«Solicitar indexación»**, en la inspección de URLs, que se hace de una en una y tiene cupo diario. Son dos cosas
+  distintas y compatibles: la validación es un re-chequeo del grupo que no necesita nada de nosotros, y la solicitud
+  por URL es la palanca prioritaria para las páginas de dinero. **Confundir ambas cosas fue un error de redacción de
+  este informe, detectado por el usuario**, y queda corregido aquí, en su sitio. Y «Descubierta: actualmente sin
   indexar» ha pasado de **34 a 46** desde la captura anterior: es el grupo que más importa (ahí están las páginas de
   dinero) y su causa sigue siendo la escasez de rastreo en este dominio, no un bloqueo. Las palancas son las que ya
   están en marcha: sitemap con `lastmod` estable, enlazado interno, host único y «Solicitar indexación» de las páginas
@@ -3553,7 +3560,7 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
 auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con canonical ajeno
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-08 00:05)
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-08 00:20)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3568,7 +3575,9 @@ auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con c
 3. ✅ **CERRADO** *(usuario, 07-10-2026)* — Decisión: el micro va solo en la caja del chat.
 
 **Google Search Console**
-4. «Validar corrección» en GSC del grupo de `noindex` (las 16) y de las filas `/servicios/form-5472` y `/guias/us`. *Tú.*
+4. «Validar corrección» en GSC: las validaciones están **en marcha** («Iniciada») para `noindex` (16 → 15), 404 (6) y
+   descubiertas (46), y **no se relanzan** — Google avisa por correo al resolverlas. Ojo: eso no es lo mismo que
+   «no hay nada que hacer» en el grupo de descubiertas; ver el pendiente 23. *Tú (nada que hacer salvo esperar).*
 5. «Solicitar indexación» en GSC de portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`, unas pocas al día. *Tú.*
 6. `favicon.ico` real (acabado, menor). *Yo.*
@@ -3606,8 +3615,12 @@ auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con c
     alternativa con etiqueta canónica adecuada», «Rastreada: actualmente sin indexar» y «Duplicada: el usuario no ha
     indicado ninguna versión canónica») **no requieren nada**: las tres primeras son estados previstos por diseño (en
     la segunda, Google dice literalmente que no hay que hacer nada) y la cuarta no corresponde a ninguna URL del
-    sitemap —auditadas las 65, todas declaran su propio canonical—. Las validaciones útiles son las tres que ya están
-    «Iniciada»: `noindex` (16 → 15), 404 (6) y descubiertas (46). *Tú.*
+    sitemap —auditadas las 65, todas declaran su propio canonical—. Las tres validaciones en marcha
+    (`noindex` 16 → 15, 404 6 y descubiertas 46) siguen su curso y no hay que relanzarlas. **Y no son la alternativa a
+    «Solicitar indexación»: son dos cosas distintas.** La validación es un re-chequeo del grupo; «Solicitar
+    indexación» es la herramienta de inspección, se hace **URL por URL** y es la palanca prioritaria para las páginas
+    de dinero (pendiente 5). Para el grupo de descubiertas, la acción propia es esa, unas pocas al día, porque la
+    documentación describe el grupo como «Google todavía no la ha rastreado». *Tú.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

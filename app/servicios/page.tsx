@@ -131,7 +131,14 @@ export default function ServiciosPage() {
               </div>
 
               <h3 className="text-2xl font-bold text-slate-900 mb-2">{s.title}</h3>
-              <p className="text-4xl font-extrabold text-blue-600 mb-6">{s.price}</p>
+              {/* El precio va en Plus Jakarta Sans, como en /precios: es la unica familia con cara 800
+                  cargada, porque de Inter solo llegan las 400, 500 y 600 y la negrita se quedaba en 600. */}
+              <p
+                className="text-4xl font-extrabold text-blue-600 mb-6"
+                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+              >
+                {s.price}
+              </p>
               <p className="text-slate-600 mb-8">{s.tagline}</p>
 
               <ul className="space-y-3 mb-10">

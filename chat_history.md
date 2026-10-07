@@ -3233,40 +3233,65 @@ al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dic
 - **Verificación pendiente:** que el usuario pruebe en su Vivaldi y confirme que ya no se le ofrece el micro (puede
   tardar una visita, porque la memoria se escribe al fallar) y que en Edge todo sigue igual.
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 00:53)
+---
+### 📅 Chat Session: 2026-10-07 15:32
+**Main objective:** Cerrar la faena del dictado por voz con las pruebas del usuario.
+
+#### 👤 User Request:
+> El usuario trae sus resultados: «1. Probar en Vivaldi: pulsar el micro una vez para que quede apuntado y comprobar
+> que después ya no se ofrece. ✅ OK. 2. Dictado real con Chrome. ✅ OK. 3. Decidir si el micro va también en los
+> formularios del widget (nombre, email, teléfono) o solo en la caja del chat. Mi respuesta: ✅ Sólo en la caja del
+> chat.»
+
+#### 🤖 Agent Solution:
+- **El dictado queda cerrado y verificado de punta a punta**, contando las dos partes: el asistente comprobó en
+  producción el botón, el camino de error, la memoria del fallo (con la clave sembrada y con la clave caducada) y la
+  no-regresión del envío, y el usuario ha probado el dictado real en Chrome y el aprendizaje del fallo en su Vivaldi.
+  Es el primer asunto de voz que se cierra entero desde el principio, sin dejar flecos.
+- **Decisión registrada: el micro vive SOLO en la caja del chat**, no en los formularios del widget (nombre, email y
+  teléfono). No hay nada que implementar: es una decisión de producto y evita que el visitante tenga que dictar datos
+  personales sin necesidad.
+- **Pendientes 1, 2 y 3 cerrados en su sitio, sin renumerar** (el usuario cita los pendientes por su número, así que
+  los números se mantienen y los cerrados se marcan como tales).
+- **Sin cambios de código en esta sesión:** solo el registro.
+- **Files created/modified:** `chat_history.md`.
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 15:32)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
-> acciones realizadas. Lo que se cierra, se elimina de aquí. Los pendientes van numerados para poder referirse a
-> ellos por su número.
+> acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
+> renumeran al cerrar uno**: lo cerrado se marca en su sitio y el número queda libre. Cada línea dice de quién es la
+> tarea: «tú» o «yo».
 > **Aparcado el 05-10-2026:** la línea de voz con proveedores se retoma cuando el usuario lo diga. El dictado del chat
 > es otra cosa: usa las APIs del navegador y no cuesta nada.
 
 **Chat de Zara**
-1. **Probar en Vivaldi** (usuario): al pulsar el micro una vez, ese navegador queda apuntado y el botón ya no se
-   ofrece en las visitas siguientes; el aviso explica que hay que dictar con Chrome, Edge o Safari.
-2. **Dictado real con Chrome** (usuario): en Edge ya funciona.
-3. **Decidir si el micro va también en los formularios del propio widget** (nombre, email, teléfono) o solo en la caja
-   del chat — hoy solo está en el chat.
+1. ✅ **CERRADO** *(usuario, 2026-10-07)* — Probar en Vivaldi: el micro queda apuntado al primer fallo y ya no
+   se ofrece después.
+2. ✅ **CERRADO** *(usuario, 2026-10-07)* — Dictado real con Chrome: funciona.
+3. ✅ **CERRADO** *(usuario, 2026-10-07)* — Decisión: el micro va **solo en la caja del chat**, no en los
+   formularios del widget.
 
 **Google Search Console**
 4. **«Validar corrección» en GSC** para el grupo de `noindex` (las 16 ya no llevan la etiqueta) y para las filas de
-   `/servicios/form-5472` y `/guias/us`. Lo hace el usuario.
+   `/servicios/form-5472` y `/guias/us`. *Tú.*
 5. **«Solicitar indexación» en GSC** para portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
-   `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`. Unas pocas al día, lo hace el usuario.
-6. **`favicon.ico` real** (acabado, menor).
-7. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas.**
+   `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`, unas pocas al día. *Tú.*
+6. **`favicon.ico` real** (acabado, menor). *Yo.*
+7. **Volver a mirar «Páginas» en GSC dentro de una o dos semanas.** *Tú.*
 
 **Producto / decisiones de negocio**
-8. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Detectado el 19-09-2026.*
-9. **Número de WhatsApp definitivo** (hoy uno provisional en el footer).
-10. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.*
+8. **Wallets cripto del checkout** (`TU_BILLETERA_*_AQUI`, líneas 405, 412 y 419). *Aplazado hasta que existan las
+   wallets.*
+9. **Número de WhatsApp definitivo** (hoy el provisional `+34 699087039`). *Tú.*
+10. **Nota de plazos en los 3 puntos restantes de la home** que prometen «72 horas». *Detectado el 19-09-2026.* *Yo.*
 
 **Técnico**
-11. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción).
+11. **Verificar a ojo los tres botones de la calculadora** (el resto del lote ya está confirmado en producción). *Tú.*
 12. **Despliegue pendiente de:** limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-13. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`.
-14. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11.
+13. **Limpieza menor:** `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`. *Yo.*
+14. **Subir dependencias críticas:** Next.js 16.3.4 → 16.3.8 y Clerk 6.x → 7.9.11. *Yo.*
 15. **Unificar los ayudantes de voz (queda menos):** la memoria del fallo ya es compartida por los tres sitios, pero
     `Header.tsx` y `app/zara/page.tsx` conservan su copia de `speechSupported`, `isSpeechlessBrowser`,
-    `describeRecognitionError` y `createRecognition`. Sustituirlas por las del módulo es cosmético y sin prisa.
+    `describeRecognitionError` y `createRecognition`. Cosmético y sin prisa. *Yo.*
 16. **Voz de Zara con proveedores — aparcada:** se retoma cuando el usuario lo diga.

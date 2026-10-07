@@ -3302,7 +3302,51 @@ al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dic
 //       hover:shadow-2xl hover:-translate-y-1 transition-all
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 16:15)
+---
+### 📅 Chat Session: 2026-10-07 22:24
+**Main objective:** Aplicar la opción A (banda suave + tarjetas elevadas) en `/servicios`.
+
+#### 👤 User Request:
+> «Elijo la opción (A) BANDA SUAVE + TARJETAS ELEVADAS. Para una segunda pasada puedes incluir los iconos de cada
+> servicio y el héroe con degradado. En el caso de los servicios que tienen la etiqueta ⭐Recomendado, coloca dicha
+> etiqueta en el centro de la tarjeta (o en la derecha) para que quede más o menos a la misma altura que el icono.
+> Me interesa que se mantenga en las tarjetas el efecto hover.»
+
+#### 🤖 Agent Solution:
+- **Commit `a620da8`**, un solo fichero: `app/servicios/page.tsx` (+28/-12). El héroe y los iconos **no** se tocan
+  (van a la segunda pasada, como pidió).
+- La sección pasa a ser un panel con tinte (`bg-slate-50 border border-slate-200 rounded-3xl px-6 py-12 md:px-12`) y
+  cada tarjeta lleva borde `slate-300` de 2 px, sombra `0 12px 32px -16px rgba(15,23,42,0.28)` y barra de acento
+  arriba (azul la normal, ámbar la destacada). El título pasa a `slate-900` y los textos a `slate-600`, dejando el
+  azul para el precio y el botón.
+- **Etiqueta movida a la derecha** de una fila superior con altura reservada (`min-h-[34px]`): medida en producción,
+  queda a 30 px del borde derecho y a 30 px del borde superior, es decir **a la misma altura a la que quedará el
+  icono** en la izquierda. Todas las tarjetas reservan esa altura, así que quedan alineadas entre sí.
+- **El hover se mantiene y se refuerza** (petición expresa del usuario): `hover:-translate-y-1 hover:shadow-2xl` más
+  el borde oscurecido, con `transition-all duration-200`; el botón conserva su `hover:bg-blue-700`.
+- **Verificado en producción, no solo en el código:** el HTML servido lleva las cuatro clases exclusivas del cambio;
+  los valores computados son los previstos (panel `rgb(248,250,252)` con borde `rgb(226,232,240)`; tarjeta blanca con
+  borde `rgb(203,213,225)` de 2 px y la sombra exacta; destacada con borde `rgb(251,191,36)`; barra de acento
+  `position: absolute`); el CSS desplegado contiene `.hover\:-translate-y-1:hover`, `.hover\:shadow-2xl:hover` y
+  `.hover\:border-slate-400:hover`; y **el hover se comprobó moviendo el ratón de verdad sobre una tarjeta**: sube
+  3,5 px (`matrix(1,0,0,1,0,-3.5)`), la sombra pasa a `0 25px 50px -12px` y el borde a `rgb(148,163,184)`. A 375 px
+  la rejilla queda en una sola columna de 289 px y no hay desborde horizontal. Los seis destinos «Ver detalles y
+  contratar» responden 200.
+- **Trampa de la verificación, para no repetirla:** el primer intento de medir el hover dio «no funciona» porque el
+  punto del ratón caía fuera de la ventana (la tarjeta estaba por debajo del pliegue) y, además, el selector
+  `.grid > div` coincide también con rejillas de la cabecera y del pie: hay que localizar la tarjeta por su clase
+  (`border-slate-300` con `rounded-3xl`) y hacer `scrollIntoView` antes de mover el ratón.
+- **Files created/modified:** `app/servicios/page.tsx` (commit `a620da8`), `chat_history.md`.
+- **Pendiente que abre:** la segunda pasada de esta misma página (iconos por servicio y héroe con degradado).
+
+#### 💻 Key Code:
+```tsx
+className={`relative bg-white rounded-3xl p-8 border-2 shadow-[0_12px_32px_-16px_rgba(15,23,42,0.28)] transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl ${
+  s.highlight ? 'border-amber-400 hover:border-amber-500' : 'border-slate-300 hover:border-slate-400'
+}`}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-07 22:24)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3337,9 +3381,11 @@ al pulsar el micro sin permiso:  aviso en espanol + [Zara dictado] error del dic
 16. Voz de Zara con proveedores — aparcada.
 
 **Diseño**
-17. **Decidir la UI de `/servicios`** entre las tres opciones propuestas y, si se autoriza, implementarla y
-    verificarla. El comparativo está en `Downloads\Propuesta_UI_Servicios_2026-10-07_mockup.html`. *Tú decides, yo la
-    implemento.*
+17. ✅ **CERRADO** *(07-10-2026)* — UI de `/servicios`: opción A aplicada, desplegada y verificada en producción
+    (commit `a620da8`).
 18. **Decidir si `/servicios` recupera su bloque de paquetes** (Starter, Professional y Business), perdido el
     25-05-2026 en el commit `3a5c544`: hoy la página solo muestra servicios individuales. Si se restaura, los precios
-    deben salir de la fuente actual ($349 / $499 / $849), no del commit antiguo. *Tú decides, yo lo implemento.*
+    deben salir de la fuente actual ($349 / $499 / $849). *Tú decides, yo lo implemento.*
+19. **Segunda pasada de `/servicios`:** iconos de cada servicio (en el hueco izquierdo de la fila superior, a la
+    altura de la etiqueta) y el héroe con el degradado navy → azul de `/precios`. *Autorizado a medias por el usuario:
+    pendiente de que diga cuándo.*

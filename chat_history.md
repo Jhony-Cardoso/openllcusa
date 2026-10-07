@@ -3553,7 +3553,7 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
 auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con canonical ajeno
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-08 00:04)
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-08 00:05)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3568,44 +3568,46 @@ auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con c
 3. ✅ **CERRADO** *(usuario, 07-10-2026)* — Decisión: el micro va solo en la caja del chat.
 
 **Google Search Console**
-4. «Validar corrección» en GSC del grupo de `noindex` (las 16 → ya 15) y de las filas `/servicios/form-5472` y
-   `/guias/us`. **Las validaciones ya están en marcha** («Iniciada»); solo queda esperar el aviso por correo. *Tú.*
+4. «Validar corrección» en GSC del grupo de `noindex` (las 16) y de las filas `/servicios/form-5472` y `/guias/us`. *Tú.*
 5. «Solicitar indexación» en GSC de portada, `/precios`, `/calculadora-fiscal`, `/crear-llc-usa`,
    `/llc-para-no-residentes`, `/guias`, `/blog` y `/quiz`, unas pocas al día. *Tú.*
 6. `favicon.ico` real (acabado, menor). *Yo.*
-7. Volver a mirar «Páginas» en GSC dentro de una o dos semanas, **con atención a «Descubierta: actualmente sin
-   indexar», que ha pasado de 34 a 46**. *Tú.*
-8. *(Sin acción)* Las cuatro filas «No iniciada» («Página con redirección», «canónica adecuada», «Rastreada sin
-   indexar» y «Duplicada sin canónica») **no requieren nada**: tres son estados previstos y la cuarta no corresponde a
-   ninguna URL del sitemap (auditadas las 65, todas con canonical propio). Se deja aquí como constancia para que no se
-   vuelva a preguntar.
+7. Volver a mirar «Páginas» en GSC dentro de una o dos semanas. *Tú.*
 
 **Producto / decisiones de negocio**
-9. Wallets cripto del checkout — aplazado hasta que existan.
-10. Número de WhatsApp definitivo (hoy el provisional `+34 699087039`). *Tú.*
-11. Nota de plazos en los 3 puntos de la home que prometen «72 horas» sin aclaración. *Yo.*
+8. Wallets cripto del checkout — aplazado hasta que existan.
+9. Número de WhatsApp definitivo (hoy el provisional `+34 699087039`). *Tú.*
+10. Nota de plazos en los 3 puntos de la home que prometen «72 horas» sin aclaración. *Yo.*
 
 **Técnico**
-12. Verificar a ojo los tres botones de la calculadora. *Tú.*
-13. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-14. Limpieza menor: `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`. *Yo.*
-15. Subir dependencias críticas (Next 16.3.4 → 16.3.8 y Clerk 6 → 7.9.11). *Yo.*
-16. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
-17. Voz de Zara con proveedores — aparcada.
+11. Verificar a ojo los tres botones de la calculadora. *Tú.*
+12. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
+13. Limpieza menor: `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`. *Yo.*
+14. Subir dependencias críticas (Next 16.3.4 → 16.3.8 y Clerk 6 → 7.9.11). *Yo.*
+15. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
+16. Voz de Zara con proveedores — aparcada.
 
 **Diseño**
-18. ✅ **CERRADO** *(07-10-2026)* — UI de `/servicios`: opción A aplicada, desplegada y verificada (commit `a620da8`).
-19. **Decidir si `/servicios` recupera su bloque de paquetes** (Starter, Professional y Business), perdido el
+17. ✅ **CERRADO** *(07-10-2026)* — UI de `/servicios`: opción A aplicada, desplegada y verificada (commit `a620da8`).
+18. **Decidir si `/servicios` recupera su bloque de paquetes** (Starter, Professional y Business), perdido el
     25-05-2026 en el commit `3a5c544`: hoy la página solo muestra servicios individuales. Si se restaura, los precios
     deben salir de la fuente actual ($349 / $499 / $849). *Tú decides, yo lo implemento.*
-20. ✅ **CERRADO** *(07-10-2026)* — Segunda pasada de `/servicios`: iconos por servicio y héroe con el degradado
+19. ✅ **CERRADO** *(07-10-2026)* — Segunda pasada de `/servicios`: iconos por servicio y héroe con el degradado
     (commit `7a8c430`).
-21. ✅ **CERRADO** *(07-10-2026)* — Tipografía del titular del héroe de `/servicios` igualada a la de `/precios`
+20. ✅ **CERRADO** *(07-10-2026)* — Tipografía del titular del héroe de `/servicios` igualada a la de `/precios`
     (Plus Jakarta Sans, commit `ff32d91`).
-22. ✅ **CERRADO** *(07-10-2026)* — Cuerpo de `/servicios` y de `/recursos` pasado a Inter, como `/precios`
+21. ✅ **CERRADO** *(07-10-2026)* — Cuerpo de `/servicios` y de `/recursos` pasado a Inter, como `/precios`
     (commit `2c2b457`).
-23. ✅ **CERRADO** *(07-10-2026)* — Precios de `/servicios` en negrita real, con Plus Jakarta Sans como `/precios`
+22. ✅ **CERRADO** *(07-10-2026)* — Precios de `/servicios` en negrita real, con Plus Jakarta Sans como `/precios`
     (commit `f77bc6a`).
+
+**Google Search Console (constancia, sin acción)**
+23. *(Sin acción)* Las cuatro filas «No iniciada» del informe de Páginas («Página con redirección», «Página
+    alternativa con etiqueta canónica adecuada», «Rastreada: actualmente sin indexar» y «Duplicada: el usuario no ha
+    indicado ninguna versión canónica») **no requieren nada**: las tres primeras son estados previstos por diseño (en
+    la segunda, Google dice literalmente que no hay que hacer nada) y la cuarta no corresponde a ninguna URL del
+    sitemap —auditadas las 65, todas declaran su propio canonical—. Las validaciones útiles son las tres que ya están
+    «Iniciada»: `noindex` (16 → 15), 404 (6) y descubiertas (46). *Tú.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

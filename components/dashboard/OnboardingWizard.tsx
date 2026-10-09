@@ -1016,7 +1016,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
                             <Globe className="text-amber-600 shrink-0 mt-0.5" size={20} />
                             <p className="text-sm text-amber-900">
-                                <strong>Importante:</strong> Los campos marcados con 🇺🇸 deben completarse en <strong>inglés</strong>, exactamente como aparecerán en el formulario oficial del IRS.
+                                <strong>Importante:</strong> Los campos marcados con <Flag countryCode="US" size="xs" title="Estados Unidos" /> deben completarse en <strong>inglés</strong>, exactamente como aparecerán en el formulario oficial del IRS.
                             </p>
                         </div>
 
@@ -1025,7 +1025,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             {/* L-1: Nombre legal de la LLC */}
                             <div className="space-y-1 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    🇺🇸 Nombre legal de la LLC (SS-4 Línea 1) <span className="text-rose-500">*</span>
+                                    <Flag countryCode="US" size="xs" title="Estados Unidos" /> Nombre legal de la LLC (SS-4 Línea 1) <span className="text-rose-500">*</span>
                                 </label>
                                 <p className="text-xs text-slate-400 ml-1">El nombre exacto con el que se registró la LLC, incluyendo el sufijo (LLC, L.L.C., etc.)</p>
                                 <input
@@ -1040,7 +1040,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             {/* L-2: Nombre comercial / DBA */}
                             <div className="space-y-1 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    🇺🇸 Nombre comercial / DBA (SS-4 Línea 2 — opcional)
+                                    <Flag countryCode="US" size="xs" title="Estados Unidos" /> Nombre comercial / DBA (SS-4 Línea 2 — opcional)
                                 </label>
                                 <p className="text-xs text-slate-400 ml-1">Solo si tu negocio usa un nombre público distinto al legal. Dejar en blanco si no aplica.</p>
                                 <input
@@ -1060,7 +1060,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             {/* L-4a: Dirección postal de la ENTIDAD - calle */}
                             <div className="space-y-1 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    🇺🇸 Calle / Número / Suite (SS-4 Línea 4a) <span className="text-rose-500">*</span>
+                                    <Flag countryCode="US" size="xs" title="Estados Unidos" /> Calle / Número / Suite (SS-4 Línea 4a) <span className="text-rose-500">*</span>
                                 </label>
                                 <p className="text-xs text-slate-400 ml-1">Para LLC en Wyoming: la dirección de tu Registered Agent (la proporcionamos nosotros). Para otras jurisdicciones: la dirección física del negocio.</p>
                                 <input
@@ -1075,7 +1075,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             {/* L-4b: Ciudad, Estado, ZIP */}
                             <div className="space-y-1">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    🇺🇸 Ciudad, Estado y ZIP (SS-4 Línea 4b) <span className="text-rose-500">*</span>
+                                    <Flag countryCode="US" size="xs" title="Estados Unidos" /> Ciudad, Estado y ZIP (SS-4 Línea 4b) <span className="text-rose-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -1089,7 +1089,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             {/* L-6: Condado y Estado del negocio */}
                             <div className="space-y-1">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    🇺🇸 Condado y Estado del negocio (SS-4 Línea 6) <span className="text-rose-500">*</span>
+                                    <Flag countryCode="US" size="xs" title="Estados Unidos" /> Condado y Estado del negocio (SS-4 Línea 6) <span className="text-rose-500">*</span>
                                 </label>
                                 <p className="text-xs text-slate-400 ml-1">Para WY: Laramie, WY</p>
                                 <input
@@ -1149,7 +1149,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             {/* L-16: Actividad principal */}
                             <div className="space-y-1 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    🇺🇸 Actividad principal del negocio (SS-4 Línea 16) <span className="text-rose-500">*</span>
+                                    <Flag countryCode="US" size="xs" title="Estados Unidos" /> Actividad principal del negocio (SS-4 Línea 16) <span className="text-rose-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -1163,7 +1163,7 @@ export default function OnboardingWizard({ pedidoId, nombreUsuario, esEIN = fals
                             {/* L-17: Producto/servicio principal */}
                             <div className="space-y-1 md:col-span-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    🇺🇸 Producto o servicio principal (SS-4 Línea 17) <span className="text-rose-500">*</span>
+                                    <Flag countryCode="US" size="xs" title="Estados Unidos" /> Producto o servicio principal (SS-4 Línea 17) <span className="text-rose-500">*</span>
                                 </label>
                                 <input
                                     type="text"

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Flag from '@/components/Flag'
 
 
 // ──────────────────────────────────────────────
@@ -90,7 +91,8 @@ export default function CrearLlcEspanaPage() {
         <div className="absolute inset-0 bg-black/20 mix-blend-multiply"></div>
         <div className="max-w-5xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-2 bg-black/30 border border-white/20 text-white text-sm font-bold px-5 py-2 rounded-full mb-8">
-            🇪🇸 Diseñado para residentes fiscales en España
+            <Flag countryCode="ES" size="sm" title="España" />
+            Diseñado para residentes fiscales en España
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
             Abre tu LLC en USA desde España

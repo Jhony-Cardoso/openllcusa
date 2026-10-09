@@ -75,7 +75,7 @@ const QUESTIONS = [
   },
   {
     id: 3,
-    icon: '🇺🇸',
+    icon: '🗽',
     title: '¿Qué porcentaje de tus clientes son de Estados Unidos?',
     subtitle: 'El factor más importante para una LLC',
     badge: 'Importante',

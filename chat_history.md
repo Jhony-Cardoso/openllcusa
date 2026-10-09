@@ -3878,7 +3878,68 @@ icon: '🗽',
 />
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 23:15)
+---
+### 📅 Chat Session: 2026-10-09 23:46
+**Main objective:** Commitear el cambio del usuario en `/faq-calculadora`, borrar `components/FlagSafe.tsx` y atacar el
+punto 14 (dependencias críticas: Next y Clerk).
+
+#### 👤 User Request:
+> «Los cambios en el texto de /faq-calculadora los he hecho yo mismo. Se puede commitear. - components/FlagSafe.tsx ya
+> no lo importa nadie. ✅ Ok, se puede borrar. El resto del punto 13 déjalo por el momento. Por otra parte, ataca el
+> Punto 14. Subir dependencias críticas (Next 16.3.4 → 16.3.8, Clerk 6 → 7.9.11).»
+
+#### 🤖 Agent Solution:
+- **Commit `002e244`** (su cambio de `/faq-calculadora`, un solo fichero) y **`8241d45`** (borrado de
+  `components/FlagSafe.tsx`, comprobado antes con `git grep`: solo se referenciaba a sí mismo y a un comentario, que se
+  ha reescrito para que no mencione un fichero que ya no existe). El resto del punto 13 se deja como estaba.
+- **Punto 14, parte 1 — Next `23ff0a3` (desplegado y verificado):** `next`, `@next/third-parties` y
+  `eslint-config-next` 16.3.4 → **16.3.8** (van atados a la misma versión). Tres líneas en `package.json`, 52 en el
+  lock. Tipos: los mismos 34 errores preexistentes, ninguno de Next. Sitio comprobado tras el despliegue: `/`, `/precios`,
+  `/servicios` y `/sign-in` responden 200.
+- **Punto 14, parte 2 — Clerk `dac01bb` (COMMITEADO, AÚN SIN SUBIR a propósito):** `@clerk/nextjs` ^6.39.1 →
+  **^7.9.11** (instalado 7.9.13) y `@clerk/localizations` ^3.37.3 → ^4.22.1, más la migración que Core 3 exige.
+- **Antes de tocar nada se auditaron las 15 rupturas de Core 3 contra el código**, y solo DOS afectan al repo:
+  `<SignedIn>`/`<SignedOut>` (sustituidos por `<Show>`) y `afterSignOutUrl` en `<UserButton>`. NO nos afectan
+  `appearance.layout`, `getToken`, `createTheme`, `__experimental_`, `saml`, `hideSlug`, `@clerk/types`,
+  `secretKey` en `clerkMiddleware` ni `showOptionalFields`; el repo usa la API estable (`auth`, `currentUser`,
+  `clerkClient`, `useUser`, `ClerkProvider`, `SignInButton`, `UserButton`).
+- **Trampa importante que se descubrió y que decidió el método:** los componentes retirados **siguen exportados** pero
+  están tipados para LANZAR un error al renderizarse (`declare function SignedIn(...): never`), así que **el typecheck
+  no los delata**: hubo que buscarlos. La migración se hizo en `components/layout/Header.tsx`: los 5 usos pasan a
+  `<Show when="signed-in">` / `<Show when="signed-out">` y los dos `<UserButton afterSignOutUrl="/" />` pierden el
+  prop, que se mueve al `<ClerkProvider>` de `app/layout.tsx` (la propia librería dice «Move afterSignOutUrl to
+  `<ClerkProvider />`»).
+- **Verificación:** `tsc` devuelve **exactamente los mismos 34 errores** que antes del cambio (comparados línea a
+  línea con `diff`: idénticos) y ninguna referencia viva a `SignedIn`, `SignedOut` ni `afterSignOutUrl`. Node del
+  contenedor (`node:20-alpine`) cumple el requisito de Clerk 7 (≥20.9). `CLERK_ENCRYPTION_KEY` solo hace falta si se
+  pasa `secretKey` a `clerkMiddleware()` y no es el caso; el cambio de 404 a 401 de `auth.protect()` afecta solo a
+  server actions y el repo no tiene ninguna.
+- **NO se ha subido la parte de Clerk**: es una subida de versión MAYOR en el sistema de autenticación de un sitio en
+  producción y sin tests, y el peor fallo posible es que nadie pueda iniciar sesión. Queda esperando la comprobación
+  local del usuario (`npm run dev` + entrar y salir de la cuenta) antes de subirla.
+- **Comprobación colateral, por si alguien la ve:** `/dashboard` responde 404 a `curl` sin cabeceras, pero **307 a un
+  navegador** (`Accept: text/html`): Clerk distingue navegación de petición programática. Es el comportamiento normal,
+  no un fallo de hoy (se verificó porque salió en el repaso de páginas).
+- **Files created/modified:** `app/faq-calculadora/page.tsx` (`002e244`), `components/FlagSafe.tsx` borrado +
+  `components/Flag.tsx` (`8241d45`), `package.json` + `package-lock.json` (`23ff0a3` y `dac01bb`),
+  `components/layout/Header.tsx` + `app/layout.tsx` (`dac01bb`), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// components/layout/Header.tsx: el componente que sustituye a los dos retirados
+<Show when="signed-out">
+  <SignInButton mode="modal">…</SignInButton>
+</Show>
+<Show when="signed-in">
+  <Link href="/dashboard">Panel</Link>
+  <UserButton />
+</Show>
+
+// app/layout.tsx: el prop retirado del UserButton se mueve al proveedor
+<ClerkProvider … signInUrl="/sign-in" signUpUrl="/sign-up" afterSignOutUrl="/">
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 23:46)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3909,9 +3970,12 @@ icon: '🗽',
 **Técnico**
 11. Verificar a ojo los tres botones de la calculadora. *Tú.*
 12. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-13. Limpieza menor: `_RESPALDO_SERVICIOS/`, los ficheros de prueba de `public/` y `components/FlagSafe.tsx` (ya nada lo
-    importa: su caso de código inválido vive ahora dentro de `components/Flag`). *Yo.*
-14. Subir dependencias críticas (Next 16.3.4 → 16.3.8 y Clerk 6 → 7.9.11). *Yo.*
+13. Limpieza menor: `components/FlagSafe.tsx` ✅ **borrado** *(09-10-2026, commit `8241d45`)*. Siguen aplazados, como
+    pediste, `_RESPALDO_SERVICIOS/` y los ficheros de prueba de `public/`. *Yo, cuando lo digas.*
+14. **Dependencias críticas, a medias:** **Next 16.3.4 → 16.3.8 ✅ subido y verificado** en producción (commit
+    `23ff0a3`). **Clerk 6 → 7.9.13 (Core 3) migrado y commiteado (`dac01bb`) pero SIN SUBIR**: es una versión mayor del
+    sistema de autenticación, así que antes de subirla hay que probar en local (`npm run dev`, entrar y salir de la
+    cuenta, ver la cabecera y el panel). *Tú compruebas, yo subo.*
 15. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
 16. Voz de Zara con proveedores — aparcada.
 

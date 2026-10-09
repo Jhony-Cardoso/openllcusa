@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { allCountries, featuredCountries } from '@/components/CountrySelector/countries'
+import { featuredCountries } from '@/components/CountrySelector/countries'
 
 type Pais = { code: string; name: string }
 
@@ -10,8 +10,7 @@ type Pais = { code: string; name: string }
  * enlazaban ninguna) y para dar salida al visitante que todavía no es de Estados Unidos.
  *
  * Los países NO se escriben aquí: salen de components/CountrySelector/countries.ts, que es la fuente
- * única de la que también comen las guías, los selectores de país y el sitemap. El contador de guías
- * se calcula con allCountries.length, así que no se queda desfasado al añadir un país.
+ * única de la que también comen las guías, los selectores de país y el sitemap.
  */
 export default function EnlazadoPaises({
   titulo = '¿Vienes de fuera de Estados Unidos?',
@@ -47,7 +46,7 @@ export default function EnlazadoPaises({
           href="/guias"
           className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:text-blue-900"
         >
-          Ver las {allCountries.length} guías por país →
+          Ver todas las guías por país →
         </Link>
         <p className="text-sm text-slate-500">
           ¿Tu país no está en la lista?{' '}

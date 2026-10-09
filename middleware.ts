@@ -11,12 +11,23 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  const { pathname } = new URL(req.url)
+  const url = new URL(req.url)
+  const hostname = req.headers.get('host') || ''
 
-  // Límite de peticiones en toda la API. Solo se cortocircuita cuando se supera el
-  // límite: el resto del tráfico sigue su curso normal, sin devolver respuesta, para
-  // no interferir con Clerk (que decora la petición con sus cabeceras) ni con los
-  // route handlers. Los webhooks de Stripe y Clerk quedan exentos dentro del guardián.
+  // 1. FORZAR REDIRECCIÓN DE WWW A SIN-WWW Y HTTP A HTTPS
+  const xForwardedProto = req.headers.get('x-forwarded-proto')
+  const esHttp = xForwardedProto === 'http'
+  const tieneWww = hostname.startsWith('www.')
+
+  if (tieneWww || esHttp) {
+    const cleanHost = hostname.replace('www.', '')
+    // Reconstruimos la URL obligando a usar https y el dominio limpio sin www
+    const targetUrl = `https://${cleanHost}${url.pathname}${url.search}`
+    return NextResponse.redirect(targetUrl, 301)
+  }
+
+  // 2. SISTEMA DE LÍMITES DE TU API (Se mantiene intacto)
+  const { pathname } = url
   if (pathname.startsWith('/api/')) {
     const limite = comprobarLimite(pathname, ipDePeticion(req))
     if (!limite.exento && !limite.permitido) {
@@ -27,7 +38,7 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
-  // Solo proteger si es una ruta del dashboard
+  // 3. PROTECCIÓN DE RUTAS DE CLERK (Se mantiene intacto)
   if (isProtectedRoute(req)) {
     await auth.protect()
   }

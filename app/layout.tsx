@@ -130,6 +130,7 @@ export default function RootLayout({
           localization={esES}
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
+          afterSignOutUrl="/"
         >
           <Header />
           {children}

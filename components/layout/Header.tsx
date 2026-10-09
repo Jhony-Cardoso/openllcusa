@@ -19,8 +19,7 @@ import { esFalloDeServicioVoz, marcarServicioVozDescartado, servicioVozDescartad
 import {
   SignInButton,
   SignUpButton,
-  SignedIn,
-  SignedOut,
+  Show,
   UserButton
 } from '@clerk/nextjs'
 
@@ -905,7 +904,7 @@ export default function Header() {
 
             {/* Desktop Auth Buttons */}
             <div className="header-auth-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <SignedOut>
+              <Show when="signed-out">
                 <SignInButton mode="modal">
                   <button style={{ background: 'transparent', border: 'none', color: '#f8fafc', fontWeight: 500, cursor: 'pointer', padding: '0.5rem' }}>
                     Iniciar sesión
@@ -915,18 +914,18 @@ export default function Header() {
                 <Link href="/precios" className="header-auth-button header-auth-button-signup">
                   Empezar
                 </Link>
-              </SignedOut>
+              </Show>
 
-              <SignedIn>
+              <Show when="signed-in">
                 <Link href="/dashboard" style={{ background: 'transparent', border: 'none', color: '#f8fafc', fontWeight: 500, cursor: 'pointer', padding: '0.5rem', textDecoration: 'none' }}>
                   Panel
                 </Link>
-                <UserButton afterSignOutUrl="/" />
-              </SignedIn>
+                <UserButton />
+              </Show>
             </div>
 
             {/* Mobile-only Empezar CTA (visible junto al hamburger) */}
-            <SignedOut>
+            <Show when="signed-out">
               <Link
                 href="/precios"
                 className="header-auth-button header-auth-button-signup header-mobile-empezar"
@@ -934,7 +933,7 @@ export default function Header() {
               >
                 Empezar
               </Link>
-            </SignedOut>
+            </Show>
 
             {/* Mobile Menu Button */}
             <button
@@ -1087,7 +1086,7 @@ export default function Header() {
 
             {/* Auth Buttons Mobile */}
             <div className="mobile-auth-section">
-              <SignedOut>
+              <Show when="signed-out">
                 <SignInButton mode="modal">
                   <button
                     style={{ width: '100%', background: 'transparent', border: 'none', color: '#f8fafc', fontWeight: 500, cursor: 'pointer', padding: '0.5rem' }}
@@ -1099,9 +1098,9 @@ export default function Header() {
                 <Link href="/precios" className="header-auth-button header-auth-button-signup" style={{ width: '100%', textAlign: 'center' }} onClick={closeMobileMenu}>
                   Empezar
                 </Link>
-              </SignedOut>
+              </Show>
 
-              <SignedIn>
+              <Show when="signed-in">
                 <Link
                   href="/dashboard"
                   className="header-auth-button header-auth-button-signin"
@@ -1110,8 +1109,8 @@ export default function Header() {
                 >
                   Panel
                 </Link>
-                <UserButton afterSignOutUrl="/" />
-              </SignedIn>
+                <UserButton />
+              </Show>
             </div>
           </div>
         )}

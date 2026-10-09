@@ -57,6 +57,38 @@ Combine verified technical facts with project priorities and safe operating rule
 - **BOI (FinCEN): sí se explica la exención**, porque es una exención objetiva por tipo de entidad, no una excepción por
   ausencia de hechos (ver `knowledge/custom/q48` y `q60`).
 
+## Banderas de países (reglas propias)
+
+Las banderas del sitio tienen tres decisiones cerradas. Respétalas al tocar cualquiera:
+
+1. **Nunca un emoji de bandera.** Windows no dibuja las banderas emoji: enseña las dos letras
+   regionales del par (o un cuadradito roto), así que el visitante no ve ninguna bandera. Pasó en la
+   portada, en `/crear-llc-usa` y en ocho etiquetas del asistente de onboarding, y hoy no queda ningún
+   emoji de bandera en el repositorio.
+2. **Siempre el componente `components/Flag`**, nunca `react-country-flag` directo:
+
+   ```tsx
+   <Flag countryCode="ES" size="sm" title="España" />
+   ```
+
+   Tamaños: `xs | sm | md | lg | xl`, o un número de píxeles. `title` es el nombre del país y alimenta
+   el `alt`. El motivo: con `svg`, `react-country-flag` **no incrusta el dibujo**, pinta un `<img>`
+   que se descarga de `cdn.jsdelivr.net`; si ese CDN falla o cambia, las banderas desaparecen de la
+   web. Ahora se sirven desde el propio dominio: `/banderas/<código>.svg`.
+3. **Los SVG viven en `public/banderas/`** (27 países, los que usa la app; ~532 KB en total) y son de
+   `lipis/flag-icons`, **licencia MIT** (ver `docs/LICENCIA-banderas.md`).
+
+**Al añadir un país nuevo** (en `components/CountrySelector/countries.ts` o como `countryCode` en el
+código) hay que ejecutar `npm run banderas`: descarga lo que falte y borra las banderas que ya no se
+usan. Si falta el SVG, esa bandera da 404 y se ve un hueco.
+
+**Comprobar que las banderas se sirven desde el dominio:**
+
+```
+curl -s -o /dev/null -w "%{http_code}" https://openllcusa.com/banderas/es.svg     # 200
+curl -sL --compressed https://openllcusa.com/ | grep -c jsdelivr                  # 0
+```
+
 ## Convenciones de edición de ficheros
 
 - **Finales de línea mixtos:** en el repo conviven ficheros en LF y en CRLF (`chat_history.md` y `app/page.tsx` están en CRLF; `knowledge/` y los scripts nuevos, en LF). Antes de editar: **normaliza a LF** (`contenido.replace("\r\n", "\n")`), aplica los cambios y **vuelve a escribir el fichero con su estilo original**.

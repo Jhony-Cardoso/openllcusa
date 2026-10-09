@@ -3601,7 +3601,60 @@ auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con c
 enlaces directos a guias por pais:  /guias -> 27   portada -> 7   /crear-llc-usa -> 0   /precios -> 0
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 14:47)
+---
+### 📅 Chat Session: 2026-10-09 15:10
+**Main objective:** Implementar y medir el bloque de enlazado contextual hacia las guías en las páginas de dinero (punto 24).
+
+#### 👤 User Request:
+> «Vamos entonces con el punto 24. ✅ Implementa el bloque de enlazado contextual hacia las guías en las páginas de
+> dinero. Impleméntalo y después mídelo.»
+
+#### 🤖 Agent Solution:
+- **Commits `db0e99c`** (el bloque) y **`3275116`** (una corrección que se explica más abajo). Tres ficheros:
+  `components/guias/EnlazadoPaises.tsx` (nuevo, componente de servidor), `app/crear-llc-usa/page.tsx` y
+  `app/llc-para-no-residentes/page.tsx`. **El componente compartido es un fichero que no estaba en la lista del
+  pendiente y se enumera aquí a propósito:** las dos páginas necesitan el mismo bloque con los mismos países, y
+  duplicarlo era la vía segura de que se desincronizaran en cuanto se cambiara una palabra o se añadiera un país.
+- **Los países no se escriben a mano:** salen de `components/CountrySelector/countries.ts` (`featuredCountries`: México,
+  Colombia, España, Argentina, Chile y Perú). El bloque enlaza esas seis guías, más el hub `/guias` y `/contacto`
+  («¿Tu país no está en la lista? Escríbenos», siguiendo el precedente de la portada).
+- **Va dentro del cuerpo y justo antes del CTA final**, no en el pie: un bloque de enlaces idéntico repetido en el pie
+  de todo el sitio es el patrón que Google devalúa y además diluye los enlaces contextuales. El fondo del panel se
+  adapta a cada página (`bg-slate-50` sobre la blanca, `bg-white` sobre la de fondo slate-50).
+- **MEDICIÓN antes/después, contra producción:**
+  - Enlaces a guías por país: **0 → 6** en cada una de las dos páginas (`/guias/ar`, `/guias/cl`, `/guias/co`,
+    `/guias/es`, `/guias/mx`, `/guias/pe`).
+  - **Prueba de que es un bloque de cuerpo, no de pie:** en el HTML servido la posición del bloque está entre `<main>`
+    y `<footer>` (posiciones medidas: 12.993 < 42.366 < 49.803 en `/crear-llc-usa` y 12.990 < 26.622 < 31.006 en
+    `/llc-para-no-residentes`).
+  - Destinos nuevos y extras, todos **200**: `/guias/mx|co|es|ar|cl|pe`, `/guias` y `/contacto`.
+  - Re-auditoría de enlaces internos de las dos páginas: **33 y 32 destinos, cero rotos** (antes 27 y 26, también cero).
+    Los CTA siguen intactos (`/agendar` y `/precios` presentes).
+  - Revisado a ojo en el navegador en las dos páginas: el panel, los seis botones y la línea del hub se ven correctos.
+- **Defecto propio detectado al mirarlo, no al leerlo:** la primera versión decía «Ver las **26** guías por país», porque
+  el contador se calculaba con `allCountries` (26 países) mientras el hub muestra **27** fichas —la guía de Estados
+  Unidos es una ruta estática aparte y no está en esa lista—. Se quitó el número: no aporta y envejece. Sin esa
+  comprobación visual habría quedado publicado un dato discutible.
+- **Falsa alarma comprobada antes de tocarla:** `/crear-llc-usa` enlaza `/guia-llc-extranjeros`, que parecía una ruta
+  rota por el nombre. **Existe**: es una página real, indexada, con canonical propio y en el sitemap. Se verificó con
+  `curl` antes de decir nada.
+- **Expectativa honesta:** esto reparte enlaces internos hacia las guías y da salida al visitante de fuera en las dos
+  páginas que más convierten; **no** mueve el grupo «Descubierta» de Search Console, porque esas guías no están en él.
+  Se puede medir a las 3-4 semanas con las impresiones de `/guias/*` en GSC, y desde ya con los clics de esas páginas
+  hacia las guías.
+- **Files created/modified:** `components/guias/EnlazadoPaises.tsx` (nuevo), `app/crear-llc-usa/page.tsx`,
+  `app/llc-para-no-residentes/page.tsx`, `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// components/guias/EnlazadoPaises.tsx — los países salen de la fuente única, nunca escritos a mano
+import { featuredCountries } from '@/components/CountrySelector/countries'
+{paises.map((pais) => (
+  <Link key={pais.code} href={`/guias/${pais.code}`}>LLC desde {pais.name}</Link>
+))}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 15:10)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3664,10 +3717,11 @@ enlaces directos a guias por pais:  /guias -> 27   portada -> 7   /crear-llc-usa
     documentación describe el grupo como «Google todavía no la ha rastreado». *Tú.*
 
 **Enlazado interno hacia las guías (SEO)**
-24. **Decidir si se hace el bloque de enlazado contextual hacia las guías** que propone el documento del usuario: es lo
-    único que recomiendo de él (bloque dentro del cuerpo en `/crear-llc-usa` y `/llc-para-no-residentes`, con 4-6 guías y
-    los países importados de `components/CountrySelector/countries.ts`). **Nada en el pie.** *Tú decides, yo lo
-    implemento y lo mido.*
+24. ✅ **CERRADO** *(08-10-2026)* — Bloque de enlazado contextual hacia las guías en las páginas de dinero: 0 → 6 enlaces
+    por página, verificado en producción (commits `db0e99c` y `3275116`). **Nada en el pie**, como se acordó.
+
+25. **Valorar extender el bloque de guías a `/precios` y `/costo-crear-llc`** (hoy siguen con 0 enlaces a guías; quedaron
+    fuera del alcance acordado). Es el mismo componente, así que sería una línea por página. *Tú decides, yo lo hago.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

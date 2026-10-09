@@ -3747,7 +3747,38 @@ si el mismo defecto está en otras páginas.
 </div>
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 16:50)
+---
+### 📅 Chat Session: 2026-10-09 22:23
+**Main objective:** Cerrar el punto 27: poner en blanco el titular «Hablemos claro sobre Hacienda» de
+`/crear-llc-desde-espana`, el otro caso del mismo fallo.
+
+#### 👤 User Request:
+> «Pues vamos con el punto 27. Poner en blanco el h2 "Hablemos claro sobre Hacienda" de /crear-llc-desde-espana ✅
+> Adelante»
+
+#### 🤖 Agent Solution:
+- **Commit `2d15468`, un fichero** (`app/crear-llc-desde-espana/page.tsx`) y **una sola línea**: la clase `text-white`
+  en el propio `h2`. Ningún otro titular de la página se toca.
+- **Por qué solo esa línea:** el `h2` vive en el panel `<section className="bg-slate-900 … text-white">` de la línea
+  165, y sus DOS `h3` (`¿Para quién NO es una LLC?` y `¿Para quién SÍ es una LLC?`) ya llevaban su `text-white`
+  propio; el `h2` era el único al que no se le había puesto. Los demás titulares de la página (los `text-slate-900`
+  sobre tarjetas blancas) se midieron legibles en el barrido del navegador, así que no se tocan.
+- **Medición antes/después contra producción:** antes, `rgb(19, 52, 59)` sobre `rgb(15, 23, 42)` = **1,3:1**
+  (el color heredado de la regla global de titulares); después, color computado **`rgb(255, 255, 255)`** sobre el
+  mismo panel = **17,9:1**, 26,25 px, peso 700, visible. Comprobado también con el marcador exclusivo en el HTML
+  servido (`text-3xl font-bold mb-6 text-white`: 0 apariciones antes del despliegue, 1 después, y el ancla vieja sin
+  color desaparece) y con captura de la sección.
+- **Files created/modified:** `app/crear-llc-desde-espana/page.tsx` (commit `2d15468`), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// unica linea cambiada: el color va en el propio titular porque la regla global de h1-h6 gana a la herencia
+<h2 className="text-3xl font-bold mb-6 text-white">
+  Hablemos claro sobre Hacienda
+</h2>
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 22:23)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3820,9 +3851,9 @@ si el mismo defecto está en otras páginas.
     `/guias`, `/guias/<pais>`, `/contacto`, `/costo-crear-llc`, `/boi-report`, `/llc-texas` o `/zara`, y casi todo el
     onboarding). Es semántica y accesibilidad, no SEO urgente, y toca decenas de ficheros: se haría por lotes y con
     verificación página a página. *Tú decides; yo lo hago si lo quieres.*
-27. **Poner en blanco el `h2` «Hablemos claro sobre Hacienda» de `/crear-llc-desde-espana`**: medido **1,3:1**
-    (mismo fallo que el título de `/crear-llc-usa`: color heredado de la regla global sobre un panel oscuro). Es una
-    clase en una línea. *Yo, con tu OK.*
+27. ✅ **CERRADO** *(09-10-2026)* — El `h2` «Hablemos claro sobre Hacienda» de `/crear-llc-desde-espana` ya se
+    ve: medido **1,3:1 → 17,9:1** en producción (commit `2d15468`, una línea). Con esto no queda ningún titular
+    ilegible en las 23 páginas medidas.
 28. **Las 10 banderas que siguen siendo emoji** (1 en `/crear-llc-desde-espana`, 1 en `/quiz` y 8 en el asistente de
     onboarding del panel, donde van como viñeta de etiquetas): en Windows no se dibujan. Se pasan a
     `ReactCountryFlag` con `svg`, o se quitan si ahí no aportan. *Tú decides, yo lo hago.*

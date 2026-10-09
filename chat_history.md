@@ -3939,7 +3939,60 @@ punto 14 (dependencias críticas: Next y Clerk).
 <ClerkProvider … signInUrl="/sign-in" signUpUrl="/sign-up" afterSignOutUrl="/">
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 23:46)
+---
+### 📅 Chat Session: 2026-10-10 00:15
+**Main objective:** Diagnosticar por qué Google Search Console marca
+`/paquetes/business/onboarding` como «Duplicada: el usuario no ha indicado ninguna versión canónica».
+
+#### 👤 User Request:
+> «En relación con GSC, la URL https://openllcusa.com/paquetes/business/onboarding está calificada como "Duplicada:
+> el usuario no ha indicado ninguna versión canónica". ¿Podemos hacer algo al respecto?»
+
+#### 🤖 Agent Solution:
+- **Diagnóstico medido (los tres síntomas juntos explican el aviso):** la URL responde **200**, **no tiene
+  `canonical`** y se declara **`index, follow`**, y su `<title>` y su `<meta description>` son **los de la portada**
+  (los hereda del layout raíz). O sea: para Google es una copia de la portada que además pide ser indexada. De ahí la
+  fila. No está en el sitemap (ni debe estarlo).
+- **No es una URL, es una familia:** el asistente expone **9 rutas × 5 paquetes = 45 URLs** (paso 1, `estado`,
+  `datos-empresa`, `datos-llc`, `documentos`, `propietario`, `revision`, `checkout` y `completado`), y **las 45** llevan
+  las mismas señales. Los cinco slugs responden 200 y los tres sub-pasos que se muestrearon también salen sin canonical
+  y con `index, follow`.
+- **Corrección de un razonamiento mío anterior:** en el punto 23 di por bueno el grupo «Duplicada» porque **ninguna de
+  las 65 URLs del sitemap era duplicada** (auditoría de canonicals). Aquello era cierto, pero **incompleto**: la URL
+  duplicada existe, está **fuera del sitemap**, y el usuario la ha encontrado en su consola. Toca rectificarlo: ese grupo
+  SÍ tenía una causa real detrás.
+- **Propuesta para arreglarlo (1 fichero nuevo, nada más):** `app/paquetes/[paqueteSlug]/layout.tsx`, de servidor, con
+  `robots: { index: false, follow: true }` más título y descripción propios. **Hace falta un layout de servidor porque
+  el que existe hoy en `onboarding/layout.tsx` es de cliente (`'use client'`) y un componente de cliente no puede
+  exportar `metadata`.** Al colgarlo del segmento `[paqueteSlug]` cubre de una vez las 45 URLs reales.
+- **Dos hallazgos más, de decisión aparte (no incluidos en la propuesta):**
+  1. **404 que no son 404:** un slug inexistente (`/paquetes/xxx/onboarding`) también devuelve **200** con un
+     «Paquete no encontrado» dentro (la página es de cliente y valida por `fetch` en el navegador), así que el espacio
+     de URLs es infinito. Es el tipo de cosa que alimenta los grupos de duplicadas y de «descubiertas».
+  2. **El asistente de `/paquetes/*` es público**, mientras el de `/servicios/*` está detrás de Clerk. No se ha visto
+     ningún dato de cliente sin sesión, pero es una diferencia que conviene que el usuario confirme si es intencionada.
+- **Nota:** con `noindex` la fila no se cierra de golpe: hay que esperar a que Google vuelva a rastrear esas URLs y
+  pasarán a «Excluida por noindex». Y esa misma pasada debería aliviar el grupo de «Descubierta: actualmente sin
+  indexar», que hoy está en 46.
+- **Files created/modified:** ninguno (solo diagnóstico). Pendiente de autorización para el layout nuevo.
+
+#### 💻 Key Code:
+```tsx
+// Propuesto: app/paquetes/[paqueteSlug]/layout.tsx  (servidor, cubre las 45 URLs del asistente)
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Completar tu pedido | Open LLC USA',
+  description: 'Completa los datos de tu LLC para empezar el proceso con Open LLC USA.',
+  robots: { index: false, follow: true },
+}
+
+export default function PaqueteLayout({ children }: { children: React.ReactNode }) {
+  return children
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-10 00:15)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4038,6 +4091,13 @@ punto 14 (dependencias críticas: Next y Clerk).
     salto MAYOR (Tailwind 4) o incluso un *descenso* (`eslint-config-next@14`), así que no se toca por iniciativa
     propia: hay un lote pequeño de arreglos no rompedores (`npm audit fix`, sin `--force`) y otro de decisiones mayores
     de verdad (Tailwind 4). *Tú decides si hacemos el lote pequeño, el grande o ninguno.*
+33. **Poner `noindex, follow` al asistente de `/paquetes/*`** (respondiendo a la fila «Duplicada: sin versión canónica»
+    de GSC): un layout de servidor nuevo en `app/paquetes/[paqueteSlug]/layout.tsx` con metadatos propios, que cubre las
+    **45 URLs** del asistente (9 pasos × 5 paquetes) y además los slugs inventados. **1 fichero nuevo, nada más.**
+    *Propuesto el 09-10-2026, pendiente de tu OK.*
+34. **Arreglar los 404 que devuelven 200 en el asistente de paquetes:** un slug inexistente responde 200 con un «Paquete
+    no encontrado» dentro, así que el espacio de URLs es infinito (alimenta los grupos de duplicadas y descubiertas de
+    GSC). Requiere tocar el asistente, porque hoy valida en el navegador y no en el servidor. *Decisión tuya.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

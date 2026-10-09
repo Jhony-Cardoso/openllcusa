@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import ReactCountryFlag from "react-country-flag"
 import EnlazadoPaises from "@/components/guias/EnlazadoPaises"
 
 
@@ -400,17 +401,21 @@ export default function CrearLLCUSA() {
             </div>
           </div>
           <div className="bg-slate-900 text-white rounded-2xl p-8">
-            <h3 className="font-bold text-xl mb-3">¿Y en mi país? ¿Tengo que declarar la LLC?</h3>
+            <h3 className="font-bold text-xl mb-3 text-white">¿Y en mi país? ¿Tengo que declarar la LLC?</h3>
             <p className="text-slate-300 text-sm mb-6">Aunque no pagues impuestos en EE.UU., como propietario de la LLC tributas personalmente en tu país de residencia fiscal por los beneficios que recibes:</p>
             <div className="grid sm:grid-cols-2 gap-4 text-sm">
               {[
-                { pais: "🇪🇸 España", desc: "Los rendimientos de la LLC tributan en IRPF. Posible transparencia fiscal internacional (TFI) si la LLC no tiene actividad real." },
-                { pais: "🇲🇽 México", desc: "Los dividendos o ingresos de la LLC se declaran en ISR. Convenio fiscal EE.UU.-México aplicable." },
-                { pais: "🇦🇷 Argentina", desc: "Los ingresos del exterior deben declararse en AFIP. La LLC puede considerarse bien del exterior (Bienes Personales)." },
-                { pais: "🇨🇴 Colombia", desc: "Los ingresos de fuente extranjera tributan en Colombia. Coordina siempre con un contador local." },
-              ].map(({ pais, desc }) => (
-                <div key={pais} className="bg-white/10 rounded-xl p-4">
-                  <div className="font-semibold text-white mb-1">{pais}</div>
+                { code: "ES", pais: "España", desc: "Los rendimientos de la LLC tributan en IRPF. Posible transparencia fiscal internacional (TFI) si la LLC no tiene actividad real." },
+                { code: "MX", pais: "México", desc: "Los dividendos o ingresos de la LLC se declaran en ISR. Convenio fiscal EE.UU.-México aplicable." },
+                { code: "AR", pais: "Argentina", desc: "Los ingresos del exterior deben declararse en AFIP. La LLC puede considerarse bien del exterior (Bienes Personales)." },
+                { code: "CO", pais: "Colombia", desc: "Los ingresos de fuente extranjera tributan en Colombia. Coordina siempre con un contador local." },
+              ].map(({ code, pais, desc }) => (
+                <div key={code} className="bg-white/10 rounded-xl p-4">
+                  <div className="font-semibold text-white mb-1 flex items-center gap-2">
+                    {/* La bandera va en SVG: el emoji de bandera no se dibuja en Windows */}
+                    <ReactCountryFlag countryCode={code} svg style={{ fontSize: "1.3em", borderRadius: "3px" }} />
+                    <span>{pais}</span>
+                  </div>
                   <p className="text-slate-300 text-xs leading-relaxed">{desc}</p>
                 </div>
               ))}

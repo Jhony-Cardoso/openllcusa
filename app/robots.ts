@@ -8,12 +8,12 @@ export default function robots(): MetadataRoute.Robots {
             userAgent: '*',
             allow: '/',
             disallow: [
-                '/dashboard/',
-                '/api/',
-                '/sign-in/',
-                '/sign-up/',
-                '/*/onboarding/', // Evitar indexar pasos de registro/pago parciales
-                '/*/checkout/',
+                '/dashboard',
+                '/api',
+                '/sign-in',
+                '/sign-up',
+                '/*/onboarding', // Evitar indexar pasos de registro/pago parciales
+                '/*/checkout',
             ],
         },
         sitemap: `${baseUrl}/sitemap.xml`,

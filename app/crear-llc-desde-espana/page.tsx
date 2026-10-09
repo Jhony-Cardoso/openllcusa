@@ -168,7 +168,7 @@ export default function CrearLlcEspanaPage() {
           
           <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-3xl font-bold mb-6 text-white">
                 Hablemos claro sobre Hacienda
               </h2>
               <p className="text-slate-300 text-lg mb-6 leading-relaxed">

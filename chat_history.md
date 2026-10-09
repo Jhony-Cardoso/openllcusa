@@ -3695,7 +3695,59 @@ import { featuredCountries } from '@/components/CountrySelector/countries'
 </section>
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 15:34)
+---
+### 📅 Chat Session: 2026-10-09 16:50
+**Main objective:** Arreglar el título invisible y las banderas rotas de una sección de `/crear-llc-usa`, y comprobar
+si el mismo defecto está en otras páginas.
+
+#### 👤 User Request:
+> «Te adjunto una captura de una sección de la página /crear-llc-usa. Ahí verás dos flechas rojas: la primera apunta
+> al título, que no se visualiza y tenemos que cambiar su color, "¿Y en mi país? ¿Tengo que declarar la LLC?". La
+> segunda apunta a las banderas (son 4, una por cada país). Tampoco se visualizan. Eso mismo nos ocurrió con las
+> banderas de la Homepage. Revisa allí cómo lo solucionamos.»
+
+#### 🤖 Agent Solution:
+- **Eran DOS fallos con dos causas distintas, en la misma sección.** Commit `51db42c`, un solo fichero
+  (`app/crear-llc-usa/page.tsx`).
+- **(1) El título.** Causa medida, no supuesta: `app/globals.css` pinta todos los `h1-h6` con
+  `color: var(--color-text)`, que resuelve a `--color-slate-900` = `rgb(19, 52, 59)`, y **un selector de elemento gana
+  a la herencia**, así que el `text-white` del contenedor no llegaba al `h3`. Medido en producción antes del arreglo:
+  el `h3` computaba `rgb(19, 52, 59)` sobre el panel `bg-slate-900` = **1,3:1**, ilegible. Arreglo: `text-white` en el
+  propio titular = **17,9:1**. Verificado después en el navegador: color computado `rgb(255, 255, 255)`.
+- **(2) Las banderas.** Eran **emojis dentro del texto** (`"🇪🇸 España"`) y Windows no dibuja banderas emoji: se veían
+  como un cuadradito roto, que es exactamente lo que aparecía en la captura. Se sustituyen por `ReactCountryFlag` con
+  `svg`, el mismo componente y la misma forma que la portada (de ahí venía el precedente), con el código ISO en los
+  datos. Verificado en el navegador: las cuatro banderas se pintan como `<img>` de 16×16 con el SVG de su país.
+- **Barrido del resto del sitio, medido en el navegador (22 páginas, todos los `h1`-`h4`), buscando el patrón del
+  título:** el único otro titular ilegible es el `h2` «Hablemos claro sobre Hacienda» de `/crear-llc-desde-espana`
+  (**1,3:1**, mismo color heredado sobre panel oscuro, sin color propio en el código). Queda como punto 27, sin tocar.
+- **Corrección de un falso positivo mío:** mi primera medición marcó también el `h2` «Asesoría con Zara» de `/recursos`
+  con 2:1. Era mi detector: el fondo es `rgba(29, 78, 216, 0.06)` y yo lo traté como azul sólido en vez de componerlo
+  sobre blanco. El real es `rgb(241, 244, 253)` → **12,1:1**, perfectamente legible. No era un defecto.
+- **Otro hallazgo del barrido, informado sin tocarlo:** las cuatro etiquetas del pie de página (`CONSTITUCIÓN DE
+  EMPRESAS`, `CUMPLIMIENTO Y SOPORTE`, `HERRAMIENTAS`, `APRENDER Y CONTACTO`) dan **2,6:1** en todas las páginas
+  (slate-400 sobre blanco, texto pequeño). Está por debajo del mínimo AA (4,5:1), pero es un patrón de diseño del pie,
+  no una avería como la del título: no se toca por iniciativa propia.
+- **Dato técnico para saberlo si vuelve a pasar:** `ReactCountryFlag` con `svg` no dibuja el SVG en línea, pinta un
+  `<img>` que carga la bandera desde el CDN `cdn.jsdelivr.net/gh/lipis/flag-icons`. Se ve bien, pero es una dependencia
+  externa en tiempo de ejecución: si ese CDN falla, las banderas desaparecen otra vez. Queda como punto 29.
+- **Banderas emoji que siguen en el repo (10):** 1 en `/crear-llc-desde-espana`, 1 en `/quiz` y 8 en el asistente de
+  onboarding del panel (como viñeta de etiquetas). Punto 28.
+- **Files created/modified:** `app/crear-llc-usa/page.tsx` (commit `51db42c`), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// (1) color explicito en el propio titular: la regla global de h1-h6 gana a la herencia
+<h3 className="font-bold text-xl mb-3 text-white">¿Y en mi país? ¿Tengo que declarar la LLC?</h3>
+
+// (2) bandera real en vez de emoji (Windows no dibuja banderas emoji)
+<div className="font-semibold text-white mb-1 flex items-center gap-2">
+  <ReactCountryFlag countryCode={code} svg style={{ fontSize: "1.3em", borderRadius: "3px" }} />
+  <span>{pais}</span>
+</div>
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 16:50)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3768,6 +3820,15 @@ import { featuredCountries } from '@/components/CountrySelector/countries'
     `/guias`, `/guias/<pais>`, `/contacto`, `/costo-crear-llc`, `/boi-report`, `/llc-texas` o `/zara`, y casi todo el
     onboarding). Es semántica y accesibilidad, no SEO urgente, y toca decenas de ficheros: se haría por lotes y con
     verificación página a página. *Tú decides; yo lo hago si lo quieres.*
+27. **Poner en blanco el `h2` «Hablemos claro sobre Hacienda» de `/crear-llc-desde-espana`**: medido **1,3:1**
+    (mismo fallo que el título de `/crear-llc-usa`: color heredado de la regla global sobre un panel oscuro). Es una
+    clase en una línea. *Yo, con tu OK.*
+28. **Las 10 banderas que siguen siendo emoji** (1 en `/crear-llc-desde-espana`, 1 en `/quiz` y 8 en el asistente de
+    onboarding del panel, donde van como viñeta de etiquetas): en Windows no se dibujan. Se pasan a
+    `ReactCountryFlag` con `svg`, o se quitan si ahí no aportan. *Tú decides, yo lo hago.*
+29. **Valorar servir las banderas desde el propio dominio** en vez del CDN `cdn.jsdelivr.net` (hoy todas las banderas
+    del sitio, también las de la portada, se descargan de ahí): unos SVG en `public/` quitan la dependencia externa.
+    *Tú decides, yo lo hago.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

@@ -54,7 +54,7 @@ const faqs = [
       },
       {
         q: '¿Es cierto que con una LLC pago menos impuestos?',
-        a: 'Depende. Residiendo en España, una LLC tributa similar a ser autónomo. Las ventajas fiscales reales aparecen al combinar la LLC con residencia fiscal en otro país (ej: Portugal NHR, Dubai, etc.), pero esto implica mudarse y cumplir requisitos de residencia.',
+        a: 'Depende. Residiendo en España, una LLC tributa similar a ser autónomo. Las ventajas fiscales reales aparecen al combinar la LLC con residencia fiscal en otro país (ej: Paraguay, Panamá, Dubai, etc.), pero esto implica mudarse y cumplir requisitos de residencia.',
       },
       {
         q: '¿Cuánto cuesta realmente mantener una LLC?',

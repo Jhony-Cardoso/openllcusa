@@ -3654,7 +3654,48 @@ import { featuredCountries } from '@/components/CountrySelector/countries'
 ))}
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 15:10)
+---
+### 📅 Chat Session: 2026-10-09 15:34
+**Main objective:** Extender el bloque de guías por país a `/precios` y `/costo-crear-llc` (punto 25) y medirlo.
+
+#### 👤 User Request:
+> «Me parece una excelente idea el punto 25 (PENDIENTES). ✅ Implementemos el mismo bloque a `/precios` y
+> `/costo-crear-llc`. Adelante…»
+
+#### 🤖 Agent Solution:
+- **Commit `29a08f1`**, dos ficheros y **ninguno nuevo**: se reutiliza `components/guias/EnlazadoPaises.tsx`, que ya
+  existía del punto 24. Una inserción por página, dentro del cuerpo y justo antes del CTA final.
+- **Cada página respeta su propio diseño, y no son iguales:** `/precios` va con tokens e inline styles (no con Tailwind),
+  así que el bloque entra en una sección con su mismo ritmo (padding `80px 24px` y borde superior) y el panel en
+  `slate-50` sobre fondo blanco; `/costo-crear-llc` usa Tailwind, así que va en una sección con contenedor `max-w-4xl` y
+  el panel por defecto. Comprobar esto antes de escribir evitó que el bloque desentonara en la página de precios.
+- **MEDICIÓN antes/después contra producción** (antes, medido en esta misma sesión: 0 enlaces a guías en cada una):
+  - `/precios`: **0 → 6** enlaces (`/guias/ar`, `/guias/cl`, `/guias/co`, `/guias/es`, `/guias/mx`, `/guias/pe`),
+    bloque entre `<main>` y `<footer>` (posiciones 13.954 < 52.380 < 55.794) y enlace al hub presente.
+  - `/costo-crear-llc`: **0 → 6** enlaces, antes del `<footer>` (24.149 < 26.913) y hub presente.
+  - Los ocho destinos (seis guías, hub y contacto) responden **200**.
+  - Re-auditoría de enlaces internos: **34 destinos en `/precios` y 31 en `/costo-crear-llc`, cero rotos**.
+  - Revisado a ojo en el navegador en las dos páginas: panel, seis botones, línea del hub y el CTA inmediatamente
+    después, correctos.
+- **Hallazgo colateral, auditado y NO tocado:** **59 de las 80 páginas del proyecto no tienen `<main>`** (su raíz es un
+  `<div>`), entre ellas públicas como `/guias`, `/contacto`, `/coste-crear-llc` o `/boi-report`, y muchas de onboarding.
+  Es una mejora de semántica y de accesibilidad (el hito `main` es lo que usan los lectores de pantalla para saltar al
+  contenido), pero es mecánica y toca decenas de ficheros, así que **no se hace por iniciativa propia**: queda como
+  punto 26 para que el usuario decida.
+- **Files created/modified:** `app/precios/page.tsx`, `app/costo-crear-llc/page.tsx` (commit `29a08f1`),
+  `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// /precios (tokens + inline styles): seccion con el mismo ritmo que las de la pagina
+<section style={{ padding: '80px 24px', background: T.wh, borderTop: `1px solid ${T.br}` }}>
+  <div style={{ maxWidth: 900, margin: '0 auto' }}>
+    <EnlazadoPaises className="bg-slate-50 border border-slate-200" />
+  </div>
+</section>
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 15:34)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3720,8 +3761,13 @@ import { featuredCountries } from '@/components/CountrySelector/countries'
 24. ✅ **CERRADO** *(08-10-2026)* — Bloque de enlazado contextual hacia las guías en las páginas de dinero: 0 → 6 enlaces
     por página, verificado en producción (commits `db0e99c` y `3275116`). **Nada en el pie**, como se acordó.
 
-25. **Valorar extender el bloque de guías a `/precios` y `/costo-crear-llc`** (hoy siguen con 0 enlaces a guías; quedaron
-    fuera del alcance acordado). Es el mismo componente, así que sería una línea por página. *Tú decides, yo lo hago.*
+25. ✅ **CERRADO** *(08-10-2026)* — El bloque de guías llega a `/precios` y `/costo-crear-llc`: **0 → 6 enlaces** en
+    cada una, verificado en producción (commit `29a08f1`). Las cuatro páginas de dinero enlazan ya las guías.
+
+26. **Valorar poner `<main>` en las páginas públicas que no lo tienen** (hoy lo tienen 21 de 80; faltan públicas como
+    `/guias`, `/guias/<pais>`, `/contacto`, `/costo-crear-llc`, `/boi-report`, `/llc-texas` o `/zara`, y casi todo el
+    onboarding). Es semántica y accesibilidad, no SEO urgente, y toca decenas de ficheros: se haría por lotes y con
+    verificación página a página. *Tú decides; yo lo hago si lo quieres.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

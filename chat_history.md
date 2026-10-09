@@ -3560,7 +3560,48 @@ import '../homepage-v4.css';   // trae Plus Jakarta Sans, como en /precios y en 
 auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con canonical ajeno
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-08 00:20)
+---
+### 📅 Chat Session: 2026-10-09 14:47
+**Main objective:** Valorar con honestidad la «Estrategia de enlazado interno para las Guías de Países» escrita por el usuario.
+
+#### 👤 User Request:
+> «He creado un documento que quiero que analices y me hagas una valoración honesta»
+> (`Downloads\Estrategia de enlazado interno para las Guías de Países en Next,js.md`).
+
+#### 🤖 Agent Solution:
+- **Medido antes de opinar (producción):** el hub `/guias` enlaza las **27** guías; la portada, 7; y las páginas de dinero
+  (`/crear-llc-usa`, `/llc-para-no-residentes`, `/precios`) **0**. El pie enlaza el hub en todas las páginas, así que se
+  llega a cualquier guía **en dos clics**, y las 28 URLs de guías y hub están en el sitemap (las 65 responden 200).
+- **Veredicto entregado por escrito** (`Downloads\Valoracion_Estrategia_Enlazado_Guias_2026-10-08.{md,html,pdf,png}`,
+  3 páginas): el instinto es bueno y **el bloque de enlazado contextual merece hacerse** —hay un hueco real: 0 enlaces
+  desde las páginas de dinero—, pero **la premisa del documento no se sostiene hoy** (las guías no están sueltas: el pie
+  enlaza el hub y el hub las enlaza todas) y la propuesta A (27 enlaces en el pie de todas las páginas) es la parte que
+  **no** conviene: duplica el hub, crea un bloque de enlaces idéntico en todo el sitio (patrón que Google devalúa y que
+  además diluye los enlaces contextuales), aparecería en checkout y onboarding y rompe el diseño de tres columnas.
+- **El punto que más importa:** el grupo «Descubierta: actualmente sin indexar» (46) **no contiene ni una guía por país**
+  —según la lista que el usuario envió el 05-10: portada, `/precios`, `/contacto`, `/faq`, `/calculadora-fiscal`, los
+  `/blog/*`, los `/llc-*` por estado, `/legal/*`, `/proceso`, `/recursos`, `/testimonios` y `/zara`—, así que esta
+  estrategia no puede mover ese grupo. Y «subirá drásticamente» no se puede prometer: descubrir no es rastrear ni
+  indexar, y el cuello de botella documentado es la escasez de rastreo, no la falta de enlaces.
+- **Contexto a favor del documento:** su diagnóstico **era correcto cuando se escribió**: en la auditoría del 05-10,
+  20 de las 27 guías no tenían ningún enlace interno. Eso ya está resuelto con el hub. La idea que sigue viva es la del
+  enlazado contextual, con una advertencia técnica: la lista de países **no debe escribirse a mano**, porque la fuente
+  única es `components/CountrySelector/countries.ts` (de ahí salen las guías, los selectores y el sitemap).
+- **Propuesta alternativa, acotada y medible:** bloque contextual con 4-6 guías en `/crear-llc-usa` y
+  `/llc-para-no-residentes` (valorando `/precios` y `/costo-crear-llc`), países importados de `countries.ts`, dentro del
+  cuerpo; enlace contextual en los artículos del blog que hablan de montar una LLC desde un país concreto; **nada en el
+  pie**; y para el grupo de las 46, seguir con «Solicitar indexación» de las páginas de dinero. Medición acordada: contar
+  los enlaces entrantes a `/guias/*` desde las páginas de dinero (hoy 0) antes y después, y mirar las impresiones de
+  `/guias/*` en GSC a las 3-4 semanas.
+- **Files created/modified:** `Downloads\Valoracion_Estrategia_Enlazado_Guias_2026-10-08.{md,html,pdf,png}` (nada del
+  repositorio); `chat_history.md`.
+
+#### 💻 Key Code:
+```
+enlaces directos a guias por pais:  /guias -> 27   portada -> 7   /crear-llc-usa -> 0   /precios -> 0
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 14:47)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3621,6 +3662,12 @@ auditoria de canonical: 65 URLs del sitemap -> 0 sin etiqueta canonical, 0 con c
     indexación» es la herramienta de inspección, se hace **URL por URL** y es la palanca prioritaria para las páginas
     de dinero (pendiente 5). Para el grupo de descubiertas, la acción propia es esa, unas pocas al día, porque la
     documentación describe el grupo como «Google todavía no la ha rastreado». *Tú.*
+
+**Enlazado interno hacia las guías (SEO)**
+24. **Decidir si se hace el bloque de enlazado contextual hacia las guías** que propone el documento del usuario: es lo
+    único que recomiendo de él (bloque dentro del cuerpo en `/crear-llc-usa` y `/llc-para-no-residentes`, con 4-6 guías y
+    los países importados de `components/CountrySelector/countries.ts`). **Nada en el pie.** *Tú decides, yo lo
+    implemento y lo mido.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

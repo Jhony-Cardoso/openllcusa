@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import EnlazadoPaises from '@/components/guias/EnlazadoPaises'
 
 
 // ──────────────────────────────────────────────
@@ -312,6 +313,8 @@ export default function LlcNoResidentesPage() {
           </div>
         </section>
 
+        {/* ── GUÍAS POR PAÍS (enlazado interno contextual hacia /guias/<pais>) ── */}
+        <EnlazadoPaises className="bg-white border border-slate-200" />
       </div>
 
       {/* ── CTA FINAL ── */}

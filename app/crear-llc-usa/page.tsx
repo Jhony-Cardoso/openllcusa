@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import EnlazadoPaises from "@/components/guias/EnlazadoPaises"
 
 
 export const metadata: Metadata = {
@@ -439,6 +440,9 @@ export default function CrearLLCUSA() {
             <Link href="/faq" className="inline-flex items-center gap-2 text-blue-600 font-semibold hover:underline">Ver todas las preguntas frecuentes →</Link>
           </div>
         </section>
+
+        {/* ── GUÍAS POR PAÍS (enlazado interno contextual hacia /guias/<pais>) ── */}
+        <EnlazadoPaises />
 
         {/* ── CTA FINAL ── */}
         <section>

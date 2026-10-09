@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import ReactCountryFlag from "react-country-flag"
+import Flag from "@/components/Flag"
 import EnlazadoPaises from "@/components/guias/EnlazadoPaises"
 
 
@@ -413,7 +413,7 @@ export default function CrearLLCUSA() {
                 <div key={code} className="bg-white/10 rounded-xl p-4">
                   <div className="font-semibold text-white mb-1 flex items-center gap-2">
                     {/* La bandera va en SVG: el emoji de bandera no se dibuja en Windows */}
-                    <ReactCountryFlag countryCode={code} svg style={{ fontSize: "1.3em", borderRadius: "3px" }} />
+                    <Flag countryCode={code} size="sm" title={pais} />
                     <span>{pais}</span>
                   </div>
                   <p className="text-slate-300 text-xs leading-relaxed">{desc}</p>

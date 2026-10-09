@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 import React from 'react'
 import Image from 'next/image'
-import ReactCountryFlag from 'react-country-flag'
+import Flag from '@/components/Flag'
 import { ArrowRight, Check, CheckCircle2, Loader2 } from 'lucide-react'
 import './homepage-v4.css'
 
@@ -212,7 +212,7 @@ function HeroSection() {
                     color: 'rgba(255,255,255,.8)',
                   }}
                 >
-                  <ReactCountryFlag countryCode={c.code} svg style={{ fontSize: '1.25em' }} />
+                  <Flag countryCode={c.code} size="sm" title={c.name} />
                   {c.name}
                 </span>
               ))}
@@ -690,11 +690,7 @@ function LatamSection() {
                   border: `1px solid ${T.br}` 
                 }}
               >
-                <ReactCountryFlag 
-                  countryCode={code} 
-                  svg 
-                  style={{ fontSize: '2.4em', borderRadius: '6px' }} 
-                />
+                <Flag countryCode={code} size="lg" title={name} />
                 <span className="group-hover:text-purple-600 transition-colors">{name}</span>
               </TrackedLink>
             ))}

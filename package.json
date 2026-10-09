@@ -9,6 +9,7 @@
     "build": "cross-env NEXT_DISABLE_LINT=1 NODE_OPTIONS=--max-old-space-size=4096 next build --webpack",
     "start": "next start",
     "lint": "next lint",
+    "banderas": "node scripts/descarga-banderas.mjs",
     "scrape": "npx tsx scripts/scrape-website.ts",
     "ingest": "cross-env NODE_OPTIONS=--max-old-space-size=4096 npx tsx scripts/ingest-knowledge.ts"
   },

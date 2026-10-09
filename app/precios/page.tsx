@@ -2,6 +2,7 @@
 // Server Component — alineado con el design system de la homepage
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import EnlazadoPaises from '@/components/guias/EnlazadoPaises'
 import Image from 'next/image'
 import '../homepage-v4.css'
 import ScrollObserver from '@/components/home/ScrollObserver'
@@ -803,6 +804,13 @@ export default function PricingPage() {
                 </details>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ═══ GUÍAS POR PAÍS (enlazado interno contextual hacia /guias/<pais>) ═══ */}
+        <section style={{ padding: '80px 24px', background: T.wh, borderTop: `1px solid ${T.br}` }}>
+          <div style={{ maxWidth: 900, margin: '0 auto' }}>
+            <EnlazadoPaises className="bg-slate-50 border border-slate-200" />
           </div>
         </section>
 

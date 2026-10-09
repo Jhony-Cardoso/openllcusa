@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import EnlazadoPaises from '@/components/guias/EnlazadoPaises'
 import CostCalculator from '@/components/llc-costs/CostCalculator'
 
 
@@ -210,6 +211,13 @@ export default function CostoLlcPage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Guías por país (enlazado interno contextual hacia /guias/<pais>) */}
+      <section className="pb-16 md:pb-24 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <EnlazadoPaises />
         </div>
       </section>
 

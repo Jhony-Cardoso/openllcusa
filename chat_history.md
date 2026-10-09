@@ -3778,7 +3778,55 @@ si el mismo defecto está en otras páginas.
 </h2>
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 22:23)
+---
+### 📅 Chat Session: 2026-10-09 22:39
+**Main objective:** Cerrar el punto 28: las diez banderas que seguían siendo emoji.
+
+#### 👤 User Request:
+> «Vamos ahora con el Punto 28. Las 10 banderas que siguen siendo emoji (1 en /crear-llc-desde-espana, 1 en /quiz
+> y 8 en el asistente de onboarding del panel): en Windows no se dibujan. ✅ Adelante»
+
+#### 🤖 Agent Solution:
+- **Commit `84177b3`, tres ficheros y tres tratamientos**, porque la bandera no pinta lo mismo en cada sitio:
+  1. **`components/dashboard/OnboardingWizard.tsx` (8).** La bandera es un **marcador funcional**: la leyenda dice
+     «los campos marcados con [bandera] deben completarse en inglés». Así que la bandera se queda y se pinta de
+     verdad: se usa el componente **`components/Flag`**, que el fichero **ya importaba** (línea 12) y ya usaba en otras
+     dos líneas. Mismo componente en la leyenda y en las siete etiquetas, para que el lector vea el mismo símbolo.
+  2. **`app/crear-llc-desde-espana/page.tsx` (1).** Era la pastilla del héroe, «Diseñado para residentes fiscales en
+     España»: se añade el import de `Flag` y la bandera va dentro de la misma pastilla (`size="sm"`).
+  3. **`app/quiz/page.tsx` (1).** Aquí el icono es decorativo y **los otros siete iconos de pregunta son emojis
+     normales** (que Windows sí dibuja), así que cambiar los datos por un componente obligaba a refactorizar el
+     render: la bandera se sustituye por un emoji que sí se ve (estatua de la libertad, U+1F5FD; la pregunta es «¿Qué
+     porcentaje de tus clientes son de Estados Unidos?»).
+- **Barrido del repo: 0 emojis de bandera** en `app/` y `components/` (antes 10). Sintaxis y tipos: 0 errores en los
+  tres ficheros (el repo sigue con sus 34 preexistentes). CRLF preservado en los tres.
+- **Verificación en producción de las dos páginas públicas:** en `/crear-llc-desde-espana` el emoji desaparece del
+  HTML servido y la pastilla sirve un `<img>` de la bandera de España; en `/quiz` el icono no está en el HTML inicial
+  (se pinta al empezar el test y además el test pide iniciar sesión para continuar, así que no se puede mirar sin
+  entrar en la cuenta del usuario), por lo que se comprobó en el **chunk desplegado**
+  (`app/quiz/page-2871a7a71280e605.js`): lleva el icono nuevo (1 aparición), cero de la bandera emoji, junto al
+  título de esa pregunta.
+- **Prueba de que Windows dibuja el carácter nuevo:** se leyó la tabla `cmap` de `C:\Windows\Fonts\seguiemj.ttf`
+  (fuente de emojis del sistema, formato 12) y **U+1F5FD tiene glifo**, igual que los otros siete iconos del quiz que
+  el usuario ya ve. El mismo análisis explica el síntoma original: **las letras regionales SÍ tienen glifo**
+  (U+1F1FA, U+1F1EA), así que Windows dibujaba las dos letras del par en vez de la bandera — que es exactamente el
+  cuadradito con letras que se veía en las capturas.
+- **Files created/modified:** `components/dashboard/OnboardingWizard.tsx`, `app/crear-llc-desde-espana/page.tsx`,
+  `app/quiz/page.tsx` (commit `84177b3`), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// asistente: el marcador funcional pasa a bandera real (el import ya estaba en el fichero)
+<strong>Importante:</strong> Los campos marcados con <Flag countryCode="US" size="xs" title="Estados Unidos" /> deben completarse en <strong>inglés</strong>
+
+// crear-llc-desde-espana: la pastilla del heroe
+<Flag countryCode="ES" size="sm" title="España" />
+
+// quiz: icono decorativo, con los otros siete tambien en emoji
+icon: '🗽',
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 22:39)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3854,12 +3902,17 @@ si el mismo defecto está en otras páginas.
 27. ✅ **CERRADO** *(09-10-2026)* — El `h2` «Hablemos claro sobre Hacienda» de `/crear-llc-desde-espana` ya se
     ve: medido **1,3:1 → 17,9:1** en producción (commit `2d15468`, una línea). Con esto no queda ningún titular
     ilegible en las 23 páginas medidas.
-28. **Las 10 banderas que siguen siendo emoji** (1 en `/crear-llc-desde-espana`, 1 en `/quiz` y 8 en el asistente de
-    onboarding del panel, donde van como viñeta de etiquetas): en Windows no se dibujan. Se pasan a
-    `ReactCountryFlag` con `svg`, o se quitan si ahí no aportan. *Tú decides, yo lo hago.*
+28. ✅ **CERRADO** *(09-10-2026)* — Las 10 banderas ya no son emoji (commit `84177b3`): las 8 del asistente y la
+    de `/crear-llc-desde-espana` se pintan con el componente `Flag`, y el icono decorativo de `/quiz` pasa a un
+    emoji que Windows sí dibuja. En el repo no queda ningún emoji de bandera.
 29. **Valorar servir las banderas desde el propio dominio** en vez del CDN `cdn.jsdelivr.net` (hoy todas las banderas
     del sitio, también las de la portada, se descargan de ahí): unos SVG en `public/` quitan la dependencia externa.
     *Tú decides, yo lo hago.*
+30. **Confirmar a ojo las 8 banderas del asistente de onboarding** (`/dashboard`): están detrás del login y no las he
+    podido ver sin entrar en tu cuenta. En el navegador he verificado las otras dos páginas; aquí la garantía es el
+    código y que ese mismo componente ya se usaba en dos líneas de ese fichero. *Tú, cuando abras el asistente.*
+31. *(menor)* **Alinear `/crear-llc-usa`** para que use el componente `components/Flag` como el resto del sitio, en vez
+    de importar `react-country-flag` directo (funciona igual; es consistencia interna). Es una línea. *Yo, si lo quieres.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

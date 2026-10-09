@@ -3826,7 +3826,59 @@ si el mismo defecto está en otras páginas.
 icon: '🗽',
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 22:39)
+---
+### 📅 Chat Session: 2026-10-09 23:15
+**Main objective:** Punto 29 (servir las banderas desde el propio dominio), punto 31 (alinear `/crear-llc-usa` con
+`components/Flag`) y dejar las reglas de banderas escritas en `AGENTS.md`.
+
+#### 👤 User Request:
+> «Todo lo que hemos aprendido hoy respecto de las banderas, y de cómo lo tenemos implementado creo que deberíamos
+> dedicarle un espacio en AGENTS.md para que no se nos olvide cómo proceder. Dicho esto, vamos con el Punto 29 Servir
+> las banderas desde el propio dominio. Y después ataca el Punto 31. ✅ Adelante con ambos puntos!»
+
+#### 🤖 Agent Solution:
+- **Commit `ce0520d` (código y assets) y `0455080` (las reglas en `AGENTS.md`).**
+- **El problema, medido:** `react-country-flag` con `svg` no incrusta el dibujo, pinta un `<img>` que se descarga de
+  `cdn.jsdelivr.net`. En la portada eso eran **42 menciones al CDN en el HTML servido**; tras el cambio, **0**. Si ese
+  CDN falla o cambia, las banderas desaparecen sin que nadie toque el código.
+- **Los SVG al repo:** `public/banderas/` con los **27 países que usa la app** (532 KB; los mismos archivos que servía
+  el CDN, así que el peso no cambia, solo el origen). Son de `lipis/flag-icons`, **licencia MIT**, con la procedencia y
+  el texto completo de la licencia en `docs/LICENCIA-banderas.md`.
+- **`scripts/descarga-banderas.mjs` + `npm run banderas`:** lee los países de `components/CountrySelector/countries.ts`
+  y los `countryCode` del código, descarga lo que falte y borra las banderas que ya no se usan, así que no puede
+  desincronizarse con la app. Es la pieza que evita que esto se pudra con el tiempo.
+- **`components/Flag.tsx`** deja de envolver `react-country-flag` y pinta `/banderas/<código>.svg`, con la misma API
+  (`countryCode`, `size`, `className`, `rounded`, `title`) y ahora con `alt` del nombre del país; si el código no es
+  válido pinta el cuadro gris que antes hacía `FlagSafe` (que ya no hace falta y queda como código muerto).
+- **Punto 31 incluido aquí:** además de `/crear-llc-usa`, había que alinear **las dos banderas de la portada**, también
+  con importación directa. Sin eso no se cumple el objetivo del punto 29 (quedaba CDN fuera), así que se hacen juntos.
+- **MEDICIÓN en producción (desplegado y comprobado):** la portada pasa de **42 menciones a `jsdelivr` a 0** y sirve
+  **7 banderas locales**; `/guias` sirve sus **27**; `/crear-llc-usa`, **4**; `/precios` no tiene banderas. Las **27**
+  banderas responden **200** con `Content-Type: image/svg+xml` (0 fallos), llegan comprimidas (`gzip`/`zstd`) y con
+  `Cache-Control: public, max-age=14400` (4 h, el valor por defecto del despliegue para `public/`). En el navegador,
+  la portada carga **14/14** banderas (`complete` y `naturalWidth` 200), pintadas a 18×14 px y con su `alt` correcto.
+- **`AGENTS.md`: sección nueva «Banderas de países (reglas propias)»** con las tres decisiones cerradas —nunca un emoji
+  de bandera; siempre `components/Flag`, nunca `react-country-flag` directo, con el motivo; los SVG en
+  `public/banderas/` con `npm run banderas` al añadir un país— más las dos comprobaciones de que se sirven desde el
+  dominio. Es lo que pidió el usuario: que no se nos olvide cómo proceder.
+- **Aviso sobre trabajo ajeno:** `app/faq-calculadora/page.tsx` aparece modificado y **no es de esta sesión** (cambia
+  un ejemplo de residencia fiscal: Portugal NHR por Paraguay/Panamá/Dubai). Se deja **sin tocar y sin commitear**.
+- **Files created/modified:** `components/Flag.tsx`, `app/page.tsx`, `app/crear-llc-usa/page.tsx`, `package.json`,
+  `public/banderas/*.svg` (27), `scripts/descarga-banderas.mjs`, `docs/LICENCIA-banderas.md` (commit `ce0520d`);
+  `AGENTS.md` (commit `0455080`); `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// components/Flag.tsx: la bandera se sirve desde el dominio, sin CDN
+<img
+  src={`/banderas/${code}.svg`}
+  alt={`Bandera de ${nombre}`}
+  title={nombre}
+  className={`${clases} ${redondeo} inline-block align-middle drop-shadow-sm ${className}`}
+/>
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-09 23:15)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -3857,7 +3909,8 @@ icon: '🗽',
 **Técnico**
 11. Verificar a ojo los tres botones de la calculadora. *Tú.*
 12. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
-13. Limpieza menor: `_RESPALDO_SERVICIOS/` y los ficheros de prueba en `public/`. *Yo.*
+13. Limpieza menor: `_RESPALDO_SERVICIOS/`, los ficheros de prueba de `public/` y `components/FlagSafe.tsx` (ya nada lo
+    importa: su caso de código inválido vive ahora dentro de `components/Flag`). *Yo.*
 14. Subir dependencias críticas (Next 16.3.4 → 16.3.8 y Clerk 6 → 7.9.11). *Yo.*
 15. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
 16. Voz de Zara con proveedores — aparcada.
@@ -3905,14 +3958,14 @@ icon: '🗽',
 28. ✅ **CERRADO** *(09-10-2026)* — Las 10 banderas ya no son emoji (commit `84177b3`): las 8 del asistente y la
     de `/crear-llc-desde-espana` se pintan con el componente `Flag`, y el icono decorativo de `/quiz` pasa a un
     emoji que Windows sí dibuja. En el repo no queda ningún emoji de bandera.
-29. **Valorar servir las banderas desde el propio dominio** en vez del CDN `cdn.jsdelivr.net` (hoy todas las banderas
-    del sitio, también las de la portada, se descargan de ahí): unos SVG en `public/` quitan la dependencia externa.
-    *Tú decides, yo lo hago.*
+29. ✅ **CERRADO** *(09-10-2026)* — Las 27 banderas se sirven desde `/banderas/<código>.svg` (commit `ce0520d`): la
+    portada pasó de 42 menciones al CDN a 0. `npm run banderas` las mantiene sincronizadas con los países de la app.
+    Reglas escritas en `AGENTS.md` (commit `0455080`).
 30. **Confirmar a ojo las 8 banderas del asistente de onboarding** (`/dashboard`): están detrás del login y no las he
     podido ver sin entrar en tu cuenta. En el navegador he verificado las otras dos páginas; aquí la garantía es el
     código y que ese mismo componente ya se usaba en dos líneas de ese fichero. *Tú, cuando abras el asistente.*
-31. *(menor)* **Alinear `/crear-llc-usa`** para que use el componente `components/Flag` como el resto del sitio, en vez
-    de importar `react-country-flag` directo (funciona igual; es consistencia interna). Es una línea. *Yo, si lo quieres.*
+31. ✅ **CERRADO** *(09-10-2026)* — `/crear-llc-usa` (y las dos banderas de la portada) usan `components/Flag`; no queda
+    ninguna importación directa de `react-country-flag` en el proyecto.
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

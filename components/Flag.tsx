@@ -44,7 +44,7 @@ export default function Flag({
 }: FlagProps) {
   const code = (countryCode || '').toLowerCase()
 
-  // Sin código válido no se pide ninguna imagen (antes esto lo cubría FlagSafe)
+  // Sin código válido no se pide ninguna imagen
   if (code.length !== 2) {
     return (
       <span

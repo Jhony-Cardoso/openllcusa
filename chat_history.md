@@ -4030,6 +4030,14 @@ punto 14 (dependencias críticas: Next y Clerk).
     código y que ese mismo componente ya se usaba en dos líneas de ese fichero. *Tú, cuando abras el asistente.*
 31. ✅ **CERRADO** *(09-10-2026)* — `/crear-llc-usa` (y las dos banderas de la portada) usan `components/Flag`; no queda
     ninguna importación directa de `react-country-flag` en el proyecto.
+32. **Revisar los avisos de `npm audit` que quedan** (24 paquetes: 1 bajo, 7 moderados y 16 altos, medido el
+    09-10-2026 tras subir Next y Clerk). **Ninguno es `next` ni `@clerk/nextjs`**: son dependencias transitivas de
+    la cadena de desarrollo y construcción (`eslint-config-next` → `@next/eslint-plugin-next`, `tailwindcss` y su
+    cadena `chokidar`/`braces`/`micromatch`/`fast-glob`, `next-sitemap`, `@tailwindcss/typography`, `postcss-selector-parser`)
+    y algunas que sí llegan al runtime (`sharp`, `undici`, `ws`). Para la mayoría, el «arreglo» que ofrece npm es un
+    salto MAYOR (Tailwind 4) o incluso un *descenso* (`eslint-config-next@14`), así que no se toca por iniciativa
+    propia: hay un lote pequeño de arreglos no rompedores (`npm audit fix`, sin `--force`) y otro de decisiones mayores
+    de verdad (Tailwind 4). *Tú decides si hacemos el lote pequeño, el grande o ninguno.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

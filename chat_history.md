@@ -4045,7 +4045,48 @@ export default async function PaqueteLayout({ children, params }) {
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 13:16)
+---
+### 📅 Chat Session: 2026-10-12 13:48
+**Main objective:** Diagnóstico del «Error al crear el pedido» que el usuario reporta con una captura del asistente
+de servicios, para descartar que lo hayan provocado los cambios de hoy.
+
+#### 👤 User Request:
+> Captura «Onboarding del reporte anual estatal»: el asistente (Paso 1 de 6) con el aviso rojo
+> «Error al crear el pedido. Inténtalo de nuevo.» Sin más texto.
+
+#### 🤖 Agent Solution:
+- **Dónde está el fallo, localizado por el texto exacto:** ese mensaje solo existe en
+  `app/servicios/[slug]/onboarding/page.tsx:160`, así que la captura es del asistente de **servicios**, no del de
+  paquetes. El aviso aparece cuando `POST /api/pedidos` devuelve algo que no es 2xx (o la petición falla).
+- **Qué NO es:**
+  - **No es el layout del punto 33:** vive en `app/paquetes/[paqueteSlug]/`, otro árbol de rutas; no se ejecuta en
+    `/servicios/<slug>/onboarding`.
+  - **No es una dependencia ajena movida por mis instalaciones:** revisado el lock. La subida de Next cambió **0**
+    entradas de paquete (solo líneas de versión de `next`), y la de Clerk tocó 9, **todas de su familia**
+    (`@clerk/nextjs`, `@clerk/react`, `@clerk/clerk-react`, `@clerk/localizations`, `@clerk/types` y sus transitivas
+    `@tanstack/query-core`, `csstype`, `std-env`, `swr`). Nada de Supabase, Stripe ni Resend.
+  - **No es un 401 por Clerk 7:** la sesión funciona en el servidor. El asistente de servicios está detrás del
+    middleware (`auth.protect()`), así que para verlo hubo que entrar con sesión válida; si `auth()` devolviera vacío,
+    el middleware no le habría dejado pasar y estaría viendo la pantalla de acceso.
+  - **No es el limitador:** `/api/pedidos` cae en el grupo `escritura` (30 peticiones por minuto) y haría falta agotarlo.
+- **La ruta responde bien:** `POST /api/pedidos` sin sesión devuelve **401 `{"error":"No autorizado"}`**, y acepta los
+  campos que la página envía (`servicioId` o `paqueteId`).
+- **Lo que falta para cerrarlo (petición al usuario):** el **código de estado** de `/api/pedidos` (pestaña Red del
+  navegador: 401, 429 o 500 y el texto de la respuesta), o la línea del registro del contenedor en Dokploy
+  (`📦 [PEDIDOS API]` indica si llegó el `userId` y dónde se cortó). Y dos datos de contexto: **si pasa hoy por primera
+  vez** y **si es en producción o en local**. Si se prefiere descartar Clerk por completo, revertir `dac01bb` son 3
+  minutos y se vuelve a probar.
+- **Files created/modified:** ninguno (solo diagnóstico), `chat_history.md`.
+
+#### 💻 Key Code:
+```ts
+// app/servicios/[slug]/onboarding/page.tsx:160  (el aviso de la captura)
+if (!response.ok) throw new Error('Error en la petición de creación de pedido')
+…
+setError('Error al crear el pedido. Inténtalo de nuevo.')
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 13:48)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4150,6 +4191,11 @@ export default async function PaqueteLayout({ children, params }) {
 34. ✅ **CERRADO** *(09-10-2026)* — Un slug inexistente en el asistente ya devuelve **404** en lugar de 200 (mismo
     commit): el slug se valida en el servidor y `notFound()` sirve la página 404. La validación falla en abierto para
     no tumbar un pedido en curso ante un fallo de Supabase.
+35. **Cerrar el «Error al crear el pedido» del asistente de servicios** (captura del 09-10-2026). Localizado: el aviso
+    salta cuando `POST /api/pedidos` no responde 2xx, y ya está descartado que venga de los cambios de hoy (otro árbol
+    de rutas, dependencias intactas y sesión de Clerk funcionando en el servidor). **Falta el código de estado** de esa
+    petición (Red del navegador o registro de Dokploy) y saber si es nuevo ocurría ya antes. *Tú me das el dato, yo lo
+    arreglo; si prefieres, revierto `dac01bb` para descartar Clerk.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

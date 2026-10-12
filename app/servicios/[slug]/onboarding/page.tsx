@@ -130,7 +130,17 @@ export default function OnboardingInicioPage() {
       })
 
       if (!response.ok) {
-        throw new Error('Error en la petición de creación de pedido')
+        // Se distingue el caso para poder decirle al cliente qué le pasa. Ademas, asi la
+        // proxima prueba se autodiagnostica sin abrir las herramientas del navegador.
+        if (response.status === 401) {
+          router.push(`/sign-in?redirect_url=${encodeURIComponent(window.location.pathname)}`)
+          return
+        }
+        if (response.status === 429) {
+          setError('Has hecho demasiados intentos seguidos. Espera un minuto y vuelve a probarlo.')
+          return
+        }
+        throw new Error(`HTTP ${response.status}`)
       }
 
       const pedido = await response.json()
@@ -157,7 +167,13 @@ export default function OnboardingInicioPage() {
 
     } catch (err) {
       console.error('Error creando pedido:', err)
-      setError('Error al crear el pedido. Inténtalo de nuevo.')
+      const detalle = err instanceof Error ? err.message : ''
+      const codigo = detalle.startsWith('HTTP ') ? detalle.slice(5) : ''
+      setError(
+        codigo
+          ? `No hemos podido preparar tu pedido (error ${codigo}). Vuelve a intentarlo en un minuto y, si se repite, escribenos y lo miramos.`
+          : 'No hemos podido preparar tu pedido. Vuelve a intentarlo en un minuto y, si se repite, escribenos y lo miramos.'
+      )
     }
   }
 

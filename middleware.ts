@@ -12,7 +12,6 @@ const isProtectedRoute = createRouteMatcher([
   // (/servicios/impuestos/<servicio>/onboarding): los rewrites de next.config.ts
   // le anaden un segmento, asi que NO coincide con '/servicios/:slug/onboarding'
   // y hasta ahora cualquier visitante anonimo podia recorrerlo.
-  // respondia 401 al crear el pedido y veia un error generico).
   '/servicios/impuestos/:service/onboarding(.*)'
 ])
 

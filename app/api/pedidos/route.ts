@@ -16,10 +16,24 @@ export async function POST(req: Request) {
 
         // Aceptamos servicioId (compatibilidad) o paqueteId explícito
         const targetId = servicioId || paqueteId
-        const esPaquete = tipo === 'paquete' || !!paqueteId
+        let esPaquete = tipo === 'paquete' || !!paqueteId
 
         if (!targetId) {
             return NextResponse.json({ error: 'Falta servicioId o paqueteId' }, { status: 400 })
+        }
+
+        // OJO: `tipo` describe el TIPO DE FLUJO (hay servicios que se venden con flujo de
+        // paquete, como el Reporte Anual Estatal), NO en que tabla vive el id. Decidir la
+        // columna solo con `tipo` metia ids de `servicios` en `pedidos.paquete_id`, y la clave
+        // foranea rechazaba el insert (error 23503: "is not present in table paquetes").
+        // Se comprueba en que tabla esta el id de verdad.
+        if (esPaquete) {
+            const { data: paqueteReal } = await supabaseAdmin
+                .from('paquetes')
+                .select('id')
+                .eq('id', targetId)
+                .maybeSingle()
+            esPaquete = !!paqueteReal
         }
 
         console.log('📦 [PEDIDOS API] Creando/recuperando pedido:')

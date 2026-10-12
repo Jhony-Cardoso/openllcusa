@@ -20,7 +20,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 export const metadata: Metadata = {
-  title: 'Completar tu pedido | Open LLC USA',
+  // Sin la marca: el layout raiz ya la anade con su plantilla de titulo
+  title: 'Completar tu pedido',
   description: 'Completa los datos de tu LLC para empezar el proceso con Open LLC USA.',
   robots: { index: false, follow: true },
 }

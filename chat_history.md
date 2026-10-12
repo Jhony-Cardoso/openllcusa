@@ -4361,7 +4361,31 @@ git commit --allow-empty -m "chore: relanzar el despliegue"
 git push origin main
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 16:05)
+---
+### 📅 Chat Session: 2026-10-12 16:22 — El precio del Reporte Anual deja de anunciarse como único
+**Main objective:** Corregir la incongruencia de precio del Reporte Anual Estatal (la tasa del estado se suma aparte).
+
+#### 👤 User Request:
+> En `/servicios/reporte-anual` se anuncia «$99» como precio fijo, pero el precio depende del estado en cuestión. Modificarlo de forma muy profesional, cuidando UI y UX.
+
+#### 🤖 Agent Solution:
+- **Diagnóstico:** el cobro real son DOS conceptos — `servicios.precio` (99) + `estados_usa.filing_anual` (la tasa oficial del estado), que Stripe cobra como segunda línea («Filing anual estatal — <Estado>», en `app/api/stripe/checkout-servicio/route.ts`) y que el asistente ya desglosa antes de pagar (`onboarding/checkout/page.tsx`: `total = precioBase + stateFee`). Medido contra la base: de **0** (New Mexico) a **350** (Nevada), con Delaware 300, Florida 139 y Wyoming 60; **Texas está desactivado** (`activo = false`) y no se ofrece. El listado `/servicios` ya decía «Desde $99»: la incongruencia estaba solo en la ficha.
+- **Cambio, SOLO para el reporte anual** (los demás servicios quedan intactos): la etiqueta «PRECIO TOTAL» pasa a «DESDE»; se añade un bloque de desglose («Gestión y presentación del reporte» 99 + «Tasa oficial de tu estado (filing anual)» de 0 a 350 + «Total desde 99») y una nota de transparencia con las tasas reales por estado, **leídas de la base**; y los datos estructurados pasan de un `price` único a `priceSpecification` (minPrice 99, maxPrice 99 + tasa máxima = 449), para que Google lea lo mismo que ve el visitante.
+- **Verificado por render** contra el servidor de desarrollo local (`127.0.0.1:3000/servicios/reporte-anual`, con la cookie del handshake de Clerk): 9 de 11 comprobaciones OK, y las 2 que salieron en rojo eran defectos de MI comprobación (React intercala `<!-- -->` entre el texto y el valor; «Texas» no aparece porque está inactivo). Control sin regresión: `/servicios/consultoria-fiscal` conserva «PRECIO TOTAL», sin desglose y con `price` simple. Tipos: 0 errores en el fichero (34 preexistentes del repo).
+
+#### 💻 Key Code:
+```tsx
+const esReporteAnual = isReporteAnual(slug)
+// El reporte anual se cobra en DOS conceptos: tarifa del servicio + tasa del estado.
+let tasasEstado: { nombre: string; filing_anual: number }[] = []
+if (esReporteAnual) {
+  const { data } = await supabaseAdmin.from('estados_usa').select('nombre, filing_anual, activo')
+    .order('filing_anual', { ascending: false })
+  tasasEstado = (data ?? []).filter((e: any) => e.activo !== false)
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 16:22)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se

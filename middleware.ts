@@ -23,8 +23,12 @@ export default clerkMiddleware(async (auth, req) => {
   const xForwardedProto = req.headers.get('x-forwarded-proto')
   const esHttp = xForwardedProto === 'http'
   const tieneWww = hostname.startsWith('www.')
+  // En local NO se fuerza nada: Next marca la peticion como 'http' en desarrollo,
+  // asi que sin esta excepcion el servidor local redirigia a https://localhost:3000
+  // y la pagina no cargaba. En produccion el host nunca es localhost.
+  const esLocal = hostname.startsWith('localhost') || hostname.startsWith('127.0.0.1')
 
-  if (tieneWww || esHttp) {
+  if (!esLocal && (tieneWww || esHttp)) {
     const cleanHost = hostname.replace('www.', '')
     // Reconstruimos la URL obligando a usar https y el dominio limpio sin www
     const targetUrl = `https://${cleanHost}${url.pathname}${url.search}`

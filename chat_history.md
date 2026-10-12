@@ -4086,7 +4086,51 @@ if (!response.ok) throw new Error('Error en la petición de creación de pedido'
 setError('Error al crear el pedido. Inténtalo de nuevo.')
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 13:48)
+---
+### 📅 Chat Session: 2026-10-12 13:56
+**Main objective:** Segunda pasada sobre el «Error al crear el pedido»: la captura de la pestaña Red llegó vacía, así
+que se siguió investigando por el código y contra producción.
+
+#### 👤 User Request:
+> Captura de las herramientas de desarrollo (pestaña «Red») con el asistente de servicios y el mismo aviso de error.
+
+#### 🤖 Agent Solution:
+- **La captura no sirve para el dato que falta:** la lista de peticiones está **vacía** (se borró al recargar; «Conservar
+  registro» está desmarcado). Lo único aprovechable es que la **Consola tiene 4 errores**.
+- **Se corrige una conclusión mía de la entrada anterior:** dije que el 401 encajaba porque el asistente de servicios
+  está detrás de Clerk. Al leer el manejador del botón, la página **sí** redirige a `/sign-in` cuando no hay usuario
+  (`app/servicios/[slug]/onboarding/page.tsx:97`), así que «no estabas identificado» **no** explica el aviso por sí
+  solo. El fallo tiene que estar en la respuesta de `POST /api/pedidos` con usuario presente (500 de base de datos) o
+  en algo intermedio.
+- **FALLO REAL ENCONTRADO, medido y de antes de hoy:** el middleware protege `/servicios/:slug/onboarding(.*)` y una
+  entrada a mano para `declaracion-anual-llc`, pero **los rewrites de `next.config.ts` sirven el asistente de impuestos
+  en `/servicios/impuestos/<servicio>/onboarding`**, y esa forma de la URL **no coincide con el patrón** (hay un
+  segmento de más). Comprobado en vivo sin sesión:
+  - `/servicios/reporte-anual-estatal/onboarding` → **307** (protegida, manda a entrar)
+  - `/servicios/impuestos/reporte-anual-estatal/onboarding` → **200** ← **sin proteger**
+  - `/servicios/impuestos/declaracion-anual-llc/onboarding` → **307** (protegida, está en la lista a mano)
+  - `/servicios/reporte-anual-estatal/onboarding/checkout` → **307**
+  O sea: cualquier visitante anónimo puede recorrer el asistente de impuestos por la URL reescrita. **No lo provocó este
+  trabajo:** `middleware.ts` y `next.config.ts` no se han tocado hoy (último commit de `middleware.ts`: `18ebffd`), y el
+  listado de ficheros tocados hoy son `chat_history.md`, `app/layout.tsx`, `components/layout/Header.tsx`,
+  `package.json`, el lock y el `layout.tsx` nuevo de `app/paquetes/`.
+- **Lo que sigue faltando para cerrar el aviso:** el **código de estado** de `POST /api/pedidos`. La vía más rápida es el
+  registro del contenedor en Dokploy: la ruta imprime `📦 [PEDIDOS API]` con el `userId`, así que se distingue un 401
+  (no llega `userId`) de un 500 (llega y falla la escritura en base de datos). Y dos datos de contexto: la URL exacta que
+  se usó y si ocurría ya antes de hoy.
+- **Files created/modified:** ninguno (solo diagnóstico), `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// app/servicios/[slug]/onboarding/page.tsx:97 — la pagina ya evita el aviso si no hay usuario
+if (!user) {
+  const currentPath = window.location.pathname
+  router.push(`/sign-in?redirect_url=${encodeURIComponent(currentPath)}`)
+  return
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 13:56)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4191,11 +4235,16 @@ setError('Error al crear el pedido. Inténtalo de nuevo.')
 34. ✅ **CERRADO** *(09-10-2026)* — Un slug inexistente en el asistente ya devuelve **404** en lugar de 200 (mismo
     commit): el slug se valida en el servidor y `notFound()` sirve la página 404. La validación falla en abierto para
     no tumbar un pedido en curso ante un fallo de Supabase.
-35. **Cerrar el «Error al crear el pedido» del asistente de servicios** (captura del 09-10-2026). Localizado: el aviso
-    salta cuando `POST /api/pedidos` no responde 2xx, y ya está descartado que venga de los cambios de hoy (otro árbol
-    de rutas, dependencias intactas y sesión de Clerk funcionando en el servidor). **Falta el código de estado** de esa
-    petición (Red del navegador o registro de Dokploy) y saber si es nuevo ocurría ya antes. *Tú me das el dato, yo lo
-    arreglo; si prefieres, revierto `dac01bb` para descartar Clerk.*
+35. **Cerrar el «Error al crear el pedido» del asistente de servicios.** Localizado: salta cuando `POST /api/pedidos`
+    no responde 2xx. Descartado que venga de los cambios de hoy (otro árbol de rutas, dependencias intactas) y
+    **corregida** mi primera conclusión: la página ya redirige a `/sign-in` si no hay usuario, así que no es un simple
+    «sin sesión». **Falta el código de estado** (registro de Dokploy: `📦 [PEDIDOS API]` con el `userId`, o la pestaña Red
+    con «Conservar registro» marcado) y saber la **URL exacta** y si pasaba ya antes. *Tú me das el dato, yo lo arreglo.*
+36. **Proteger el asistente de impuestos por su URL reescrita.** El middleware no cubre
+    `/servicios/impuestos/<servicio>/onboarding(.*)` porque los rewrites de `next.config.ts` lo sirven con un segmento de
+    más, así que **hoy se puede recorrer sin sesión** (medido: 200 para un visitante anónimo, frente a 307 en la URL
+    canónica). Es **1 línea** en `middleware.ts` (añadir el patrón a `createRouteMatcher`). *Propuesto el 09-10-2026,
+    pendiente de tu OK.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

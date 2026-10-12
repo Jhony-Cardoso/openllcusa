@@ -4305,7 +4305,44 @@ if (esPaquete) {
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:56)
+---
+### 📅 Chat Session: 2026-10-12 15:06
+**Main objective:** El servidor local no carga: `http://localhost:3000` redirige a `https://localhost:3000`.
+
+#### 👤 User Request:
+> «No me funciona localhost.3000. Parece que hace una redirección a https://localhost.3000»
+
+#### 🤖 Agent Solution:
+- **Causa encontrada en las tripas de Next:** en desarrollo, Next marca todas las peticiones como **http**
+  (`node_modules/next/dist/server/base-server.js:611`: `req.headers['x-forwarded-proto'] ??= isHttps ? 'https' : 'http'`).
+  El primer bloque del middleware fuerza HTTPS cuando esa cabecera vale `http` — y **no tenía ninguna excepción para
+  local** (0 apariciones de `NODE_ENV`/`localhost` en el fichero): reconstruía `https://${host}` con el host local, o
+  sea `https://localhost:3000`, y ahí no hay nada escuchando. De ahí la página en blanco.
+- **No es nuevo:** ese bloque es del lote de seguridad de septiembre; ha salido ahora porque es la primera vez en un
+  tiempo que se arranca el servidor local (se le pidió reiniciarlo para la prueba de Clerk).
+- **Arreglo, commit `34f68f2` (una excepción):** `const esLocal = hostname.startsWith('localhost') ||
+  hostname.startsWith('127.0.0.1')` y el bloque pasa a `if (!esLocal && (tieneWww || esHttp))`. En producción el host
+  nunca es localhost, así que ese comportamiento no cambia.
+- **Verificación en producción tras subirlo: 9 comprobaciones, 0 fallos** — `http://openllcusa.com` → **301**,
+  `https://www.openllcusa.com` → **301**, portada/`/precios`/`/servicios` → 200, la protección del punto 36 → 307,
+  `/dashboard` → 307, el asistente de paquetes → 200 y el slug inventado → 404.
+- **Para el usuario:** reinicio limpio (como dice `AGENTS.md`): cerrar el servidor, `rm -rf .next` y `npm run dev`.
+  Y ojo: la clave de Clerk de `.env.local` es `pk_test_…`, una instancia de **desarrollo**, así que la sesión local es
+  independiente de la de producción (los usuarios no se comparten).
+- **Files created/modified:** `middleware.ts` (commit `34f68f2`), `chat_history.md`.
+
+#### 💻 Key Code:
+```ts
+// middleware.ts: en local no se fuerza nada (Next marca la peticion como 'http' en desarrollo)
+const esLocal = hostname.startsWith('localhost') || hostname.startsWith('127.0.0.1')
+
+if (!esLocal && (tieneWww || esHttp)) {
+  const cleanHost = hostname.replace('www.', '')
+  return NextResponse.redirect(`https://${cleanHost}${url.pathname}${url.search}`, 301)
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 15:06)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se

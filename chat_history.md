@@ -4254,7 +4254,58 @@ Tabla de versiones que hay que recordar (SDK != JS del cliente):
   @clerk/nextjs 7.x  ->  @clerk/clerk-js 6.x   (Core 3)
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:37)
+---
+### 📅 Chat Session: 2026-10-12 14:56
+**Main objective:** El usuario aporta el registro del contenedor con el error de creación de pedido y autoriza que el
+aviso de pantalla distinga los casos.
+
+#### 👤 User Request:
+> «✅ Sí, haz que el aviso de la pantalla distinga los casos (sesión caducada / demasiados intentos / fallo del
+> servidor) en lugar del mensaje genérico… Te adjunto el error en los Logs.»
+
+#### 🤖 Agent Solution:
+- **CAUSA ENCONTRADA, y estaba en su registro:**
+  `❌ [PEDIDOS API] Error creando pedido: { code: '23503', details: 'Key (paquete_id)=(c5e110b4-3b09-4c4c-986b-d16e7e9d1111)
+  is not present in table "paquetes"', message: 'insert or update on table "pedidos" violates foreign key constraint
+  "pedidos_paquete_id_fkey"' }`. Ese identificador es **el del servicio «Reporte Anual Estatal»** (comprobado contra la
+  base de datos). O sea: la ruta metía un **servicio** en la columna **`paquete_id`**.
+- **Por qué:** `POST /api/pedidos` decide la columna con `const esPaquete = tipo === 'paquete' || !!paqueteId`, y el
+  `tipo` que envía la página sale de `servicios.tipo` de la base de datos. Ese campo describe **el tipo de flujo** (el
+  reporte anual se vende con el flujo largo: estado → datos → revisión → pago), **no en qué tabla vive el id**.
+  **Hay SEIS servicios con `tipo = 'paquete'`**: starter, professional, business, compliance-basico, plan-crecimiento y
+  reporte-anual. Los cinco primeros existen **también** como paquete, así que el visitante entra por `/paquetes/…` y no
+  se nota; el reporte anual **no tiene equivalente**, de modo que es el único que falla siempre. Eso explica por qué el
+  usuario lo veía justo ahí y por qué el flujo parecía funcionar en otros sitios.
+- **El dato NO se toca:** `tipo` sí se usa para el flujo y para la ficha (`app/servicios/[slug]/page.tsx:256`), así
+  que cambiarlo rompería otras cosas. El arreglo va en la ruta.
+- **Descartado antes de llegar aquí, midiendo:** Clerk (revertido a 6 y el error seguía), las columnas obligatorias de
+  `pedidos` (solo `id`, `numero_pedido` y `user_id`, y el insert las rellena), el propio servicio (existe, activo, con
+  sus $99) y **mi propia sospecha de que faltara la clave de servicio** (la ficha de cada servicio lee de la base de
+  datos con ese mismo cliente y sale bien, así que la clave funciona). También se comprobó que los últimos borradores
+  son del 3 de septiembre: el fallo tiene semanas, no es de hoy.
+- **Subido (autorizado por el usuario), commit `59ae26a`:** el aviso de la pantalla distingue los casos — un 401 manda a
+  `/sign-in` con la vuelta incluida, un 429 explica que ha habido demasiados intentos, y el resto muestra el código
+  (`error 500`) con un texto útil. Verificado: tipos con los mismos 34 errores preexistentes y ninguno en el fichero.
+- **Arreglo de la causa PREPARADO Y VERIFICADO, pero NO aplicado ni subido** (queda esperando el OK del usuario, que
+  pidió expresamente no cambiar nada sin autorización). En `app/api/pedidos/route.ts`: en vez de fiarse de `tipo`, se
+  comprueba en qué tabla está el id de verdad (una consulta a `paquetes`) y se elige `paquete_id` o `servicio_id`
+  conforme a eso. **Probado en el árbol de trabajo y devuelto**: compila y tipa sin errores (0 en la ruta, 34 totales),
+  y el diff está guardado en `%LOCALAPPDATA%\Temp\fix_pedidos.diff` por si se autoriza.
+- **Files created/modified:** `app/servicios/[slug]/onboarding/page.tsx` (commit `59ae26a`), `chat_history.md`.
+
+#### 💻 Key Code:
+```ts
+// app/api/pedidos/route.ts — el arreglo preparado (aún sin autorizar)
+let esPaquete = tipo === 'paquete' || !!paqueteId
+…
+// `tipo` describe el TIPO DE FLUJO, no en que tabla vive el id: se comprueba de verdad
+if (esPaquete) {
+  const { data: paqueteReal } = await supabaseAdmin.from('paquetes').select('id').eq('id', targetId).maybeSingle()
+  esPaquete = !!paqueteReal
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:56)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4359,10 +4410,13 @@ Tabla de versiones que hay que recordar (SDK != JS del cliente):
 34. ✅ **CERRADO** *(09-10-2026)* — Un slug inexistente en el asistente ya devuelve **404** en lugar de 200 (mismo
     commit): el slug se valida en el servidor y `notFound()` sirve la página 404. La validación falla en abierto para
     no tumbar un pedido en curso ante un fallo de Supabase.
-35. **Cerrar el «Error al crear el pedido» del asistente de servicios** (sigue ABIERTO: el punto 36 no lo arreglaba;
-    cerraba el acceso sin sesión). Acaba de revertirse Clerk 7 a 6 para descartarlo. **Prueba el asistente otra vez**: si
-    ya crea el pedido, era Clerk 7; si sigue fallando, necesito el estado de `POST /api/pedidos` (pestaña Red **sin** el
-    filtro `video`) o el registro de Dokploy. *Tú pruebas, yo sigo.*
+35. **«Error al crear el pedido» — CAUSA ENCONTRADA y arreglo listo, esperando tu OK.** Era una violación de clave
+    foránea: la ruta metía el id del servicio en `pedidos.paquete_id`, porque decide la columna con el campo `tipo` y
+    ese campo describe el *flujo*, no la tabla (seis servicios lo tienen a «paquete»; el reporte anual es el único sin
+    equivalente en `/paquetes` y por eso es el que falla siempre). El arreglo son ~8 líneas en `app/api/pedidos/route.ts`
+    (comprobar en qué tabla está el id antes de elegir columna), **probado y devuelto**, con el diff en
+    `%LOCALAPPDATA%`/Temp/fix_pedidos.diff. *Dime OK y lo subo (2 minutos); si prefieres, revierto y no se toca.*
+
 36. ✅ **CERRADO** *(09-10-2026)* — El asistente de impuestos está protegido también por su URL reescrita (commit
     `501521d`, una línea en `middleware.ts`): medido **200 → 307** para un visitante anónimo, con las landings y el resto
     del sitio sin cambios.

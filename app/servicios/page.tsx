@@ -20,7 +20,7 @@ const serviciosIndividuales = [
     slug: 'reporte-anual',
     icono: CalendarCheck,
     title: 'Reporte Anual Estatal',
-    price: 'Desde $99',
+    price: 'Desde $159',
     tagline: 'Mantenimiento obligatorio de tu LLC año tras año.',
     features: ['Presentación ante el estado', 'Evita disolución automática', 'Recordatorios anuales', 'Gestión completa'],
     highlight: true,

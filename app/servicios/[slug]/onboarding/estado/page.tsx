@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
-import { AlertCircle, Loader2, Check, Star, ChevronDown } from 'lucide-react'
+import { AlertCircle, Loader2, Check, Star, ChevronDown, Minus } from 'lucide-react'
 import { isEIN, isReporteAnual } from '@/lib/constants'
 
 export default function EstadoPage() {
@@ -35,6 +35,9 @@ export default function EstadoPage() {
   // Campos LLC (Creación nueva)
   const [estados, setEstados] = useState<any[]>([])
   const [selectedEstado, setSelectedEstado] = useState<string | null>(null)
+  // El reporte anual no aplica en estados sin tasa oficial (New Mexico): se muestran
+  // informativos, pero no se pueden elegir.
+  const esReporteAnual = isReporteAnual(slug)
   const [expandedInfo, setExpandedInfo] = useState<string | null>(null)
 
   useEffect(() => {
@@ -98,7 +101,11 @@ export default function EstadoPage() {
         }
 
         setPedidoId(pedido.id)
-        if (pedido.estado_usa_id) setSelectedEstado(pedido.estado_usa_id)
+        if (pedido.estado_usa_id) {
+          // No se restaura un estado que no es elegible para este trámite.
+          const elegible = !esReporteAnual || Number(pedido.estado_usa?.filing_anual ?? 1) > 0
+          if (elegible) setSelectedEstado(pedido.estado_usa_id)
+        }
 
         // Cargar estados disponibles vía API Proxy
         const responseEstados = await fetch('/api/estados')
@@ -385,26 +392,30 @@ export default function EstadoPage() {
         {estados.map((estado) => {
           const isSelected = selectedEstado === estado.id;
           const isExpanded = expandedInfo === estado.id;
+          const noElegible = esReporteAnual && Number(estado.filing_anual ?? 0) <= 0;
+          const Etiqueta = (noElegible ? 'div' : 'label') as 'label';
 
           return (
-            <div key={estado.id} className="border-2 rounded-xl overflow-hidden transition-all bg-white shadow-sm">
-              <label
+            <div key={estado.id} className={`border-2 rounded-xl overflow-hidden transition-all shadow-sm ${noElegible ? 'border-gray-200 bg-gray-50' : 'border-transparent bg-white'}`}>
+              <Etiqueta
                 className={`
-                  block p-5 cursor-pointer transition-all
-                  ${isSelected
-                    ? 'border-blue-600 bg-blue-50/50'
-                    : 'border-transparent hover:bg-gray-50'
+                  block p-5 transition-all
+                  ${noElegible
+                    ? 'cursor-default'
+                    : `cursor-pointer ${isSelected ? 'border-blue-600 bg-blue-50/50' : 'border-transparent hover:bg-gray-50'}`
                   }
                 `}
               >
-                <input
-                  type="radio"
-                  name="estado"
-                  value={estado.id}
-                  checked={isSelected}
-                  onChange={(e) => setSelectedEstado(e.target.value)}
-                  className="sr-only"
-                />
+                {!noElegible && (
+                  <input
+                    type="radio"
+                    name="estado"
+                    value={estado.id}
+                    checked={isSelected}
+                    onChange={(e) => setSelectedEstado(e.target.value)}
+                    className="sr-only"
+                  />
+                )}
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
@@ -416,6 +427,7 @@ export default function EstadoPage() {
                       }
                     `}>
                       {isSelected && <Check size={14} className="text-white" />}
+                      {noElegible && <Minus size={14} className="text-gray-400" />}
                     </div>
 
                     <div className="flex-1">
@@ -431,11 +443,20 @@ export default function EstadoPage() {
                         )}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Filing anual: <span className="font-semibold">${estado.filing_anual}</span>
+                        {noElegible ? (
+                          <>Sin Reporte Anual que presentar</>
+                        ) : (
+                          <>Filing anual: <span className="font-semibold">${estado.filing_anual}</span></>
+                        )}
                         {estado.filing_inicial && (
                           <> • Filing inicial: <span className="font-semibold">${estado.filing_inicial}</span></>
                         )}
                       </div>
+                      {noElegible && (
+                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
+                          No aplica a este trámite
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -450,7 +471,7 @@ export default function EstadoPage() {
                     <ChevronDown className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                   </button>
                 </div>
-              </label>
+              </Etiqueta>
 
               {isExpanded && (
                 <div className="px-5 pb-5 bg-white border-t border-gray-100">

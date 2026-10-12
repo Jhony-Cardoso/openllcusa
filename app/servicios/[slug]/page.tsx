@@ -261,17 +261,23 @@ export default async function ServicioDetallePage({
   // "total": se informa del rango real y del desglose.
   const esReporteAnual = isReporteAnual(slug)
   const dinero = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
-  let tasasEstado: { nombre: string; filing_anual: number }[] = []
+  // Dos conceptos: la tarifa del servicio y la tasa oficial del estado. Los estados sin
+  // tasa (New Mexico) no presentan Reporte Anual: no son elegibles y no entran en el rango.
+  let estadosConTasa: { nombre: string; filing_anual: number }[] = []
+  let estadosSinReporte: string[] = []
   if (esReporteAnual) {
     const { data } = await supabaseAdmin
       .from('estados_usa')
       .select('nombre, filing_anual, activo')
       .order('filing_anual', { ascending: false })
-    tasasEstado = (data ?? []).filter((e: any) => e.activo !== false)
+    const activos = (data ?? []).filter((e: any) => e.activo !== false)
+    estadosConTasa = activos.filter((e: any) => Number(e.filing_anual ?? 0) > 0)
+    estadosSinReporte = activos.filter((e: any) => Number(e.filing_anual ?? 0) <= 0).map((e: any) => e.nombre)
   }
-  const tasaMaxima = tasasEstado.length ? Number(tasasEstado[0].filing_anual ?? 0) : 0
-  const tasaMinima = tasasEstado.length ? Number(tasasEstado[tasasEstado.length - 1].filing_anual ?? 0) : 0
-  const ejemploTasas = tasasEstado.map((e) => `${e.nombre} ${dinero(Number(e.filing_anual ?? 0))}`).join(' · ')
+  const tasaMaxima = estadosConTasa.length ? Number(estadosConTasa[0].filing_anual) : 0
+  const tasaMinima = estadosConTasa.length ? Number(estadosConTasa[estadosConTasa.length - 1].filing_anual) : 0
+  const ejemploTasas = estadosConTasa.map((e) => `${e.nombre} ${dinero(Number(e.filing_anual))}`).join(' · ')
+  const totalMinimo = (servicio.precio ?? 0) + tasaMinima
   const IconHeader = getIconForSlug(slug)
   const timeline = getTimelineForSlug(slug)
   const faqs = getFAQsForSlug(slug)
@@ -306,7 +312,7 @@ const ctaHref = isEIN(slug)
           "@type": "Offer",
           "priceSpecification": {
             "@type": "PriceSpecification",
-            "minPrice": servicio.precio ?? 0,
+            "minPrice": totalMinimo,
             ...(tasaMaxima > 0 ? { "maxPrice": (servicio.precio ?? 0) + tasaMaxima } : {}),
             "priceCurrency": "USD"
           },
@@ -730,7 +736,7 @@ const ctaHref = isEIN(slug)
                   {esReporteAnual ? 'DESDE' : 'PRECIO TOTAL'}
                 </div>
                 <div className="text-5xl font-extrabold tracking-tighter text-[#111827] mb-1">
-                  {precioFormateado}
+                  {esReporteAnual ? dinero(totalMinimo) : precioFormateado}
                 </div>
 
                 {servicio.precio_recurrente ? (
@@ -754,19 +760,20 @@ const ctaHref = isEIN(slug)
                     <div className="mt-2 flex items-baseline justify-between gap-3 text-sm text-[#4B5563]">
                       <span>Tasa oficial de tu estado (filing anual)</span>
                       <span className="font-semibold text-[#111827]">
-                        {tasasEstado.length > 0 ? `de ${dinero(tasaMinima)} a ${dinero(tasaMaxima)}` : 'según el estado'}
+                        {estadosConTasa.length > 0 ? `de ${dinero(tasaMinima)} a ${dinero(tasaMaxima)}` : 'según el estado'}
                       </span>
                     </div>
                     <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-[#E5E7EB] pt-3">
                       <span className="font-semibold text-[#111827]">Total</span>
-                      <span className="font-extrabold text-[#111827]">desde {precioFormateado}</span>
+                      <span className="font-extrabold text-[#111827]">desde {dinero(totalMinimo)}</span>
                     </div>
                   </div>
                 )}
 
-                {esReporteAnual && ejemploTasas && (
+                {esReporteAnual && (ejemploTasas || estadosSinReporte.length > 0) && (
                   <p className="mt-3 text-xs leading-relaxed text-[#6B7280]">
-                    La tasa la fija cada estado ({ejemploTasas}). En el asistente la verás desglosada, con el importe exacto de tu estado, antes de pagar.
+                    {ejemploTasas && <>La tasa la fija cada estado ({ejemploTasas}). </>}
+                    {estadosSinReporte.length > 0 && <>En {estadosSinReporte.join(' y ')} las LLC no presentan Reporte Anual, así que no se puede elegir en el asistente.</>}
                   </p>
                 )}
 

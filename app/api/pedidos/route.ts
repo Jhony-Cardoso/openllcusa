@@ -28,12 +28,16 @@ export async function POST(req: Request) {
         // foranea rechazaba el insert (error 23503: "is not present in table paquetes").
         // Se comprueba en que tabla esta el id de verdad.
         if (esPaquete) {
-            const { data: paqueteReal } = await supabaseAdmin
+            // Se comprueba en que tabla esta el id de verdad: si no se puede
+            // saber (hipo de la base), se mantiene el comportamiento de antes.
+            const { data: paqueteReal, error: errorPaquete } = await supabaseAdmin
                 .from('paquetes')
                 .select('id')
                 .eq('id', targetId)
                 .maybeSingle()
-            esPaquete = !!paqueteReal
+            if (!errorPaquete) {
+                esPaquete = !!paqueteReal
+            }
         }
 
         console.log('📦 [PEDIDOS API] Creando/recuperando pedido:')

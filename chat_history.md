@@ -4342,7 +4342,26 @@ if (!esLocal && (tieneWww || esHttp)) {
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 15:06)
+---
+### 📅 Chat Session: 2026-10-12 16:05 — INCIDENCIA: la web se quedó sin servir por un despliegue Cancelled
+**Main objective:** Restaurar el servicio tras un build fallido por falta de memoria.
+
+#### 👤 User Request:
+> El despliegue aparece "Cancelled" y no sé cómo se lanza (commit c855741).
+
+#### 🤖 Agent Solution:
+- **Causa:** el `next build` en el VPS de 4 GB se quedó sin memoria (modo de fallo documentado en `AGENTS.md`); al no levantarse el contenedor nuevo, la web dejó de responder por HTTPS. Cloudflare seguía contestando en el puerto 80 con el 301, pero el origen daba timeout en todas las rutas (portada, estáticos y API), comprobado durante 10 minutos y también con User-Agent de navegador, para descartar un bloqueo de Cloudflare.
+- **Relanzado el despliegue** empujando un commit nuevo a `main` (el push dispara el despliegue en Dokploy, que es la forma más rápida y ya probada en este repo).
+- **Para el futuro:** en Dokploy, el proyecto → la aplicación → botón **Deploy**; o pestaña **Deployments** → **Redeploy** sobre la entrada fallida.
+
+#### 💻 Key Code:
+```bash
+# relanzar el despliegue sin tocar el panel: un push a main lo dispara
+git commit --allow-empty -m "chore: relanzar el despliegue"
+git push origin main
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 16:05)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se

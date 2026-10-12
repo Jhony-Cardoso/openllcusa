@@ -4195,11 +4195,17 @@ Clerk 7 a Clerk 6 para descartar la causa más probable.
   error (se subió por accidente en `6514d57`), es el único cambio de todo el día que toca la sesión, y **las
   comprobaciones que hice no podían detectarlo** porque todas eran sin sesión (cabecera de visitante, pantalla de
   acceso) — precisamente la parte que no está en duda. Revertir elimina la variable en 3 minutos.
-- **Verificación del revert en producción:** el sitio ya sirve `https://clerk.openllcusa.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js`
-  (**versión 6**, que es el marcador que se puede leer desde fuera). Ocho comprobaciones, **0 fallos**: `/`, `/precios`,
+- **Verificación del revert en producción:** ocho comprobaciones dan **0 fallos**: `/`, `/precios`,
   `/servicios`, `/sign-in`, `/guias` en 200; el 36 intacto (la URL reescrita del asistente sigue en 307);
   `/paquetes/business/onboarding` 200 y `/paquetes/xxx/onboarding` 404 (lo de ayer, sin cambios). La pantalla de acceso
   carga su formulario.
+- **CORRECCIÓN de la frase que había aquí (el marcador estaba mal leído):** esta primera lectura anotaba que el sitio
+  servía `@clerk/clerk-js@6`. Ese número **no es el del SDK**: el JS del cliente lleva otra numeración (Clerk 6 →
+  `clerk-js@5`, Clerk 7/Core 3 → `clerk-js@6`), así que servir `clerk-js@6` significaba que **Clerk 7 seguía desplegado**
+  y que el revert aún no había entrado. Quedó desplegado después: comprobado más tarde, el HTML sirve
+  `@clerk/clerk-js@5` y `@clerk/clerk-js@6` no aparece (0 menciones). **Regla para el futuro: para saber qué Clerk corre
+  en producción, mira la versión de `clerk-js` en el HTML y tradúcela con esa tabla, o mira `@clerk/nextjs` en
+  `node_modules`; no las mezcles.**
 - **Entorno local igualado:** se lanzó `npm install` para devolver `node_modules` a Clerk 6, de modo que el `npm run dev`
   del usuario corra la misma versión que el lock. Si tenía el servidor abierto, conviene reiniciarlo.
 - **Lo que queda por saber (punto 35), sin cambios:** si tras el revert el asistente ya crea el pedido, la causa era
@@ -4213,7 +4219,42 @@ Clerk 7 a Clerk 6 para descartar la causa más probable.
 git revert --no-edit dac01bb   # Clerk 7.9.13 -> 6.39.1 y la migracion a <Show>, de vuelta
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:22)
+---
+### 📅 Chat Session: 2026-10-12 14:37
+**Main objective:** Interpretar el «Cancelled» del despliegue y la advertencia de `middleware`/`proxy` en el registro de
+Dokploy.
+
+#### 👤 User Request:
+> «El deploy ha terminado con resultado de "Cancelled". ⚠ The "middleware" file convention is deprecated. Please use
+> "proxy" instead…»
+
+#### 🤖 Agent Solution:
+- **El «Cancelled» es el build, no el código.** En este VPS de 4 GB el `next build` ya ha muerto así antes (está
+  documentado en `AGENTS.md`): Dokploy deja corriendo la última versión que sí se construyó, no una intermedia. Comprobado:
+  el sitio está sano y sirve la versión con el revert de Clerk (8 comprobaciones, 0 fallos).
+- **Qué versión hay AHORA mismo en producción, con el marcador bien leído:** `@clerk/clerk-js@5` (1 mención) y
+  `@clerk/clerk-js@6` (0 menciones) → **Clerk 6**, o sea el revert **sí** está desplegado. La lectura anterior de ese
+  mismo marcador decía `clerk-js@6` y se interpretó al revés; la corrección está puesta en su sitio, en la entrada de
+  arriba.
+- **Consecuencia para la prueba del usuario:** el ensayo en el que el asistente «no funcionaba» se hizo **con Clerk 7
+  desplegado**, así que sigue siendo válido como indicio de que Clerk 7 fuera la causa. La prueba que vale es la de
+  ahora, con Clerk 6 en producción.
+- **La advertencia de `middleware` es una deprecación de Next 16.3.8**, o sea que la ha destapado el parche de Next de
+  este mismo día: Next quiere que ese fichero se llame `proxy` en lugar de `middleware` (lo renombra y ofrece un codemod,
+  `npx @next/codemod@canary middleware-to-proxy`). **Es un aviso, no un error**: no cancela el build ni cambia el
+  comportamiento hoy, y el «Cancelled» no viene de ahí. **No se toca por iniciativa propia**: ese fichero es el que
+  protege `/dashboard`, los onboards, el limitador de la API y la redirección de `www`, así que un renombrado mal hecho
+  dejaría el sitio entero sin protección. Queda como punto 37, con verificación posterior de las tres cosas.
+- **Files created/modified:** `chat_history.md` (corrección en su sitio + esta entrada).
+
+#### 💻 Key Code:
+```
+Tabla de versiones que hay que recordar (SDK != JS del cliente):
+  @clerk/nextjs 6.x  ->  @clerk/clerk-js 5.x   (Core 2)
+  @clerk/nextjs 7.x  ->  @clerk/clerk-js 6.x   (Core 3)
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:37)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4246,10 +4287,10 @@ git revert --no-edit dac01bb   # Clerk 7.9.13 -> 6.39.1 y la migracion a <Show>,
 12. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
 13. Limpieza menor: `components/FlagSafe.tsx` ✅ **borrado** *(09-10-2026, commit `8241d45`)*. Siguen aplazados, como
     pediste, `_RESPALDO_SERVICIOS/` y los ficheros de prueba de `public/`. *Yo, cuando lo digas.*
-14. **Dependencias críticas:** **Next 16.3.8 ✅** subido y verificado. **Clerk: 7.9.13 REVERTIDO a 6.39.1**
-    (commit `c738819`) para descartar que fuera la causa del fallo del asistente; Clerk 6 sigue en soporte (LTS), así que
-    no hay urgencia. Si el asistente funciona tras el revert, era Clerk y la subida se rehará con prueba previa; si sigue
-    fallando, se queda en 6 y el problema está en la ruta. *Decidido y hecho por mí; te lo cuento aquí.*
+14. **Dependencias críticas:** **Next 16.3.8 ✅** subido y verificado (y de él sale la deprecación del punto 37).
+    **Clerk: 7.9.13 revertido a 6.39.1 y YA desplegado** (commit `c738819`; comprobado en producción con el marcador
+    `clerk-js@5`). Clerk 6 está en soporte (LTS), así que no hay prisa. *Pendiente: tu prueba del asistente con esta
+    versión.*
 15. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
 16. Voz de Zara con proveedores — aparcada.
 
@@ -4325,6 +4366,11 @@ git revert --no-edit dac01bb   # Clerk 7.9.13 -> 6.39.1 y la migracion a <Show>,
 36. ✅ **CERRADO** *(09-10-2026)* — El asistente de impuestos está protegido también por su URL reescrita (commit
     `501521d`, una línea en `middleware.ts`): medido **200 → 307** para un visitante anónimo, con las landings y el resto
     del sitio sin cambios.
+37. **Renombrar `middleware.ts` a `proxy.ts`** (deprecación de Next 16.3.8): el fichero funciona hoy, pero Next pide el
+    nombre nuevo y ofrece un codemod (`npx @next/codemod@canary middleware-to-proxy`). **Hay que hacerlo con cuidado y
+    verificar después**: ese fichero es el que protege `/dashboard`, los dos onboards, el limitador de la API y la
+    redirección de `www` a HTTPS, así que un renombrado mal hecho deja el sitio sin protección. *Propuesto el 12-10-2026,
+    pendiente de tu OK.*
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

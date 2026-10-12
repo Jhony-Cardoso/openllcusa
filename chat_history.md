@@ -4385,7 +4385,34 @@ if (esReporteAnual) {
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 16:22)
+---
+### 📅 Chat Session: 2026-10-12 16:59 — New Mexico: no es «tasa $0», es que no presenta
+**Main objective:** Corregir el dato de New Mexico (LLC exentas de Reporte Anual) en la ficha y dejarlo visible pero no elegible en el asistente.
+
+#### 👤 User Request:
+> En New Mexico las LLC están exentas de presentar el Reporte Anual; no es que la tasa sea de $0. Corregir el texto de la ficha («La tasa la fija cada estado (Nevada $350 · Delaware $300 · Florida $139 · Wyoming $60 · New Mexico $0)…») y, en el onboarding, retirar New Mexico o dejarlo visible pero sin ser elegible.
+
+#### 🤖 Agent Solution:
+- **Ficha (`app/servicios/[slug]/page.tsx`)**: los estados se parten en dos grupos —con tasa y sin reporte—. El rango pasa de «de $0 a $350» a **«de $60 a $350»**, la lista de ejemplos ya no incluye «New Mexico $0», y la nota añade que **en New Mexico las LLC no presentan Reporte Anual**, así que no puede elegirse en el asistente. El nombre del estado se lee de la base: no queda escrito a mano en el código.
+- **Coherencia del precio**: al dejar de ser elegible New Mexico, el mínimo real es 99 + 60 (Wyoming) = **159**. Por eso el titular de la ficha y la tarjeta del listado `/servicios` dicen «Desde 159», la fila final «Total desde 159» y los datos estructurados `minPrice: 159` / `maxPrice: 449`.
+- **Asistente (`onboarding/estado/page.tsx`)**: para el reporte anual, los estados sin tasa se muestran **informativos pero no elegibles** —sin radio, sin cursor de selección, con el icono «—», la línea «Sin Reporte Anual que presentar» y la etiqueta «No aplica a este trámite»— y el desplegable informativo (descripción y ventajas que ya trae la base) sigue abierto. Tampoco se restaura ese estado si venía guardado en un borrador. Texas ya se filtraba a mano en ese paso y se deja igual.
+- **Verificado por render** contra el servidor de desarrollo local: 8 de 9 comprobaciones OK y la novena era el marcador `<!-- -->` que React intercala (la fila sale como `desde <!-- -->159`). Control sin regresión: `consultoria-fiscal` conserva «PRECIO TOTAL» y su `price` simple. Tipos: 0 errores en los ficheros tocados (34 preexistentes del repo).
+
+#### 💻 Key Code:
+```tsx
+const noElegible = esReporteAnual && Number(estado.filing_anual ?? 0) <= 0;
+const Etiqueta = (noElegible ? 'div' : 'label') as 'label';
+```
+
+#### 💻 En la ficha:
+```tsx
+const activos = (data ?? []).filter((e: any) => e.activo !== false)
+estadosConTasa = activos.filter((e: any) => Number(e.filing_anual ?? 0) > 0)
+estadosSinReporte = activos.filter((e: any) => Number(e.filing_anual ?? 0) <= 0).map((e: any) => e.nombre)
+const totalMinimo = (servicio.precio ?? 0) + tasaMinima
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 16:59)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se

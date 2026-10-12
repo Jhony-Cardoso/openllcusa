@@ -3992,7 +3992,60 @@ export default function PaqueteLayout({ children }: { children: React.ReactNode 
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-10 00:15)
+---
+### 📅 Chat Session: 2026-10-12 13:16
+**Main objective:** Puntos 33 (`noindex` al asistente de `/paquetes/*`) y 34 (los 404 que devolvían 200).
+
+#### 👤 User Request:
+> «Adelante con los puntos 33 y 34.»
+
+#### 🤖 Agent Solution:
+- **Un solo fichero nuevo, commit `6514d57`:** `app/paquetes/[paqueteSlug]/layout.tsx`. De servidor a propósito,
+  porque el layout de `onboarding/` es de cliente (`'use client'`) y un componente de cliente no puede exportar
+  `metadata`.
+- **Punto 33:** `robots: { index: false, follow: true }` más título y descripción propios. Al colgar del segmento
+  `[paqueteSlug]` cubre las **45 URLs** del asistente (9 pasos × 5 paquetes) de una vez. Verificado en producción:
+  cuatro URLs muestreadas devuelven `noindex, follow` con el título nuevo, y `/`, `/precios`, `/servicios`, `/sign-in`
+  y `/guias` siguen en 200.
+- **Punto 34:** el slug se valida en el servidor contra la misma consulta que usa `/api/paquetes?slug=` (**por slug, sin
+  filtrar por `activo`**, para no cambiar el comportamiento de ningún flujo que hoy funciona) y, si no existe,
+  `notFound()` sirve la página de `app/not-found.tsx`. Verificado: `/paquetes/xxx/onboarding` y
+  `/paquetes/paquete-que-no-existe/onboarding` pasan de **200 a 404**, mientras un paquete real sigue sirviendo el
+  asistente (129 KB). **La validación falla en abierto**: sin credenciales o ante un error de Supabase deja pasar la
+  página, porque es preferible un mensaje propio a tumbar un pedido en curso con un 404 falso.
+- **Defecto propio cazado al medir:** el título salía «Completar tu pedido | Open LLC USA | Open LLC USA», porque el
+  layout raíz ya añade la marca con su plantilla (`template: '%s | Open LLC USA'`). Corregido en **`889e906`** y
+  comprobado en producción.
+- **INCIDENTE, y lo escribo tal cual: subí Clerk sin la comprobación del usuario.** El `git push` del punto 33/34 envió
+  **todo** `main` y arrastró el commit local `dac01bb` (Clerk 7.9.13), que estaba esperando su prueba. La subida fue
+  `23ff0a3..6514d57`. **Lección y norma desde ahora: mirar `git log --oneline origin/main..HEAD` antes de cada push**
+  (o subir el commit concreto), porque en este repo hay tandas que esperan autorización o verificación y un push
+  genérico se las lleva todas.
+- **Qué se pudo verificar de Clerk 7 en producción sin credenciales:** la cabecera de un visitante sin sesión pinta
+  «Iniciar sesión» y «Empezar» y **no** «Panel» (los `<Show when="signed-out">` funcionan y no lanzan), `/sign-in`
+  carga el formulario de Clerk con la localización en español (o sea, `@clerk/localizations` v4 va bien) y las páginas
+  principales responden 200. **Lo que NO se puede comprobar sin entrar en la cuenta:** la rama con sesión («Panel» +
+  `UserButton`) y el cierre de sesión con `afterSignOutUrl`. Queda para el usuario; si fallara, se revierte `dac01bb`.
+- **Files created/modified:** `app/paquetes/[paqueteSlug]/layout.tsx` (nuevo, commits `6514d57` y `889e906`),
+  `chat_history.md`.
+
+#### 💻 Key Code:
+```tsx
+// app/paquetes/[paqueteSlug]/layout.tsx (servidor): cubre las 45 URLs del asistente
+export const metadata: Metadata = {
+  title: 'Completar tu pedido',
+  description: 'Completa los datos de tu LLC para empezar el proceso con Open LLC USA.',
+  robots: { index: false, follow: true },
+}
+
+export default async function PaqueteLayout({ children, params }) {
+  const { paqueteSlug } = await params          // en Next 16 params es una promesa
+  if (!(await existePaquete(paqueteSlug))) notFound()
+  return <>{children}</>
+}
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 13:16)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4025,10 +4078,10 @@ export default function PaqueteLayout({ children }: { children: React.ReactNode 
 12. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
 13. Limpieza menor: `components/FlagSafe.tsx` ✅ **borrado** *(09-10-2026, commit `8241d45`)*. Siguen aplazados, como
     pediste, `_RESPALDO_SERVICIOS/` y los ficheros de prueba de `public/`. *Yo, cuando lo digas.*
-14. **Dependencias críticas, a medias:** **Next 16.3.4 → 16.3.8 ✅ subido y verificado** en producción (commit
-    `23ff0a3`). **Clerk 6 → 7.9.13 (Core 3) migrado y commiteado (`dac01bb`) pero SIN SUBIR**: es una versión mayor del
-    sistema de autenticación, así que antes de subirla hay que probar en local (`npm run dev`, entrar y salir de la
-    cuenta, ver la cabecera y el panel). *Tú compruebas, yo subo.*
+14. **Dependencias críticas:** **Next 16.3.8 ✅** subido y verificado (`23ff0a3`). **Clerk 7.9.13 está EN PRODUCCIÓN**
+    (`dac01bb`, subido por error junto al 33/34; ver la entrada de hoy). De Clerk se ha verificado en producción todo
+    lo que no exige cuenta: cabecera sin sesión, `<Show>`, página de acceso y localización. **Falta tu prueba con
+    sesión iniciada** («Panel», avatar y salir): si algo fallara, se revierte `dac01bb`. *Tú compruebas, yo reverto.*
 15. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
 16. Voz de Zara con proveedores — aparcada.
 
@@ -4091,13 +4144,12 @@ export default function PaqueteLayout({ children }: { children: React.ReactNode 
     salto MAYOR (Tailwind 4) o incluso un *descenso* (`eslint-config-next@14`), así que no se toca por iniciativa
     propia: hay un lote pequeño de arreglos no rompedores (`npm audit fix`, sin `--force`) y otro de decisiones mayores
     de verdad (Tailwind 4). *Tú decides si hacemos el lote pequeño, el grande o ninguno.*
-33. **Poner `noindex, follow` al asistente de `/paquetes/*`** (respondiendo a la fila «Duplicada: sin versión canónica»
-    de GSC): un layout de servidor nuevo en `app/paquetes/[paqueteSlug]/layout.tsx` con metadatos propios, que cubre las
-    **45 URLs** del asistente (9 pasos × 5 paquetes) y además los slugs inventados. **1 fichero nuevo, nada más.**
-    *Propuesto el 09-10-2026, pendiente de tu OK.*
-34. **Arreglar los 404 que devuelven 200 en el asistente de paquetes:** un slug inexistente responde 200 con un «Paquete
-    no encontrado» dentro, así que el espacio de URLs es infinito (alimenta los grupos de duplicadas y descubiertas de
-    GSC). Requiere tocar el asistente, porque hoy valida en el navegador y no en el servidor. *Decisión tuya.*
+33. ✅ **CERRADO** *(09-10-2026)* — El asistente de `/paquetes/*` lleva `noindex, follow` con metadatos propios
+    (commit `6514d57`): cubre las 45 URLs de los 9 pasos × 5 paquetes. La fila «Duplicada» de GSC debería vaciarse
+    según Google vuelva a rastrearlas, en unas semanas.
+34. ✅ **CERRADO** *(09-10-2026)* — Un slug inexistente en el asistente ya devuelve **404** en lugar de 200 (mismo
+    commit): el slug se valida en el servidor y `notFound()` sirve la página 404. La validación falla en abierto para
+    no tumbar un pedido en curso ante un fallo de Supabase.
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el

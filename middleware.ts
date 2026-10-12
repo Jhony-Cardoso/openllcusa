@@ -7,7 +7,13 @@ const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
   '/servicios/:slug/onboarding(.*)',
   '/servicios/form-5472-1120/onboarding(.*)',
-  '/servicios/impuestos/declaracion-anual-llc/onboarding(.*)'
+  '/servicios/impuestos/declaracion-anual-llc/onboarding(.*)',
+  // El asistente de impuestos tambien se sirve por la URL reescrita
+  // (/servicios/impuestos/<servicio>/onboarding): los rewrites de next.config.ts
+  // le anaden un segmento, asi que NO coincide con '/servicios/:slug/onboarding'
+  // y hasta ahora cualquier visitante anonimo podia recorrerlo.
+  // respondia 401 al crear el pedido y veia un error generico).
+  '/servicios/impuestos/:service/onboarding(.*)'
 ])
 
 export default clerkMiddleware(async (auth, req) => {

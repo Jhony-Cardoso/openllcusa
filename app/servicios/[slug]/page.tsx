@@ -757,11 +757,11 @@ const ctaHref = isEIN(slug)
                       <span>Gestión y presentación del reporte</span>
                       <span className="font-semibold text-[#111827]">{precioFormateado}</span>
                     </div>
-                    <div className="mt-2 flex items-baseline justify-between gap-3 text-sm text-[#4B5563]">
-                      <span>Tasa oficial de tu estado (filing anual)</span>
-                      <span className="font-semibold text-[#111827]">
+                    <div className="mt-2 text-sm text-[#4B5563]">
+                      <div>Tasa oficial de tu estado (filing anual)</div>
+                      <div className="mt-0.5 text-right font-semibold text-[#111827]">
                         {estadosConTasa.length > 0 ? `de ${dinero(tasaMinima)} a ${dinero(tasaMaxima)}` : 'según el estado'}
-                      </span>
+                      </div>
                     </div>
                     <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-[#E5E7EB] pt-3">
                       <span className="font-semibold text-[#111827]">Total</span>

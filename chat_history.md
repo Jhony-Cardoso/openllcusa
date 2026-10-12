@@ -4173,7 +4173,47 @@ const isProtectedRoute = createRouteMatcher([
 ])
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:06)
+---
+### 📅 Chat Session: 2026-10-12 14:22
+**Main objective:** El usuario avisa de que el onboarding del Reporte Anual Estatal sigue sin funcionar. Se revierte
+Clerk 7 a Clerk 6 para descartar la causa más probable.
+
+#### 👤 User Request:
+> «Entonces, ¿qué ocurre? No me has dicho si has arreglado el onboarding del Reporte Anual Estatal. Yo lo he probado y
+> no funciona…»
+
+#### 🤖 Agent Solution:
+- **Respuesta directa, que faltaba en los mensajes anteriores:** **NO está arreglado.** Lo que se cerró (punto 36) fue
+  otra cosa: que ese asistente se podía abrir **sin sesión** (un agujero de acceso). El «Error al crear el pedido» es el
+  punto 35 y sigue abierto. Los cuadros de códigos HTTP de los mensajes anteriores describían la protección, no la
+  reparación del error, y eso se prestaba a confusión.
+- **Lo que sí se ha hecho ahora (decisión propia, por ser mi error el que lo puso ahí): revertir Clerk 7.**
+  `git revert dac01bb` en el commit **`c738819`**: `@clerk/nextjs` vuelve a `^6.39.1` y `@clerk/localizations` a
+  `^3.37.3`, y `components/layout/Header.tsx` / `app/layout.tsx` recuperan sus componentes y props originales
+  (`<SignedIn>`, `<SignedOut>`, `afterSignOutUrl` en el `UserButton`).
+- **Por qué revertir y no esperar otra prueba:** Clerk 7 llevaba en producción desde antes de la primera captura del
+  error (se subió por accidente en `6514d57`), es el único cambio de todo el día que toca la sesión, y **las
+  comprobaciones que hice no podían detectarlo** porque todas eran sin sesión (cabecera de visitante, pantalla de
+  acceso) — precisamente la parte que no está en duda. Revertir elimina la variable en 3 minutos.
+- **Verificación del revert en producción:** el sitio ya sirve `https://clerk.openllcusa.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js`
+  (**versión 6**, que es el marcador que se puede leer desde fuera). Ocho comprobaciones, **0 fallos**: `/`, `/precios`,
+  `/servicios`, `/sign-in`, `/guias` en 200; el 36 intacto (la URL reescrita del asistente sigue en 307);
+  `/paquetes/business/onboarding` 200 y `/paquetes/xxx/onboarding` 404 (lo de ayer, sin cambios). La pantalla de acceso
+  carga su formulario.
+- **Entorno local igualado:** se lanzó `npm install` para devolver `node_modules` a Clerk 6, de modo que el `npm run dev`
+  del usuario corra la misma versión que el lock. Si tenía el servidor abierto, conviene reiniciarlo.
+- **Lo que queda por saber (punto 35), sin cambios:** si tras el revert el asistente ya crea el pedido, la causa era
+  Clerk 7; si sigue fallando, es la ruta y hace falta el estado de `POST /api/pedidos` (pestaña Red **sin** el filtro
+  `video`, o el registro de Dokploy con la línea `📦 [PEDIDOS API]`).
+- **Files created/modified:** `package.json`, `package-lock.json`, `components/layout/Header.tsx`, `app/layout.tsx`
+  (commit `c738819`, revert de `dac01bb`), `chat_history.md`.
+
+#### 💻 Key Code:
+```bash
+git revert --no-edit dac01bb   # Clerk 7.9.13 -> 6.39.1 y la migracion a <Show>, de vuelta
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:22)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4206,10 +4246,10 @@ const isProtectedRoute = createRouteMatcher([
 12. Despliegue de lo que queda: limpieza de código muerto, allowlist de admin unificado y regla 6 de `AGENTS.md`.
 13. Limpieza menor: `components/FlagSafe.tsx` ✅ **borrado** *(09-10-2026, commit `8241d45`)*. Siguen aplazados, como
     pediste, `_RESPALDO_SERVICIOS/` y los ficheros de prueba de `public/`. *Yo, cuando lo digas.*
-14. **Dependencias críticas:** **Next 16.3.8 ✅** subido y verificado (`23ff0a3`). **Clerk 7.9.13 está EN PRODUCCIÓN**
-    (`dac01bb`, subido por error junto al 33/34; ver la entrada de hoy). De Clerk se ha verificado en producción todo
-    lo que no exige cuenta: cabecera sin sesión, `<Show>`, página de acceso y localización. **Falta tu prueba con
-    sesión iniciada** («Panel», avatar y salir): si algo fallara, se revierte `dac01bb`. *Tú compruebas, yo reverto.*
+14. **Dependencias críticas:** **Next 16.3.8 ✅** subido y verificado. **Clerk: 7.9.13 REVERTIDO a 6.39.1**
+    (commit `c738819`) para descartar que fuera la causa del fallo del asistente; Clerk 6 sigue en soporte (LTS), así que
+    no hay urgencia. Si el asistente funciona tras el revert, era Clerk y la subida se rehará con prueba previa; si sigue
+    fallando, se queda en 6 y el problema está en la ruta. *Decidido y hecho por mí; te lo cuento aquí.*
 15. Unificar lo que queda de los ayudantes de voz en el módulo compartido (cosmético). *Yo.*
 16. Voz de Zara con proveedores — aparcada.
 
@@ -4278,11 +4318,10 @@ const isProtectedRoute = createRouteMatcher([
 34. ✅ **CERRADO** *(09-10-2026)* — Un slug inexistente en el asistente ya devuelve **404** en lugar de 200 (mismo
     commit): el slug se valida en el servidor y `notFound()` sirve la página 404. La validación falla en abierto para
     no tumbar un pedido en curso ante un fallo de Supabase.
-35. **Cerrar el «Error al crear el pedido» del asistente de servicios.** Localizado: salta cuando `POST /api/pedidos`
-    no responde 2xx. Descartado que venga de los cambios de hoy (otro árbol de rutas, dependencias intactas) y
-    **corregida** mi primera conclusión: la página ya redirige a `/sign-in` si no hay usuario, así que no es un simple
-    «sin sesión». **Falta el código de estado** (registro de Dokploy: `📦 [PEDIDOS API]` con el `userId`, o la pestaña Red
-    con «Conservar registro» marcado) y saber la **URL exacta** y si pasaba ya antes. *Tú me das el dato, yo lo arreglo.*
+35. **Cerrar el «Error al crear el pedido» del asistente de servicios** (sigue ABIERTO: el punto 36 no lo arreglaba;
+    cerraba el acceso sin sesión). Acaba de revertirse Clerk 7 a 6 para descartarlo. **Prueba el asistente otra vez**: si
+    ya crea el pedido, era Clerk 7; si sigue fallando, necesito el estado de `POST /api/pedidos` (pestaña Red **sin** el
+    filtro `video`) o el registro de Dokploy. *Tú pruebas, yo sigo.*
 36. ✅ **CERRADO** *(09-10-2026)* — El asistente de impuestos está protegido también por su URL reescrita (commit
     `501521d`, una línea en `middleware.ts`): medido **200 → 307** para un visitante anónimo, con las landings y el resto
     del sitio sin cambios.

@@ -254,6 +254,24 @@ export default async function ServicioDetallePage({
   if (error || !servicio) notFound()
 
   const isPaquete = servicio.tipo === 'paquete'
+
+  // El reporte anual se cobra en DOS conceptos: la tarifa del servicio (servicios.precio)
+  // mas la tasa oficial del estado (estados_usa.filing_anual). El asistente ya los
+  // desglosa antes de pagar, asi que aqui no puede anunciarse un unico precio como
+  // "total": se informa del rango real y del desglose.
+  const esReporteAnual = isReporteAnual(slug)
+  const dinero = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  let tasasEstado: { nombre: string; filing_anual: number }[] = []
+  if (esReporteAnual) {
+    const { data } = await supabaseAdmin
+      .from('estados_usa')
+      .select('nombre, filing_anual, activo')
+      .order('filing_anual', { ascending: false })
+    tasasEstado = (data ?? []).filter((e: any) => e.activo !== false)
+  }
+  const tasaMaxima = tasasEstado.length ? Number(tasasEstado[0].filing_anual ?? 0) : 0
+  const tasaMinima = tasasEstado.length ? Number(tasasEstado[tasasEstado.length - 1].filing_anual ?? 0) : 0
+  const ejemploTasas = tasasEstado.map((e) => `${e.nombre} ${dinero(Number(e.filing_anual ?? 0))}`).join(' · ')
   const IconHeader = getIconForSlug(slug)
   const timeline = getTimelineForSlug(slug)
   const faqs = getFAQsForSlug(slug)
@@ -281,12 +299,25 @@ const ctaHref = isEIN(slug)
       "name": "Open LLC USA",
       "url": "https://openllcusa.com"
     },
-    "offers": {
-      "@type": "Offer",
-      "price": servicio.precio,
-      "priceCurrency": "USD",
-      "url": `https://openllcusa.com/servicios/${rawSlug}`
-    }
+    // En el reporte anual el precio no es unico: tarifa del servicio + tasa del estado.
+    // Google tiene que leer lo mismo que ve el visitante.
+    "offers": esReporteAnual
+      ? {
+          "@type": "Offer",
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "minPrice": servicio.precio ?? 0,
+            ...(tasaMaxima > 0 ? { "maxPrice": (servicio.precio ?? 0) + tasaMaxima } : {}),
+            "priceCurrency": "USD"
+          },
+          "url": `https://openllcusa.com/servicios/${rawSlug}`
+        }
+      : {
+          "@type": "Offer",
+          "price": servicio.precio,
+          "priceCurrency": "USD",
+          "url": `https://openllcusa.com/servicios/${rawSlug}`
+        }
   }
 
   return (
@@ -695,7 +726,9 @@ const ctaHref = isEIN(slug)
                   </div>
                 )}
 
-                <div className="text-xs font-semibold tracking-widest text-gray-500 mb-1">PRECIO TOTAL</div>
+                <div className="text-xs font-semibold tracking-widest text-gray-500 mb-1">
+                  {esReporteAnual ? 'DESDE' : 'PRECIO TOTAL'}
+                </div>
                 <div className="text-5xl font-extrabold tracking-tighter text-[#111827] mb-1">
                   {precioFormateado}
                 </div>
@@ -709,6 +742,32 @@ const ctaHref = isEIN(slug)
                   <div className="text-sm text-emerald-600 font-medium mt-1">
                     Pago único · Sin costes ocultos · 100% deducible
                   </div>
+                )}
+
+                {/* Desglose real del reporte anual: tarifa + tasa del estado */}
+                {esReporteAnual && (
+                  <div className="mt-4 rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] p-4">
+                    <div className="flex items-baseline justify-between gap-3 text-sm text-[#4B5563]">
+                      <span>Gestión y presentación del reporte</span>
+                      <span className="font-semibold text-[#111827]">{precioFormateado}</span>
+                    </div>
+                    <div className="mt-2 flex items-baseline justify-between gap-3 text-sm text-[#4B5563]">
+                      <span>Tasa oficial de tu estado (filing anual)</span>
+                      <span className="font-semibold text-[#111827]">
+                        {tasasEstado.length > 0 ? `de ${dinero(tasaMinima)} a ${dinero(tasaMaxima)}` : 'según el estado'}
+                      </span>
+                    </div>
+                    <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-[#E5E7EB] pt-3">
+                      <span className="font-semibold text-[#111827]">Total</span>
+                      <span className="font-extrabold text-[#111827]">desde {precioFormateado}</span>
+                    </div>
+                  </div>
+                )}
+
+                {esReporteAnual && ejemploTasas && (
+                  <p className="mt-3 text-xs leading-relaxed text-[#6B7280]">
+                    La tasa la fija cada estado ({ejemploTasas}). En el asistente la verás desglosada, con el importe exacto de tu estado, antes de pagar.
+                  </p>
                 )}
 
                 {/* CTA PRINCIPAL OPTIMIZADO */}

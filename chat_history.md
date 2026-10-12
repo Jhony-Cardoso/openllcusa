@@ -4130,7 +4130,50 @@ if (!user) {
 }
 ```
 
-## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 13:56)
+---
+### 📅 Chat Session: 2026-10-12 14:06
+**Main objective:** Cerrar el punto 36 (proteger el asistente de impuestos por su URL reescrita).
+
+#### 👤 User Request:
+> «He hecho de nuevo la prueba marcando ✅ Conservar registro, y el resultado es el mismo (no sale información).
+> Pero ve haciendo el Punto 36.»
+
+#### 🤖 Agent Solution:
+- **Commit `501521d`, una línea útil** en `middleware.ts`: se añade `/servicios/impuestos/:service/onboarding(.*)` a
+  `createRouteMatcher`, que es la forma en que los rewrites de `next.config.ts` sirven ese asistente (con un segmento de
+  más, motivo por el que se escapaba del patrón general). Las cuatro entradas anteriores se quedan como estaban: la de
+  `declaracion-anual-llc` pasa a ser redundante, pero no se retira en este cambio.
+- **MEDICIÓN antes/después en producción** (visitante anónimo, `Accept: text/html`):
+  - `/servicios/impuestos/reporte-anual-estatal/onboarding`: **200 → 307** (era la puerta abierta)
+  - `/servicios/impuestos/reporte-anual-estatal/onboarding/checkout`: **307**
+  - `/servicios/impuestos/declaracion-anual-llc/onboarding`: **307** (ya lo estaba, por la entrada a mano)
+  - `/servicios/impuestos/declaracion-anual-llc` (la landing) y `/`, `/precios`, `/servicios`: **200**, sin cambios
+  - `/paquetes/business/onboarding`: **200**, el asistente de paquetes no se ve afectado por este cambio
+  - Observación: la landing de reporte anual por la URL reescrita (`/servicios/impuestos/reporte-anual-estatal`) devuelve
+    404, pero **el patrón nuevo solo cubre `/onboarding(.*)`**, así que ese 404 viene de antes y no de este cambio.
+- **Un comentario mío corregido en el mismo lote:** la primera versión del comentario aseguraba en el código que la API
+  respondía 401 al crear el pedido, y eso es una hipótesis sin verificar (además, la propia página redirige a `/sign-in`
+  cuando no hay usuario). Se dejó solo lo medido: que el asistente se podía recorrer sin sesión.
+- **Sobre la pestaña Red que le sale vacía: tiene la causa en su propia captura.** En el buscador de peticiones hay un
+  filtro con la palabra `video`, que no coincide con ninguna petición del sitio: hay que borrarlo (la cruz del campo) y
+  volver a reproducir. Se le indica, junto con la alternativa del registro de Dokploy.
+- **Y se afina el diagnóstico del punto 35:** como la página ya redirige a `/sign-in` sin usuario, y el aviso apareció con
+  el asistente ya cargado, el fallo es de la respuesta de `POST /api/pedidos` **con sesión presente** (lo más probable, un
+  500 de escritura en base de datos), no un 401.
+- **Files created/modified:** `middleware.ts` (commit `501521d`), `chat_history.md`.
+
+#### 💻 Key Code:
+```ts
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/servicios/:slug/onboarding(.*)',
+  '/servicios/form-5472-1120/onboarding(.*)',
+  '/servicios/impuestos/declaracion-anual-llc/onboarding(.*)',
+  '/servicios/impuestos/:service/onboarding(.*)',   // el que faltaba: cubre la URL reescrita
+])
+```
+
+## 📌 PENDIENTES ABIERTOS (actualizado: 2026-10-12 14:06)
 
 > Convención: este bloque se revisa y actualiza en cada sesión, y cada entrada de arriba indica la fecha de las
 > acciones realizadas. Los pendientes van numerados para poder referirse a ellos por su número, **y los números NO se
@@ -4240,11 +4283,9 @@ if (!user) {
     **corregida** mi primera conclusión: la página ya redirige a `/sign-in` si no hay usuario, así que no es un simple
     «sin sesión». **Falta el código de estado** (registro de Dokploy: `📦 [PEDIDOS API]` con el `userId`, o la pestaña Red
     con «Conservar registro» marcado) y saber la **URL exacta** y si pasaba ya antes. *Tú me das el dato, yo lo arreglo.*
-36. **Proteger el asistente de impuestos por su URL reescrita.** El middleware no cubre
-    `/servicios/impuestos/<servicio>/onboarding(.*)` porque los rewrites de `next.config.ts` lo sirven con un segmento de
-    más, así que **hoy se puede recorrer sin sesión** (medido: 200 para un visitante anónimo, frente a 307 en la URL
-    canónica). Es **1 línea** en `middleware.ts` (añadir el patrón a `createRouteMatcher`). *Propuesto el 09-10-2026,
-    pendiente de tu OK.*
+36. ✅ **CERRADO** *(09-10-2026)* — El asistente de impuestos está protegido también por su URL reescrita (commit
+    `501521d`, una línea en `middleware.ts`): medido **200 → 307** para un visitante anónimo, con las landings y el resto
+    del sitio sin cambios.
 
 **Nota técnica (no es una tarea, no lleva número):** la hoja de fuentes del sitio pide de Inter los pesos 400, 500 y
 600 y de Plus Jakarta Sans hasta el 800. Por eso **cualquier texto en negrita con Inter se queda en 600**, que es el
